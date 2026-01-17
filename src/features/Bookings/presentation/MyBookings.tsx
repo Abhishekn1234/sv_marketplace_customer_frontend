@@ -57,10 +57,15 @@ export default function MyBookings() {
   /* DERIVED IDS */
   /* ------------------------------------------------------------------ */
 
-  const serviceId = useMemo(
-    () => currentBooking?.service?._id || currentBooking?.serviceId,
-    [currentBooking]
-  );
+  const serviceId = useMemo(() => {
+  if (!currentBooking) return null;
+
+  if (typeof currentBooking.service === "object") {
+    return currentBooking.service._id;
+  }
+
+  return currentBooking.serviceId ?? null;
+}, [currentBooking]);
 
   const serviceTierId = useMemo(
     () =>
