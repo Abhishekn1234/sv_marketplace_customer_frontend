@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "./features/core/store/auth";
 
 export default function ConfirmModal() {
-  const { accessToken } = useAuthStore();
+  const { customerData} = useAuthStore();
   const [open, setOpen] = useState(false);
-
+ const accessToken=customerData.accessToken;
   // Open modal when accessToken exists
   useEffect(() => {
     if (accessToken) {

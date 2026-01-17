@@ -26,12 +26,30 @@ export const useBookingActions = (
       const request: CancelBookingRequest = { bookingId };
       return await cancelUseCase.execute(request);
     },
-    onSuccess: () => {
-       
-      queryClient.invalidateQueries({ queryKey: ["bookings"] });
-        toast.success("Booking cancelled successfully");
-      onSuccess?.();
-    },
+   onSuccess: (_data, bookingId) => {
+  toast.success("Booking cancelled successfully");
+
+  queryClient.setQueryData(["bookings"], (oldData: any) => {
+    if (!oldData) return oldData;
+
+    // If your bookings query returns an array
+    if (Array.isArray(oldData)) {
+      return oldData.filter((b) => b._id !== bookingId);
+    }
+
+    // If your bookings query returns { data: Booking[] }
+    if (oldData.data) {
+      return {
+        ...oldData,
+        data: oldData.data.filter((b: any) => b._id !== bookingId),
+      };
+    }
+
+    return oldData;
+  });
+
+  onSuccess?.();
+},
     onError: (err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Failed to cancel booking";

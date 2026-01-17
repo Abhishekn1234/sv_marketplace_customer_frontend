@@ -7,7 +7,7 @@ type LocationResponse = {
 const fetchLocationName = async (coordinates: [number, number]): Promise<string> => {
   const [lng, lat] = coordinates;
   const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`
   );
 
   if (!res.ok) throw new Error("Failed to fetch location");

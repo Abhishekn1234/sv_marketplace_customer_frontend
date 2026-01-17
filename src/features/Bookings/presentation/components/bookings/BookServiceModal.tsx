@@ -8,7 +8,7 @@ import BookingServiceHeader from "./BookingServiceHeader";
 import BookingServiceForm from "./BookingServiceForm";
 import BookingServiceLocation from "./BookingServiceLocation";
 import BookingServiceFooter from "./BookingServiceFooter";
-import { getCurrentLocationName } from "../../utils/reverse";
+import { getCurrentLocationName } from "../../../../utils/reverse";
 
 interface BookingServiceModalProps {
   isOpen: boolean;
