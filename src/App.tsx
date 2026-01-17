@@ -12,7 +12,7 @@ import ForgotPassword from "./features/Auth/presentation/components/auth/ForgotP
 // /* DASHBOARD */
 import DashboardLayout from "./features/Layout/DashboardLayout";
 import WebsiteHome from "./features/Home/presentation/DashboardHome";
-import Services from "./features/components/services/Services";
+
 import BookService from "./features/Bookings/presentation/components/bookings/BookService";
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 import Profile from "./features/Profile/presentation/Profile";
@@ -21,24 +21,22 @@ import Profile from "./features/Profile/presentation/Profile";
 // /* AUTH LOGIC */
 import { useAuth } from "./features/Auth/presentation/hooks/useAuth";
 import { ProtectedRoute } from "./ProtectedLayout";
+
 import './App.css';
+
 function App() {
   const { logout } = useAuth();
 
   return (
     <ThemeProvider>
-      
       <ToastContainer position="top-right" />
 
       <Router>
         <Routes>
-          {/* ================= AUTH ROUTES ================= */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-        
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* ================= PROTECTED DASHBOARD ================= */}
           <Route
             path="/"
             element={
@@ -48,21 +46,21 @@ function App() {
             }
           >
             <Route index element={<WebsiteHome />} />
-            <Route path="services" element={<Services />} />
             <Route path="book-service/:serviceId" element={<BookService />} />
             <Route path="my-bookings" element={<MyBookings />} />
             <Route path="profile" element={<Profile />} />
-          
           </Route>
 
-          {/* ================= FALLBACK ================= */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
+
+      {/* 🔥 Global Modal */}
+
     </ThemeProvider>
-    
   );
 }
+
 
 export default App;
 

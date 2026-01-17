@@ -1,6 +1,6 @@
 import type {
-  UserProfile,
-  UpdateProfileRequest,
+  // UserProfile,
+  // UpdateProfileRequest,
   UpdateProfileResponse,
   UploadDocumentRequest,
   UploadDocumentResponse,

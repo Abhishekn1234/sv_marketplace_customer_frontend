@@ -1,9 +1,11 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
-import type { UploadDocumentRequest, UploadDocumentResponse } from '../../features/types/profile.types';
+import type { UploadDocumentRequest, UploadDocumentResponse } from '../../entities/profile.types';
 
 export class UploadDocumentUseCase {
-  constructor(private profileRepository: IProfileRepository) {}
-
+  private profileRepository: IProfileRepository;
+    constructor(profilerepo:IProfileRepository){
+      this.profileRepository=profilerepo;
+    }
   async execute(request: UploadDocumentRequest): Promise<UploadDocumentResponse> {
     // Validation
     if (!request.file) {

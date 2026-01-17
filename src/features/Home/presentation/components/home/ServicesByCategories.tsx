@@ -6,7 +6,7 @@ import BookingServiceModal from "../../../../Bookings/presentation/components/bo
 
 export default function ServicesByCategory() {
   const { categories: categoryData = [], loading, error } = useServices();
-
+  
   /* ------------------------------------------------------------------ */
   /* MODAL STATE */
   /* ------------------------------------------------------------------ */
@@ -66,19 +66,11 @@ export default function ServicesByCategory() {
           <div key={category._id} className="mb-24">
             {/* CATEGORY HEADER */}
             <div className="flex items-center gap-4 mb-6">
-              {category.iconUrl && (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center">
-                  <img
-                    src={category.iconUrl}
-                    alt={category.name}
-                    className="w-8 h-8 object-cover rounded-full"
-                  />
-                </div>
-              )}
               <h3 className="text-3xl font-semibold">
-                {category.name}
+                {category?.services?.[0]?.name}
               </h3>
             </div>
+
 
             {/* SERVICES GRID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

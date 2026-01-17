@@ -16,7 +16,7 @@ const circleColors = [
 
 export default function CategoriesRow() {
   const { categories: categoryData = [], loading, error } = useServices();
-
+ console.log(categoryData);
   if (loading)
     return (
       <p className="text-center mt-10 text-gray-600">
@@ -46,36 +46,40 @@ export default function CategoriesRow() {
       </h2>
 
       <div className="flex gap-6 py-4 px-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 snap-x snap-mandatory">
-        {categoryData.map((category, idx) => {
-          const colorClass = circleColors[idx % circleColors.length];
+       {categoryData.map((category, idx) => {
+  const colorClass = circleColors[idx % circleColors.length];
+  const serviceName = category.services?.[0]?.name;
+  const iconUrl=category.services?.[0]?.iconUrl
+  return (
+    <div
+      key={category._id}
+      className="flex-shrink-0 flex flex-col items-center w-24 snap-start cursor-pointer transition-transform duration-200 hover:scale-110"
+    >
+      {/* Icon Circle */}
+      <div
+        className={`w-20 h-20 rounded-full flex items-center justify-center text-center px-2 bg-gradient-to-br ${colorClass} shadow-md transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg`}
+      >
+        {iconUrl ? (
+          <img
+            src={iconUrl}
+            alt={category.name}
+            className="w-10 h-10 object-cover rounded-full"
+          />
+        ) : (
+          <span className="text-white text-xs font-semibold leading-tight line-clamp-2">
+            {serviceName}
+          </span>
+        )}
+      </div>
 
-          return (
-            <div
-              key={category._id}
-              className="flex-shrink-0 flex flex-col items-center w-24 snap-start cursor-pointer transition-transform duration-200 hover:scale-110"
-            >
-              <div
-                className={`w-20 h-20 rounded-full flex items-center justify-center mb-2 bg-gradient-to-br ${colorClass} shadow-md transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg`}
-              >
-                {category.iconUrl ? (
-                  <img
-                    src={category.iconUrl}
-                    alt={category.name}
-                    className="w-10 h-10 object-cover rounded-full"
-                  />
-                ) : (
-                  <span className="text-white text-xl font-bold">
-                    {category.name.charAt(0)}
-                  </span>
-                )}
-              </div>
+      {/* Category Name */}
+      <p className="text-sm text-center text-gray-800 font-medium line-clamp-1">
+        {serviceName}
+      </p>
+    </div>
+  );
+})}
 
-              <p className="text-sm text-center text-gray-800 font-medium line-clamp-1">
-                {category.name}
-              </p>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

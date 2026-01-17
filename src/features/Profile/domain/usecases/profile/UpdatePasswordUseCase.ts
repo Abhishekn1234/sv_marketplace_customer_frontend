@@ -1,8 +1,10 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
 
 export class UpdatePasswordUseCase {
-  constructor(private profileRepository: IProfileRepository) {}
-
+  private profileRepository: IProfileRepository;
+    constructor(profilerepo:IProfileRepository){
+      this.profileRepository=profilerepo;
+    }
   async execute(
     oldPassword: string,
     newPassword: string,

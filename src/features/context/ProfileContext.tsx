@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { useProfile as useProfileHook } from "../features/hooks/useProfile"
+import { useProfile as useProfileHook } from "../Profile/presentation/hooks/useProfile"
 
 const ProfileContext = createContext<ReturnType<typeof useProfileHook> | null>(null);
 

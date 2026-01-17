@@ -12,44 +12,39 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { Button } from "../components/ui/button";
-import { useTheme } from "../context/themeContext";
+import { useAuthStore } from "../core/store/auth";
 
-interface Props {
-  onLogout: () => void;
-}
-
-export default function DashboardHeader({ onLogout }: Props) {
+export default function DashboardHeader({ onLogout }: { onLogout: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
 
+  /* ---------------- ZUSTAND ---------------- */
+  const customerData = useAuthStore((s) => s.customerData);
+  const toggleTheme = useAuthStore((s) => s.toggleTheme);
+  const setLanguage = useAuthStore((s) => s.setLanguage);
+
+  const { user, theme, language } = customerData;
+
+  /* ---------------- UI STATE ---------------- */
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [language, setLanguage] = useState("EN");
   const [languageOpen, setLanguageOpen] = useState(false);
 
-  /* USER INITIALS */
-  const raw = localStorage.getItem("customerData");
-  let initials = "??";
-  if (raw) {
-    try {
-      const { fullName } = JSON.parse(raw);
-      if (fullName) {
-        initials = fullName
-          .split(" ")
-          .map((n: string) => n[0])
-          .slice(0, 2)
-          .join("")
-          .toUpperCase();
-      }
-    } catch {}
-  }
+  /* ---------------- USER INITIALS ---------------- */
+  const initials = user?.fullName
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "??";
 
   const menu = [
     { label: "My Bookings", path: "/my-bookings", icon: Calendar },
     { label: "Profile", path: "/profile", icon: User },
   ];
 
-  const languages = ["EN", "HI", "AR","UR"];
+  const languages = ["EN", "HI", "AR", "UR"];
 
   return (
     <header
@@ -76,6 +71,7 @@ export default function DashboardHeader({ onLogout }: Props) {
           {menu.map((m) => {
             const Icon = m.icon;
             const active = location.pathname === m.path;
+
             return (
               <button
                 key={m.path}
@@ -95,12 +91,12 @@ export default function DashboardHeader({ onLogout }: Props) {
             );
           })}
 
-          {/* THEME */}
+          {/* THEME TOGGLE */}
           <Button variant="ghost" onClick={toggleTheme}>
             {theme === "light" ? <Moon /> : <Sun />}
           </Button>
 
-          {/* LANGUAGE */}
+          {/* LANGUAGE DROPDOWN */}
           <div className="relative">
             <Button
               variant="ghost"
@@ -144,7 +140,6 @@ export default function DashboardHeader({ onLogout }: Props) {
           <Button
             variant="ghost"
             onClick={() => {
-              localStorage.removeItem("customerData");
               onLogout();
               navigate("/login");
             }}
@@ -153,7 +148,7 @@ export default function DashboardHeader({ onLogout }: Props) {
           </Button>
         </div>
 
-        {/* MOBILE TOGGLE */}
+        {/* MOBILE MENU TOGGLE */}
         <Button
           size="icon"
           variant="ghost"

@@ -1,9 +1,11 @@
-import type { IAuthRepository } from '../../Auth/domain/repositories/IAuthRepository';
-import type { ResetPasswordRequest } from '../../features/types/auth.types';
+import type { IAuthRepository } from '../../repositories/IAuthRepository';
+import type { ResetPasswordRequest } from '../../entities/auth.types';
 
 export class ResetPasswordUseCase {
-  constructor(private authRepository: IAuthRepository) {}
-
+  private authRepository: IAuthRepository;
+    constructor(authrepo:IAuthRepository){
+      this.authRepository=authrepo;
+    }
   async execute(request: ResetPasswordRequest): Promise<{ message: string }> {
     // Email validation
     if (!request.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)) {

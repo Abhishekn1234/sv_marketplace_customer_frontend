@@ -1,9 +1,11 @@
-import type { IAuthRepository } from "../../Auth/domain/repositories/IAuthRepository";
-import type { LoginRequest, LoginResponse } from "../../features/types/auth.types";
+import type { IAuthRepository } from '../../repositories/IAuthRepository';
+import type { LoginRequest, LoginResponse } from "../../entities/auth.types";
 
 export class LoginUseCase {
-  constructor(private authRepository: IAuthRepository) {}
-
+  private authRepository: IAuthRepository;
+  constructor(authrepo:IAuthRepository){
+    this.authRepository=authrepo;
+  }
   async execute(request: LoginRequest): Promise<LoginResponse> {
     // ✅ Validation
     if (!request.password) {

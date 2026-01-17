@@ -32,18 +32,23 @@ function UpdatePasswordTab() {
     setShow(prev => ({ ...prev, [key]: !prev[key] }));
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (form.newPassword !== form.confirmPassword) return;
+  if (form.newPassword !== form.confirmPassword) return;
 
-    await updatePassword(
-      form.currentPassword,
-      form.newPassword,
-      form.confirmPassword
-    );
+  await updatePassword({
+    oldPassword: form.currentPassword,
+    newPassword: form.newPassword,
+    confirmPassword: form.confirmPassword,
+  });
 
-    setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  };
+  setForm({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mx-auto max-w-140 ">

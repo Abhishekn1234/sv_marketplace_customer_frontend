@@ -1,9 +1,11 @@
-import type { IAuthRepository } from '../../Auth/domain/repositories/IAuthRepository';
-import type { SendOTPRequest, SendOTPResponse } from '../../features/types/auth.types';
+import type { IAuthRepository } from '../../repositories/IAuthRepository';
+import type { SendOTPRequest, SendOTPResponse } from '../../entities/auth.types';
 
 export class SendOTPUseCase {
-  constructor(private authRepository: IAuthRepository) {}
-
+  private authRepository: IAuthRepository;
+    constructor(authrepo:IAuthRepository){
+      this.authRepository=authrepo;
+    }
   async execute(request: SendOTPRequest): Promise<SendOTPResponse> {
     // Validation
     if (!request.phone || request.phone.trim().length < 10) {

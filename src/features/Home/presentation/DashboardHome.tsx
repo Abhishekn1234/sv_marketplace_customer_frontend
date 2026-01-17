@@ -4,6 +4,7 @@ import ServicesByCategory from "./components/home/ServicesByCategories";
 
 export default function WebsiteHome() {
   return (
+    
     <div className="min-h-screen bg-background text-foreground">
       {/* ================= HERO SECTION ================= */}
       <section className="relative overflow-hidden">

@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react';
-import { ProfileRepository } from '../../data/repositories/ProfileRepository';
-import { GetProfileUseCase } from '../../domain/usecases/profile/GetProfileUseCase';
-import { UpdateProfileUseCase } from '../../domain/usecases/profile/UpdateProfileUseCase';
-import { UploadDocumentUseCase } from '../../domain/usecases/profile/UploadDocumentUseCase';
+import { useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
+import { ProfileRepository } from "../../data/repositories/ProfileRepository";
+import { GetProfileUseCase } from "../../domain/usecases/profile/GetProfileUseCase";
+import { UpdateProfileUseCase } from "../../domain/usecases/profile/UpdateProfileUseCase";
+import { UploadDocumentUseCase } from "../../domain/usecases/profile/UploadDocumentUseCase";
+import { UpdatePasswordUseCase } from "../../domain/usecases/profile/UpdatePasswordUseCase";
+
+import { useAuthStore } from "../../../core/store/auth";
+
 import type {
   UserProfile,
   UpdateProfileRequest,
   UploadDocumentRequest,
-} from '../../domain/entities/profile.types';
-import { UpdatePasswordUseCase } from '../../domain/usecases/profile/UpdatePasswordUseCase';
-import { toast } from 'react-toastify';
+} from "../../domain/entities/profile.types";
+import type { User } from "../../../Auth/domain/entities/auth.types";
 
 type UpdateProfileRequestWithFiles = UpdateProfileRequest & {
   profileImage?: File;
@@ -17,178 +23,110 @@ type UpdateProfileRequestWithFiles = UpdateProfileRequest & {
   addressProof?: File;
   photoProof?: File;
 };
-const updateCustomerLocalStorage = (updatedProfile: UserProfile) => {
-  const stored = localStorage.getItem("customerData");
-  if (!stored) return;
 
-  const parsed = JSON.parse(stored);
-
-  const updatedCustomerData = {
-    ...parsed,
-    ...updatedProfile, // overwrite only profile fields
-  };
-
-  localStorage.setItem(
-    "customerData",
-    JSON.stringify(updatedCustomerData)
-  );
-};
-
-export const useProfile = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const [fetchLoading, setFetchLoading] = useState(false);
-  const [profileUpdating, setProfileUpdating] = useState(false);
-  const [passwordUpdating, setPasswordUpdating] = useState(false);
-  const [documentUploading, setDocumentUploading] = useState(false);
-
-  const profileRepository = new ProfileRepository();
-  const getProfileUseCase = new GetProfileUseCase(profileRepository);
-  const updateProfileUseCase = new UpdateProfileUseCase(profileRepository);
-  const uploadDocumentUseCase = new UploadDocumentUseCase(profileRepository);
-  const updatePasswordUseCase = new UpdatePasswordUseCase(profileRepository);
-
-  /* ---------------- Fetch Profile ---------------- */
-  const fetchProfile = async () => {
-    try {
-      setFetchLoading(true);
-      setError(null);
-
-      const response = await getProfileUseCase.execute();
-      setProfile(response);
-      return response;
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch profile');
-      throw err;
-    } finally {
-      setFetchLoading(false);
-    }
-  };
-
-  /* ---------------- Update Profile (NO refetch) ---------------- */
-const updateProfile = async (request: UpdateProfileRequestWithFiles) => {
-  try {
-    setProfileUpdating(true);
-    setError(null);
-
-    const updatedProfile = await updateProfileUseCase.execute(request);
-
-    setProfile(prev => {
-      if (!prev) return prev;
-
-      const mergedProfile = {
-        ...prev,
-        fullName: request.fullName ?? prev.fullName,
-        address: request.address ?? prev.address,
-        profilePictureUrl: request.profileImage
-          ? URL.createObjectURL(request.profileImage)
-          : prev.profilePictureUrl,
-      };
-
-      // ✅ sync localStorage
-      updateCustomerLocalStorage(mergedProfile);
-
-      return mergedProfile;
-    });
-
-    toast.success("Profile updated successfully ✅");
-    return updatedProfile;
-
-  } catch (err: any) {
-    const message = err?.message || "Failed to update profile";
-    setError(message);
-    toast.error(message);
-    throw err;
-  } finally {
-    setProfileUpdating(false);
-  }
-};
-
-
-
-
-
-  /* ---------------- Update Password ---------------- */
- const updatePassword = async (
-  oldPassword: string,
-  newPassword: string,
-  confirmPassword: string
-) => {
-  try {
-    setPasswordUpdating(true);
-    setError(null);
-
-    await updatePasswordUseCase.execute(
-      oldPassword,
-      newPassword,
-      confirmPassword
-    );
-
-    toast.success("Password updated successfully 🔐");
-  } catch (err: any) {
-    const message = err?.message || "Failed to update password";
-    setError(message);
-    toast.error(message);
-    throw err;
-  } finally {
-    setPasswordUpdating(false);
-  }
-};
-
-
-  /* ---------------- Upload Document (NO refetch) ---------------- */
-  const uploadDocument = async (request: UploadDocumentRequest) => {
-    try {
-      setDocumentUploading(true);
-      setError(null);
-
-      const response = await uploadDocumentUseCase.execute(request);
-
-  setProfile(prev => {
-  if (!prev) return prev;
-
-  const docs = prev.documents ?? [];
-
-  const updatedDocs = docs.some(d => d.type === request.documentType)
-    ? docs.map(d =>
-        d.type === request.documentType
-          ? { ...d, url: response.url }
-          : d
-      )
-    : [...docs, { type: request.documentType, url: response.url }];
-
-  return {
-    ...prev,
-    documents: updatedDocs,
-  };
+const mapProfileToUser = (profile: UserProfile): User => ({
+  _id: profile._id,
+  fullName: profile.fullName,
+  email: profile.email,
+  phone: profile.phone,
+  address: profile.address,
+  profilePictureUrl: profile.profilePictureUrl,
+  profilePicturePublicId: profile.profilePicturePublicId,
+  role: {
+    _id: profile.role._id,
+    name: profile.role.name,
+    modules: profile.role.modules,
+    createdAt: profile.role.createdAt,
+    updatedAt: profile.role.updatedAt,
+  },
+  documents: profile.documents ?? [],
+  isVerified: profile.isVerified,
+  kycStatus: profile.kycStatus,
 });
 
+export const useProfile = () => {
+  const queryClient = useQueryClient();
+  const setUser = useAuthStore((s) => s.setUser);
 
+  const repository = useMemo(() => new ProfileRepository(), []);
+  const getProfileUC = useMemo(() => new GetProfileUseCase(repository), [repository]);
+  const updateProfileUC = useMemo(() => new UpdateProfileUseCase(repository), [repository]);
+  const uploadDocumentUC = useMemo(() => new UploadDocumentUseCase(repository), [repository]);
+  const updatePasswordUC = useMemo(() => new UpdatePasswordUseCase(repository), [repository]);
 
-      return response;
-    } catch (err: any) {
-      setError(err.message || 'Failed to upload document');
-      throw err;
-    } finally {
-      setDocumentUploading(false);
-    }
-  };
+  const {
+    data: profile,
+    error,
+    isLoading: fetchLoading,
+    refetch: fetchProfile,
+  } = useQuery<UserProfile>({
+    queryKey: ["profile"],
+    queryFn: () => getProfileUC.execute(),
+  });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const { mutateAsync: updateProfile, isPending: profileUpdating } = useMutation({
+    mutationFn: (req: UpdateProfileRequestWithFiles) =>
+      updateProfileUC.execute(req),
+    onSuccess: (response) => {
+      queryClient.setQueryData<UserProfile>(["profile"], response);
+      setUser(mapProfileToUser(response));
+      toast.success("Profile updated successfully ✅");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to update profile");
+    },
+  });
+
+  const { mutateAsync: updatePassword, isPending: passwordUpdating } = useMutation({
+    mutationFn: (req: {
+      oldPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    }) =>
+      updatePasswordUC.execute(
+        req.oldPassword,
+        req.newPassword,
+        req.confirmPassword
+      ),
+    onSuccess: () => {
+      toast.success("Password updated successfully 🔐");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to update password");
+    },
+  });
+
+  const { mutateAsync: uploadDocument, isPending: documentUploading } = useMutation({
+    mutationFn: (req: UploadDocumentRequest) =>
+      uploadDocumentUC.execute(req),
+    onSuccess: (response, req) => {
+      queryClient.setQueryData<UserProfile>(["profile"], (prev) => {
+        if (!prev) return prev;
+
+        const documents = prev.documents ?? [];
+        const updatedDocuments = documents.some((d) => d.type === req.documentType)
+          ? documents.map((d) =>
+              d.type === req.documentType ? { ...d, url: response.url } : d
+            )
+          : [...documents, { type: req.documentType, url: response.url }];
+
+        const updatedProfile = { ...prev, documents: updatedDocuments };
+        setUser(mapProfileToUser(updatedProfile));
+        return updatedProfile;
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to upload document");
+    },
+  });
 
   return {
     profile,
-    error,
-
-    // loading flags
+    error: error ? (error as Error).message : null,
     fetchLoading,
     profileUpdating,
     passwordUpdating,
     documentUploading,
-
     fetchProfile,
     updateProfile,
     updatePassword,

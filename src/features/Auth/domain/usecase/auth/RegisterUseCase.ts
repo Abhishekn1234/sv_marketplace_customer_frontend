@@ -1,9 +1,11 @@
-import type { IAuthRepository } from '../../Auth/domain/repositories/IAuthRepository';
-import type { RegisterRequest, RegisterResponse } from '../../features/types/auth.types';
+import type { IAuthRepository } from '../../repositories/IAuthRepository';
+import type { RegisterRequest, RegisterResponse } from '../../entities/auth.types';
 
 export class RegisterUseCase {
-  constructor(private authRepository: IAuthRepository) {}
-
+  private authRepository: IAuthRepository;
+  constructor(authrepo:IAuthRepository){
+    this.authRepository=authrepo;
+  }
   async execute(request: RegisterRequest): Promise<RegisterResponse> {
     // Normalize input
     const payload: RegisterRequest = {

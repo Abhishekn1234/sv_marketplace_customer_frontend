@@ -19,9 +19,12 @@ export interface UserProfile {
     createdAt: string;
     updatedAt: string;
   };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UpdateProfileRequest {
+  _id?:string;
   fullName?: string;
   email?: string;
   phone?: string;
@@ -29,10 +32,9 @@ export interface UpdateProfileRequest {
   profileImage?:File;
 }
 
-export interface UpdateProfileResponse {
-  profile: UserProfile;
-  message: string;
-}
+// ✅ backend reality
+export type UpdateProfileResponse = UserProfile;
+
 
 export type DocumentType = 'idProof' | 'addressProof' | 'photoProof';
 

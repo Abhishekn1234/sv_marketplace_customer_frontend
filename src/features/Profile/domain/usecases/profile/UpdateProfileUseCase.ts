@@ -1,5 +1,5 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
-import type { UpdateProfileResponse } from '../../features/types/profile.types';
+import type { UpdateProfileResponse } from '../../entities/profile.types';
 
 type UpdateProfileWithFiles = {
   fullName?: string;

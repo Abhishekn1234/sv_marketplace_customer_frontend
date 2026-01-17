@@ -1,41 +1,28 @@
-import type { RegisterRequest, RegisterResponse } from "../Auth/domain/entities/auth.types";
+import type {
+  RegisterRequest,
+  RegisterResponse,
+} from "../Auth/domain/entities/auth.types";
+import { useAuthStore } from "../core/store/auth";
 import apiClient from "./interceptor";
 
 export const registerUser = async (
   payload: RegisterRequest
 ): Promise<RegisterResponse> => {
-  const response = await apiClient.post("/auth/register", payload);
+  const response = await apiClient.post<RegisterResponse>(
+    "/auth/register",
+    payload
+  );
 
-  // ✅ CORRECT LEVEL
-  const { accessToken, refreshToken, user } = response.data.data;
+  const { accessToken, refreshToken, user } = response.data;
 
-  const customerData = {
-    accessToken,
-    refreshToken,
-    user: {
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      phone: user.phone,
-      address: user.address,
-      isVerified: user.isVerified,
-      kycStatus: user.kycStatus,
+  if (accessToken && refreshToken && user) {
+    const { setTokens, setUser } = useAuthStore.getState();
 
-      profilePictureUrl: user.profilePictureUrl,
-      profilePicturePublicId: user.profilePicturePublicId,
+    setTokens(accessToken, refreshToken);
+    setUser(user);
+  }
 
-      role: user.role,
-      documents: user.documents,
-
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    },
-  };
-  console.log(customerData);
-  localStorage.setItem("customer", JSON.stringify(customerData));
-
-  // ⬅️ return normalized data
-  return response.data.data;
+  return response.data;
 };
 
 

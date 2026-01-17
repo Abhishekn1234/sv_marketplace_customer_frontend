@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useAuthStore } from '../../../core/store/auth';
+import { useMutation } from '@tanstack/react-query';
 import AuthRepository from '../../data/repositories/AuthRepository';
-import type  {
+import { toast } from 'react-toastify';
+import type {
   LoginRequest,
   RegisterRequest,
   OTPRequest,
@@ -10,61 +12,122 @@ import type  {
 } from '../../domain/entities/auth.types';
 
 export const useAuth = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const setTokens = useAuthStore((state) => state.setTokens);
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
-  const login = async (req: LoginRequest) => {
-    try {
-      setLoading(true);
-      setError(null);
+  /* ---------------- Login ---------------- */
+  const loginMutation = useMutation({
+    mutationFn: async (req: LoginRequest) => {
       const res = await AuthRepository.login(req);
 
-      // Save tokens
-      localStorage.setItem('accessToken', res.accessToken);
-      localStorage.setItem('refreshToken', res.refreshToken);
-      localStorage.setItem('customerData', JSON.stringify(res));
+      // Save tokens and user to store
+      setTokens(res.accessToken, res.refreshToken);
+      setUser(res.user);
 
       return res;
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    onSuccess: (res) => {
+      toast.success(res.message || 'Login successful ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'Login failed ❌');
+    },
+  });
 
-  const register = async (req: RegisterRequest) => {
-    try {
-      setLoading(true);
-      const res = await AuthRepository.register(req);
-      return res;
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  /* ---------------- Register ---------------- */
+  const registerMutation = useMutation({
+    mutationFn: (req: RegisterRequest) => AuthRepository.register(req),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || 'Registration successful ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'Registration failed ❌');
+    },
+  });
 
-  const sendOTP = (req: SendOTPRequest) => AuthRepository.sendOTP(req);
-  const verifyOTP = (req: OTPRequest) => AuthRepository.verifyOTP(req);
-  const forgotPassword = (req: ForgotPasswordRequest) => AuthRepository.forgotPassword(req);
-  const resetPassword = (req: ResetPasswordRequest) => AuthRepository.resetPassword(req);
+  /* ---------------- Send OTP ---------------- */
+  const sendOTPMutation = useMutation({
+    mutationFn: (req: SendOTPRequest) => AuthRepository.sendOTP(req),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || 'OTP sent successfully ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'Failed to send OTP ❌');
+    },
+  });
 
+  /* ---------------- Verify OTP ---------------- */
+  const verifyOTPMutation = useMutation({
+    mutationFn: (req: OTPRequest) => AuthRepository.verifyOTP(req),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || 'OTP verified ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'OTP verification failed ❌');
+    },
+  });
+
+  /* ---------------- Forgot Password ---------------- */
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (req: ForgotPasswordRequest) => AuthRepository.forgotPassword(req),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || 'Password reset link sent ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'Failed to send password reset link ❌');
+    },
+  });
+
+  /* ---------------- Reset Password ---------------- */
+  const resetPasswordMutation = useMutation({
+    mutationFn: (req: ResetPasswordRequest) => AuthRepository.resetPassword(req),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || 'Password reset successful ✅');
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || 'Password reset failed ❌');
+    },
+  });
+
+  /* ---------------- Logout ---------------- */
   const logout = async () => {
     await AuthRepository.logout();
+    clearAuth();
+    toast.info('Logged out successfully 🚪');
     window.location.href = '/login';
   };
 
   return {
-    login,
-    register,
-    sendOTP,
-    verifyOTP,
-    forgotPassword,
-    resetPassword,
+    login: loginMutation.mutateAsync,
+    register: registerMutation.mutateAsync,
+    sendOTP: sendOTPMutation.mutateAsync,
+    verifyOTP: verifyOTPMutation.mutateAsync,
+    forgotPassword: forgotPasswordMutation.mutateAsync,
+    resetPassword: resetPasswordMutation.mutateAsync,
     logout,
-    loading,
-    error
+    loading:
+      loginMutation.isPending ||
+      registerMutation.isPending ||
+      sendOTPMutation.isPending ||
+      verifyOTPMutation.isPending ||
+      forgotPasswordMutation.isPending ||
+      resetPasswordMutation.isPending,
+    error:
+      loginMutation.error ||
+      registerMutation.error ||
+      sendOTPMutation.error ||
+      verifyOTPMutation.error ||
+      forgotPasswordMutation.error ||
+      resetPasswordMutation.error,
+    // Optional: expose mutations if needed
+    mutations: {
+      loginMutation,
+      registerMutation,
+      sendOTPMutation,
+      verifyOTPMutation,
+      forgotPasswordMutation,
+      resetPasswordMutation,
+    },
   };
 };

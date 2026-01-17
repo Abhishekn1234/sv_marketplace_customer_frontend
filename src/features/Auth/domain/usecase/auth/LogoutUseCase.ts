@@ -1,17 +1,18 @@
-import type { IAuthRepository } from '../../Auth/domain/repositories/IAuthRepository';
+import type { IAuthRepository } from '../../repositories/IAuthRepository';
+import { useAuthStore } from '../../../../core/store/auth';
 
 export class LogoutUseCase {
-  constructor(private authRepository: IAuthRepository) {}
+  private authRepository: IAuthRepository;
+  constructor(authrepo:IAuthRepository){
+    this.authRepository=authrepo;
+  }
 
   async execute(): Promise<void> {
-    // Execute logout
+    // Execute logout API call
     await this.authRepository.logout();
 
-    // Clear local storage
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userProfile');
+    // Clear Zustand auth store instead of localStorage
+    const { clearAuth } = useAuthStore.getState();
+    clearAuth();
   }
 }

@@ -1,4 +1,6 @@
-import apiClient, { publicApiClient } from '../../../api/interceptor';
+import apiClient, { publicApiClient } from "../../../api/interceptor";
+import { useAuthStore } from "../../../core/store/auth";
+
 import type {
   LoginRequest,
   LoginResponse,
@@ -10,72 +12,130 @@ import type {
   SendOTPResponse,
   ForgotPasswordRequest,
   ResetPasswordRequest,
-  ForgotPasswordResponse
-} from '../../domain/entities/auth.types';
+  ForgotPasswordResponse,
+} from "../../domain/entities/auth.types";
 
-export class AuthRepository {
-  private readonly baseUrl = '/auth';
+class AuthRepository {
+  private readonly baseUrl = "/auth";
 
-  async login(request: LoginRequest): Promise<LoginResponse> {
-    const res = await apiClient.post<LoginResponse>(`${this.baseUrl}/login`, request);
-    return res.data;
-  }
+  /* ---------------- LOGIN ---------------- */
+
+ async login(request: LoginRequest): Promise<LoginResponse> {
+  const res = await apiClient.post<LoginResponse>(
+    `${this.baseUrl}/login`,
+    request
+  );
+
+  return res.data; // 🚀 ONLY return data
+}
+
+
+  /* ---------------- REGISTER ---------------- */
 
   async register(request: RegisterRequest): Promise<RegisterResponse> {
-    const res = await apiClient.post<RegisterResponse>(`${this.baseUrl}/register`, request);
+    const res = await apiClient.post<RegisterResponse>(
+      `${this.baseUrl}/register`,
+      request
+    );
     return res.data;
   }
+
+  /* ---------------- SEND OTP ---------------- */
 
   async sendOTP(request: SendOTPRequest): Promise<SendOTPResponse> {
-    const res = await apiClient.post<SendOTPResponse>(`${this.baseUrl}/send-otp-email`, request);
+    const res = await apiClient.post<SendOTPResponse>(
+      `${this.baseUrl}/send-otp-email`,
+      request
+    );
     return res.data;
   }
 
- async verifyOTP(request: OTPRequest): Promise<OTPResponse> {
-  const res = await apiClient.post<OTPResponse>(
-    `${this.baseUrl}/verify-otp`,
-    request
-  );
-  if (res.data?.accessToken) {
-      const customerData = {
-        accessToken: res.data.accessToken,
-        refreshToken: res.data.refreshToken
-      };
-      localStorage.setItem('accessTokens', res.data.accessToken);
-      localStorage.setItem('resetpassword', JSON.stringify(customerData));
+  /* ---------------- VERIFY OTP ---------------- */
+
+  async verifyOTP(request: OTPRequest): Promise<OTPResponse> {
+    const res = await apiClient.post<OTPResponse>(
+      `${this.baseUrl}/verify-otp`,
+      request
+    );
+
+    if (res.data?.accessToken && res.data?.refreshToken) {
+      useAuthStore.getState().setTokens(
+        res.data.accessToken,
+        res.data.refreshToken
+      );
     }
-  return res.data;
-}
 
-
- async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
-  const response = await apiClient.post<ForgotPasswordResponse>(
-    `${this.baseUrl}/send-otp-email`,
-    request
-  );
-  return response.data;
-}
-
-
-  async resetPassword(request: ResetPasswordRequest): Promise<{ message: string }> {
-    const token = localStorage.getItem('accessTokens'); // get token saved after OTP
-    const headers: any = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-    const res = await publicApiClient.post(`${this.baseUrl}/reset-password`, request, { headers });
     return res.data;
   }
 
+  /* ---------------- FORGOT PASSWORD ---------------- */
 
-  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
-    const res = await apiClient.post(`${this.baseUrl}/refresh-token`, { refreshToken });
+  async forgotPassword(
+    request: ForgotPasswordRequest
+  ): Promise<ForgotPasswordResponse> {
+    const res = await apiClient.post<ForgotPasswordResponse>(
+      `${this.baseUrl}/send-otp-email`,
+      request
+    );
     return res.data;
   }
+
+  /* ---------------- RESET PASSWORD ---------------- */
+
+  async resetPassword(
+    request: ResetPasswordRequest
+  ): Promise<{ message: string }> {
+    const token =
+      useAuthStore.getState().customerData.accessToken;
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const res = await publicApiClient.post(
+      `${this.baseUrl}/reset-password`,
+      request,
+      { headers }
+    );
+
+    return res.data;
+  }
+
+  /* ---------------- REFRESH TOKEN ---------------- */
+
+  async refreshToken(): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    const refreshToken =
+      useAuthStore.getState().customerData.refreshToken;
+
+    if (!refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
+    const res = await apiClient.post(
+      `${this.baseUrl}/refresh-token`,
+      { refreshToken }
+    );
+
+    const {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    } = res.data;
+
+    useAuthStore
+      .getState()
+      .setTokens(newAccessToken, newRefreshToken);
+
+    return res.data;
+  }
+
+  /* ---------------- LOGOUT ---------------- */
 
   async logout(): Promise<void> {
-    localStorage.removeItem('customerData');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    useAuthStore.getState().clearAuth();
   }
 }
 

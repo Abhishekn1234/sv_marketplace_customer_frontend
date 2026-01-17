@@ -7,9 +7,11 @@ import type {
   Service,
 } from "../../domain/entities/service.types";
 import apiClient from "../../../api/interceptor";
+import type { GetBookingsResponse, ServiceTierRef } from "../../domain/entities/booking.types";
 
 export class ServiceRepository implements IServiceRepository {
-  private readonly baseUrl = "/booking";
+ private readonly baseUrl = "booking"; // remove leading slash
+
 
   async getServices(): Promise<APIResponse<Category[]>> {
     const response = await apiClient.get<APIResponse<Category[]>>(
@@ -17,11 +19,19 @@ export class ServiceRepository implements IServiceRepository {
     );
     return response.data;
   }
+  async getBookings(): Promise<GetBookingsResponse> {
+  const response = await apiClient.get<GetBookingsResponse>(`/booking`);
+  console.log("Single booking object:", response.data);
+  
+  
+  return   response.data ;
+}
 
-  async getServiceTiers(): Promise<APIResponse<PricingTier[]>> {
-    const response = await apiClient.get<APIResponse<PricingTier[]>>(
+  async getServiceTiers(): Promise<ServiceTierRef[]> {
+    const response = await apiClient.get<ServiceTierRef[]>(
       `${this.baseUrl}/pricing-tiers`
     );
+    console.log(response);
     return response.data;
   }
 

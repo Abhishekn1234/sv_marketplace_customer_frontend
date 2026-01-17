@@ -1,34 +1,20 @@
 import { type JSX } from "react";
 import { Navigate } from "react-router-dom";
+import { useAuthStore } from "./features/core/store/auth";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const customerDataRaw = localStorage.getItem("customerData");
+  const { customerData } = useAuthStore();
 
-  if (!customerDataRaw) {
-    // No user data, redirect to login
+  const { accessToken, refreshToken, isLoggedIn } = customerData;
+
+  // If not logged in or tokens missing → redirect
+  if (!isLoggedIn || !accessToken || !refreshToken) {
     return <Navigate to="/login" replace />;
   }
 
-  try {
-    const customerData = JSON.parse(customerDataRaw) as {
-      accessToken?: string;
-      refreshToken?: string;
-      [key: string]: any;
-    };
-
-    // Ensure both tokens exist
-    if (!customerData.accessToken || !customerData.refreshToken) {
-      return <Navigate to="/login" replace />;
-    }
-
-    // Valid tokens, render protected route
-    return children;
-  } catch (e) {
-    // Invalid JSON, redirect to login
-    return <Navigate to="/login" replace />;
-  }
+  return children;
 };

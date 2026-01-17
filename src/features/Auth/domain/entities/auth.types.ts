@@ -2,6 +2,9 @@
    AUTH REQUEST TYPES
 ======================= */
 
+import type { AuthBooking } from "../../../Bookings/domain/entities/auth.booking.types";
+// import type { Booking } from "../../../Bookings/domain/entities/booking.types";
+
 export interface RegisterRequest {
   fullName: string;
   email: string;
@@ -39,6 +42,9 @@ export interface ResetPasswordRequest {
 ======================= */
 
 export interface Role {
+  _id?:string;
+   createdAt?:string;
+  updatedAt?:string;
   name: string;
   modules: any[]; // replace with Module[] if you have it
 }
@@ -51,16 +57,16 @@ export interface User {
 
   address?: string;
   isVerified: boolean;
-  kycStatus: string;
+  kycStatus?: string;
 
   profilePictureUrl?: string;
   profilePicturePublicId?: string;
 
   role: Role;
-  documents: any[];
-
-  createdAt: string;
-  updatedAt: string;
+  documents?: any[];
+  bookings?:AuthBooking[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // types/auth.types.ts
@@ -108,6 +114,9 @@ export interface OTPResponse {
   accessToken?: string;
   refreshToken?: string;
   message?: string;
+  user?:any;
+  verified?:boolean;
+
 }
 
 export interface SendOTPResponse {

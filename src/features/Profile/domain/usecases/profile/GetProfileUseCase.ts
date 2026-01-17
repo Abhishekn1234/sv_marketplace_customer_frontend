@@ -1,8 +1,11 @@
 import type  { IProfileRepository } from '../../repositories/IProfileRepository';
-import type { GetProfileResponse } from '../../features/types/profile.types';
+import type { GetProfileResponse } from '../../entities/profile.types';
 
 export class GetProfileUseCase {
-  constructor(private profileRepository: IProfileRepository) {}
+  private profileRepository: IProfileRepository;
+  constructor(profilerepo:IProfileRepository){
+    this.profileRepository=profilerepo;
+  }
 
   async execute(): Promise<GetProfileResponse> {
     // Execute get profile

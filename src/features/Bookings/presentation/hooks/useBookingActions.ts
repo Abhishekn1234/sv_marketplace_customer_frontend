@@ -1,84 +1,48 @@
-import { useState } from 'react';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CancelRepository } from "../../data/repositories/CancelRepository";
+import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookingUseCase";
+import type { CancelBookingRequest } from "../../domain/entities/booking.types";
+import { toast } from "react-toastify";
 
 interface UseBookingActionsProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
 
-export const useBookingActions = ({ onSuccess, onError }: UseBookingActionsProps = {}) => {
-  const [loading, setLoading] = useState(false);
+export const useBookingActions = (
+  { onSuccess, onError }: UseBookingActionsProps = {}
+) => {
+  const queryClient = useQueryClient();
 
-  const cancelBooking = async (bookingId: string, reason: string) => {
-    setLoading(true);
-    try {
-      // Implement actual API call
-      const response = await fetch(`/api/bookings/${bookingId}/cancel`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      });
+  // Init repo + usecase
+  const cancelRepo = new CancelRepository();
+  const cancelUseCase = new CancelBookingUseCase(cancelRepo);
 
-      if (!response.ok) throw new Error('Failed to cancel booking');
-      
+  // -----------------------------
+  // Cancel Booking Mutation
+  // -----------------------------
+  const cancelBookingMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      const request: CancelBookingRequest = { bookingId };
+      return await cancelUseCase.execute(request);
+    },
+    onSuccess: () => {
+       
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+        toast.success("Booking cancelled successfully");
       onSuccess?.();
-      return true;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to cancel booking';
+    },
+    onError: (err: unknown) => {
+      const message =
+        err instanceof Error ? err.message : "Failed to cancel booking";
       onError?.(message);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const messageProvider = async (providerId: string, message: string) => {
-    setLoading(true);
-    try {
-      // Implement actual API call
-      const response = await fetch(`/api/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId, message })
-      });
-
-      if (!response.ok) throw new Error('Failed to send message');
-      
-      onSuccess?.();
-      return true;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to send message';
-      onError?.(message);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateInvoice = async (bookingId: string) => {
-    try {
-      // Implement invoice generation logic
-      const response = await fetch(`/api/bookings/${bookingId}/invoice`);
-      if (!response.ok) throw new Error('Failed to generate invoice');
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${bookingId}.pdf`;
-      a.click();
-      
-      return true;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate invoice';
-      onError?.(message);
-      return false;
-    }
-  };
+    },
+  });
 
   return {
-    cancelBooking,
-    messageProvider,
-    generateInvoice,
-    loading
+    cancelBooking: cancelBookingMutation.mutateAsync,
+    isCancelling: cancelBookingMutation.isPending,
+    error: cancelBookingMutation.error,
   };
 };
+

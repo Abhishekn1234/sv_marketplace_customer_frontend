@@ -12,30 +12,22 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const response = await login({ email, password });
+  try {
+    const response = await login({ email, password });
 
-      // Save everything inside customerData
-      if (response.user && response.accessToken && response.refreshToken) {
-        localStorage.setItem(
-          'customerData',
-          JSON.stringify({
-            ...response.user,
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          })
-        );
-      }
+    // Save user and tokens in Zustand store (already done inside useAuth)
+    // So no need to use localStorage manually
 
-      toast.success(response.message || 'Login successful');
-      navigate('/');
-    } catch (err: any) {
-      toast.error(err.message || 'Login failed');
-    }
-  };
+    toast.success(response.message || 'Login successful');
+    navigate('/');
+  } catch (err: any) {
+    toast.error(err.message || 'Login failed');
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -58,6 +50,7 @@ export default function Login() {
               <input
                 id="email"
                 type="email"
+                 autoComplete="email"
                 placeholder="john@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -77,6 +70,7 @@ export default function Login() {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

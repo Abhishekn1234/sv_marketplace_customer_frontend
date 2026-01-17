@@ -1,114 +1,171 @@
-// src/hooks/useBookings.ts
-import { useState, useEffect } from "react";
+// src/features/bookings/hooks/useBookings.ts
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
 import { BookingRepository } from "../../data/repositories/BookingRepository";
-import { CreateBookingUseCase } from "../../domain/usecases/booking/CreateBookingUseCase";
 import { GetBookingsUseCase } from "../../domain/usecases/booking/GetBookingsUseCase";
+import { CreateBookingUseCase } from "../../domain/usecases/booking/CreateBookingUseCase";
 import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookingUseCase";
+
 import type {
   Booking,
   BookingPayload,
-  GetBookingsRequest,
   CancelBookingRequest,
+  GetBookingsResponse,
+  ServiceTierRef,
 } from "../../domain/entities/booking.types";
 
-export const useBookings = (request?: GetBookingsRequest) => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+import { useAuthStore } from "../../../core/store/auth";
+import { mapBookingToAuthBooking } from "../../../core/mappers/mapBooking";
 
-  // ✅ single repository instance
-  const bookingRepository = new BookingRepository();
+import type { Service } from "../../domain/entities/service.types";
+import type { AuthBooking } from "../../domain/entities/auth.booking.types";
 
-  // ✅ use cases
-  const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
-  const createBookingUseCase = new CreateBookingUseCase(bookingRepository);
-  const cancelBookingUseCase = new CancelBookingUseCase(bookingRepository);
+import {
+  SERVICES_QUERY_KEY,
+  SERVICE_TIERS_QUERY_KEY,
+} from "./useServices";
 
-  /**
-   * FETCH BOOKINGS (for a particular user)
-   */
-  const fetchBookings = async (params?: GetBookingsRequest) => {
-    try {
-      setLoading(true);
-      setError(null);
+/* ---------------- USE CASE SETUP ---------------- */
 
-      const response = await getBookingsUseCase.execute(
-        params || request!
+const bookingRepository = new BookingRepository();
+const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
+const createBookingUseCase = new CreateBookingUseCase(bookingRepository);
+const cancelBookingUseCase = new CancelBookingUseCase(bookingRepository);
+
+export const BOOKINGS_QUERY_KEY = ["bookings"] as const;
+
+/* ================================================= */
+export const useBookings = () => {
+  const queryClient = useQueryClient();
+
+  const customerData = useAuthStore((s) => s.customerData);
+  const setUser = useAuthStore((s) => s.setUser);
+
+  const user = customerData?.user;
+
+  /* ---------------- FETCH BOOKINGS ---------------- */
+  const { data, isLoading, isError } = useQuery<Booking[], Error>({
+    queryKey: BOOKINGS_QUERY_KEY,
+
+    queryFn: async (): Promise<Booking[]> => {
+      const res: GetBookingsResponse = await getBookingsUseCase.execute();
+
+      // Read cached services & tiers
+      const services = queryClient.getQueryData<Service[]>(
+        SERVICES_QUERY_KEY
+      );
+      const tiers = queryClient.getQueryData<ServiceTierRef[]>(
+        SERVICE_TIERS_QUERY_KEY
       );
 
-      setBookings(response.bookings);
-      return response;
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch bookings");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (user) {
+        const mappedBookings: AuthBooking[] = res.bookings.map((b) => {
+          const service = services?.find(
+            (s) => String(s._id) === String(b.serviceId)
+          );
 
-  /**
-   * CREATE BOOKING
-   */
-  const createBooking = async (payload: BookingPayload) => {
-    try {
-      setLoading(true);
-      setError(null);
+          const tier = tiers?.find(
+            (t) => String(t._id) === String(b.serviceTierId)
+          );
 
-      const booking = await createBookingUseCase.execute(payload);
+          return mapBookingToAuthBooking(
+            b,
+            service?.name,
+            tier?.displayName
+          );
+        });
 
-      // refresh bookings list
-      if (request) {
-        await fetchBookings(request);
+        setUser({
+          ...user,
+          bookings: mappedBookings,
+        });
       }
 
-      return booking;
-    } catch (err: any) {
-      setError(err.message || "Failed to create booking");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+      return res.bookings;
+    },
 
-  /**
-   * CANCEL BOOKING
-   */
-  const cancelBooking = async (request: CancelBookingRequest) => {
-    try {
-      setLoading(true);
-      setError(null);
+    staleTime: 60 * 1000,
+  });
 
-      const booking = await cancelBookingUseCase.execute(request);
+  /* ---------------- CREATE BOOKING ---------------- */
+  const createBooking = useMutation<Booking, Error, BookingPayload>({
+    mutationFn: (payload) => createBookingUseCase.execute(payload),
 
-      // refresh bookings list
-      if (request) {
-        await fetchBookings();
+    onSuccess: (newBooking) => {
+      // 1️⃣ Update React Query cache
+      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
+        old ? [newBooking, ...old] : [newBooking]
+      );
+
+      // 2️⃣ Update Auth Store
+      const { customerData } = useAuthStore.getState();
+      const currentUser = customerData?.user;
+
+      if (currentUser) {
+        const mapped = mapBookingToAuthBooking(
+          newBooking,
+          newBooking.service?.name,
+          newBooking.serviceTier?.displayName
+        );
+
+        setUser({
+          ...currentUser,
+          bookings: [mapped, ...(currentUser.bookings ?? [])],
+        });
       }
 
-      return booking;
-    } catch (err: any) {
-      setError(err.message || "Failed to cancel booking");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+      toast.success("Booking created successfully ✅");
+    },
 
-  /**
-   * AUTO FETCH ON MOUNT
-   */
-  useEffect(() => {
-    if (request?.userId) {
-      fetchBookings(request);
-    }
-  }, [request?.userId]);
+    onError: (err: any) => {
+      toast.error(err.message);
+    },
+  });
 
+  /* ---------------- CANCEL BOOKING ---------------- */
+  const cancelBooking = useMutation<Booking, Error, CancelBookingRequest>({
+    mutationFn: (req) => cancelBookingUseCase.execute(req),
+
+    onSuccess: (updatedBooking) => {
+      // 1️⃣ Update React Query cache
+      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
+        if (!old) return [];
+        return old.map((b) =>
+          b._id === updatedBooking._id ? updatedBooking : b
+        );
+      });
+
+      // 2️⃣ Update Auth Store
+      const { customerData } = useAuthStore.getState();
+      const currentUser = customerData?.user;
+
+      if (currentUser?.bookings) {
+        setUser({
+          ...currentUser,
+          bookings: currentUser.bookings.map((b) =>
+            b._id === updatedBooking._id
+              ? { ...b, status: updatedBooking.status }
+              : b
+          ),
+        });
+      }
+
+      toast.success("Booking cancelled successfully ✅");
+    },
+
+    onError: (err: any) => {
+      toast.error(err.message);
+    },
+  });
+
+  /* ---------------- RETURN API ---------------- */
   return {
-    bookings,
-    loading,
-    error,
-    createBooking,
-    cancelBooking,
-    refetch: fetchBookings,
+    bookings: data ?? [],
+    loading: isLoading,
+    error: isError,
+    createBooking: createBooking.mutateAsync,
+    cancelBooking: cancelBooking.mutateAsync,
   };
 };
