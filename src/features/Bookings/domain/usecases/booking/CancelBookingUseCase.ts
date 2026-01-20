@@ -2,6 +2,7 @@
 import type { ICancelBookingRepository } from "../../repositories/IBookingCancelRepository";
 import type {  Booking } from "../../entities/booking.types";
 import type { CancelBookingRequest } from "../../entities/cancelbookingrequest.types";
+import { validatecancelbooking } from "../../validations/cancelbookingvalidation";
 export class CancelBookingUseCase {
   private cancelRepo: ICancelBookingRepository;
   constructor(cancelRepo: ICancelBookingRepository) {
@@ -9,7 +10,7 @@ export class CancelBookingUseCase {
   }
 
   async execute(request: CancelBookingRequest): Promise<Booking> {
-    if (!request.bookingId) throw new Error("Booking ID is required");
+    validatecancelbooking(request);
     return await this.cancelRepo.cancelBooking(request);
   }
 }

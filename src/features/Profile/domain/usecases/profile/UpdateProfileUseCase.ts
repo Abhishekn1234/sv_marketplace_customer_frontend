@@ -1,6 +1,7 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
 import type { UpdateProfileResponse } from '../../entities/updateprofileresponse.types';
 import type { UpdateProfileWithFiles } from '../../entities/updateprofilewithfiles.types';
+import { validateUpdateProfile } from '../../validations/updateprofilevalidation';
 
 
 export class UpdateProfileUseCase {
@@ -14,25 +15,7 @@ constructor(profilerepo:IProfileRepository){
   ): Promise<UpdateProfileResponse> {
 
    
-    if (request.fullName && request.fullName.trim().length < 2) {
-      throw new Error('Full name must be at least 2 characters');
-    }
-
-    if (
-      request.email &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)
-    ) {
-      throw new Error('Invalid email format');
-    }
-
-    if (request.phone && request.phone.trim().length < 10) {
-      throw new Error('Invalid phone number');
-    }
-
-    if (request.address && request.address.trim().length < 10) {
-      throw new Error('Address must be at least 10 characters');
-    }
-
+    validateUpdateProfile(request);
    
     const formData = new FormData();
 

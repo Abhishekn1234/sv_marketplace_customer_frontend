@@ -1,6 +1,7 @@
 import type { IAuthRepository } from '../../repositories/IAuthRepository';
 import type {  SendOTPResponse } from '../../entities/sendotpresponse.types';
 import type { SendOTPRequest } from '../../entities/sendotprequest.types';
+import { validatePhone } from '../../validations/authvalidation';
 export class SendOTPUseCase {
   private authRepository: IAuthRepository;
     constructor(authrepo:IAuthRepository){
@@ -8,9 +9,7 @@ export class SendOTPUseCase {
     }
   async execute(request: SendOTPRequest): Promise<SendOTPResponse> {
     
-    if (!request.phone || request.phone.trim().length < 10) {
-      throw new Error('Valid phone number is required');
-    }
+   validatePhone(request.phone);
 
     return await this.authRepository.sendOTP(request);
   }

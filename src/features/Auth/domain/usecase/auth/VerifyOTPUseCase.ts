@@ -2,6 +2,7 @@ import type { IAuthRepository } from '../../repositories/IAuthRepository';
 import type {  OTPResponse } from '../../entities/otpresponse.types';
 import type { OTPRequest } from '../../entities/otprequest.types';
 import { useAuthStore } from '../../../../core/store/auth';
+import { validateOTP } from '../../validations/authvalidation';
 
 export class VerifyOTPUseCase {
   private authRepository: IAuthRepository;
@@ -10,9 +11,7 @@ export class VerifyOTPUseCase {
   }
   async execute(request: OTPRequest): Promise<OTPResponse> {
    
-    if (!request.otp || request.otp.length !== 6) {
-      throw new Error('Valid 6-digit OTP is required');
-    }
+   validateOTP(request.otp);
 
 
     const response = await this.authRepository.verifyOTP(request);

@@ -1,6 +1,6 @@
 import type { IAuthRepository } from '../../repositories/IAuthRepository';
 import type { ForgotPasswordRequest } from '../../entities/forgotpasswordrequest';
-
+import { validateForgotPassword } from '../../validations/authvalidation';
 export class ForgotPasswordUseCase {
  private authRepository: IAuthRepository;
    constructor(authrepo:IAuthRepository){
@@ -8,11 +8,9 @@ export class ForgotPasswordUseCase {
    }
   async execute(request: ForgotPasswordRequest): Promise<{ message: string }> {
    
-    if (!request.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)) {
-      throw new Error('Valid email is required');
-    }
+    const payload = validateForgotPassword(request);
 
    
-    return await this.authRepository.forgotPassword(request);
+    return await this.authRepository.forgotPassword(payload);
   }
 }

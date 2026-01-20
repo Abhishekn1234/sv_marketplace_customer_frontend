@@ -1,4 +1,5 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
+import { validateUpdatePassword } from '../../validations/updateprofilevalidation';
 
 export class UpdatePasswordUseCase {
   private profileRepository: IProfileRepository;
@@ -11,17 +12,11 @@ export class UpdatePasswordUseCase {
     confirmPassword: string
   ): Promise<{ message: string }> {
  
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      throw new Error('All fields are required');
-    }
-
-    if (newPassword.length < 8) {
-      throw new Error('Password must be at least 8 characters');
-    }
-
-    if (newPassword !== confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
+   validateUpdatePassword(
+      oldPassword,
+      newPassword,
+      confirmPassword
+    );
 
     return this.profileRepository.updatePassword(
       oldPassword,
