@@ -1,10 +1,10 @@
 export interface UserProfile {
-  _id: string; // matches API
+  _id: string; 
   fullName: string;
   email: string;
   phone: string;
   address: string;
-  profilePictureUrl?: string; // matches API
+  profilePictureUrl?: string; 
   profilePicturePublicId?: string;
   documents?: Array<{
     type: 'idProof' | 'addressProof' | 'photoProof';
@@ -23,30 +23,3 @@ export interface UserProfile {
   updatedAt?: string;
 }
 
-export interface UpdateProfileRequest {
-  _id?:string;
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  profileImage?:File;
-}
-
-// ✅ backend reality
-export type UpdateProfileResponse = UserProfile;
-
-
-export type DocumentType = 'idProof' | 'addressProof' | 'photoProof';
-
-export interface UploadDocumentRequest {
-  documentType: DocumentType;
-  file: File;
-}
-export interface UploadDocumentResponse {
-  url: string;
-  documentType: string;
-  message: string;
-}
-
-
-export type GetProfileResponse = UserProfile; // directly the profile

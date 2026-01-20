@@ -1,92 +1,9 @@
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Lock, Upload, User } from "lucide-react";
+import {  Lock,  Upload, User } from "lucide-react";
 import { useProfile } from "../presentation/hooks/useProfile";
-
-type FormState = {
-  fullName: string;
-  email: string;
-  phone: string;
-  address: string;
-};
-
-type TabType = "profile" | "password";
-
-/* ---------------- PASSWORD TAB ---------------- */
-
-function UpdatePasswordTab() {
-  const { updatePassword, passwordUpdating } = useProfile();
-
-  const [form, setForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [show, setShow] = useState({
-    currentPassword: false,
-    newPassword: false,
-    confirmPassword: false,
-  });
-
-  const toggle = (key: keyof typeof show) =>
-    setShow(prev => ({ ...prev, [key]: !prev[key] }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (form.newPassword !== form.confirmPassword) return;
-
-  await updatePassword({
-    oldPassword: form.currentPassword,
-    newPassword: form.newPassword,
-    confirmPassword: form.confirmPassword,
-  });
-
-  setForm({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-};
-
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 mx-auto max-w-140 ">
-      {(["currentPassword", "newPassword", "confirmPassword"] as const).map(
-        field => (
-          <div key={field} className="relative">
-            <input
-              type={show[field] ? "text" : "password"}
-              placeholder={field.replace(/([A-Z])/g, " $1")}
-              value={form[field]}
-              onChange={e =>
-                setForm(prev => ({ ...prev, [field]: e.target.value }))
-              }
-              className="w-full border rounded-lg px-3 py-2 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => toggle(field)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {show[field] ? <Eye size={18} /> : <EyeOff size={18} />}
-            </button>
-          </div>
-        )
-      )}
-
-      <button
-        disabled={passwordUpdating}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg"
-      >
-        {passwordUpdating ? "Updating..." : "Update Password"}
-      </button>
-    </form>
-  );
-}
-
-/* ---------------- PROFILE ---------------- */
-
+import type { TabType } from "../domain/entities/tabtype";
+import type { FormState } from "../domain/entities/formstate.types";
+import UpdatePasswordTab from "./components/UpdatePassword";
 export default function Profile() {
   const { profile, updateProfile, profileUpdating } = useProfile();
   const [activeTab, setActiveTab] = useState<TabType>("profile");
@@ -101,7 +18,7 @@ export default function Profile() {
   const [profileImage, setProfileImage] = useState<string>();
   const [profileImageFile, setProfileImageFile] = useState<File>();
 
-  /* CENTRAL AUTO UPDATE */
+
   useEffect(() => {
     if (!profile) return;
 
@@ -116,7 +33,7 @@ export default function Profile() {
     setProfileImageFile(undefined);
   }, [profile]);
 
-  /* cleanup blob */
+  
   useEffect(() => {
     return () => {
       if (profileImage?.startsWith("blob:")) {
@@ -134,7 +51,13 @@ export default function Profile() {
     });
   };
 
-  if (!profile) return <div>Loading...</div>;
+  if (!profile)
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

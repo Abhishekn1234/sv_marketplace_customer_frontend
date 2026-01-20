@@ -10,7 +10,7 @@ export class UpdatePasswordUseCase {
     newPassword: string,
     confirmPassword: string
   ): Promise<{ message: string }> {
-    // ✅ frontend validation
+ 
     if (!oldPassword || !newPassword || !confirmPassword) {
       throw new Error('All fields are required');
     }

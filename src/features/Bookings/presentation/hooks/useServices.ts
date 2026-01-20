@@ -1,22 +1,18 @@
-import { useQuery,  type UseQueryOptions } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import ServiceRepository from "../../data/repositories/ServiceRepository";
 import { GetServicesUseCase } from "../../domain/usecases/services/GetServiceUsecase";
 import { GetServiceTierUsecase } from "../../domain/usecases/services/GetServiceTierUsecase";
 
-import type { Category, Service } from "../../domain/entities/service.types";
-import type { ServiceTierRef } from "../../domain/entities/booking.types";
+import type {  Service } from "../../domain/entities/service.types";
+import type { Category } from "../../domain/entities/category.types";
+import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 
 export const useServices = () => {
-  // const queryClient = useQueryClient();
-
   const getServicesUseCase = new GetServicesUseCase(ServiceRepository);
   const getServiceTierUseCase = new GetServiceTierUsecase(ServiceRepository);
 
-  // ------------------------------
-  // Service Tiers Query
-  // ------------------------------
   const serviceTiersQuery = useQuery<ServiceTierRef[], Error>({
     queryKey: ["serviceTiers"],
     queryFn: async () => {
@@ -27,11 +23,8 @@ export const useServices = () => {
       const message = err?.message || "Failed to fetch service tiers";
       toast.error(message);
     },
-  } as UseQueryOptions<ServiceTierRef[], Error>); // ✅ cast to UseQueryOptions
+  } as UseQueryOptions<ServiceTierRef[], Error>);
 
-  // ------------------------------
-  // Services Query
-  // ------------------------------
   const servicesQuery = useQuery<Service[], Error>({
     queryKey: ["services"],
     queryFn: async () => {
@@ -43,11 +36,8 @@ export const useServices = () => {
       const message = err?.message || "Failed to fetch services";
       toast.error(message);
     },
-  } as UseQueryOptions<Service[], Error>); // ✅ cast to UseQueryOptions
+  } as UseQueryOptions<Service[], Error>);
 
-  // ------------------------------
-  // Derived Categories
-  // ------------------------------
   const categories: Category[] = servicesQuery.data
     ? Object.values(
         servicesQuery.data.reduce((acc, service) => {
@@ -81,7 +71,10 @@ export const useServices = () => {
     services: servicesQuery.data ?? [],
     serviceTiers: serviceTiersQuery.data ?? [],
     loading: serviceTiersQuery.isLoading || servicesQuery.isLoading,
-    error: serviceTiersQuery.error?.message || servicesQuery.error?.message || null,
+    error:
+      serviceTiersQuery.error?.message ||
+      servicesQuery.error?.message ||
+      null,
     refetch: () => {
       serviceTiersQuery.refetch();
       servicesQuery.refetch();
@@ -89,5 +82,5 @@ export const useServices = () => {
   };
 };
 
-export const SERVICES_QUERY_KEY = ['services'] as const;
-export const SERVICE_TIERS_QUERY_KEY = ['serviceTiers'] as const;
+export const SERVICES_QUERY_KEY = ["services"] as const;
+export const SERVICE_TIERS_QUERY_KEY = ["serviceTiers"] as const;

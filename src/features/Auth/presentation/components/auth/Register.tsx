@@ -55,15 +55,15 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-8">
-        {/* Header */}
+    
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Create an Account</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Enter your details to get started</p>
         </div>
 
-        {/* Form */}
+      
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Full Name */}
+          
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input
@@ -76,7 +76,7 @@ export default function Register() {
             />
           </div>
 
-          {/* Email */}
+          
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input
@@ -90,12 +90,13 @@ export default function Register() {
             />
           </div>
 
-          {/* Phone */}
+         
           <PhoneInput
             country="in"
             value={formData.phone}
             onChange={(_value: string, data: {} | CountryData, _e: any, formattedValue: string) => {
               const normalized = formattedValue.replace(/\s/g, '');
+              console.log(data);
               setFormData(prev => ({ ...prev, phone: normalized }));
             }}
             inputProps={{ required: true }}
@@ -103,7 +104,7 @@ export default function Register() {
             buttonClass="h-full"
           />
 
-          {/* Password */}
+         
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input
@@ -124,7 +125,7 @@ export default function Register() {
             </button>
           </div>
 
-          {/* Confirm Password */}
+         
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input
@@ -145,7 +146,7 @@ export default function Register() {
             </button>
           </div>
 
-          {/* Submit Button */}
+         
           <button
             type="submit"
             disabled={loading}
@@ -155,7 +156,7 @@ export default function Register() {
           </button>
         </form>
 
-        {/* Footer */}
+      
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600 dark:text-gray-300">
             Already have an account?{' '}

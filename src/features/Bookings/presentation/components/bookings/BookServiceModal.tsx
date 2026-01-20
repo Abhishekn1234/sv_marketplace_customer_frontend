@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 import type { Service } from "../../../domain/entities/service.types";
-import type { BookingPayload } from "../../../domain/entities/booking.types";
+import type { BookingPayload } from "../../../domain/entities/bookingpayload.types"
 import { useBookings } from "../../hooks/useBookings";
 import { useServices } from "../../hooks/useServices";
 import BookingServiceHeader from "./BookingServiceHeader";
@@ -21,9 +21,7 @@ export default function BookingServiceModal({
   onClose,
   service,
 }: BookingServiceModalProps) {
-  // =====================
-  // STATE & HOOKS
-  // =====================
+  
   const [workDescription, setWorkDescription] = useState("");
   const [numberOfWorkers, setNumberOfWorkers] = useState(1);
   const [estimatedHours, setEstimatedHours] = useState(1);
@@ -43,10 +41,7 @@ export default function BookingServiceModal({
   const { serviceTiers } = useServices();
   const { createBooking } = useBookings();
 
-  // =====================
-  // MEMOS
-  // =====================
-  const calculateTotalPrice = useMemo(() => {
+   const calculateTotalPrice = useMemo(() => {
     if (!service || selectedTiers.length === 0) return 0;
 
     let total = 0;
@@ -75,22 +70,20 @@ export default function BookingServiceModal({
     return map;
   }, [serviceTiers]);
 
-  // =====================
-  // EFFECTS
-  // =====================
-  // Set default start date based on booking type
-  useEffect(() => {
-    if (bookingType === "INSTANT") {
-      setStartDate(new Date());
-    } else {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-      setStartDate(tomorrow);
-    }
-  }, [bookingType]);
 
-  // Fetch current location when modal opens
+  useEffect(() => {
+  const now = new Date();
+
+  if (bookingType === "INSTANT") {
+    setStartDate(now);
+  } else {
+    const scheduledTime = new Date(now.getTime() + 15 * 60 * 1000);
+    setStartDate(scheduledTime);
+  }
+}, [bookingType]);
+
+
+ 
   useEffect(() => {
     if (!isOpen) return;
 
@@ -110,9 +103,7 @@ export default function BookingServiceModal({
     }
   }, [isOpen, locationMode]);
 
-  // =====================
-  // CALLBACKS & HANDLERS
-  // =====================
+  
   const formatPrice = (price: number) =>
     `${price.toFixed(2)} ${service?.currency || "SAR"}`;
 
@@ -173,29 +164,27 @@ export default function BookingServiceModal({
       // toast.success("Booking created successfully");
       onClose();
     } catch (err: any) {
-      toast.error(err.message || "Booking failed");
+      // toast.error(err.message || "Booking failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // =====================
-  // SAFE EARLY RETURN
-  // =====================
+ 
   if (!isOpen || !service) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full max-w-4xl rounded-xl shadow-xl overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-700">
-        {/* Header Component */}
+        
         <BookingServiceHeader 
           service={service}
           onClose={onClose}
         />
 
-        {/* Main Content */}
+        
         <div className="p-4 space-y-4">
-          {/* Form Component */}
+        
           <BookingServiceForm
             workDescription={workDescription}
             setWorkDescription={setWorkDescription}
@@ -222,7 +211,7 @@ export default function BookingServiceModal({
             tierNameMap={tierNameMap}
           />
 
-          {/* Location Component */}
+         
           <BookingServiceLocation
             lat={lat ?? 0}
             lng={lng ?? 0}
@@ -237,7 +226,7 @@ export default function BookingServiceModal({
           />
         </div>
 
-        {/* Footer Component */}
+      
         <BookingServiceFooter
           selectedTiers={selectedTiers}
           calculateTotalPrice={calculateTotalPrice}

@@ -18,8 +18,7 @@ export default function Login() {
   try {
     const response = await login({ email, password });
 
-    // Save user and tokens in Zustand store (already done inside useAuth)
-    // So no need to use localStorage manually
+  
 
     toast.success(response.message || 'Login successful');
     navigate('/');
@@ -32,15 +31,15 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-8">
-        {/* Header */}
+       
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Welcome Back</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Sign in to your account</p>
         </div>
 
-        {/* Form */}
+       
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
+          
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Email
@@ -60,7 +59,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Password */}
+          
           <div>
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
@@ -96,7 +95,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Submit Button */}
+          
           <button
             type="submit"
             disabled={loading}
@@ -106,7 +105,7 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Footer */}
+        
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600 dark:text-gray-300">
             Don’t have an account?{' '}

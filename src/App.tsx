@@ -3,13 +3,13 @@ import { ThemeProvider } from "./features/context/themeContext";
 import "leaflet/dist/leaflet.css";
 import "react-toastify/ReactToastify.css";
 import {ToastContainer} from "react-toastify";
-/* AUTH */
+
 import Login from "./features/Auth/presentation/components/auth/Login";
 import Register from "./features/Auth/presentation/components/auth/Register";
 
 import ForgotPassword from "./features/Auth/presentation/components/auth/ForgotPassword";
 
-// /* DASHBOARD */
+
 import DashboardLayout from "./features/Layout/DashboardLayout";
 import WebsiteHome from "./features/Home/presentation/DashboardHome";
 
@@ -17,8 +17,6 @@ import BookService from "./features/Bookings/presentation/components/bookings/Bo
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 import Profile from "./features/Profile/presentation/Profile";
 
-
-// /* AUTH LOGIC */
 import { useAuth } from "./features/Auth/presentation/hooks/useAuth";
 import { ProtectedRoute } from "./ProtectedLayout";
 
@@ -55,8 +53,7 @@ function App() {
         </Routes>
       </Router>
 
-      {/* 🔥 Global Modal */}
-
+      
     </ThemeProvider>
   );
 }

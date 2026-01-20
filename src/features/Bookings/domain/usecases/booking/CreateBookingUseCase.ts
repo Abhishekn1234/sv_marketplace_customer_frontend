@@ -1,7 +1,7 @@
-// src/usecases/booking/CreateBookingUseCase.ts
-import type { IBookingRepository } from "../../repositories/IBookingRepository";
-import type { BookingPayload, Booking } from "../../entities/booking.types";
 
+import type { IBookingRepository } from "../../repositories/IBookingRepository";
+import type { Booking } from "../../entities/booking.types";
+import type { BookingPayload } from "../../entities/bookingpayload.types";
 export class CreateBookingUseCase {
   private Bookingrepo:IBookingRepository;
   constructor(bookrepo:IBookingRepository){
@@ -9,9 +9,7 @@ export class CreateBookingUseCase {
   }
 
   async execute(payload: BookingPayload): Promise<Booking> {
-    /**
-     * VALIDATIONS
-     */
+    
 
     if (!payload.serviceId) {
       throw new Error("Service ID is required");
@@ -58,9 +56,7 @@ export class CreateBookingUseCase {
       throw new Error("Valid location (lat, lng) is required");
     }
 
-    /**
-     * EXECUTE REPOSITORY
-     */
+   
     return await this.Bookingrepo.createBooking(payload);
   }
 }

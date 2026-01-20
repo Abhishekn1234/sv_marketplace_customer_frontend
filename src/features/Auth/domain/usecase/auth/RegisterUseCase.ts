@@ -1,6 +1,6 @@
 import type { IAuthRepository } from '../../repositories/IAuthRepository';
-import type { RegisterRequest, RegisterResponse } from '../../entities/auth.types';
-
+import type {  RegisterResponse } from '../../entities/registerresponse.types';
+import type { RegisterRequest } from '../../entities/registerrequest';
 export class RegisterUseCase {
   private authRepository: IAuthRepository;
   constructor(authrepo:IAuthRepository){

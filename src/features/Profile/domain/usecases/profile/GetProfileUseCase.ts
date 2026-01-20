@@ -1,5 +1,5 @@
 import type  { IProfileRepository } from '../../repositories/IProfileRepository';
-import type { GetProfileResponse } from '../../entities/profile.types';
+import type { GetProfileResponse } from '../../entities/getprofileresponse.types';
 
 export class GetProfileUseCase {
   private profileRepository: IProfileRepository;
@@ -8,7 +8,7 @@ export class GetProfileUseCase {
   }
 
   async execute(): Promise<GetProfileResponse> {
-    // Execute get profile
+    
     return await this.profileRepository.getProfile();
   }
 }

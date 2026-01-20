@@ -1,8 +1,9 @@
 import type { Service } from "../../../domain/entities/service.types";
+import type { ServiceTierRef } from "../../../domain/entities/servicetier.types";
 
 interface Props {
   service: Service;
-  serviceTiers: any[];
+  serviceTiers: ServiceTierRef[];
   pricingMode: "HOURLY" | "PER_DAY";
   setPricingMode: Function;
   estimatedHours: number;

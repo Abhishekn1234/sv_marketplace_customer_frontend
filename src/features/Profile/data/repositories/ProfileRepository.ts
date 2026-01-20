@@ -1,18 +1,16 @@
 import apiClient from "../../../api/interceptor";
 import type { IProfileRepository } from "../../domain/repositories/IProfileRepository";
-import type {
-  UpdateProfileResponse,
-  UploadDocumentRequest,
-  UploadDocumentResponse,
-  GetProfileResponse,
-} from "../../domain/entities/profile.types";
+import type { GetProfileResponse } from "../../domain/entities/getprofileresponse.types";
+import type { UploadDocumentResponse } from "../../domain/entities/uploaddocumentresponse.types";
+import type { UpdateProfileResponse } from "../../domain/entities/updateprofileresponse.types";
+import type { UploadDocumentRequest } from "../../domain/entities/uploaddocumentrequest.types";
 import { apiUrl } from "../../../api/apiConfig";
 import { useAuthStore } from "../../../core/store/auth";
 
 export class ProfileRepository implements IProfileRepository {
   private readonly baseUrl = apiUrl;
 
-  /* ---------------- GET PROFILE ---------------- */
+ 
 
   async getProfile(): Promise<GetProfileResponse> {
     try {
@@ -23,7 +21,7 @@ export class ProfileRepository implements IProfileRepository {
       if (customerData.user && response.data) {
         setUser({
           ...customerData.user,
-          ...response.data, // merge latest profile fields
+          ...response.data, 
         });
       }
 
@@ -36,7 +34,7 @@ export class ProfileRepository implements IProfileRepository {
     }
   }
 
-  /* ---------------- UPDATE PROFILE ---------------- */
+  
 
   async updateProfile(
     formData: FormData
@@ -58,7 +56,7 @@ export class ProfileRepository implements IProfileRepository {
     return response.data;
   }
 
-  /* ---------------- UPDATE PASSWORD ---------------- */
+  
 
   async updatePassword(
     oldPassword: string,
@@ -75,7 +73,7 @@ export class ProfileRepository implements IProfileRepository {
     return response.data;
   }
 
-  /* ---------------- UPLOAD DOCUMENT ---------------- */
+
 
   async uploadDocument(
     request: UploadDocumentRequest
@@ -103,7 +101,7 @@ export class ProfileRepository implements IProfileRepository {
     return response.data;
   }
 
-  /* ---------------- DELETE DOCUMENT ---------------- */
+
 
   async deleteDocument(
     documentType: string

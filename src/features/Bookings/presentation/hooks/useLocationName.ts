@@ -1,28 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
+import { reverseGeocode } from "../../../utils/reverse";
 
-type LocationResponse = {
-  display_name?: string;
-};
-
-const fetchLocationName = async (coordinates: [number, number]): Promise<string> => {
+const fetchLocationName = async (
+  coordinates: [number, number]
+): Promise<string> => {
   const [lng, lat] = coordinates;
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`
-  );
 
-  if (!res.ok) throw new Error("Failed to fetch location");
+  const placeName = await reverseGeocode(lat, lng);
 
-  const data: LocationResponse = await res.json();
-  return data.display_name ?? "Unknown location";
+  if (!placeName) {
+    throw new Error("Failed to fetch location");
+  }
+
+  return placeName;
 };
 
 export const useLocationName = (coordinates?: [number, number]) => {
   const enabled = !!coordinates;
 
-  // Only run query if coordinates exist
   const query = useQuery({
     queryKey: coordinates ? ["locationName", coordinates] : ["locationName"],
-    queryFn: () => fetchLocationName(coordinates!), // non-null assertion, safe because enabled
+    queryFn: () => fetchLocationName(coordinates!),
     enabled,
     staleTime: 1000 * 60 * 5,
     retry: 1,

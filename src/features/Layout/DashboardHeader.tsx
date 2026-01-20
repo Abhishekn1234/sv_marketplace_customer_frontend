@@ -18,18 +18,18 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
   const navigate = useNavigate();
   const location = useLocation();
 
-  /* ---------------- ZUSTAND ---------------- */
+
   const customerData = useAuthStore((s) => s.customerData);
   const toggleTheme = useAuthStore((s) => s.toggleTheme);
   const setLanguage = useAuthStore((s) => s.setLanguage);
 
   const { user, theme, language } = customerData;
 
-  /* ---------------- UI STATE ---------------- */
+ 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
 
-  /* ---------------- USER INITIALS ---------------- */
+
   const initials = user?.fullName
     ? user.fullName
         .split(" ")
@@ -56,7 +56,7 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
       )}
     >
       <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-        {/* LOGO */}
+       
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => navigate("/")}
@@ -66,7 +66,7 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
           </div>
         </div>
 
-        {/* DESKTOP MENU */}
+       
         <div className="hidden md:flex items-center gap-4">
           {menu.map((m) => {
             const Icon = m.icon;
@@ -91,12 +91,12 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
             );
           })}
 
-          {/* THEME TOGGLE */}
+          
           <Button variant="ghost" onClick={toggleTheme}>
             {theme === "light" ? <Moon /> : <Sun />}
           </Button>
 
-          {/* LANGUAGE DROPDOWN */}
+       
           <div className="relative">
             <Button
               variant="ghost"
@@ -136,7 +136,7 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
             )}
           </div>
 
-          {/* LOGOUT */}
+        
           <Button
             variant="ghost"
             onClick={() => {
@@ -148,7 +148,7 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
           </Button>
         </div>
 
-        {/* MOBILE MENU TOGGLE */}
+       
         <Button
           size="icon"
           variant="ghost"
@@ -159,7 +159,7 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
         </Button>
       </div>
 
-      {/* MOBILE MENU */}
+     
       {mobileOpen && (
         <div
           className={clsx(

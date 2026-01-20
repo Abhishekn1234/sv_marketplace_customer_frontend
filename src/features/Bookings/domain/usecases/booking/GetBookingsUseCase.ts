@@ -1,5 +1,5 @@
 import type { IBookingRepository } from "../../repositories/IBookingRepository";
-import type { GetBookingsResponse } from "../../entities/booking.types";
+import type { GetBookingsResponse } from "../../entities/getbookingresponse.types";
 
 export class GetBookingsUseCase {
   private bookingRepository: IBookingRepository;

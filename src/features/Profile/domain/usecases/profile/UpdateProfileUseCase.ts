@@ -1,16 +1,7 @@
 import type { IProfileRepository } from '../../repositories/IProfileRepository';
-import type { UpdateProfileResponse } from '../../entities/profile.types';
+import type { UpdateProfileResponse } from '../../entities/updateprofileresponse.types';
+import type { UpdateProfileWithFiles } from '../../entities/updateprofilewithfiles.types';
 
-type UpdateProfileWithFiles = {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  profileImage?: File;
-  idProof?: File;
-  addressProof?: File;
-  photoProof?: File;
-};
 
 export class UpdateProfileUseCase {
 private profileRepository: IProfileRepository;
@@ -22,7 +13,7 @@ constructor(profilerepo:IProfileRepository){
     request: UpdateProfileWithFiles
   ): Promise<UpdateProfileResponse> {
 
-    // ✅ Validation (JSON-friendly)
+   
     if (request.fullName && request.fullName.trim().length < 2) {
       throw new Error('Full name must be at least 2 characters');
     }
@@ -42,7 +33,7 @@ constructor(profilerepo:IProfileRepository){
       throw new Error('Address must be at least 10 characters');
     }
 
-    // ✅ Build FormData AFTER validation
+   
     const formData = new FormData();
 
     if (request.fullName) formData.append('fullName', request.fullName);
@@ -59,7 +50,7 @@ constructor(profilerepo:IProfileRepository){
     if (request.photoProof)
       formData.append('photoProof', request.photoProof);
 
-    // ✅ Repository ONLY receives FormData
+  
     return this.profileRepository.updateProfile(formData);
   }
 }

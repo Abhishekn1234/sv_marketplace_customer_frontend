@@ -6,7 +6,7 @@ export default function ConfirmModal() {
   const { customerData} = useAuthStore();
   const [open, setOpen] = useState(false);
  const accessToken=customerData.accessToken;
-  // Open modal when accessToken exists
+ 
   useEffect(() => {
     if (accessToken) {
       setOpen(true);
@@ -28,7 +28,7 @@ export default function ConfirmModal() {
         className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl
                    animate-in fade-in zoom-in duration-200"
       >
-        {/* Close Button */}
+  
         <button
           onClick={() => setOpen(false)}
           className="absolute right-3 top-3 rounded-full p-1 text-gray-500

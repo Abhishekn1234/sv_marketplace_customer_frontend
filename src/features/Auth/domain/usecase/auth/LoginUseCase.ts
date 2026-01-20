@@ -1,6 +1,6 @@
 import type { IAuthRepository } from '../../repositories/IAuthRepository';
-import type { LoginRequest, LoginResponse } from "../../entities/auth.types";
-
+import type {  LoginResponse } from "../../entities/loginresponse.types";
+import type { LoginRequest } from '../../entities/loginrequest.types';
 export class LoginUseCase {
   private authRepository: IAuthRepository;
   constructor(authrepo:IAuthRepository){

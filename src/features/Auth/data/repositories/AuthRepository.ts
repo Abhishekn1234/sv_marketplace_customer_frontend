@@ -1,24 +1,21 @@
 import apiClient, { publicApiClient } from "../../../api/interceptor";
 import { useAuthStore } from "../../../core/store/auth";
 
-import type {
-  LoginRequest,
-  LoginResponse,
-  RegisterRequest,
-  RegisterResponse,
-  OTPRequest,
-  OTPResponse,
-  SendOTPRequest,
-  SendOTPResponse,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  ForgotPasswordResponse,
-} from "../../domain/entities/auth.types";
-
+import type {SendOTPResponse} from "../../domain/entities/sendotpresponse.types";
+import type { OTPResponse } from "../../domain/entities/otpresponse.types";
+import type { OTPRequest } from "../../domain/entities/otprequest.types";
+import type { LoginResponse } from "../../domain/entities/loginresponse.types";
+import type { ResetPasswordRequest } from "../../domain/entities/resetpasswordrequest.types";
+import type { ForgotPasswordRequest } from "../../domain/entities/forgotpasswordrequest";
+import type { ForgotPasswordResponse } from "../../domain/entities/forgotpasswordresponse";
+import type { RegisterResponse } from "../../domain/entities/registerresponse.types";
+import type { LoginRequest } from "../../domain/entities/loginrequest.types";
+import type { RegisterRequest } from "../../domain/entities/registerrequest";
+import type { SendOTPRequest } from "../../domain/entities/sendotprequest.types";
 class AuthRepository {
   private readonly baseUrl = "/auth";
 
-  /* ---------------- LOGIN ---------------- */
+ 
 
  async login(request: LoginRequest): Promise<LoginResponse> {
   const res = await apiClient.post<LoginResponse>(
@@ -26,11 +23,10 @@ class AuthRepository {
     request
   );
 
-  return res.data; // 🚀 ONLY return data
+  return res.data; 
 }
 
 
-  /* ---------------- REGISTER ---------------- */
 
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     const res = await apiClient.post<RegisterResponse>(
@@ -40,7 +36,6 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- SEND OTP ---------------- */
 
   async sendOTP(request: SendOTPRequest): Promise<SendOTPResponse> {
     const res = await apiClient.post<SendOTPResponse>(
@@ -50,7 +45,6 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- VERIFY OTP ---------------- */
 
   async verifyOTP(request: OTPRequest): Promise<OTPResponse> {
     const res = await apiClient.post<OTPResponse>(
@@ -68,7 +62,7 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- FORGOT PASSWORD ---------------- */
+  
 
   async forgotPassword(
     request: ForgotPasswordRequest
@@ -80,7 +74,6 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- RESET PASSWORD ---------------- */
 
   async resetPassword(
     request: ResetPasswordRequest
@@ -102,7 +95,6 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- REFRESH TOKEN ---------------- */
 
   async refreshToken(): Promise<{
     accessToken: string;
@@ -132,7 +124,7 @@ class AuthRepository {
     return res.data;
   }
 
-  /* ---------------- LOGOUT ---------------- */
+
 
   async logout(): Promise<void> {
     useAuthStore.getState().clearAuth();

@@ -11,7 +11,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   const { accessToken, refreshToken, isLoggedIn } = customerData;
 
-  // If not logged in or tokens missing → redirect
+
   if (!isLoggedIn || !accessToken || !refreshToken) {
     return <Navigate to="/login" replace />;
   }

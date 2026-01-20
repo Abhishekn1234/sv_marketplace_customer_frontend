@@ -1,12 +1,7 @@
-import type {
-  // UserProfile,
-  // UpdateProfileRequest,
-  UpdateProfileResponse,
-  UploadDocumentRequest,
-  UploadDocumentResponse,
-  GetProfileResponse,
-} from '../entities/profile.types';
-
+import type { GetProfileResponse } from '../entities/getprofileresponse.types';
+import type { UploadDocumentResponse } from '../entities/uploaddocumentresponse.types';
+import type { UploadDocumentRequest } from '../entities/uploaddocumentrequest.types';
+import type { UpdateProfileResponse } from '../entities/updateprofileresponse.types';
 export interface IProfileRepository {
   updatePassword(
     oldPassword: string,

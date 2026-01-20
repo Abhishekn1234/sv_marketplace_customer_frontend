@@ -1,5 +1,6 @@
 import {ServiceRepository} from "../../../data/repositories/ServiceRepository";
-import type { Category,APIResponse } from "../../entities/service.types";
+import type {APIResponse } from "../../entities/apiresponse.types";
+import type { Category } from "../../entities/category.types";
 export class GetServicesUseCase {
  private serviceRepo:ServiceRepository;
  constructor(service:ServiceRepository){

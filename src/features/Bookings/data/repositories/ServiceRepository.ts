@@ -1,14 +1,15 @@
-// src/repositories/implementation/ServiceRepository.ts
+
 import type { IServiceRepository } from "../../domain/repositories/IServiceRepository";
 import type {
-  APIResponse,
-  Category,
-  PricingTier,
+  
+
   Service,
 } from "../../domain/entities/service.types";
+import type { APIResponse } from "../../domain/entities/apiresponse.types";
+import type { Category } from "../../domain/entities/category.types";
 import apiClient from "../../../api/interceptor";
-import type { GetBookingsResponse, ServiceTierRef } from "../../domain/entities/booking.types";
-
+import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
+import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 export class ServiceRepository implements IServiceRepository {
  private readonly baseUrl = "booking"; // remove leading slash
 

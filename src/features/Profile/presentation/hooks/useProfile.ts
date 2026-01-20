@@ -7,42 +7,13 @@ import { GetProfileUseCase } from "../../domain/usecases/profile/GetProfileUseCa
 import { UpdateProfileUseCase } from "../../domain/usecases/profile/UpdateProfileUseCase";
 import { UploadDocumentUseCase } from "../../domain/usecases/profile/UploadDocumentUseCase";
 import { UpdatePasswordUseCase } from "../../domain/usecases/profile/UpdatePasswordUseCase";
-
 import { useAuthStore } from "../../../core/store/auth";
+import type {UserProfile} from "../../domain/entities/profile.types";
+import type { UploadDocumentRequest } from "../../domain/entities/uploaddocumentrequest.types";
+import { mapProfileToUser } from "../../../core/mappers/mapfileprofile";
+import type { UpdateProfileRequestWithFiles } from "../../domain/entities/updateprofiletypes";
 
-import type {
-  UserProfile,
-  UpdateProfileRequest,
-  UploadDocumentRequest,
-} from "../../domain/entities/profile.types";
-import type { User } from "../../../Auth/domain/entities/auth.types";
 
-type UpdateProfileRequestWithFiles = UpdateProfileRequest & {
-  profileImage?: File;
-  idProof?: File;
-  addressProof?: File;
-  photoProof?: File;
-};
-
-const mapProfileToUser = (profile: UserProfile): User => ({
-  _id: profile._id,
-  fullName: profile.fullName,
-  email: profile.email,
-  phone: profile.phone,
-  address: profile.address,
-  profilePictureUrl: profile.profilePictureUrl,
-  profilePicturePublicId: profile.profilePicturePublicId,
-  role: {
-    _id: profile.role._id,
-    name: profile.role.name,
-    modules: profile.role.modules,
-    createdAt: profile.role.createdAt,
-    updatedAt: profile.role.updatedAt,
-  },
-  documents: profile.documents ?? [],
-  isVerified: profile.isVerified,
-  kycStatus: profile.kycStatus,
-});
 
 export const useProfile = () => {
   const queryClient = useQueryClient();

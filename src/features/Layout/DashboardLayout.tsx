@@ -19,10 +19,10 @@ export default function DashboardLayout({onLogout }: Props) {
           : "bg-gray-50 text-gray-900"
       )}
     >
-      {/* Header */}
+      
      <DashboardHeader onLogout={onLogout} />
 
-      {/* Content */}
+    
       <main className="mx-auto max-w-7xl px-4 py-6">
         <Outlet />
       </main>

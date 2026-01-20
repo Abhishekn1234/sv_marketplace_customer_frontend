@@ -1,4 +1,4 @@
-// utils/geocoding.ts
+
 export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   try {
     const response = await fetch(

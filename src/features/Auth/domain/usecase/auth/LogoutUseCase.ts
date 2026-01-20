@@ -8,10 +8,10 @@ export class LogoutUseCase {
   }
 
   async execute(): Promise<void> {
-    // Execute logout API call
+  
     await this.authRepository.logout();
 
-    // Clear Zustand auth store instead of localStorage
+   
     const { clearAuth } = useAuthStore.getState();
     clearAuth();
   }

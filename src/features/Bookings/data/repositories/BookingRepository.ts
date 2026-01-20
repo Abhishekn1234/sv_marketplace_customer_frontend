@@ -1,10 +1,12 @@
 import type { IBookingRepository } from "../../domain/repositories/IBookingRepository";
 import type {
   Booking,
-  BookingPayload,
-  GetBookingsResponse,
-  CancelBookingRequest,
+
+
 } from "../../domain/entities/booking.types";
+import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
+import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
+import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
 import apiClient from "../../../api/interceptor";
 
 export class BookingRepository implements IBookingRepository {

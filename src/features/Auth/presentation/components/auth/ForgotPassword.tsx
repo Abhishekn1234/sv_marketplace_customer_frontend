@@ -20,7 +20,6 @@ export default function ForgotPassword() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  /* ---------------- Step Handlers ---------------- */
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput) return toast.error('Please enter your email');
@@ -62,12 +61,12 @@ export default function ForgotPassword() {
     }
   };
 
-  /* ---------------- Render ---------------- */
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <ToastContainer position="top-right" />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-        {/* Header */}
+  
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {step === 'email' && 'Forgot Password'}
@@ -81,7 +80,7 @@ export default function ForgotPassword() {
           </p>
         </div>
 
-        {/* Step Forms */}
+       
         {step === 'email' && (
           <form onSubmit={handleSendOTP} className="space-y-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -180,7 +179,7 @@ export default function ForgotPassword() {
           </form>
         )}
 
-        {/* Footer */}
+      
         <div className="text-center mt-6">
           <button
             onClick={() => navigate('/login')}

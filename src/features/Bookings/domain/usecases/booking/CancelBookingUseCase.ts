@@ -1,7 +1,7 @@
-// domain/usecases/booking/CancelBookingUseCase.ts
-import type { ICancelBookingRepository } from "../../repositories/IBookingCancelRepository";
-import type { CancelBookingRequest, Booking } from "../../entities/booking.types";
 
+import type { ICancelBookingRepository } from "../../repositories/IBookingCancelRepository";
+import type {  Booking } from "../../entities/booking.types";
+import type { CancelBookingRequest } from "../../entities/cancelbookingrequest.types";
 export class CancelBookingUseCase {
   private cancelRepo: ICancelBookingRepository;
   constructor(cancelRepo: ICancelBookingRepository) {

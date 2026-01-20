@@ -36,7 +36,7 @@ export default function BookingDetailsForm({
 }: BookingDetailsFormProps) {
   return (
     <div className="space-y-4">
-      {/* Work Description */}
+     
       <div>
         <label className="block font-medium mb-1">Work Description *</label>
         <textarea
@@ -48,7 +48,7 @@ export default function BookingDetailsForm({
         />
       </div>
 
-      {/* Booking Type & Date */}
+    
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-medium mb-1">Booking Type *</label>
@@ -78,7 +78,7 @@ export default function BookingDetailsForm({
         )}
       </div>
 
-      {/* Pricing Mode, Duration, Workers */}
+      
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label className="block font-medium mb-1">Pricing Mode *</label>

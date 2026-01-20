@@ -6,9 +6,9 @@ export default function WebsiteHome() {
   return (
     
     <div className="min-h-screen bg-background text-foreground">
-      {/* ================= HERO SECTION ================= */}
+      
       <section className="relative overflow-hidden">
-        {/* Gradient background */}
+        
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
 
         <div className="relative py-32 px-6 text-center max-w-6xl mx-auto">
@@ -30,7 +30,7 @@ export default function WebsiteHome() {
         </div>
       </section>
 
-      {/* ================= CATEGORIES ================= */}
+     
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-semibold text-center mb-12">
@@ -40,7 +40,7 @@ export default function WebsiteHome() {
         </div>
       </section>
 
-      {/* ================= ABOUT ================= */}
+
       <section className="py-24 px-6 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
@@ -78,7 +78,7 @@ export default function WebsiteHome() {
         </div>
       </section>
 
-      {/* ================= SERVICES ================= */}
+     
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-semibold text-center mb-12">

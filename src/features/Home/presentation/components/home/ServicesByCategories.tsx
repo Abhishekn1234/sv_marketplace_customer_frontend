@@ -7,9 +7,7 @@ import BookingServiceModal from "../../../../Bookings/presentation/components/bo
 export default function ServicesByCategory() {
   const { categories: categoryData = [], loading, error } = useServices();
   
-  /* ------------------------------------------------------------------ */
-  /* MODAL STATE */
-  /* ------------------------------------------------------------------ */
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -24,9 +22,7 @@ export default function ServicesByCategory() {
     setIsModalOpen(false);
   };
 
-  /* ------------------------------------------------------------------ */
-  /* STATES */
-  /* ------------------------------------------------------------------ */
+
 
   if (loading)
     return (
@@ -42,7 +38,6 @@ export default function ServicesByCategory() {
       </p>
     );
 
-  // ✅ NO CATEGORIES
   if (categoryData.length === 0)
     return (
       <p className="text-center mt-10 text-gray-500">
@@ -50,21 +45,19 @@ export default function ServicesByCategory() {
       </p>
     );
 
-  /* ------------------------------------------------------------------ */
-  /* RENDER */
-  /* ------------------------------------------------------------------ */
+
 
   return (
     <div className="container mx-auto px-6 py-12">
       {categoryData.map((category) => {
         const servicesInCategory = category.services ?? [];
 
-        // ✅ SKIP EMPTY CATEGORIES
+       
         if (servicesInCategory.length === 0) return null;
 
         return (
           <div key={category._id} className="mb-24">
-            {/* CATEGORY HEADER */}
+           
             <div className="flex items-center gap-4 mb-6">
               <h3 className="text-3xl font-semibold">
                 {category?.services?.[0]?.name}
@@ -72,7 +65,7 @@ export default function ServicesByCategory() {
             </div>
 
 
-            {/* SERVICES GRID */}
+           
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {servicesInCategory.map((service) => {
                 const firstTier = service.pricingTiers?.[0];
@@ -85,12 +78,12 @@ export default function ServicesByCategory() {
                     key={service._id}
                     className="flex flex-col h-full p-4 shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300"
                   >
-                    {/* SERVICE NAME */}
+                   
                     <h4 className="text-lg font-semibold mb-2">
                       {service.name}
                     </h4>
 
-                    {/* THUMBNAIL */}
+                  
                     {service.thumbnailUrl && (
                       <img
                         src={service.thumbnailUrl}
@@ -99,12 +92,12 @@ export default function ServicesByCategory() {
                       />
                     )}
 
-                    {/* DESCRIPTION */}
+                    
                     <p className="text-gray-700 flex-1 mb-2 line-clamp-3">
                       {service.description}
                     </p>
 
-                    {/* PRICING */}
+                    
                     <div className="mt-auto text-gray-800 font-medium space-y-1 mb-4">
                       {hourly && (
                         <p>
@@ -123,7 +116,7 @@ export default function ServicesByCategory() {
                       )}
                     </div>
 
-                    {/* ACTION */}
+                   
                     <button
                       onClick={() => openModal(service)}
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -138,7 +131,7 @@ export default function ServicesByCategory() {
         );
       })}
 
-      {/* BOOKING MODAL */}
+      
       <BookingServiceModal
         isOpen={isModalOpen}
         onClose={closeModal}

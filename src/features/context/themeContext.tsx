@@ -11,7 +11,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // ✅ Read from customerData
+  
   const theme = useAuthStore((s) => s.customerData.theme);
   const toggleTheme = useAuthStore((s) => s.toggleTheme);
 

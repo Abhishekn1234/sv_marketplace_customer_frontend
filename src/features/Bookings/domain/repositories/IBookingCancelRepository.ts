@@ -1,5 +1,5 @@
-// domain/repositories/ICancelBookingRepository.ts
-import type { CancelBookingRequest } from "../entities/booking.types";
+
+import type { CancelBookingRequest } from "../entities/cancelbookingrequest.types";
 import type { Booking } from "../entities/booking.types";
 
 export interface ICancelBookingRepository {

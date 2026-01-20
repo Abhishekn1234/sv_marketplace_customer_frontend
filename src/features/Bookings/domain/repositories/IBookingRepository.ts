@@ -1,12 +1,14 @@
-// src/repositories/IBookingRepository.ts
+
 import type {
   Booking,
-  BookingPayload,
- 
-  GetBookingsResponse,
-  CancelBookingRequest,
-} from "../entities/booking.types";
 
+ 
+
+
+} from "../entities/booking.types";
+import type { CancelBookingRequest } from "../entities/cancelbookingrequest.types";
+import type { GetBookingsResponse } from "../entities/getbookingresponse.types";
+import type { BookingPayload } from "../entities/bookingpayload.types";
 export interface IBookingRepository {
   createBooking(payload: BookingPayload): Promise<Booking>;
   getBookings(): Promise<GetBookingsResponse>;

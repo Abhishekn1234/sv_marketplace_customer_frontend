@@ -2,26 +2,23 @@ import { useAuthStore } from '../../../core/store/auth';
 import { useMutation } from '@tanstack/react-query';
 import AuthRepository from '../../data/repositories/AuthRepository';
 import { toast } from 'react-toastify';
-import type {
-  LoginRequest,
-  RegisterRequest,
-  OTPRequest,
-  SendOTPRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest
-} from '../../domain/entities/auth.types';
-
+import type {OTPRequest} from '../../domain/entities/otprequest.types';
+import type { ResetPasswordRequest } from '../../domain/entities/resetpasswordrequest.types';
+import type { ForgotPasswordRequest } from '../../domain/entities/forgotpasswordrequest';
+import type { SendOTPRequest } from '../../domain/entities/sendotprequest.types';
+import type { LoginRequest } from '../../domain/entities/loginrequest.types';
+import type { RegisterRequest } from '../../domain/entities/registerrequest';
 export const useAuth = () => {
   const setTokens = useAuthStore((state) => state.setTokens);
   const setUser = useAuthStore((state) => state.setUser);
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
-  /* ---------------- Login ---------------- */
+  
   const loginMutation = useMutation({
     mutationFn: async (req: LoginRequest) => {
       const res = await AuthRepository.login(req);
 
-      // Save tokens and user to store
+      
       setTokens(res.accessToken, res.refreshToken);
       setUser(res.user);
 
@@ -35,7 +32,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Register ---------------- */
+ 
   const registerMutation = useMutation({
     mutationFn: (req: RegisterRequest) => AuthRepository.register(req),
     onSuccess: (res: any) => {
@@ -46,7 +43,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Send OTP ---------------- */
+ 
   const sendOTPMutation = useMutation({
     mutationFn: (req: SendOTPRequest) => AuthRepository.sendOTP(req),
     onSuccess: (res: any) => {
@@ -57,7 +54,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Verify OTP ---------------- */
+  
   const verifyOTPMutation = useMutation({
     mutationFn: (req: OTPRequest) => AuthRepository.verifyOTP(req),
     onSuccess: (res: any) => {
@@ -68,7 +65,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Forgot Password ---------------- */
+ 
   const forgotPasswordMutation = useMutation({
     mutationFn: (req: ForgotPasswordRequest) => AuthRepository.forgotPassword(req),
     onSuccess: (res: any) => {
@@ -79,7 +76,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Reset Password ---------------- */
+ 
   const resetPasswordMutation = useMutation({
     mutationFn: (req: ResetPasswordRequest) => AuthRepository.resetPassword(req),
     onSuccess: (res: any) => {
@@ -90,7 +87,7 @@ export const useAuth = () => {
     },
   });
 
-  /* ---------------- Logout ---------------- */
+ 
   const logout = async () => {
     await AuthRepository.logout();
     clearAuth();
@@ -120,7 +117,7 @@ export const useAuth = () => {
       verifyOTPMutation.error ||
       forgotPasswordMutation.error ||
       resetPasswordMutation.error,
-    // Optional: expose mutations if needed
+  
     mutations: {
       loginMutation,
       registerMutation,

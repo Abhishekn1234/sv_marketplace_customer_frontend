@@ -1,5 +1,3 @@
-// src/features/bookings/hooks/useBookings.ts
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -10,12 +8,14 @@ import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookin
 
 import type {
   Booking,
-  BookingPayload,
-  CancelBookingRequest,
-  GetBookingsResponse,
-  ServiceTierRef,
-} from "../../domain/entities/booking.types";
 
+ 
+  
+} from "../../domain/entities/booking.types";
+import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
+import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
+import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
+import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 import { useAuthStore } from "../../../core/store/auth";
 import { mapBookingToAuthBooking } from "../../../core/mappers/mapBooking";
 
@@ -27,8 +27,6 @@ import {
   SERVICE_TIERS_QUERY_KEY,
 } from "./useServices";
 
-/* ---------------- USE CASE SETUP ---------------- */
-
 const bookingRepository = new BookingRepository();
 const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
 const createBookingUseCase = new CreateBookingUseCase(bookingRepository);
@@ -36,7 +34,6 @@ const cancelBookingUseCase = new CancelBookingUseCase(bookingRepository);
 
 export const BOOKINGS_QUERY_KEY = ["bookings"] as const;
 
-/* ================================================= */
 export const useBookings = () => {
   const queryClient = useQueryClient();
 
@@ -45,14 +42,11 @@ export const useBookings = () => {
 
   const user = customerData?.user;
 
-  /* ---------------- FETCH BOOKINGS ---------------- */
   const { data, isLoading, isError } = useQuery<Booking[], Error>({
     queryKey: BOOKINGS_QUERY_KEY,
-
     queryFn: async (): Promise<Booking[]> => {
       const res: GetBookingsResponse = await getBookingsUseCase.execute();
 
-      // Read cached services & tiers
       const services = queryClient.getQueryData<Service[]>(
         SERVICES_QUERY_KEY
       );
@@ -85,21 +79,16 @@ export const useBookings = () => {
 
       return res.bookings;
     },
-
     staleTime: 60 * 1000,
   });
 
-  /* ---------------- CREATE BOOKING ---------------- */
   const createBooking = useMutation<Booking, Error, BookingPayload>({
     mutationFn: (payload) => createBookingUseCase.execute(payload),
-
     onSuccess: (newBooking) => {
-      // 1️⃣ Update React Query cache
       queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
         old ? [newBooking, ...old] : [newBooking]
       );
 
-      // 2️⃣ Update Auth Store
       const { customerData } = useAuthStore.getState();
       const currentUser = customerData?.user;
 
@@ -118,18 +107,14 @@ export const useBookings = () => {
 
       toast.success("Booking created successfully ✅");
     },
-
     onError: (err: any) => {
       toast.error(err.message);
     },
   });
 
-  /* ---------------- CANCEL BOOKING ---------------- */
   const cancelBooking = useMutation<Booking, Error, CancelBookingRequest>({
     mutationFn: (req) => cancelBookingUseCase.execute(req),
-
     onSuccess: (updatedBooking) => {
-      // 1️⃣ Update React Query cache
       queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
         if (!old) return [];
         return old.map((b) =>
@@ -137,7 +122,6 @@ export const useBookings = () => {
         );
       });
 
-      // 2️⃣ Update Auth Store
       const { customerData } = useAuthStore.getState();
       const currentUser = customerData?.user;
 
@@ -154,13 +138,11 @@ export const useBookings = () => {
 
       toast.success("Booking cancelled successfully ✅");
     },
-
     onError: (err: any) => {
       toast.error(err.message);
     },
   });
 
-  /* ---------------- RETURN API ---------------- */
   return {
     bookings: data ?? [],
     loading: isLoading,

@@ -95,9 +95,9 @@ export default function LocationSelector(props: LocationSelectorProps) {
 
       <MapContainer center={[lat, lng]} zoom={13} className="w-full h-64 rounded">
         <TileLayer 
-  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
-/>
+            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+          />
 
         <LocationMarker lat={lat} lng={lng} setLat={setLat} setLng={setLng} disabled={locationMode === "current"} onChange={handleLocationChange} />
       </MapContainer>

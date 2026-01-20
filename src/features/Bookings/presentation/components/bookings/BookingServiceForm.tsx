@@ -1,4 +1,4 @@
-// import { useState } from "react";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import type { Service } from "../../../domain/entities/service.types";
@@ -52,11 +52,11 @@ export default function BookingServiceForm({
   getDurationLabel,
   getWorkersLabel,
   serviceTiers,
-  tierNameMap,
+  // tierNameMap,
 }: BookingServiceFormProps) {
   return (
     <>
-      {/* Work Description */}
+     
       <div>
         <label className="block font-medium mb-1">Work Description *</label>
         <textarea
@@ -69,7 +69,7 @@ export default function BookingServiceForm({
         />
       </div>
 
-      {/* Booking Type and Duration */}
+     
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-medium mb-1">Booking Type *</label>
@@ -101,7 +101,6 @@ export default function BookingServiceForm({
         )}
       </div>
 
-      {/* Pricing Mode and Duration */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label className="block font-medium mb-1">Pricing Mode *</label>
@@ -154,7 +153,7 @@ export default function BookingServiceForm({
         </div>
       </div>
 
-      {/* Pricing Tiers with Price Calculation */}
+   
       <div>
         <label className="block font-medium mb-2">
           Select Pricing Tiers * (Select one or more)
@@ -205,7 +204,6 @@ export default function BookingServiceForm({
         </div>
       </div>
 
-      {/* Price Summary */}
       {selectedTiers.length > 0 && calculateTotalPrice > 0 && (
         <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
           <div className="flex justify-between items-center">
