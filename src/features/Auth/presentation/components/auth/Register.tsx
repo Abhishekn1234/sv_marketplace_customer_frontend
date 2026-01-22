@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-
 import type { CountryData } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { toast } from 'sonner';
 import { useAuth } from '../../hooks/useAuth';
 import PhoneInput from '../../../../utils/PhoneInput';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
 
 export default function Register() {
   const navigate = useNavigate();
@@ -43,7 +45,6 @@ export default function Register() {
         phone: formData.phone,
         password: formData.password,
       });
-
       toast.success(response.message || 'Registration successful');
       navigate('/login');
     } catch (err) {
@@ -55,42 +56,44 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-8">
-    
+
+        {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Create an Account</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Enter your details to get started</p>
         </div>
 
-      
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          
+
+          {/* Full Name */}
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
+            <Input
               name="fullName"
               placeholder="Full Name"
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="pl-10 pr-3 py-2 w-full border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="pl-10 pr-3 py-2 w-full"
             />
           </div>
 
-          
+          {/* Email */}
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
+            <Input
               name="email"
               type="email"
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="pl-10 pr-3 py-2 w-full border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="pl-10 pr-3 py-2 w-full"
             />
           </div>
 
-         
+          {/* Phone */}
           <PhoneInput
             country="in"
             value={formData.phone}
@@ -104,17 +107,17 @@ export default function Register() {
             buttonClass="h-full"
           />
 
-         
+          {/* Password */}
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
+            <Input
               name="password"
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
               required
-              className="pl-10 pr-10 py-2 w-full border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="pl-10 pr-10 py-2 w-full"
             />
             <button
               type="button"
@@ -125,17 +128,17 @@ export default function Register() {
             </button>
           </div>
 
-         
+          {/* Confirm Password */}
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
+            <Input
               name="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="pl-10 pr-10 py-2 w-full border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="pl-10 pr-10 py-2 w-full"
             />
             <button
               type="button"
@@ -146,25 +149,22 @@ export default function Register() {
             </button>
           </div>
 
-         
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400 transition"
-          >
+          {/* Submit */}
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Creating account...' : 'Create Account'}
-          </button>
+          </Button>
         </form>
 
-      
+        {/* Footer */}
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600 dark:text-gray-300">
             Already have an account?{' '}
-            <button className="text-blue-600 hover:underline" onClick={() => navigate('/login')}>
+            <Button variant="link" onClick={() => navigate('/login')}>
               Sign in
-            </button>
+            </Button>
           </span>
         </div>
+
       </div>
     </div>
   );

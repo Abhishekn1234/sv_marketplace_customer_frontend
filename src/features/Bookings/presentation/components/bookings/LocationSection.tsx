@@ -1,9 +1,12 @@
 import { useCallback } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { reverseGeocode,getCurrentLocationName } from "../../../../utils/reverse";
 import { toast } from "react-toastify";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import CommonMap from "@/components/common/CommonMap";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -28,20 +31,7 @@ interface LocationSelectorProps {
   setIsGeocoding: (val: boolean) => void;
 }
 
-function LocationMarker({ lat, lng, setLat, setLng, disabled = false, onChange }: any) {
-  useMapEvents({
-    click(e) {
-      if (!disabled) {
-        const newLat = e.latlng.lat;
-        const newLng = e.latlng.lng;
-        setLat(newLat);
-        setLng(newLng);
-        onChange?.(newLat, newLng);
-      }
-    },
-  });
-  return <Marker position={[lat, lng]} />;
-}
+
 
 export default function LocationSelector(props: LocationSelectorProps) {
   const { lat, lng, setLat, setLng, placeName, setPlaceName, locationMode, setLocationMode, isGeocoding, setIsGeocoding } = props;
@@ -80,12 +70,12 @@ export default function LocationSelector(props: LocationSelectorProps) {
   return (
     <div className="space-y-2">
       <div className="flex gap-4">
-        <label>
-          <input type="radio" checked={locationMode === "current"} onChange={handleUseCurrent} disabled={isGeocoding} /> Current Location
-        </label>
-        <label>
-          <input type="radio" checked={locationMode === "new"} onChange={() => setLocationMode("new")} disabled={isGeocoding} /> Set New
-        </label>
+        <Label>
+          <Input type="radio" checked={locationMode === "current"} onChange={handleUseCurrent} disabled={isGeocoding} /> Current Location
+        </Label>
+        <Label>
+          <Input type="radio" checked={locationMode === "new"} onChange={() => setLocationMode("new")} disabled={isGeocoding} /> Set New
+        </Label>
       </div>
 
       <div className="p-3 bg-gray-50 rounded border">
@@ -93,14 +83,14 @@ export default function LocationSelector(props: LocationSelectorProps) {
         <p>Coordinates: {lat.toFixed(6)}, {lng.toFixed(6)}</p>
       </div>
 
-      <MapContainer center={[lat, lng]} zoom={13} className="w-full h-64 rounded">
-        <TileLayer 
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
-          />
-
-        <LocationMarker lat={lat} lng={lng} setLat={setLat} setLng={setLng} disabled={locationMode === "current"} onChange={handleLocationChange} />
-      </MapContainer>
+       <CommonMap
+        lat={lat}
+        lng={lng}
+        setLat={setLat}
+        setLng={setLng}
+        locationMode={locationMode}
+        onLocationChange={handleLocationChange}
+      />
     </div>
   );
 }

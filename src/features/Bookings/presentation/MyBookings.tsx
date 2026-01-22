@@ -1,135 +1,104 @@
-import { useEffect, useMemo, useState, useRef } from "react";
-import { AlertTriangle, Package } from "lucide-react";
-import { useReactToPrint } from "react-to-print";
+import { useEffect, useMemo, useState } from "react"
+import { AlertTriangle, Package } from "lucide-react"
 
-import { useBookings } from "./hooks/useBookings";
-import { useServices } from "./hooks/useServices";
-import { useLocationName } from "./hooks/useLocationName";
-import { useBookingActions } from "./hooks/useBookingActions";
+import { useBookings } from "./hooks/useBookings"
+import { useServices } from "./hooks/useServices"
+import { useLocationName } from "./hooks/useLocationName"
+import { useBookingActions } from "./hooks/useBookingActions"
 
-import type { Booking } from "../domain/entities/booking.types";
-import type { Service } from "../domain/entities/service.types";
-import type { ServiceTierRef } from "../domain/entities/servicetier.types";
+import { CommandCard } from "@/components/common/CommonCards"
+import { Button } from "@/components/ui/button"
+
+import type { Booking } from "../domain/entities/booking.types"
+import type { Service } from "../domain/entities/service.types"
+import type { ServiceTierRef } from "../domain/entities/servicetier.types"
 
 export default function MyBookings() {
-  const { bookings, loading, error } = useBookings();
-  const { services = [], serviceTiers = [] } = useServices();
-  console.log(bookings);
+  const { bookings, loading, error } = useBookings()
+  const { services = [], serviceTiers = [] } = useServices()
   const { cancelBooking } = useBookingActions({
     onSuccess: () => console.log("Booking cancelled"),
     onError: (err: any) => console.error(err),
-  });
+  })
 
-  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
-  const printRef = useRef<HTMLDivElement>(null);
+  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null)
 
+  const handleCancelBooking = async () => {
+    if (!currentBooking?._id) return
+    await cancelBooking(currentBooking._id)
+  }
+
+ 
   useEffect(() => {
     if (!bookings?.length) {
-      setCurrentBooking(null);
-      return;
+      setCurrentBooking(null)
+      return
     }
-
     const sorted = [...bookings].sort(
       (a, b) =>
         new Date(b.updatedAt || b.createdAt).getTime() -
         new Date(a.updatedAt || a.createdAt).getTime()
-    );
-
+    )
     const active = sorted.find(b =>
       ["ACTIVE", "REQUESTED", "CONFIRMED"].includes(b.status)
-    );
+    )
+    setCurrentBooking(active ?? sorted[0])
+  }, [bookings])
 
-    setCurrentBooking(active ?? sorted[0]);
-  }, [bookings]);
-
-  const serviceId = useMemo(() => {
-    if (!currentBooking) return null;
-
-    if (typeof currentBooking.service === "object") {
-      return currentBooking.service._id;
-    }
-
-    return currentBooking.serviceId ?? null;
-  }, [currentBooking]);
 
   const currentService: Service | null = useMemo(() => {
-    if (!serviceId) return null;
+    if (!currentBooking) return null
+    const serviceId =
+      typeof currentBooking.service === "object"
+        ? currentBooking.service._id
+        : currentBooking.serviceId ?? null
+    if (!serviceId) return null
+    return services.find(s => String(s._id) === String(serviceId)) || null
+  }, [currentBooking, services])
 
-    return (
-      services.find(s => String(s._id) === String(serviceId)) || null
-    );
-  }, [services, serviceId]);
-
-  const serviceTierIds: string[] = useMemo(() => {
-    if (!currentBooking) return [];
-
-    if (currentBooking.serviceTier) {
-      if (Array.isArray(currentBooking.serviceTier)) {
-        return currentBooking.serviceTier.map(t => String(t._id));
-      }
-      return [String(currentBooking.serviceTier._id)];
-    }
-
-    if (currentBooking.serviceTierId) {
-      if (Array.isArray(currentBooking.serviceTierId)) {
-        return currentBooking.serviceTierId.map(id => String(id));
-      }
-      return [String(currentBooking.serviceTierId)];
-    }
-
-    return [];
-  }, [currentBooking]);
-
+  
   const currentTiers: ServiceTierRef[] = useMemo(() => {
-    if (!serviceTierIds.length) return [];
+    if (!currentBooking) return []
+    const tierIds = currentBooking.serviceTier
+      ? Array.isArray(currentBooking.serviceTier)
+        ? currentBooking.serviceTier.map(t => String(t._id))
+        : [String(currentBooking.serviceTier._id)]
+      : currentBooking.serviceTierId
+      ? Array.isArray(currentBooking.serviceTierId)
+        ? currentBooking.serviceTierId.map(id => String(id))
+        : [String(currentBooking.serviceTierId)]
+      : []
 
-    return serviceTiers.filter(t =>
-      serviceTierIds.includes(String(t._id))
-    );
-  }, [serviceTiers, serviceTierIds]);
+    return serviceTiers.filter(t => tierIds.includes(String(t._id)))
+  }, [currentBooking, serviceTiers])
+
 
   const startDateTimeFormatted = useMemo(() => {
-    const iso = currentBooking?.schedule?.startDateTime;
-    if (!iso) return null;
-
-    const date = new Date(iso);
-    const now = new Date();
-
+    const iso = currentBooking?.schedule?.startDateTime
+    if (!iso) return null
+    const date = new Date(iso)
+    const now = new Date()
     const isToday =
       date.getDate() === now.getDate() &&
       date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear();
-
+      date.getFullYear() === now.getFullYear()
     const time = date.toLocaleTimeString("en-IN", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    });
-
-    if (isToday) return `Today at ${time}`;
-
+    })
+    if (isToday) return `Today at ${time}`
     const formattedDate = date.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
-    });
-
-    return `${formattedDate} at ${time}`;
-  }, [currentBooking]);
+    })
+    return `${formattedDate} at ${time}`
+  }, [currentBooking])
 
   const { locationName } = useLocationName(
     currentBooking?.location?.coordinates
-  );
-
-  const handleCancelBooking = async () => {
-    if (!currentBooking?._id) return;
-    await cancelBooking(currentBooking._id);
-  };
-
-  const handlePrintBooking = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `booking-${currentBooking?._id}`,
-  });
+  )
 
   if (loading)
     return (
@@ -139,40 +108,32 @@ export default function MyBookings() {
           <p className="text-gray-500 text-sm">Loading bookings...</p>
         </div>
       </div>
-    );
+    )
 
   if (error)
     return (
       <div className="min-h-screen flex items-center justify-center text-center">
         <div>
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto mb-3" />
-          <p className="text-gray-700 font-semibold">
-            Error loading bookings
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            {String(error)}
-          </p>
+          <p className="text-gray-700 font-semibold">Error loading bookings</p>
+          <p className="text-sm text-gray-500 mt-1">{String(error)}</p>
         </div>
       </div>
-    );
+    )
 
   if (!currentBooking)
-    return <div className="p-8 text-center">No bookings found.</div>;
+    return <div className="p-8 text-center">No bookings found.</div>
 
   return (
-    <div className="min-h-screen bg-gray-50 print:bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-8 print:p-0">
-        <div className="mb-8 print:hidden">
+    <div className="min-h-screen ">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold">My Bookings</h1>
-          <p className="text-gray-500">
-            Manage and track all your service bookings
-          </p>
+          <p className="text-gray-500">Manage and track all your service bookings</p>
         </div>
 
-        <div
-          ref={printRef}
-          className="bg-white rounded-2xl border shadow print:shadow-none print:border-none"
-        >
+        
+        <CommandCard width="w-full" className="rounded-2xl p-0">
           <div className="p-6 border-b flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
               <Package className="text-blue-600" />
@@ -189,9 +150,7 @@ export default function MyBookings() {
             <div><b>Service:</b> {currentService?.name}</div>
             <div><b>Status:</b> {currentBooking.status}</div>
             <div><b>Booking Type:</b> {currentBooking.bookingType}</div>
-            {startDateTimeFormatted && (
-              <div><b>Start:</b> {startDateTimeFormatted}</div>
-            )}
+            {startDateTimeFormatted && <div><b>Start:</b> {startDateTimeFormatted}</div>}
             <div><b>Workers:</b> {currentBooking.numberOfWorkers}</div>
             <div><b>Amount:</b> {currentBooking.amount} {currentBooking.currency}</div>
 
@@ -199,21 +158,14 @@ export default function MyBookings() {
               <div className="col-span-2 flex gap-2 flex-wrap items-center">
                 <b>Tiers:</b>
                 {currentTiers.map(t => (
-                  <span
-                    key={t._id}
-                    className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium"
-                  >
+                  <span key={t._id} className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
                     {t.displayName}
                   </span>
                 ))}
               </div>
             )}
 
-            {locationName && (
-              <div className="col-span-2">
-                <b>Location:</b> {locationName}
-              </div>
-            )}
+            {locationName && <div className="col-span-2"><b>Location:</b> {locationName}</div>}
           </div>
 
           <div className="px-6 pb-6">
@@ -223,24 +175,16 @@ export default function MyBookings() {
             </div>
           </div>
 
-          <div className="p-6 flex gap-4 print:hidden">
-            <button
+          <div className="p-6 flex gap-4">
+            <Button
               onClick={handleCancelBooking}
-              className="flex-1 py-3 rounded-xl bg-red-500 text-white font-semibold"
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl"
             >
               Cancel Booking
-            </button>
-
-            <button
-              onClick={handlePrintBooking}
-              className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-semibold"
-            >
-              Print Booking
-            </button>
+            </Button>
           </div>
-        </div>
+        </CommandCard>
       </div>
     </div>
-  );
+  )
 }
-

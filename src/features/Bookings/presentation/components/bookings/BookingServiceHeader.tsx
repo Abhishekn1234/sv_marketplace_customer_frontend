@@ -1,9 +1,10 @@
 import { X } from "lucide-react";
 import type { Service } from "../../../domain/entities/service.types";
+import { Button } from "@/components/ui/button";
 
 interface BookingServiceHeaderProps {
   service: Service;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export default function BookingServiceHeader({ service, onClose }: BookingServiceHeaderProps) {
@@ -15,12 +16,13 @@ export default function BookingServiceHeader({ service, onClose }: BookingServic
           {service.description}
         </p>
       </div>
-      <button
+      <Button
         onClick={onClose}
-        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full transition"
+        variant="ghost"
+        className=" "
       >
         <X size={24} />
-      </button>
+      </Button>
     </div>
   );
 }

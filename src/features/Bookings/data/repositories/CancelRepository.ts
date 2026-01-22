@@ -1,4 +1,4 @@
-// data/repositories/CancelRepository.ts
+
 import type { ICancelBookingRepository } from "../../domain/repositories/IBookingCancelRepository";
 import type { Booking } from "../../domain/entities/booking.types";
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";

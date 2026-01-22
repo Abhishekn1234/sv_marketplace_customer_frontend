@@ -11,13 +11,14 @@ import {
   Globe,
 } from "lucide-react";
 import clsx from "clsx";
-import { Button } from "../components/ui/button";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useAuthStore } from "../core/store/auth";
 
 export default function DashboardHeader({ onLogout }: { onLogout: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
-
 
   const customerData = useAuthStore((s) => s.customerData);
   const toggleTheme = useAuthStore((s) => s.toggleTheme);
@@ -25,10 +26,8 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
 
   const { user, theme, language } = customerData;
 
- 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
-
 
   const initials = user?.fullName
     ? user.fullName
@@ -49,109 +48,95 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
   return (
     <header
       className={clsx(
-        "sticky top-0 z-50 border-b",
+        "sticky top-0 z-50 border-b transition-colors",
         theme === "dark"
-          ? "bg-gray-900 border-gray-800"
-          : "bg-white border-gray-200"
+          ? "bg-gray-900 border-gray-800 text-gray-100"
+          : "bg-white border-gray-200 text-gray-800"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-       
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div
-          className="flex items-center gap-3 cursor-pointer"
           onClick={() => navigate("/")}
+          className="flex items-center gap-3 cursor-pointer"
         >
-          <div className="w-9 h-9 bg-blue-600 text-white rounded-md flex items-center justify-center font-bold">
+          <div className="w-9 h-9 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center">
             {initials}
           </div>
         </div>
 
-       
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-2">
           {menu.map((m) => {
             const Icon = m.icon;
             const active = location.pathname === m.path;
 
             return (
-              <button
+              <Button
                 key={m.path}
+                variant={active ? "secondary" : "ghost"}
                 onClick={() => navigate(m.path)}
-                className={clsx(
-                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm",
-                  active
-                    ? "text-blue-500"
-                    : theme === "dark"
-                    ? "text-gray-300 hover:text-white"
-                    : "text-gray-700 hover:text-blue-600"
-                )}
+                className="flex items-center gap-2"
               >
                 <Icon className="w-4 h-4" />
-                {m.label}
-              </button>
+                <Label>{m.label}</Label>
+              </Button>
             );
           })}
 
-          
-          <Button variant="ghost" onClick={toggleTheme}>
-            {theme === "light" ? <Moon /> : <Sun />}
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </Button>
 
-       
           <div className="relative">
             <Button
               variant="ghost"
               onClick={() => setLanguageOpen(!languageOpen)}
-              className="flex items-center gap-1"
+              className="flex items-center gap-2"
             >
-              <Globe size={16} /> {language}
+              <Globe size={16} />
+              <Label>{language}</Label>
             </Button>
 
             {languageOpen && (
               <div
                 className={clsx(
-                  "absolute right-0 mt-1 rounded border min-w-[80px]",
+                  "absolute right-0 mt-2 w-24 rounded-md border shadow-md",
                   theme === "dark"
                     ? "bg-gray-800 border-gray-700"
                     : "bg-white border-gray-200"
                 )}
               >
                 {languages.map((lang) => (
-                  <button
+                  <Button
                     key={lang}
+                    variant="ghost"
+                    className="w-full justify-start"
                     onClick={() => {
                       setLanguage(lang);
                       setLanguageOpen(false);
                     }}
-                    className={clsx(
-                      "block w-full px-3 py-2 text-left text-sm",
-                      theme === "dark"
-                        ? "hover:bg-gray-700"
-                        : "hover:bg-gray-100"
-                    )}
                   >
-                    {lang}
-                  </button>
+                    <Label>{lang}</Label>
+                  </Button>
                 ))}
               </div>
             )}
           </div>
 
-        
           <Button
-            variant="ghost"
+            variant="destructive"
+            size="icon"
             onClick={() => {
               onLogout();
               navigate("/login");
             }}
           >
-            <LogOut className="text-red-500" />
+            <LogOut className="w-5 h-5" />
           </Button>
         </div>
 
-       
         <Button
-          size="icon"
           variant="ghost"
+          size="icon"
           className="md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
@@ -159,28 +144,30 @@ export default function DashboardHeader({ onLogout }: { onLogout: () => void }) 
         </Button>
       </div>
 
-     
       {mobileOpen && (
         <div
           className={clsx(
-            "md:hidden px-4 py-4 border-t",
-            theme === "dark" ? "border-gray-800" : "border-gray-200"
+            "md:hidden px-4 py-3 space-y-2 border-t",
+            theme === "dark"
+              ? "bg-gray-900 border-gray-800"
+              : "bg-white border-gray-200"
           )}
         >
           {menu.map((m) => {
             const Icon = m.icon;
             return (
-              <button
+              <Button
                 key={m.path}
+                variant="ghost"
+                className="w-full justify-start gap-2"
                 onClick={() => {
                   navigate(m.path);
                   setMobileOpen(false);
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 rounded-md"
               >
                 <Icon className="w-4 h-4" />
-                {m.label}
-              </button>
+                <Label>{m.label}</Label>
+              </Button>
             );
           })}
         </div>

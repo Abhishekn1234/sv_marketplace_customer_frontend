@@ -1,10 +1,12 @@
+import { Button } from "@/components/ui/button";
+
 interface BookingServiceFooterProps {
   selectedTiers: string[];
   calculateTotalPrice: number;
   formatPrice: (price: number) => string;
   loading: boolean;
   isGeocoding: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   handleSubmit: () => void;
 }
 
@@ -31,14 +33,14 @@ export default function BookingServiceFooter({
       </div>
       
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={onClose}
           disabled={loading}
-          className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 dark:text-red-400 transition disabled:opacity-50"
+          className="px-4 py-2 border rounded-lg transition disabled:opacity-50"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleSubmit}
           disabled={loading || selectedTiers.length === 0 || isGeocoding}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center gap-2"
@@ -53,7 +55,7 @@ export default function BookingServiceFooter({
           ) : (
             `Confirm Booking - ${formatPrice(calculateTotalPrice)}`
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );

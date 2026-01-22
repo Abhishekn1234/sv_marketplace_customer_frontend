@@ -29,6 +29,7 @@ export const useServices = () => {
     queryKey: ["services"],
     queryFn: async () => {
       const response = await getServicesUseCase.execute();
+      console.log(response);
       if (!Array.isArray(response)) return [];
       return response;
     },
@@ -48,7 +49,7 @@ export const useServices = () => {
             typeof service.category === "string"
               ? service.category
               : service.category._id;
-
+          console.log(categoryId);
           if (!acc[categoryId]) {
             acc[categoryId] = {
               _id: categoryId,

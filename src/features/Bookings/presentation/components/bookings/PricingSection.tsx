@@ -1,19 +1,23 @@
 import type { Service } from "../../../domain/entities/service.types";
 import type { ServiceTierRef } from "../../../domain/entities/servicetier.types";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
   service: Service;
   serviceTiers: ServiceTierRef[];
   pricingMode: "HOURLY" | "PER_DAY";
-  setPricingMode: Function;
+  setPricingMode: (mode: "HOURLY" | "PER_DAY") => void;
   estimatedHours: number;
-  setEstimatedHours: Function;
+  setEstimatedHours: (val: number) => void;
   estimatedDays: number;
-  setEstimatedDays: Function;
+  setEstimatedDays: (val: number) => void;
   numberOfWorkers: number;
-  setNumberOfWorkers: Function;
+  setNumberOfWorkers: (val: number) => void;
   selectedTiers: string[];
-  setSelectedTiers: Function;
+  setSelectedTiers: (tiers: string[]) => void;
   totalPrice: number;
 }
 
@@ -34,62 +38,72 @@ export default function PricingSection({
 }: Props) {
 
   const toggleTier = (id: string) => {
-    setSelectedTiers((prev: string[]) =>
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    setSelectedTiers(
+      selectedTiers.includes(id) ? selectedTiers.filter(t => t !== id) : [...selectedTiers, id]
     );
   };
 
   return (
-    <div>
-      <h4 className="font-semibold mb-2">Pricing</h4>
+    <div className="space-y-4">
+      <Label>Pricing</Label>
 
-      <select
-        value={pricingMode}
-        onChange={e => setPricingMode(e.target.value)}
-        className="border p-2 rounded"
-      >
-        <option value="HOURLY">Hourly</option>
-        <option value="PER_DAY">Per Day</option>
-      </select>
+      {/* Pricing Mode Select */}
+      <Select value={pricingMode} onValueChange={(val: "HOURLY" | "PER_DAY") => setPricingMode(val)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select pricing mode" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="HOURLY">Hourly</SelectItem>
+          <SelectItem value="PER_DAY">Per Day</SelectItem>
+        </SelectContent>
+      </Select>
 
-      <input
-        type="number"
-        min={1}
-        value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
-        onChange={e =>
-          pricingMode === "HOURLY"
-            ? setEstimatedHours(+e.target.value)
-            : setEstimatedDays(+e.target.value)
-        }
-        className="border p-2 rounded"
-      />
+      {/* Estimated Hours/Days Input */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <Label>{pricingMode === "HOURLY" ? "Estimated Hours" : "Estimated Days"}</Label>
+          <Input
+            type="number"
+            min={1}
+            value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
+            onChange={(e) => {
+              const val = Math.max(1, +e.target.value);
+              pricingMode === "HOURLY" ? setEstimatedHours(val) : setEstimatedDays(val);
+            }}
+          />
+        </div>
 
-      <input
-        type="number"
-        min={1}
-        value={numberOfWorkers}
-        onChange={e => setNumberOfWorkers(+e.target.value)}
-        className="border p-2 rounded"
-      />
+        {/* Number of Workers Input */}
+        <div>
+          <Label>Number of Workers</Label>
+          <Input
+            type="number"
+            min={1}
+            value={numberOfWorkers}
+            onChange={(e) => setNumberOfWorkers(Math.max(1, +e.target.value))}
+          />
+        </div>
+      </div>
 
+      {/* Pricing Tier Buttons */}
       <div className="grid grid-cols-2 gap-2 mt-2">
         {service.pricingTiers.map(tier => {
           const tierInfo = serviceTiers.find(st => st._id === tier.tierId);
           return (
-            <button
+            <Button
               key={tier._id}
+              variant={selectedTiers.includes(tier.tierId) ? "default" : "outline"}
               onClick={() => toggleTier(tier.tierId)}
-              className={`border p-2 rounded ${
-                selectedTiers.includes(tier.tierId) ? "bg-blue-100" : ""
-              }`}
             >
               {tierInfo?.displayName ?? "Tier"}
-            </button>
+            </Button>
           );
         })}
       </div>
 
+      {/* Total Price */}
       <p className="mt-2 font-bold">Total: {totalPrice}</p>
     </div>
   );
 }
+

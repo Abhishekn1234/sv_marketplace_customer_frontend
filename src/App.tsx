@@ -21,10 +21,12 @@ import { useAuth } from "./features/Auth/presentation/hooks/useAuth";
 import { ProtectedRoute } from "./ProtectedLayout";
 
 import './App.css';
+import { useNotification } from "./features/utils/useNotification";
 
 function App() {
+  useNotification();
   const { logout } = useAuth();
-
+   
   return (
     <ThemeProvider>
       <ToastContainer position="top-right" />

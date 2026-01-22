@@ -1,4 +1,5 @@
 import type { AuthBooking } from "../../../Bookings/domain/entities/auth.booking.types";
+import type { LastLocation } from "./lastlocation.types";
 import type { Role } from "./role.types";
 
 export interface User {
@@ -16,6 +17,8 @@ export interface User {
 
   role: Role;
   documents?: any[];
+  last_location?:LastLocation;
+  current_location?:LastLocation;
   bookings?:AuthBooking[];
   createdAt?: string;
   updatedAt?: string;

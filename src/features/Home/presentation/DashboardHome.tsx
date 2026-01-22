@@ -1,15 +1,16 @@
 
+import { CommandCard } from "@/components/common/CommonCards";
 import CategoriesRow from "./components/home/CategoriesRow";
 import ServicesByCategory from "./components/home/ServicesByCategories";
 
 export default function WebsiteHome() {
   return (
     
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen">
       
       <section className="relative overflow-hidden">
         
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
+        <div className="absolute inset-0  via-transparent to-secondary/10" />
 
         <div className="relative py-32 px-6 text-center max-w-6xl mx-auto">
           <span className="inline-block mb-6 rounded-full bg-primary/10 px-6 py-2 text-sm font-medium text-primary tracking-wide">
@@ -41,42 +42,56 @@ export default function WebsiteHome() {
       </section>
 
 
-      <section className="py-24 px-6 bg-muted/30">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Quality Services, Delivered Right
-          </h2>
 
-          <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
-            We connect you with trusted professionals across a wide range of services.
-            From everyday needs to specialized expertise, our platform ensures
-            reliability, transparency, and customer satisfaction at every step.
-          </p>
+<section className="py-24 px-6 ">
+  <div className="container mx-auto max-w-4xl text-center">
+    <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+      Quality Services, Delivered Right
+    </h2>
 
-          <div className="mt-10 flex justify-center gap-6 flex-wrap">
-            <div className="px-6 py-4 rounded-xl bg-background shadow-sm border">
-              <p className="text-lg font-semibold">Verified Experts</p>
-              <p className="text-sm text-muted-foreground">
-                Skilled professionals you can trust
-              </p>
-            </div>
+    <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
+      We connect you with trusted professionals across a wide range of services.
+      From everyday needs to specialized expertise, our platform ensures
+      reliability, transparency, and customer satisfaction at every step.
+    </p>
 
-            <div className="px-6 py-4 rounded-xl bg-background shadow-sm border">
-              <p className="text-lg font-semibold">Transparent Pricing</p>
-              <p className="text-sm text-muted-foreground">
-                No hidden costs, ever
-              </p>
-            </div>
+    <div className="mt-10 flex justify-center gap-6 flex-wrap">
+      {/* Verified Experts */}
+      <CommandCard
+        width="w-64"
+        className="p-6 flex flex-col gap-2 text-center"
+      >
+        <p className="text-lg font-semibold">Verified Experts</p>
+        <p className="text-sm text-muted-foreground">
+          Skilled professionals you can trust
+        </p>
+      </CommandCard>
 
-            <div className="px-6 py-4 rounded-xl bg-background shadow-sm border">
-              <p className="text-lg font-semibold">Seamless Booking</p>
-              <p className="text-sm text-muted-foreground">
-                Book services in just a few clicks
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Transparent Pricing */}
+      <CommandCard
+        width="w-64"
+        className="p-6 flex flex-col gap-2 text-center"
+      >
+        <p className="text-lg font-semibold">Transparent Pricing</p>
+        <p className="text-sm text-muted-foreground">
+          No hidden costs, ever
+        </p>
+      </CommandCard>
+
+      {/* Seamless Booking */}
+      <CommandCard
+        width="w-64"
+        className="p-6 flex flex-col gap-2 text-center"
+      >
+        <p className="text-lg font-semibold">Seamless Booking</p>
+        <p className="text-sm text-muted-foreground">
+          Book services in just a few clicks
+        </p>
+      </CommandCard>
+    </div>
+  </div>
+</section>
+
 
      
       <section className="py-24 px-6">

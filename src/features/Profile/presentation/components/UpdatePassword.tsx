@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useProfile } from "../hooks/useProfile";
 import { Eye, EyeOff } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function UpdatePasswordTab() {
   const { updatePassword, passwordUpdating } = useProfile();
@@ -18,58 +21,62 @@ export default function UpdatePasswordTab() {
   });
 
   const toggle = (key: keyof typeof show) =>
-    setShow(prev => ({ ...prev, [key]: !prev[key] }));
+    setShow((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (form.newPassword !== form.confirmPassword) return;
+    if (form.newPassword !== form.confirmPassword) return;
 
-  await updatePassword({
-    oldPassword: form.currentPassword,
-    newPassword: form.newPassword,
-    confirmPassword: form.confirmPassword,
-  });
+    await updatePassword({
+      oldPassword: form.currentPassword,
+      newPassword: form.newPassword,
+      confirmPassword: form.confirmPassword,
+    });
 
-  setForm({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-};
+    setForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+  };
 
+  const fields: (keyof typeof form)[] = [
+    "currentPassword",
+    "newPassword",
+    "confirmPassword",
+  ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mx-auto max-w-140 ">
-      {(["currentPassword", "newPassword", "confirmPassword"] as const).map(
-        field => (
-          <div key={field} className="relative">
-            <input
-              type={show[field] ? "text" : "password"}
-              placeholder={field.replace(/([A-Z])/g, " $1")}
-              value={form[field]}
-              onChange={e =>
-                setForm(prev => ({ ...prev, [field]: e.target.value }))
-              }
-              className="w-full border rounded-lg px-3 py-2 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => toggle(field)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {show[field] ? <Eye size={18} /> : <EyeOff size={18} />}
-            </button>
-          </div>
-        )
-      )}
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+      {fields.map((field) => (
+        <div key={field} className="relative">
+          <Label className="mb-1 capitalize" htmlFor={field}>
+            {field.replace(/([A-Z])/g, " $1")}
+          </Label>
+          <Input
+            id={field}
+            type={show[field] ? "text" : "password"}
+            value={form[field]}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, [field]: e.target.value }))
+            }
+            className="pr-10"
+          />
+          <Button
+          variant="ghost"
+            type="button"
+            onClick={() => toggle(field)}
+            className="absolute right-5 translate-x-1/2"
+          >
+            {show[field] ? <Eye size={18} /> : <EyeOff size={18} />}
+          </Button>
+        </div>
+      ))}
 
-      <button
-        disabled={passwordUpdating}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg"
-      >
+      <Button type="submit" disabled={passwordUpdating} className="w-full">
         {passwordUpdating ? "Updating..." : "Update Password"}
-      </button>
+      </Button>
     </form>
   );
 }

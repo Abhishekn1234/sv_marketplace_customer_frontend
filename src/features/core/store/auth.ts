@@ -1,13 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User as APIUser } from "../../Auth/domain/entities/auth.types";
+import type { User } from "../../Auth/domain/entities/auth.types";
+import type { LastLocation } from "../../Auth/domain/entities/lastlocation.types";
 
 export type Theme = "light" | "dark";
+
+
+export interface UserWithLocation extends User {
+  last_location?: LastLocation;
+  current_location?: LastLocation;
+}
 
 export interface CustomerData {
   accessToken: string | null;
   refreshToken: string | null;
-  user: APIUser | null;
+  user: UserWithLocation | null;
   isLoggedIn: boolean;
   theme: Theme;
   language: string;
@@ -17,12 +24,13 @@ export interface AuthState {
   customerData: CustomerData;
 
   setTokens: (accessToken: string, refreshToken: string) => void;
-  setUser: (user: APIUser) => void;
+  setUser: (user: UserWithLocation) => void;
   clearAuth: () => void;
 
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   setLanguage: (lang: string) => void;
+  updateUserLastLocation: (current: LastLocation) => void;
 }
 
 const initialCustomerData: CustomerData = {
@@ -39,6 +47,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       customerData: initialCustomerData,
 
+      // Set access & refresh tokens
       setTokens: (accessToken, refreshToken) =>
         set({
           customerData: {
@@ -49,6 +58,7 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
+  
       setUser: (user) =>
         set({
           customerData: {
@@ -58,11 +68,13 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
+      // Clear all auth data
       clearAuth: () =>
         set({
           customerData: initialCustomerData,
         }),
 
+      // Toggle theme
       toggleTheme: () => {
         const { theme } = get().customerData;
         set({
@@ -73,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
+      // Set specific theme
       setTheme: (theme) =>
         set({
           customerData: {
@@ -81,6 +94,7 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
+      // Set language
       setLanguage: (language) =>
         set({
           customerData: {
@@ -88,7 +102,26 @@ export const useAuthStore = create<AuthState>()(
             language,
           },
         }),
+
+      // Update user location: last_location = previous current_location
+      updateUserLastLocation: (current: LastLocation) => {
+        const user = get().customerData.user;
+        if (!user) return;
+
+        const previous: LastLocation | undefined = user.current_location;
+
+        set({
+          customerData: {
+            ...get().customerData,
+            user: {
+              ...user,
+              last_location: previous,   // previous location
+              current_location: current, // new current location
+            },
+          },
+        });
+      },
     }),
-    { name: "auth-storage" }
+    { name: "auth-storage" } // persist to localStorage
   )
 );

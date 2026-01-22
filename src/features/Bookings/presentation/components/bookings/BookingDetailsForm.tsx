@@ -1,5 +1,10 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Label } from "@/components/ui/label";
 
 interface BookingDetailsFormProps {
   workDescription: string;
@@ -36,30 +41,32 @@ export default function BookingDetailsForm({
 }: BookingDetailsFormProps) {
   return (
     <div className="space-y-4">
-     
+
+      {/* Work Description */}
       <div>
-        <label className="block font-medium mb-1">Work Description *</label>
-        <textarea
+        <Label className="block font-medium mb-1">Work Description *</Label>
+        <Textarea
           value={workDescription}
           onChange={(e) => setWorkDescription(e.target.value)}
           placeholder="Describe the work in detail..."
-          className="w-full p-2 border rounded-lg"
+          className="w-full"
           rows={3}
         />
       </div>
 
-    
+      {/* Booking Type & Start Date */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block font-medium mb-1">Booking Type *</label>
-          <select
-            value={bookingType}
-            onChange={(e) => setBookingType(e.target.value as any)}
-            className="w-full p-2 border rounded-lg"
-          >
-            <option value="INSTANT">Instant Booking</option>
-            <option value="SCHEDULED">Schedule for Later</option>
-          </select>
+          <Label className="block font-medium mb-1">Booking Type *</Label>
+          <Select value={bookingType} onValueChange={(val) => setBookingType(val as any)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select booking type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="INSTANT">Instant Booking</SelectItem>
+              <SelectItem value="SCHEDULED">Schedule for Later</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {bookingType === "SCHEDULED" && (
@@ -78,29 +85,33 @@ export default function BookingDetailsForm({
         )}
       </div>
 
-      
+      {/* Pricing Mode, Duration, Number of Workers */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block font-medium mb-1">Pricing Mode *</label>
-          <select
+          <Label className="block font-medium mb-1">Pricing Mode *</Label>
+          <Select
             value={pricingMode}
-            onChange={(e) => {
-              setPricingMode(e.target.value as any);
-              if (e.target.value === "HOURLY") setEstimatedHours(1);
+            onValueChange={(val) => {
+              setPricingMode(val as any);
+              if (val === "HOURLY") setEstimatedHours(1);
               else setEstimatedDays(1);
             }}
-            className="w-full p-2 border rounded-lg"
           >
-            <option value="HOURLY">Hourly Rate</option>
-            <option value="PER_DAY">Daily Rate</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select pricing mode" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="HOURLY">Hourly Rate</SelectItem>
+              <SelectItem value="PER_DAY">Daily Rate</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
-          <label className="block font-medium mb-1">
+          <Label className="block font-medium mb-1">
             {pricingMode === "HOURLY" ? "Estimated Hours *" : "Estimated Days *"}
-          </label>
-          <input
+          </Label>
+          <Input
             type="number"
             min={1}
             value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
@@ -109,18 +120,16 @@ export default function BookingDetailsForm({
               if (pricingMode === "HOURLY") setEstimatedHours(value);
               else setEstimatedDays(value);
             }}
-            className="w-full p-2 border rounded-lg"
           />
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Number of Workers *</label>
-          <input
+          <Label className="block font-medium mb-1">Number of Workers *</Label>
+          <Input
             type="number"
             min={1}
             value={numberOfWorkers}
             onChange={(e) => setNumberOfWorkers(Math.max(1, Number(e.target.value)))}
-            className="w-full p-2 border rounded-lg"
           />
         </div>
       </div>

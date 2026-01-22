@@ -175,7 +175,7 @@ export default function BookingServiceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full max-w-4xl rounded-xl shadow-xl overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-700">
+      <div className="bg-white text-black w-full max-w-4xl rounded-xl shadow-xl overflow-y-auto max-h-[90vh] border border-gray-200 dark:border-gray-700">
         
         <BookingServiceHeader 
           service={service}
