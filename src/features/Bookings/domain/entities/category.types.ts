@@ -7,6 +7,7 @@ export interface Category {
   iconUrl?: string;
   iconPublicId?: string;
   services: Service[];
+  description?: string;
   createdAt?: string;
   updatedAt?: string;
 }

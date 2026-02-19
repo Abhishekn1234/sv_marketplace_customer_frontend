@@ -26,6 +26,7 @@ import {
   SERVICES_QUERY_KEY,
   SERVICE_TIERS_QUERY_KEY,
 } from "./useServices";
+import { useNavigate } from "react-router-dom";
 
 const bookingRepository = new BookingRepository();
 const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
@@ -36,7 +37,7 @@ export const BOOKINGS_QUERY_KEY = ["bookings"] as const;
 
 export const useBookings = () => {
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   const customerData = useAuthStore((s) => s.customerData);
   const setUser = useAuthStore((s) => s.setUser);
 
@@ -104,12 +105,17 @@ export const useBookings = () => {
           bookings: [mapped, ...(currentUser.bookings ?? [])],
         });
       }
+      navigate("/jobtracking")
+      
 
       toast.success("Booking created successfully ✅");
     },
-    onError: (err: any) => {
-      toast.error(err.message);
-    },
+  onError: (err: any) => {
+  const errorMessage =
+    err?.response?.data?.message || err.message || "Something went wrong";
+
+  toast.error(errorMessage);
+ },
   });
 
   const cancelBooking = useMutation<Booking, Error, CancelBookingRequest>({

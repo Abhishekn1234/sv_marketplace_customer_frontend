@@ -1,3 +1,7 @@
+interface Feature {
+  text: string;
+  included: boolean;
+}
 export interface ServiceTierRef {
   _id: string;
   name?: string;
@@ -7,5 +11,6 @@ export interface ServiceTierRef {
   isActive:boolean;
   createdAt?:Date;
   updatedAt?:Date;
+  features?:Feature[];
 
 }

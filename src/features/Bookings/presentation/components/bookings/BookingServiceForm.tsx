@@ -31,7 +31,7 @@ interface BookingServiceFormProps {
   formatPrice: (price: number) => string;
   getDurationLabel: () => string;
   getWorkersLabel: () => string;
-  serviceTiers: any[]; // Replace with proper type
+  serviceTiers: any[]; 
   tierNameMap: Record<string, string>;
 }
 

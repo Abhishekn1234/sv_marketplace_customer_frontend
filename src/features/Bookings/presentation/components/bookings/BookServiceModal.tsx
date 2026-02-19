@@ -146,6 +146,7 @@ export default function BookingServiceModal({
     const payload: BookingPayload = {
       workDescription,
       serviceId: service!._id,
+      // serviceTierId: selectedTiers,
       serviceTierId: selectedTiers[0],
       pricingMode,
       numberOfWorkers,
@@ -158,7 +159,7 @@ export default function BookingServiceModal({
         coordinates: [lng, lat],
       },
     };
-
+    console.log(payload);
     try {
       await createBooking(payload);
       // toast.success("Booking created successfully");

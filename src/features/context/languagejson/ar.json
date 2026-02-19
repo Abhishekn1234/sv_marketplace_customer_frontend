@@ -1,0 +1,72 @@
+{
+  "language": {
+    "title": "اختر لغتك",
+    "continue": "متابعة"
+  },
+  "location": {
+    "searchPlaceholder": "ابحث عن شارع أو مبنى أو منطقة",
+    "useCurrent": "استخدم موقعي الحالي",
+    "home": "المنزل",
+    "homeDesc": "تعيين كافتراضي",
+    "office": "المكتب",
+    "premium": "وصول مميز",
+    "title":"",
+     "confirmLocation": "تأكيد الموقع",
+  "dontSeeCity": "لا ترى مدينتك؟",
+  "suggestLocation": "اقترح موقعًا"
+  },
+  "verification": {
+    "step_account": "تفاصيل الحساب",
+    "step_verification": "التحقق",
+
+    "badge": "تحقق آمن",
+
+    "title": "تحقق من رقمك",
+    "subtitle": "لقد أرسلنا رمز التحقق إلى",
+
+    "enter_code": "أدخل رمز مكون من 6 أرقام",
+
+    "expires_in": "ينتهي الرمز خلال",
+    "resend_question": "لم تستلم الرمز؟",
+    "resend": "إعادة إرسال الرمز",
+
+    "verify_continue": "تحقق والمتابعة",
+    "change_number": "تغيير رقم الهاتف"
+  },
+  "register":{
+   "badge": "خدمة مميزة",
+  "title": "إنشاء حساب",
+  "subtitle": "انضم إلى HomeEase لخدمات احترافية عند باب منزلك.",
+   "and": "و",
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "email": "البريد الإلكتروني",
+  "phone": "رقم الهاتف",
+  "password": "كلمة المرور",
+
+  "firstNamePlaceholder": "محمد",
+  "lastNamePlaceholder": "أحمد",
+  "emailPlaceholder": "mohamed@example.com",
+  "phonePlaceholder": "+971 500000000",
+  "passwordPlaceholder": "••••••••",
+
+  "termsText": "أوافق على",
+  "terms": "شروط الخدمة",
+  "privacy": "سياسة الخصوصية",
+
+  "submit": "إنشاء حساب",
+  "already": "هل لديك حساب؟",
+  "login": "تسجيل الدخول"
+  },
+  "common": {
+    "geoNotSupported": "الموقع الجغرافي غير مدعوم",
+    "locationError": "تعذر الحصول على الموقع"
+  },
+  "stepper": {
+    "language": "اللغة",
+    "location": "الموقع",
+    "registration": "التسجيل",
+     "mobileVerification": "التحقق من رقم الهاتف",
+    "accountDetails": "تفاصيل الحساب"
+  }
+}

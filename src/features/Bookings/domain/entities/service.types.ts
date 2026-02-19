@@ -5,20 +5,30 @@ export interface Service {
   _id: string;
   name: string;
   slug: string;
-  category: string | ServiceCategoryObject; 
+
+  // ❌ remove string | union
+  // category: string | ServiceCategoryObject;
+
+  category: ServiceCategoryObject;  // ✅ always object now
+
   description: string;
-  currency: string;            
+  currency: string;
   pricingTiers: PricingTier[];
+
   isActive: boolean;
   avgRating: number;
   totalRatings: number;
+
   createdAt: string;
   updatedAt: string;
+
   iconUrl?: string;
   iconPublicId?: string;
   thumbnailUrl?: string;
   thumbnailPublicId?: string;
-  
+
+  rating?: string;
   price?: number;
 }
+
 

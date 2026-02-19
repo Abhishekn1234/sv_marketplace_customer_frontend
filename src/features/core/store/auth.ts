@@ -6,23 +6,26 @@ import type { LastLocation } from "../../Auth/domain/entities/lastlocation.types
 export type Theme = "light" | "dark";
 
 
-export interface UserWithLocation extends User {
-  last_location?: LastLocation;
-  current_location?: LastLocation;
-}
+export interface UserWithLocation extends User {}
 
 export interface CustomerData {
   accessToken: string | null;
   refreshToken: string | null;
-  user: UserWithLocation | null;
+  user: User | null
   isLoggedIn: boolean;
   theme: Theme;
+   last_location?: LastLocation;
+  current_location?: LastLocation;
   language: string;
 }
-
+interface SearchState {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+}
 export interface AuthState {
   customerData: CustomerData;
-
+   
+  updateUserLocation: (location: LastLocation) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
   setUser: (user: UserWithLocation) => void;
   clearAuth: () => void;
@@ -30,7 +33,8 @@ export interface AuthState {
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   setLanguage: (lang: string) => void;
-  updateUserLastLocation: (current: LastLocation) => void;
+updateAddress: (type: "home" | "office" |"other" |"inputValue", value: string) => void;
+
 }
 
 const initialCustomerData: CustomerData = {
@@ -40,7 +44,10 @@ const initialCustomerData: CustomerData = {
   isLoggedIn: false,
   theme: "light",
   language: "EN",
+  current_location: undefined,
+  last_location: undefined,
 };
+
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -103,25 +110,43 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
-      // Update user location: last_location = previous current_location
-      updateUserLastLocation: (current: LastLocation) => {
-        const user = get().customerData.user;
-        if (!user) return;
+    
+      
+      updateUserLocation: (newLocation: LastLocation) => {
+  set((state) => ({
+    customerData: {
+      ...state.customerData,
+      last_location: state.customerData.current_location, // 👈 previous
+      current_location: newLocation,                      // 👈 new
+    },
+  }));
+},
+updateAddress: (type: "home" | "office" |"other"|"inputValue", value: string) => {
+  set((state) => {
+    const current = state.customerData.current_location;
 
-        const previous: LastLocation | undefined = user.current_location;
-
-        set({
-          customerData: {
-            ...get().customerData,
-            user: {
-              ...user,
-              last_location: previous,   // previous location
-              current_location: current, // new current location
-            },
-          },
-        });
+    return {
+      customerData: {
+        ...state.customerData,
+        current_location: {
+          id: current?.id,
+          home: type === "home" ? value : current?.home || "",
+          office: type === "office" ? value : current?.office || "",
+          inputValue: type === "inputValue" ? value : current?.inputValue || "",
+          other: type === "other" ? value : current?.other || "",
+        },
       },
+    };
+  });
+},
+
+
     }),
+    
     { name: "auth-storage" } // persist to localStorage
   )
 );
+export const useSearchStore = create<SearchState>((set) => ({
+  searchTerm: "",
+  setSearchTerm: (term) => set({ searchTerm: term }),
+}));

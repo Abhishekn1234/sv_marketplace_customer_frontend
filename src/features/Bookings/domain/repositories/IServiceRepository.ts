@@ -7,6 +7,7 @@ export interface IServiceRepository {
   getServices(): Promise<APIResponse<Category[]>>;
   getServiceTiers(): Promise<ServiceTierRef[]>;
   getServiceById(serviceId: string): Promise<Service | null>;
-  getCategories(): Promise<Category[]>;
+ getCategories(): Promise<Category[]>;
+
   searchServices(query: string): Promise<APIResponse<Service[]>>;
 }

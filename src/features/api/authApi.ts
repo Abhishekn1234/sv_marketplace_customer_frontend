@@ -1,7 +1,5 @@
-import type {
-  RegisterRequest,
-  RegisterResponse,
-} from "../Auth/domain/entities/auth.types";
+import type { RegisterRequest } from "../Auth/domain/entities/registerrequest";
+import type  { RegisterResponse } from "../Auth/domain/entities/registerresponse.types";
 import { useAuthStore } from "../core/store/auth";
 import apiClient from "./interceptor";
 

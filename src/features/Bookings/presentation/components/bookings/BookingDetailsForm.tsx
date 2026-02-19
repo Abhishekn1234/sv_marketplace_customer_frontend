@@ -42,7 +42,7 @@ export default function BookingDetailsForm({
   return (
     <div className="space-y-4">
 
-      {/* Work Description */}
+      
       <div>
         <Label className="block font-medium mb-1">Work Description *</Label>
         <Textarea

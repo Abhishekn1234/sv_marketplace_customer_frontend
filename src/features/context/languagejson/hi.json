@@ -1,0 +1,71 @@
+{
+  "language": {
+    "title": "अपनी भाषा चुनें",
+    "continue": "जारी रखें"
+  },
+  "location": {
+    "searchPlaceholder": "सड़क, इमारत या क्षेत्र खोजें",
+    "useCurrent": "मेरी वर्तमान लोकेशन का उपयोग करें",
+    "home": "घर",
+    "homeDesc": "प्राथमिक सेट करें",
+    "office": "ऑफिस",
+    "premium": "प्रीमियम एक्सेस",
+    "confirmLocation": "स्थान की पुष्टि करें",
+  "dontSeeCity": "क्या आपका शहर दिखाई नहीं दे रहा?",
+  "suggestLocation": "स्थान सुझाएँ"
+  },
+  "register":{
+    "badge": "प्रीमियम सेवा",
+  "title": "खाता बनाएं",
+  "subtitle": "HomeEase के साथ विशेषज्ञ सेवाएं पाएं।",
+
+  "firstName": "पहला नाम",
+  "lastName": "अंतिम नाम",
+  "email": "ईमेल पता",
+  "phone": "फोन नंबर",
+  "password": "पासवर्ड",
+
+  "firstNamePlaceholder": "राहुल",
+  "lastNamePlaceholder": "शर्मा",
+  "emailPlaceholder": "rahul@example.com",
+  "phonePlaceholder": "+91 90000 00000",
+  "passwordPlaceholder": "••••••••",
+
+  "termsText": "मैं सहमत हूँ",
+  "terms": "सेवा की शर्तें",
+  "privacy": "गोपनीयता नीति",
+  "and": "और",
+  "submit": "खाता बनाएं",
+  "already": "पहले से खाता है?",
+  "login": "लॉग इन करें"
+  },
+  "verification": {
+    "step_account": "खाता विवरण",
+    "step_verification": "सत्यापन",
+
+    "badge": "सुरक्षित सत्यापन",
+
+    "title": "अपना नंबर सत्यापित करें",
+    "subtitle": "हमने सत्यापन कोड भेजा है",
+
+    "enter_code": "6-अंकों का कोड दर्ज करें",
+
+    "expires_in": "कोड समाप्त होने में",
+    "resend_question": "कोड प्राप्त नहीं हुआ?",
+    "resend": "कोड पुनः भेजें",
+
+    "verify_continue": "सत्यापित करें और आगे बढ़ें",
+    "change_number": "फोन नंबर बदलें"
+  },
+   "common": {
+    "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
+    "locationError": "लोकेशन प्राप्त नहीं कर सकते"
+  },
+  "stepper": {
+    "language": "भाषा",
+    "location": "स्थान",
+    "registration": "पंजीकरण",
+     "mobileVerification": "मोबाइल सत्यापन",
+    "accountDetails": "खाता विवरण"
+  }
+}

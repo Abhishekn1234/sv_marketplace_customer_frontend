@@ -67,7 +67,7 @@ export default function BookingServiceLocation({
         await handleSetCurrentLocation();
         return;
       }
-      // If switching to "new", update the name of existing coordinates
+      
       setIsGeocoding(true);
       try {
         const name = await reverseGeocode(lat, lng);

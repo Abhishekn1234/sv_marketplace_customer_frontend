@@ -1,2 +1,4 @@
 export const apiUrl=
-    "https://sv-marketplace-customer-api.vercel.app"
+    "http://localhost:4000"
+
+    // https://sv-market-customer-backend.vercel.app

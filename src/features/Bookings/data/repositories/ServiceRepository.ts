@@ -44,12 +44,15 @@ export class ServiceRepository implements IServiceRepository {
   }
 
   async getCategories(): Promise<Category[]> {
-    const response = await apiClient.get<APIResponse<Category[]>>(
+    const response = await apiClient.get<Category[]>(
       `${this.baseUrl}/categories`
     );
-    return response.data.data;
-  }
 
+    console.log("Full API response:", response.data); // full object
+    console.log("Categories array:", response.data); // just the array
+
+    return response.data; // ✅ return full APIResponse
+  }
   async searchServices(query: string): Promise<APIResponse<Service[]>> {
     const response = await apiClient.get<APIResponse<Service[]>>(
       `${this.baseUrl}?search=${query}`

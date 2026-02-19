@@ -1,5 +1,5 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardHeader,
@@ -7,39 +7,63 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
-type CommandCardProps = {
-  title?: string
-  description?: string
-  width?: string
-  height?: string
-  className?: string
-  footer?: React.ReactNode
-  children?: React.ReactNode
-}
+type CommandCardProps = React.HTMLAttributes<HTMLDivElement> & {
+  title?: string;
+  description?: string;
+  width?: string;
+  height?: string;
+  className?: string;
+  footer?: React.ReactNode;
+  children?: React.ReactNode;
+  icons?: React.ReactNode;
+};
 
-// Use forwardRef to attach ref to the root Card
-export const CommandCard = React.forwardRef<HTMLDivElement, CommandCardProps>(
-  ({ title, description, width = "w-full", height = "auto", className, footer, children }, ref) => {
+export const CommandCard = React.forwardRef<
+  HTMLDivElement,
+  CommandCardProps
+>(
+  (
+    {
+      title,
+      description,
+      width = "w-full",
+      height = "auto",
+      className,
+      footer,
+      children,
+      icons,
+      ...props // 👈 capture onClick, role, tabIndex, etc
+    },
+    ref
+  ) => {
     return (
       <Card
-        ref={ref} // <-- attach ref here
-        className={cn(width, height, "border rounded-xl bg-transparent", className)}
+        ref={ref}
+        {...props} // 👈 pass them to Card
+        className={cn(
+          width,
+          height,
+          "border rounded-xl bg-transparent",
+          className
+        )}
       >
-        {(title || description) && (
-          <CardHeader>
+        {(title || description || icons) && (
+          <CardHeader className="flex items-center gap-3 text-center">
+            {icons && <div className="mb-2">{icons}</div>}
             {title && <CardTitle>{title}</CardTitle>}
-            {description && <CardDescription>{description}</CardDescription>}
+            {description && (
+              <CardDescription>{description}</CardDescription>
+            )}
           </CardHeader>
         )}
 
-        <CardContent>{children}</CardContent>
-
+        {children && <CardContent>{children}</CardContent>}
         {footer && <CardFooter>{footer}</CardFooter>}
       </Card>
-    )
+    );
   }
-)
+);
 
-CommandCard.displayName = "CommandCard"
+CommandCard.displayName = "CommandCard";
