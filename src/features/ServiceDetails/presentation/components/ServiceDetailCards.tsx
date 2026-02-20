@@ -16,8 +16,9 @@ export default function ServiceDetailCards({
   const { id } = useParams();
   const { searchTerm } = useSearchStore();
   const navigate = useNavigate();
-
+  
   const { services, loading: loadingServices, error } = useServices();
+ 
   const { isPending: loadingCategories } = useServiceCategory();
 
   if (loadingServices || loadingCategories) {
@@ -126,7 +127,7 @@ export default function ServiceDetailCards({
         const isInstant = service.pricingTiers?.some(
           (tier) => tier.HOURLY || tier.PER_DAY
         );
-
+       console.log(isInstant);
         const tier = service.pricingTiers?.[0];
         const price = getPrice(service);
 
@@ -182,18 +183,17 @@ export default function ServiceDetailCards({
                 </div>
 
                 <div className="text-[22px] font-bold text-gray-900">
-                  {service.currency} {price}
-                  {tier?.HOURLY && (
-                    <span className="text-sm font-medium text-gray-500 ml-1">
-                      /hr
-                    </span>
-                  )}
-                  {tier?.PER_DAY && (
-                    <span className="text-sm font-medium text-gray-500 ml-1">
-                      /day
-                    </span>
-                  )}
-                </div>
+            {service.currency} {price}
+
+            <span className="text-sm font-medium text-gray-500 ml-1">
+              {tier?.HOURLY
+                ? "/hr"
+                : tier?.PER_DAY
+                ? "/day"
+                : ""}
+            </span>
+          </div>
+
               </div>
 
               <button

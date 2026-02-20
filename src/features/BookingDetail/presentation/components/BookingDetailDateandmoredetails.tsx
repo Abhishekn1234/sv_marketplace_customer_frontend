@@ -13,7 +13,7 @@ export default function BookingDetailDateandmoredetails() {
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [duration, setDuration] = useState(1);
   const [notes, setNotes] = useState("");
-
+ console.log(setNotes);
   // ✅ Dynamic Dates (Today + next 6 days)
   const dates = useMemo(() => {
     const today = new Date();
@@ -29,42 +29,67 @@ export default function BookingDetailDateandmoredetails() {
     return week;
   }, []);
 
-  const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
+  // ✅ Time Slots
+  const times = [
+    "08:00 AM",
+    "10:00 AM",
+    "12:30 PM",
+    "03:00 PM",
+    "05:00 PM",
+    "06:30 PM",
+  ];
 
-  // Dynamic Pricing rules
-  const basePricePerHour = 30; // per hour
-  const discountPercent = 15; // default 15% if no membership data
-  const serviceFeePercent = 5; // 5% of base price
- 
- const basePrice = duration * basePricePerHour;
-console.log("Base Price:", basePrice);
-const discount = (basePrice * discountPercent) / 100;
-const serviceFee = (basePrice * serviceFeePercent) / 100;
+  // ==============================
+  // 🔥 PRICING LOGIC
+  // ==============================
 
-const totalCostToSend = basePrice - discount + serviceFee; // send this
-console.log("Total Cost to Send:", totalCostToSend);
-  // ✅ Booking Handler
+  const basePricePerHour = 30;
+  const discountPercent = 15;
+
+  const commissionValue = 10; // 10%
+  const commissionType = "PERCENTAGE"; // or "FIXED"
+
+  const basePrice = duration * basePricePerHour;
+  const discount = (basePrice * discountPercent) / 100;
+
+  let commissionAmount = 0;
+
+  if (commissionType === "PERCENTAGE") {
+    commissionAmount = (basePrice * commissionValue) / 100;
+  } else {
+    commissionAmount = commissionValue;
+  }
+
+  const totalCostToSend = basePrice - discount + commissionAmount;
+
+  // ==============================
+  // ✅ BOOKING HANDLER
+  // ==============================
+
   const handleBooking = async () => {
     try {
       if (selectedDate === null) return toast.error("Please select a date");
       if (selectedTime === null) return toast.error("Please select a time");
 
-      // Build correct datetime
       const today = new Date();
       const selectedDateObj = new Date(today);
       selectedDateObj.setDate(today.getDate() + selectedDate);
 
+      // ⏰ Convert 12hr to 24hr format
       const [time, modifier] = times[selectedTime].split(" ");
       let [hours, minutes] = time.split(":").map(Number);
+
       if (modifier === "PM" && hours !== 12) hours += 12;
       if (modifier === "AM" && hours === 12) hours = 0;
+
       selectedDateObj.setHours(hours, minutes, 0, 0);
 
       if (selectedDateObj.getTime() <= new Date().getTime())
         return toast.error("Please select a future time");
 
-      // ✅ Geocode home address to get lat/lng
-      let lat = 0, lng = 0;
+      let lat = 0;
+      let lng = 0;
+
       const homeAddress = customerData?.current_location?.home;
       if (!homeAddress) return toast.error("No home address found");
 
@@ -75,16 +100,17 @@ console.log("Total Cost to Send:", totalCostToSend);
           )}&limit=1&accept-language=en`
         );
         const data = await res.json();
-        if (data.length === 0) return toast.error("Unable to find coordinates for the address");
+
+        if (data.length === 0)
+          return toast.error("Unable to find coordinates");
 
         lat = parseFloat(data[0].lat);
         lng = parseFloat(data[0].lon);
       } catch (error) {
         console.error("Geocoding error:", error);
-        return toast.error("Failed to fetch coordinates for address");
+        return toast.error("Failed to fetch coordinates");
       }
 
-      // ✅ Build booking payload
       const payload = {
         workDescription: notes || "Service booking",
         serviceId: serviceId!,
@@ -95,10 +121,14 @@ console.log("Total Cost to Send:", totalCostToSend);
         startDateTime: selectedDateObj.toISOString(),
         estimatedHours: duration,
         estimatedDays: 0,
-        memberDiscount: discount, // actual value in dollars
-        serviceFee: serviceFee, 
-        totalCost: totalCostToSend, 
-       
+
+        memberDiscount: discount,
+        // commissionValue,
+        // commissionType,
+        // commissionAmount,
+        serviceFee: commissionAmount,
+        totalCost: totalCostToSend,
+
         location: {
           type: "Point" as const,
           coordinates: [lng, lat] as [number, number],
@@ -107,20 +137,21 @@ console.log("Total Cost to Send:", totalCostToSend);
 
       console.log("Booking Payload:", payload);
       await createBooking(payload);
-    //   toast.success("Booking created successfully!");
     } catch (error: any) {
       console.error(error);
-    //   toast.error(error.message || "Something went wrong");
     }
   };
 
   const increaseDuration = () => setDuration((prev) => prev + 1);
-  const decreaseDuration = () => setDuration((prev) => (prev > 1 ? prev - 1 : 1));
+  const decreaseDuration = () =>
+    setDuration((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
-      {/* Date Selection */}
+
+      {/* ================= DATE ================= */}
       <h2 className="text-sm font-bold text-gray-900 mb-4">Select Date</h2>
+
       <div className="flex gap-3 overflow-x-auto pb-2 mb-6">
         {dates.map((item, index) => (
           <div
@@ -132,11 +163,7 @@ console.log("Total Cost to Send:", totalCostToSend);
                 : "bg-white border-gray-200 hover:border-blue-600"
             }`}
           >
-            <span
-              className={`text-xs font-bold uppercase tracking-wide ${
-                selectedDate === index ? "text-white/80" : "text-gray-400"
-              }`}
-            >
+            <span className="text-xs font-bold uppercase">
               {item.day}
             </span>
             <span className="text-2xl font-black">{item.date}</span>
@@ -144,9 +171,10 @@ console.log("Total Cost to Send:", totalCostToSend);
         ))}
       </div>
 
-      {/* Time Selection */}
+      {/* ================= TIME ================= */}
       <h2 className="text-sm font-bold text-gray-900 mb-4">Select Time</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         {times.map((time, index) => (
           <div
             key={index}
@@ -154,7 +182,7 @@ console.log("Total Cost to Send:", totalCostToSend);
             className={`flex items-center justify-center p-4 rounded-xl border-2 text-sm font-semibold cursor-pointer transition-all ${
               selectedTime === index
                 ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-                : "bg-white border-gray-200 hover:border-blue-600 text-gray-900"
+                : "bg-white border-gray-200 hover:border-blue-600"
             }`}
           >
             {time}
@@ -162,63 +190,68 @@ console.log("Total Cost to Send:", totalCostToSend);
         ))}
       </div>
 
-      {/* Duration */}
-      <h2 className="text-sm font-bold text-gray-900 mb-4">Estimated Duration</h2>
+      {/* ================= DURATION ================= */}
+      <h2 className="text-sm font-bold text-gray-900 mb-4">
+        Estimated Duration
+      </h2>
+
       <div className="flex items-center gap-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
-        <button
-          onClick={decreaseDuration}
-          className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition"
-        >
+        <button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">
           −
         </button>
+
         <div className="flex-1 text-center">
-          <span className="text-3xl font-black text-gray-900">{duration}</span>
-          <span className="ml-2 text-sm font-semibold text-gray-500">Hours</span>
+          <span className="text-3xl font-black">{duration}</span>
+          <span className="ml-2 text-sm font-semibold text-gray-500">
+            Hours
+          </span>
         </div>
-        <button
-          onClick={increaseDuration}
-          className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition"
-        >
+
+        <button onClick={increaseDuration} className="w-10 h-10 bg-white rounded-lg">
           +
         </button>
       </div>
 
-      {/* Special Requirements */}
-      <h2 className="text-sm font-bold text-gray-900 mb-4">Special Requirements</h2>
-      <textarea
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="e.g. Focus on kitchen cabinets, be careful with glass table..."
-        className="w-full h-32 p-4 border-2 border-gray-200 rounded-xl text-sm outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 mb-6"
-      />
-
-      {/* Price Summary */}
+      {/* ================= PRICE SUMMARY ================= */}
       <div className="border-t-2 border-dashed border-gray-200 pt-6 mb-6">
-        <div className="flex justify-between mb-2 text-sm text-gray-500">
-          <span>Base Price ({duration} hours)</span>
-          <span className="font-semibold text-gray-900">${basePrice.toFixed(2)}</span>
-        </div>
         <div className="flex justify-between mb-2 text-sm">
-          <span className="text-gray-500">Member Discount ({discountPercent}%)</span>
-          <span className="text-blue-600 font-semibold">-${discount.toFixed(2)}</span>
+          <span>Base Price ({duration} hrs)</span>
+          <span>SAR {basePrice.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between mb-2 text-sm text-gray-500">
-          <span>Service Fee</span>
-          <span className="font-semibold text-gray-900">${serviceFee.toFixed(2)}</span>
+
+        <div className="flex justify-between mb-2 text-sm">
+          <span>Member Discount ({discountPercent}%)</span>
+          <span className="text-blue-600">
+            -SAR {discount.toFixed(2)}
+          </span>
         </div>
+
+        <div className="flex justify-between mb-2 text-sm">
+          <span>
+            Service Fee (
+            {commissionType === "PERCENTAGE"
+              ? `${commissionValue}%`
+              : "Fixed"}
+            )
+          </span>
+          <span>SAR {commissionAmount.toFixed(2)}</span>
+        </div>
+
         <div className="flex justify-between border-t-2 border-gray-200 pt-3 mt-3">
-          <span className="text-lg font-bold text-gray-900">Total</span>
-          <span className="text-2xl font-black text-gray-900">${totalCostToSend.toFixed(2)}</span>
+          <span className="text-lg font-bold">Total</span>
+          <span className="text-2xl font-black">
+            SAR {totalCostToSend.toFixed(2)}
+          </span>
         </div>
       </div>
 
-      {/* Confirm Booking Button */}
       <button
         onClick={handleBooking}
-        className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1"
+        className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full"
       >
         Confirm Booking →
       </button>
     </div>
   );
 }
+

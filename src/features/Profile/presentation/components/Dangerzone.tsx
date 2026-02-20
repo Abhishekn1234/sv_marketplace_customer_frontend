@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function DangerZone() {
+  const navigate=useNavigate();
   return (
     <div className="mt-6 bg-red-50 border border-red-200 rounded-[20px] p-8">
       
@@ -22,7 +25,7 @@ export default function DangerZone() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         
         {/* Change Password */}
-        <button className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
+        <button onClick={()=>navigate('/changepassword')} className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
           <svg
             viewBox="0 0 24 24"
             fill="none"

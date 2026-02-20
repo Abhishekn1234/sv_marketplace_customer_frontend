@@ -82,7 +82,7 @@ export const useBookings = () => {
     },
     staleTime: 60 * 1000,
   });
-
+  
   const createBooking = useMutation<Booking, Error, BookingPayload>({
     mutationFn: (payload) => createBookingUseCase.execute(payload),
     onSuccess: (newBooking) => {
@@ -105,7 +105,7 @@ export const useBookings = () => {
           bookings: [mapped, ...(currentUser.bookings ?? [])],
         });
       }
-      navigate("/jobtracking")
+      navigate(`/confirmation/${newBooking._id}`)
       
 
       toast.success("Booking created successfully ✅");
@@ -134,11 +134,12 @@ export const useBookings = () => {
       if (currentUser?.bookings) {
         setUser({
           ...currentUser,
-          bookings: currentUser.bookings.map((b) =>
+        bookings: currentUser.bookings.map((b) =>
             b._id === updatedBooking._id
               ? { ...b, status: updatedBooking.status }
               : b
           ),
+
         });
       }
 

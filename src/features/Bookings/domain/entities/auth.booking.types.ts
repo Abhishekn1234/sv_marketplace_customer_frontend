@@ -1,3 +1,5 @@
+import type { BookingStatus } from "./bookingstatus.types";
+
 export interface AuthBooking {
   _id: string;
 
@@ -7,7 +9,7 @@ export interface AuthBooking {
   amount: number;
   currency: string;
 
-  status: "REQUESTED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+  status: BookingStatus;
   numberOfWorkers: number;
 
   tierName?: string;

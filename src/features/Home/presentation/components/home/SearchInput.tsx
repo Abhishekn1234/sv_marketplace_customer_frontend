@@ -1,8 +1,30 @@
-import React from "react";
+import type { Category } from "@/features/Bookings/domain/entities/category.types";
+import React, { useState, useEffect } from "react";
 
-const ServiceSearch: React.FC = () => {
+
+
+interface Props {
+  services:Category[]; // All services fetched from API
+  onSearchResults: (results: Category[]) => void; // Callback for filtered services
+}
+
+const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!query) {
+      onSearchResults(services); // No query → show all
+      return;
+    }
+
+    const filtered = services.filter((service) =>
+      service.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+    onSearchResults(filtered);
+  }, [query, services, onSearchResults]);
+
   return (
-    <>
     <div className="flex flex-col gap-7 max-w-4xl">
       {/* Title */}
       <h1 className="text-[36px] font-bold leading-[1.2] tracking-[-0.02em] text-gray-900">
@@ -30,6 +52,8 @@ const ServiceSearch: React.FC = () => {
           type="text"
           placeholder="Search for cleaning, repair..."
           aria-label="Search services"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           className="
             w-full h-[56px]
             rounded-2xl
@@ -71,9 +95,8 @@ const ServiceSearch: React.FC = () => {
         </svg>
       </div>
     </div>
-  
-    </>
   );
 };
 
 export default ServiceSearch;
+

@@ -34,11 +34,17 @@ import ServiceTierSelectionPage from "./features/ServiceTierSelection/presentati
 import BookingDetailPage from "./features/BookingDetail/presentation/BookingDetailPage";
 import JobTrackingPage from "./features/JobTracking/presentation/JobTrackingPage";
 import JobProgressPage from "./features/JobProgress/presentation/JobProgressPage";
+import ConfirmationPage from "./features/Confirmation/presentation/ConfirmationPage";
+import { useEffect } from "react";
+import ScrollToTop from "./ScrollToTop";
+import ChangePasswordPage from "./features/ChangePassword/presentation/ChangePasswordPage";
 
 function App() {
   useNotification();
   const { logout } = useAuth();
+useEffect(()=>{
 
+})
   return (
     <ThemeProvider>
      <ToastContainer
@@ -56,6 +62,7 @@ function App() {
 />
      <LanguageProvider>
       <Router>
+          <ScrollToTop />
     <Routes>
   {/* Public pages */}
   <Route path="/login" element={<LoginLayout />} />
@@ -69,8 +76,9 @@ function App() {
   <Route path="/" element={<ProtectedRoute><DashboardLayout onLogout={logout} /></ProtectedRoute>}>
     <Route index element={<WebsiteHome />} />
     <Route path="bookingdetail/:serviceId/:serviceTierId"element={<BookingDetailPage/>}/>
+    <Route path="changepassword" element={<ChangePasswordPage/>}/>
     <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage/>}/>
-    <Route path="bookingdetails" element={<MyBookings/>}/>
+    <Route path="bookings" element={<MyBookings/>}/>
     <Route path="about" element={<AboutPage/>}/>
     <Route path="services/:id" element={<ServiceDetailPage/>}/>
     <Route path="privacy" element={<PrivacyPolicyPage/>}/>
@@ -78,6 +86,7 @@ function App() {
     <Route path="book-service/:serviceId" element={<BookService />} />
      <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
      <Route path="jobprogress" element={<JobProgressPage />} />
+     <Route path="confirmation/:bookingId" element={<ConfirmationPage/>}/>
   </Route>
 
   {/* Catch-all */}

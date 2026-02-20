@@ -15,6 +15,7 @@ export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filteredServices, setFilteredServices] = useState(apiResponse ?? []);
 
   const categories = apiResponse?.map((c: { name: string }) => c.name) ?? [];
 
@@ -26,7 +27,10 @@ export default function WebsiteHome() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
         {/* LEFT COLUMN */}
         <div className="flex flex-col gap-6">
-          <ServiceSearch />
+          <ServiceSearch
+            services={apiResponse ?? []}
+            onSearchResults={setFilteredServices}
+          />
 
           <CategoryPills
             categories={categories}
@@ -34,21 +38,22 @@ export default function WebsiteHome() {
             onChange={setActiveCategory}
           />
 
-          <ActiveService />
-          <PopularService />
+          <ActiveService  />
+          <PopularService services={filteredServices} />
         </div>
 
         {/* RIGHT COLUMN */}
         <div className="flex flex-col gap-6">
           <RecentServices />
           <SecurePayment />
-          <SatisfactionGuarantee/>
-          <PromoCards/>
+          <SatisfactionGuarantee />
+          <PromoCards />
         </div>
       </div>
-      <CommonFaq/>
+      <CommonFaq />
     </div>
   );
 }
+
 
 

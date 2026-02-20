@@ -8,6 +8,7 @@ import type { CancelBookingRequest } from "../../domain/entities/cancelbookingre
 import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
 import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
 import apiClient from "../../../api/interceptor";
+import type { BookingById } from "../../domain/entities/bookingbyid.types";
 
 export class BookingRepository implements IBookingRepository {
   private readonly baseUrl = "/booking";
@@ -34,8 +35,9 @@ async getBookings(): Promise<GetBookingsResponse> {
 
 
   
-  async getBookingById(bookingId: string): Promise<Booking> {
-    const response = await apiClient.get<Booking>(`${this.baseUrl}/${bookingId}`);
+  async getBookingById(bookingId: string): Promise<BookingById> {
+    const response = await apiClient.get<BookingById>(`${this.baseUrl}/${bookingId}`);
+    console.log("Fetched Booking by ID:", response.data);
     return response.data;
   }
 

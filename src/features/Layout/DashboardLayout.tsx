@@ -13,6 +13,9 @@ import CommonFooter from "@/components/common/CommonFooter";
 import CommonNavbar from "@/components/common/CommonNavbar";
 
 import JobTrackingNavbar from "../JobTracking/presentation/components/JobTrackingNavbar";
+import ConfirmationNavbar from "../Confirmation/presentation/components/ConfirmationNavbar";
+import ConfirmationFooter from "../Confirmation/presentation/components/ConfirmationFooter";
+import BookingHistoryNavbar from "../Bookings/presentation/components/BookingHistoryNavbar";
 
 
 
@@ -23,74 +26,61 @@ interface Props {
 
 export default function DashboardLayout({ onLogout, children }: Props) {
   const location = useLocation();
+  const pathname = location.pathname;
 
-  const hideBottomNav = location.pathname === "/register";
-    const pathname = location.pathname;
+  const isRegisterPage = pathname === "/register";
+  const isConfirmationPage = pathname.startsWith("/confirmation/");
+
+  // 🔹 Decide which header to show
+  const renderHeader = () => {
+    if (pathname === "/profile") return <ProfileNavbar />;
+    if (pathname === "/") return <DashboardHeader />;
+    if (pathname === "/jobtracking") return <JobTrackingNavbar />;
+    if (pathname === "/about") return <AboutHeader />;
+    if (pathname === "/privacy") return <PrivacyHeader />;
+    if (pathname.startsWith("/services/")) return <ServiceDetailNavbar />;
+    if (pathname.startsWith("/servicetierselection/")) return <CommonNavbar />;
+    if (pathname.startsWith("/bookingdetail/")) return <CommonNavbar />;
+    if(pathname === "/bookings") return <BookingHistoryNavbar />;
+    if(pathname==="/changepassword") return <CommonNavbar/>;
+    if (isConfirmationPage) return <ConfirmationNavbar />;
+
+    return null;
+  };
+
+  // 🔹 Decide which footer to show
+  const renderFooter = () => {
+    if (pathname.startsWith("/services/")) return <CommonFooter />;
+    if (pathname.startsWith("/servicetierselection/")) return <CommonFooter />;
+    if (pathname.startsWith("/bookingdetail/")) return <CommonFooter />;
+    if (isConfirmationPage) return <ConfirmationFooter />;
+    if(pathname==="/changepassword") return <CommonFooter/>;
+
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 relative">
-     
-     
- {pathname==="/profile"?(
-  <ProfileNavbar/>
- ):(
- <></>
- )}
- {pathname ==="/"?(
-<DashboardHeader/>
- ):(
-<></>
- )}
- {pathname==="/jobtracking"?(<JobTrackingNavbar/>):(
-  <></>
- )}
- {pathname ==="/about"?(
-  <AboutHeader/>
- ):(
-  <></>
- )}
- {pathname.startsWith("/services/") && <ServiceDetailNavbar />}
 
-     {pathname ==="/privacy"?(
-        <PrivacyHeader/>
-     ):(
-      <></>
-     )}
-      {hideBottomNav ? (
+      {/* ✅ HEADER (Always at top if exists) */}
+      {renderHeader()}
+
+      {/* ✅ MAIN CONTENT */}
+      {isRegisterPage ? (
         <RegisterTabCard />
       ) : (
-        <main className="mx-auto max-w-7xl px-4 py-6 pb-24">
-          {children || <Outlet />}
-        </main>
+       <main className="mx-auto max-w-7xl px-4 py-6 pb-24"> {children || <Outlet />} </main>
       )}
 
-      {/* Bottom Navigation */}
-      {!hideBottomNav && <BottomNav />}
+      {/* ✅ Bottom Navigation (Hidden for Register & Confirmation) */}
+      {!isRegisterPage && !isConfirmationPage && <BottomNav />}
+
+      {/* ✅ FOOTER (Always at bottom if exists) */}
+      {renderFooter()}
       
-      {pathname.startsWith('/services/') ? (
-      <CommonFooter/>
-      ):(
-        <></>
-      )}
-        {pathname.startsWith('/servicetierselection/') ? (
-          <>
-      <CommonNavbar/>
-      <CommonFooter/>
-     
-      </>
-      ):(
-        <></>
-      )}
-      {pathname.startsWith('/bookingdetail/')?(
-        <>
-        <CommonNavbar/>
-        <CommonFooter/>
-        </>
-      ):(
-       <>
-       </>
-      )}
     </div>
   );
 }
+
 
 
