@@ -1,85 +1,36 @@
+import { toast } from "react-toastify";
+import { apiUrl } from "../api/apiConfig";
+
 
 export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   try {
     console.log("Reverse geocode called with:", { lat, lng });
 
-   const response = await fetch(
-  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en&zoom=18`,
-  {
-    headers: {
-      "User-Agent": "YourAppName/1.0 (your@email.com)",
-      "Accept": "application/json",
-    },
-  }
-);
-
-    console.log("Fetch response:", response);
+    // ✅ Call your backend reverse geocode endpoint
+    const response = await fetch(`${apiUrl}/geolocation/reverse?lat=${lat}&lon=${lng}`);
 
     if (!response.ok) {
       throw new Error("Geocoding request failed");
     }
 
     const data = await response.json();
-    console.log("Full API data:", data);
+    console.log("Backend response data:", data);
 
-    if (data.address) {
-      const { address } = data;
-      console.log("Address object:", address);
-
-      const parts: string[] = [];
-
-      if (address.road) {
-        console.log("Road:", address.road);
-        parts.push(address.road);
-      }
-
-      if (address.suburb) {
-        console.log("Suburb:", address.suburb);
-        parts.push(address.suburb);
-      }
-
-      if (address.city) {
-        console.log("City:", address.city);
-        parts.push(address.city);
-      }
-
-      if (address.town) {
-        console.log("Town:", address.town);
-        parts.push(address.town);
-      }
-
-      if (address.village) {
-        console.log("Village:", address.village);
-        parts.push(address.village);
-      }
-
-      if (address.state) {
-        console.log("State:", address.state);
-        parts.push(address.state);
-      }
-
-      if (address.country) {
-        console.log("Country:", address.country);
-        parts.push(address.country);
-      }
-
-      const finalAddress =
-        parts.length > 0
-          ? parts.join(", ")
-          : data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
-      console.log("Final formatted address:", finalAddress);
-      return finalAddress;
+    if (data.error) {
+      console.warn("Backend returned an error:", data.error);
+      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     }
 
-    console.log("No address found, using display_name");
-    return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    const address = data.address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    console.log("Final formatted address from backend:", address);
+
+    return address;
   } catch (error) {
     console.error("Reverse geocoding error:", error);
+    toast.error("Failed to fetch address from backend");
     return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
 };
-
 
 export const getCurrentLocationName = async (): Promise<{ lat: number; lng: number; placeName: string }> => {
   return new Promise((resolve, reject) => {
@@ -94,6 +45,7 @@ export const getCurrentLocationName = async (): Promise<{ lat: number; lng: numb
         const lng = position.coords.longitude;
         try {
           const placeName = await reverseGeocode(lat, lng);
+          console.log(placeName);
           resolve({ lat, lng, placeName });
         } catch (error) {
           resolve({ 
@@ -114,3 +66,125 @@ export const getCurrentLocationName = async (): Promise<{ lat: number; lng: numb
     );
   });
 };
+
+
+export const getCoordinatesFromAddress = async (address: string) => {
+  try {
+    if (!address) return null;
+
+    // Call your NestJS backend instead of Nominatim directly
+    const response = await fetch(
+      `${apiUrl}/geolocation/forward?address=${encodeURIComponent(address)}`, 
+      {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error("Backend geocoding error:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    // Check if backend returned an error
+    if (!data || data.error) {
+      console.error("Geocoding error:", data?.error);
+      return null;
+    }
+
+    return {
+      lat: data.lat,
+      lng: data.lng,
+    };
+  } catch (error) {
+    console.error("Geocoding fetch error:", error);
+    return null;
+  }
+};
+
+
+export const getPlaceNameFromCoords = async (
+  lat: number,
+  lng: number
+): Promise<string> => {
+  try {
+    // Call your backend instead of Nominatim directly
+    const response = await fetch(
+      `${apiUrl}/geolocation/reverse?lat=${lat}&lon=${lng}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch location from backend");
+    }
+
+    const data = await response.json();
+
+    // Your backend returns { address: string } or { error: string }
+    if (data.error) return "Location not available";
+
+    return data.address || "Unknown location";
+  } catch (error) {
+    console.error("Reverse geocoding error:", error);
+    return "Location not available";
+  }
+};
+
+// utils/geolocation.ts
+export const getSuggestions = async (
+  query: string,
+  signal?: AbortSignal
+): Promise<string[]> => {
+  if (!query) return [];
+
+  const res = await fetch(
+    `${apiUrl}/geolocation/suggestions?q=${encodeURIComponent(query)}`,
+    { signal }
+  );
+
+  if (!res.ok) return [];
+
+  const data = await res.json();
+  return data.suggestions ?? [];
+};
+
+// export const getCoordinatesFromAddress = async (address: string) => {
+//   try {
+//     if (!address) return null;
+
+//     // Call your NestJS backend instead of Nominatim directly
+//     const response = await fetch(
+//       `${apiUrl}/geolocation/forward?address=${encodeURIComponent(address)}`, 
+//       {
+//         method: "GET",
+//         headers: {
+//           "Accept": "application/json",
+//         },
+//       }
+//     );
+
+//     if (!response.ok) {
+//       console.error("Backend geocoding error:", response.status);
+//       return null;
+//     }
+
+//     const data = await response.json();
+
+//     // Check if backend returned an error
+//     if (!data || data.error) {
+//       console.error("Geocoding error:", data?.error);
+//       return null;
+//     }
+
+//     return {
+//       lat: data.lat,
+//       lng: data.lng,
+//     };
+//   } catch (error) {
+//     console.error("Geocoding fetch error:", error);
+//     return null;
+//   }
+// };

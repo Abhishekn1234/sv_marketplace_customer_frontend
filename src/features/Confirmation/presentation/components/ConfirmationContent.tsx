@@ -3,7 +3,7 @@ import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
 import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
 import { formatSmartDate } from "../helpers/formatdatetime";
-import { getPlaceNameFromCoords } from "../helpers/map";
+import { getPlaceNameFromCoords } from "@/features/utils/reverse";
 import { useEffect, useState } from "react";
 
 export default function ConfirmationContent() {

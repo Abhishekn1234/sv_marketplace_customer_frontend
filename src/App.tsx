@@ -12,7 +12,7 @@ import BookService from "./features/Bookings/presentation/components/bookings/Bo
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 
 
-import { useAuth } from "./features/Auth/presentation/hooks/useAuth";
+
 import { ProtectedRoute } from "./ProtectedLayout";
 
 import './App.css';
@@ -38,10 +38,14 @@ import ConfirmationPage from "./features/Confirmation/presentation/ConfirmationP
 import { useEffect } from "react";
 import ScrollToTop from "./ScrollToTop";
 import ChangePasswordPage from "./features/ChangePassword/presentation/ChangePasswordPage";
+import HelpPage from "./features/Help/presentation/HelpPage";
+import SecurityPage from "./features/Security/presentation/SecurityPage";
+import ServiceRating from "./features/ServiceRating/presentation/ServiceRating";
+import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedPage";
 
 function App() {
   useNotification();
-  const { logout } = useAuth();
+
 useEffect(()=>{
 
 })
@@ -73,15 +77,19 @@ useEffect(()=>{
   <Route path="/forgot-password" element={<DashboardLayout><ForgotPassword /></DashboardLayout>} />
  <Route path="/verification" element={<VerificationPage/>}/>
   {/* Protected pages */}
-  <Route path="/" element={<ProtectedRoute><DashboardLayout onLogout={logout} /></ProtectedRoute>}>
+  <Route path="/" element={<ProtectedRoute><DashboardLayout  /></ProtectedRoute>}>
     <Route index element={<WebsiteHome />} />
     <Route path="bookingdetail/:serviceId/:serviceTierId"element={<BookingDetailPage/>}/>
     <Route path="changepassword" element={<ChangePasswordPage/>}/>
     <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage/>}/>
     <Route path="bookings" element={<MyBookings/>}/>
     <Route path="about" element={<AboutPage/>}/>
+    <Route path="servicerating" element={<ServiceRating/>}/>
+    <Route path="jobcompleted" element={<JobCompletedPage/>}/>
     <Route path="services/:id" element={<ServiceDetailPage/>}/>
     <Route path="privacy" element={<PrivacyPolicyPage/>}/>
+      <Route path="help" element={<HelpPage/>}/>
+        <Route path="security" element={<SecurityPage/>}/>
     <Route path="profile" element={<Profile/>}/>
     <Route path="book-service/:serviceId" element={<BookService />} />
      <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />

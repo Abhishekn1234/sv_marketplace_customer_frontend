@@ -20,11 +20,11 @@ import BookingHistoryNavbar from "../Bookings/presentation/components/BookingHis
 
 
 interface Props {
-  onLogout?: () => void;
+ 
   children?: React.ReactNode;
 }
 
-export default function DashboardLayout({ onLogout, children }: Props) {
+export default function DashboardLayout({  children }: Props) {
   const location = useLocation();
   const pathname = location.pathname;
 
@@ -35,7 +35,7 @@ export default function DashboardLayout({ onLogout, children }: Props) {
   const renderHeader = () => {
     if (pathname === "/profile") return <ProfileNavbar />;
     if (pathname === "/") return <DashboardHeader />;
-    if (pathname === "/jobtracking") return <JobTrackingNavbar />;
+    if (pathname.startsWith( "/jobtracking/")) return <JobTrackingNavbar />;
     if (pathname === "/about") return <AboutHeader />;
     if (pathname === "/privacy") return <PrivacyHeader />;
     if (pathname.startsWith("/services/")) return <ServiceDetailNavbar />;
@@ -44,7 +44,8 @@ export default function DashboardLayout({ onLogout, children }: Props) {
     if(pathname === "/bookings") return <BookingHistoryNavbar />;
     if(pathname==="/changepassword") return <CommonNavbar/>;
     if (isConfirmationPage) return <ConfirmationNavbar />;
-
+   if(pathname==="/security") return <PrivacyHeader/>;
+   if(pathname==="/help") return <PrivacyHeader/>;
     return null;
   };
 

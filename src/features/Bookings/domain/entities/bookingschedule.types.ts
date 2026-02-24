@@ -1,5 +1,5 @@
 export interface BookingSchedule {
-  startDateTime: string; 
+  startDateTime: string | undefined; 
   estimatedDays: number;
   estimatedHours:number;
 }

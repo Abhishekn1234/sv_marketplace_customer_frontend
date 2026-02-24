@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // 👈 import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export default function BookingDetailNavbar() {
   const { customerData, updateAddress } = useAuthStore();
   const username = customerData.user?.fullName;
   const profileurl = customerData.user?.profilePictureUrl;
-  const customerplace = customerData.current_location?.inputValue;
+
+  // Safely get home address
+  const homeAddress = customerData.current_location?.addresses?.find(
+    (a) => a.type === "home"
+  )?.value;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const navigate = useNavigate(); // 👈 initialize navigate
+  const navigate = useNavigate();
 
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -33,7 +37,7 @@ export default function BookingDetailNavbar() {
           const data = await res.json();
           const address = data.display_name;
 
-          // Save to customerData store
+          // Save to store using type
           updateAddress("home", address);
           updateAddress("inputValue", address);
 
@@ -63,7 +67,7 @@ export default function BookingDetailNavbar() {
           {/* Logo */}
           <div
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => navigate("/profile")} // 👈 navigate to profile on click
+            onClick={() => navigate("/profile")}
           >
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
@@ -92,7 +96,7 @@ export default function BookingDetailNavbar() {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              {customerplace || "Select location"}
+              {homeAddress || "Select location"}
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -113,7 +117,9 @@ export default function BookingDetailNavbar() {
                   disabled={loadingLocation}
                 >
                   <span>Use Current Location</span>
-                  {loadingLocation && <span className="text-xs text-gray-500">Loading...</span>}
+                  {loadingLocation && (
+                    <span className="text-xs text-gray-500 ml-2">Loading...</span>
+                  )}
                 </button>
               </div>
             )}
@@ -143,11 +149,15 @@ export default function BookingDetailNavbar() {
           {/* User Profile */}
           <div
             className="flex items-center gap-3 cursor-pointer"
-            onClick={() => navigate("/profile")} // 👈 navigate to profile on click
+            onClick={() => navigate("/profile")}
           >
             <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-md">
               {profileurl ? (
-                <img src={profileurl} alt={username} className="w-full h-full rounded-full object-cover" />
+                <img
+                  src={profileurl}
+                  alt={username}
+                  className="w-full h-full rounded-full object-cover"
+                />
               ) : (
                 <svg
                   viewBox="0 0 24 24"
@@ -162,7 +172,9 @@ export default function BookingDetailNavbar() {
               )}
             </div>
             <div className="hidden lg:flex flex-col text-left">
-              <span className="text-xs font-bold uppercase text-gray-400">Premium Member</span>
+              <span className="text-xs font-bold uppercase text-gray-400">
+                Premium Member
+              </span>
               <span className="text-sm font-bold text-gray-900">{username}</span>
             </div>
           </div>

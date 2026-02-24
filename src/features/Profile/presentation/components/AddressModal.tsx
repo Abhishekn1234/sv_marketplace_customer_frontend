@@ -1,62 +1,71 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
-
+import { getSuggestions } from "@/features/utils/reverse";
+import { useDebounce } from "../utils/debouncer";
 interface AddressModalProps {
   open: boolean;
   onClose: () => void;
-}
-
-interface Suggestion {
-  display_name: string;
-  lat: string;
-  lon: string;
 }
 
 export default function AddressModal({
   open,
   onClose,
 }: AddressModalProps) {
-  const { customerData, updateAddress } = useAuthStore();
+  const { customerData, updateHome } = useAuthStore();
 
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
   const [address, setAddress] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
+  // ✅ Debounce input (400ms)
+  const debouncedAddress = useDebounce(address, 400);
+
+  /* Load existing address */
   useEffect(() => {
-    if (open) {
-      setAddress(customerData.current_location?.[selectedType] || "");
-    }
+    if (!open) return;
+
+    const addresses = customerData.current_location?.addresses ?? [];
+
+    const existing =
+      addresses.find((addr) => addr.type === selectedType)?.value || "";
+
+    setAddress(existing);
   }, [open, selectedType, customerData]);
 
-  /* Autocomplete */
-  useEffect(() => {
-    if (address.length < 3) {
-      setSuggestions([]);
-      return;
+  /* Fetch suggestions only when debounced value changes */
+useEffect(() => {
+  if (!debouncedAddress || debouncedAddress.length < 3) {
+    setSuggestions([]);
+    return;
+  }
+
+  const controller = new AbortController();
+
+  const fetchSuggestions = async () => {
+    try {
+      const results = await getSuggestions(debouncedAddress, controller.signal);
+      setSuggestions(results);
+    } catch (error) {
+      if ((error as any).name !== "AbortError") {
+        console.error(error);
+      }
     }
+  };
 
-    const delay = setTimeout(() => {
-      fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          address
-        )}&addressdetails=1&limit=5&countrycodes=in&accept-language=en`
-      )
-        .then((res) => res.json())
-        .then((data) => setSuggestions(data))
-        .catch(() => setSuggestions([]));
-    }, 400);
+  fetchSuggestions();
 
-    return () => clearTimeout(delay);
-  }, [address]);
+  return () => controller.abort(); // ✅ cancel previous request
+}, [debouncedAddress]);
 
   const handleSave = () => {
     if (!address.trim()) return;
-    updateAddress(selectedType, address.trim());
+
+    updateHome(selectedType, address.trim());
     onClose();
   };
 
-  const handleSelect = (item: Suggestion) => {
-    setAddress(item.display_name);
+  const handleSelect = (value: string) => {
+    setAddress(value);
     setSuggestions([]);
   };
 
@@ -64,84 +73,39 @@ export default function AddressModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
         <h2 className="text-xl font-bold mb-6 text-gray-900">
           Select Address Type
         </h2>
 
-        {/* Radio Row */}
         <div className="flex gap-4 mb-6">
-          {/* Home */}
-          <label
-            className={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-              selectedType === "home"
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              value="home"
-              checked={selectedType === "home"}
-              onChange={() => setSelectedType("home")}
-              className="hidden"
-            />
-
-            {/* Home SVG */}
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+          {["home", "office"].map((type) => (
+            <label
+              key={type}
+              className={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                selectedType === type
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-gray-200"
+              }`}
             >
-              <path d="M3 12l9-9 9 9" />
-              <path d="M9 21V9h6v12" />
-            </svg>
-
-            <span className="font-medium">Home</span>
-          </label>
-
-          {/* Office */}
-          <label
-            className={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-              selectedType === "office"
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              value="office"
-              checked={selectedType === "office"}
-              onChange={() => setSelectedType("office")}
-              className="hidden"
-            />
-
-            {/* Office SVG */}
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="7" width="18" height="14" rx="2" />
-              <path d="M16 3h-8v4h8V3z" />
-            </svg>
-
-            <span className="font-medium">Office</span>
-          </label>
+              <input
+                type="radio"
+                checked={selectedType === type}
+                onChange={() =>
+                  setSelectedType(type as "home" | "office")
+                }
+                className="hidden"
+              />
+              <span className="font-medium capitalize">{type}</span>
+            </label>
+          ))}
         </div>
 
-        {/* Address Input */}
         <div className="relative">
           <input
             type="text"
@@ -159,14 +123,13 @@ export default function AddressModal({
                   onClick={() => handleSelect(item)}
                   className="p-3 cursor-pointer hover:bg-blue-50 text-sm"
                 >
-                  {item.display_name}
+                  {item}
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        {/* Buttons */}
         <div className="flex gap-4 pt-6">
           <button
             onClick={handleSave}

@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import type { Booking } from "../../domain/entities/booking.types";
+import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 
 interface Props {
   booking: Booking | null;
@@ -40,9 +41,7 @@ export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClos
           <div>
             <span className="text-xs text-gray-500 font-medium">Date</span>
             <p className="text-sm font-semibold">
-              {booking.schedule?.startDateTime
-                ? new Date(booking.schedule.startDateTime).toLocaleDateString()
-                : "-"}
+              {formatSmartDate(booking.schedule?.startDateTime)}
             </p>
           </div>
 

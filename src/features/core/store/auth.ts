@@ -1,40 +1,39 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "../../Auth/domain/entities/auth.types";
-import type { LastLocation } from "../../Auth/domain/entities/lastlocation.types";
+import type { LastLocations,Address } from "@/features/Auth/presentation/components/Location/domain/entities/updatelocation";
+
 
 export type Theme = "light" | "dark";
-
-
-export interface UserWithLocation extends User {}
-
+interface SearchState { searchTerm: string; setSearchTerm: (term: string) => void; }
 export interface CustomerData {
   accessToken: string | null;
   refreshToken: string | null;
-  user: User | null
+  user: User | null;
   isLoggedIn: boolean;
   theme: Theme;
-   last_location?: LastLocation;
-  current_location?: LastLocation;
+  last_location?: LastLocations;
+  current_location?: LastLocations;
   language: string;
 }
-interface SearchState {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-}
+
 export interface AuthState {
   customerData: CustomerData;
-   
-  updateUserLocation: (location: LastLocation) => void;
+
   setTokens: (accessToken: string, refreshToken: string) => void;
-  setUser: (user: UserWithLocation) => void;
+  setUser: (user: User) => void;
   clearAuth: () => void;
 
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   setLanguage: (lang: string) => void;
-updateAddress: (type: "home" | "office" |"other" |"inputValue", value: string) => void;
 
+  updateUserLocation: (location: LastLocations) => void;
+
+  addAddress: (type: "home" | "office"|"inputValue"|"other", value: string) => void;
+  updateAddress: (id: string, value: string) => void;
+  updateHome:(type:"home"|"office",value: string)=>void;
+  deleteAddress: (id: string) => void;
 }
 
 const initialCustomerData: CustomerData = {
@@ -44,17 +43,15 @@ const initialCustomerData: CustomerData = {
   isLoggedIn: false,
   theme: "light",
   language: "EN",
-  current_location: undefined,
+  current_location: { addresses: [] },
   last_location: undefined,
 };
-
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       customerData: initialCustomerData,
 
-      // Set access & refresh tokens
       setTokens: (accessToken, refreshToken) =>
         set({
           customerData: {
@@ -65,7 +62,6 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
-  
       setUser: (user) =>
         set({
           customerData: {
@@ -75,13 +71,11 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
-      // Clear all auth data
       clearAuth: () =>
         set({
           customerData: initialCustomerData,
         }),
 
-      // Toggle theme
       toggleTheme: () => {
         const { theme } = get().customerData;
         set({
@@ -92,7 +86,6 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      // Set specific theme
       setTheme: (theme) =>
         set({
           customerData: {
@@ -101,7 +94,6 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
-      // Set language
       setLanguage: (language) =>
         set({
           customerData: {
@@ -110,43 +102,107 @@ export const useAuthStore = create<AuthState>()(
           },
         }),
 
-    
-      
-      updateUserLocation: (newLocation: LastLocation) => {
+     updateUserLocation: (payload) =>
   set((state) => ({
     customerData: {
       ...state.customerData,
-      last_location: state.customerData.current_location, // 👈 previous
-      current_location: newLocation,                      // 👈 new
+      current_location: {
+        addresses: payload.addresses,
+      },
     },
-  }));
-},
-updateAddress: (type: "home" | "office" |"other"|"inputValue", value: string) => {
+  })),
+      // ✅ ADD
+      addAddress: (type, value) =>
+        set((state) => {
+          const current = state.customerData.current_location ?? { addresses: [] };
+
+          const newAddress: Address = {
+            id: Date.now().toString(),
+            type,
+            value,
+          };
+
+          return {
+            customerData: {
+              ...state.customerData,
+              current_location: {
+                ...current,
+                addresses: [...current.addresses, newAddress],
+              },
+            },
+          };
+        }),
+
+      // ✅ UPDATE
+      updateHome: (type: "home" | "office", value: string) =>
   set((state) => {
-    const current = state.customerData.current_location;
+    const current = state.customerData.current_location ?? { addresses: [] };
+
+    const index = current.addresses.findIndex((addr) => addr.type === type);
+
+    let updatedAddresses;
+
+    if (index !== -1) {
+      // Update existing address
+      updatedAddresses = current.addresses.map((addr) =>
+        addr.type === type ? { ...addr, value } : addr
+      );
+    } else {
+      // If address of this type doesn't exist, add it
+      updatedAddresses = [
+        ...current.addresses,
+        { id: Date.now().toString(), type, value },
+      ];
+    }
 
     return {
       customerData: {
         ...state.customerData,
         current_location: {
-          id: current?.id,
-          home: type === "home" ? value : current?.home || "",
-          office: type === "office" ? value : current?.office || "",
-          inputValue: type === "inputValue" ? value : current?.inputValue || "",
-          other: type === "other" ? value : current?.other || "",
+          ...current,
+          addresses: updatedAddresses,
         },
       },
     };
-  });
-},
+  }),
+     updateAddress: (type, value) =>
+  set((state) => {
+    const current = state.customerData.current_location;
+    if (!current) return state;
 
+    return {
+      customerData: {
+        ...state.customerData,
+        current_location: {
+          ...current,
+          addresses: current.addresses.map((addr) =>
+            addr.type === type ? { ...addr, value } : addr
+          ),
+        },
+      },
+    };
+  }),
 
+      // ✅ DELETE
+      deleteAddress: (id) =>
+        set((state) => {
+          const current = state.customerData.current_location;
+          if (!current) return state;
+
+          return {
+            customerData: {
+              ...state.customerData,
+              current_location: {
+                ...current,
+                addresses: current.addresses.filter(
+                  (addr) => addr.id !== id
+                ),
+              },
+            },
+          };
+        }),
     }),
-    
-    { name: "auth-storage" } // persist to localStorage
+    { name: "auth-storage" }
   )
 );
-export const useSearchStore = create<SearchState>((set) => ({
-  searchTerm: "",
-  setSearchTerm: (term) => set({ searchTerm: term }),
-}));
+export const useSearchStore = create<SearchState>((set) => ({ searchTerm: "", setSearchTerm: (term) => set({ searchTerm: term }), }));

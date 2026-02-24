@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUpdatePassword } from "../hooks/usePassword";
 import { validatePassword } from "../utils/passwordvalidation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -72,52 +73,17 @@ export default function ChangePasswordCard() {
           placeholder={placeholder}
         />
 
-        <button
-          type="button"
-          onClick={() => togglePasswordVisibility(field)}
-          className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-        >
-          {showPassword[field] ? (
-            // Eye Open
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5
-                c4.478 0 8.268 2.943 9.542 7
-                -1.274 4.057-5.064 7-9.542 7
-                -4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          ) : (
-            // Eye Closed
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3l18 18"
-              />
-            </svg>
-          )}
-        </button>
+       <button
+  type="button"
+  onClick={() => togglePasswordVisibility(field)}
+  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+>
+  {showPassword[field] ? (
+    <Eye className="w-5 h-5" />
+  ) : (
+    <EyeOff className="w-5 h-5" />
+  )}
+</button>
       </div>
     </div>
   );

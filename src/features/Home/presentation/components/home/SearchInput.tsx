@@ -1,11 +1,13 @@
+
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
+
 import React, { useState, useEffect } from "react";
 
 
 
 interface Props {
-  services:Category[]; // All services fetched from API
-  onSearchResults: (results: Category[]) => void; // Callback for filtered services
+  services:Category[]; 
+  onSearchResults: (results: Category[]) => void; 
 }
 
 const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
@@ -13,7 +15,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
 
   useEffect(() => {
     if (!query) {
-      onSearchResults(services); // No query → show all
+      onSearchResults(services); 
       return;
     }
 

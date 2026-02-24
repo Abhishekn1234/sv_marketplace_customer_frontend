@@ -1,75 +1,60 @@
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+import type { Feature } from "../../domain/entities/feature";
 
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
-  const { serviceTiers, services } = useServices();
+  const {  services } = useServices();
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
-  // ✅ Robust Feature Parser
+  if (!services) return null;
+
+  
+  const currentService = services.find((s) => s._id === id);
+
+
   const parseFeatures = (rawFeatures: any): Feature[] => {
     if (!rawFeatures) return [];
-
     try {
-      // Case 1: Array with JSON string inside
       if (Array.isArray(rawFeatures) && typeof rawFeatures[0] === "string") {
         return JSON.parse(rawFeatures[0]);
       }
-
-      // Case 2: Already array of objects
-      if (Array.isArray(rawFeatures)) {
-        return rawFeatures;
-      }
-
-      // Case 3: Single JSON string
-      if (typeof rawFeatures === "string") {
-        return JSON.parse(rawFeatures);
-      }
+      if (Array.isArray(rawFeatures)) return rawFeatures;
+      if (typeof rawFeatures === "string") return JSON.parse(rawFeatures);
     } catch (error) {
       console.error("Feature parsing error:", error);
     }
-
     return [];
   };
 
-  // ✅ Get calculated prices
+
   const getTierPrices = (tierId?: string) => {
-    if (!tierId || !services) return { hourly: 0, daily: 0, currency: "SAR" };
+    if (!tierId || !currentService) return { hourly: 0, daily: 0, currency: "SAR" };
 
-    for (const service of services) {
-      const matchedPricing = service?.pricingTiers?.find(
-        (pt: any) => pt?.tierId?._id === tierId
-      );
+    const matchedPricing = currentService.pricingTiers?.find(
+      (pt: any) => pt?.tierId?._id === tierId
+    );
 
-      if (matchedPricing) {
-        const currency = service?.currency || "SAR";
-        const commissionType = matchedPricing?.commissionType;
-        const commissionValue = matchedPricing?.commissionValue || 0;
+    if (!matchedPricing) return { hourly: 0, daily: 0, currency: currentService.currency || "SAR" };
 
-        let hourly = 0;
-        let daily = 0;
+    const currency = currentService.currency || "SAR";
+    const commissionType = matchedPricing?.commissionType;
+    const commissionValue = matchedPricing?.commissionValue || 0;
 
-        if (matchedPricing?.HOURLY?.ratePerHour != null) {
-          hourly = matchedPricing.HOURLY.ratePerHour;
-          if (commissionType === "PERCENTAGE")
-            hourly += (hourly * commissionValue) / 100;
-          else if (commissionType === "FLAT") hourly += commissionValue;
-        }
+    let hourly = matchedPricing?.HOURLY?.ratePerHour || 0;
+    let daily = matchedPricing?.PER_DAY?.ratePerDay || 0;
 
-        if (matchedPricing?.PER_DAY?.ratePerDay != null) {
-          daily = matchedPricing.PER_DAY.ratePerDay;
-          if (commissionType === "PERCENTAGE")
-            daily += (daily * commissionValue) / 100;
-          else if (commissionType === "FLAT") daily += commissionValue;
-        }
-
-        return { hourly, daily, currency };
-      }
+    if (commissionType === "PERCENTAGE") {
+      hourly += (hourly * commissionValue) / 100;
+      daily += (daily * commissionValue) / 100;
+    } else if (commissionType === "FLAT") {
+      hourly += commissionValue;
+      daily += commissionValue;
     }
 
-    return { hourly: 0, daily: 0, currency: "SAR" };
+    return { hourly, daily, currency };
   };
 
   const handleContinue = () => {
@@ -77,33 +62,31 @@ export default function ServiceTierSelectionContent() {
       alert("Please select a tier before continuing!");
       return;
     }
-
     navigate(`/bookingdetail/${id}/${selectedTierId}`);
   };
 
+  if (!currentService) return <p>Service not found!</p>;
+
   return (
     <div className="px-6 lg:px-8 pb-20">
-      {/* ================= TIER GRID ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto">
-        {serviceTiers?.map((tier, index) => {
-          const features = parseFeatures(tier.features);
-
-          return (
-            <TierCard
-              key={tier._id}
-              name={tier.displayName ?? ""}
-              description={tier.description}
-              prices={getTierPrices(tier._id)}
-              features={features}
-              recommended={index === 1}
-              selected={selectedTierId === tier._id}
-              onSelect={() => setSelectedTierId(tier._id)}
-            />
-          );
-        })}
+        {currentService.pricingTiers?.map((tier: any, index: number) => {
+  const features = parseFeatures(tier.tierId.features);
+  return (
+    <TierCard
+      key={tier.tierId._id}
+      name={tier.tierId?.displayName ?? tier.tierId?.code} 
+      description={tier.description}
+      prices={getTierPrices(tier.tierId?._id)}
+      features={features}
+      recommended={index === 1}
+      selected={selectedTierId === tier.tierId?._id}
+      onSelect={() => setSelectedTierId(tier.tierId?._id)}
+    />
+  );
+})}
       </div>
 
-      {/* ================= CTA SECTION ================= */}
       <div className="flex flex-col items-center gap-4">
         <button
           onClick={handleContinue}
@@ -132,12 +115,9 @@ export default function ServiceTierSelectionContent() {
       </div>
     </div>
   );
-}
+};
 
-interface Feature {
-  text: string;
-  included: boolean;
-}
+
 
 interface TierCardProps {
   name: string;

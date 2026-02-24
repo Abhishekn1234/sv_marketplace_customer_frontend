@@ -5,6 +5,7 @@ import { useBookings } from "../hooks/useBookings";
 import { useState } from "react";
 import type { Booking } from "../../domain/entities/booking.types";
 import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
+import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 
 interface Props {
   activeTab: string;
@@ -116,9 +117,7 @@ const [modalOpen, setModalOpen] = useState(false);
                 Date
               </span>
               <p className="text-sm sm:text-base font-semibold">
-                {booking.schedule?.startDateTime
-                  ? new Date(booking.schedule.startDateTime).toLocaleDateString()
-                  : "-"}
+                {formatSmartDate(booking.schedule?.startDateTime)}
               </p>
             </div>
             <div>

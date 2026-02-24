@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ServiceSearch from "./components/home/SearchInput";
 import RecentServices from "./components/home/RecentServices";
 import CategoryPills from "./components/home/CategoryPills";
@@ -8,16 +8,38 @@ import PopularService from "./components/home/PopularService";
 import SecurePayment from "./components/home/RecentPayment";
 import SatisfactionGuarantee from "./components/home/SatisificationGuarantte";
 import PromoCards from "./components/home/PromoCards";
-
 import CommonFaq from "@/components/common/CommonFaq";
 
 export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [filteredServices, setFilteredServices] = useState(apiResponse ?? []);
+  const [filteredServices, setFilteredServices] = useState<any[]>([]);
+
+  // ✅ Initialize data when API loads
+  useEffect(() => {
+    if (apiResponse) {
+      setFilteredServices(apiResponse);
+    }
+  }, [apiResponse]);
 
   const categories = apiResponse?.map((c: { name: string }) => c.name) ?? [];
+
+  // ✅ Filter handler
+  const handleCategoryChange = (categoryName: string) => {
+    setActiveCategory(categoryName);
+
+    if (!apiResponse) return;
+
+    if (categoryName === "All") {
+      setFilteredServices(apiResponse);
+    } else {
+      const filtered = apiResponse.filter(
+        (category: { name: string }) => category.name === categoryName
+      );
+      setFilteredServices(filtered);
+    }
+  };
 
   if (isLoading) return <div>Loading categories...</div>;
   if (error) return <div>Error loading categories</div>;
@@ -32,14 +54,17 @@ export default function WebsiteHome() {
             onSearchResults={setFilteredServices}
           />
 
+          
           <CategoryPills
-            categories={categories}
+            categories={["All", ...categories]}
             activeCategory={activeCategory}
-            onChange={setActiveCategory}
+            onChange={handleCategoryChange}
           />
 
-          <ActiveService  />
-          <PopularService services={filteredServices} />
+          <ActiveService />
+
+          {/* ✅ Now filtered */}
+          <PopularService categories={filteredServices} />
         </div>
 
         {/* RIGHT COLUMN */}
@@ -50,10 +75,8 @@ export default function WebsiteHome() {
           <PromoCards />
         </div>
       </div>
+
       <CommonFaq />
     </div>
   );
 }
-
-
-

@@ -13,9 +13,6 @@ export class ChangePasswordRepositoryImpl implements IChangePasswordRepository{
     const response = await apiClient.patch(
       "/user/update-password",
       data,
-      {
-        withCredentials: true,
-      }
     );
 
     return response.data;

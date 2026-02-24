@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
-
+import debounce from "lodash.debounce";
+import { getSuggestions, reverseGeocode } from "@/features/utils/reverse";
 type Props = {
   selected: "home" | "office" | null;
   inputValue: string;
@@ -13,7 +14,6 @@ type Props = {
 };
 
 export default function LocationSearchInput({
- 
   inputValue,
   setInputValue,
   onChange,
@@ -22,6 +22,7 @@ export default function LocationSearchInput({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch suggestions via backend
   const fetchSuggestions = async (query: string) => {
     if (!query) {
       setSuggestions([]);
@@ -30,37 +31,38 @@ export default function LocationSearchInput({
 
     setIsLoading(true);
     try {
-      const res = await fetch(
-  `https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=en&q=${encodeURIComponent(query)}`
-);
-
-      const data: { display_name?: string }[] = await res.json();
-      setSuggestions(data.map((d) => d.display_name ?? ""));
-    } catch {
+      const results = await getSuggestions(query);
+      setSuggestions(results);
+    } catch (err) {
+      console.error("Error fetching suggestions:", err);
       setSuggestions([]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Debounced version of fetchSuggestions (500ms)
+  const debouncedFetch = useMemo(
+    () => debounce((query: string) => fetchSuggestions(query), 500),
+    []
+  );
+
+  // Handle input change
   const handleChange = (value: string) => {
     setInputValue(value);
     onChange(value);
-    fetchSuggestions(value);
+    debouncedFetch(value);
   };
 
+  // When a suggestion is clicked
   const handleSuggestionClick = (loc: string) => {
     setInputValue(loc);
     onChange(loc);
     setSuggestions([]);
   };
 
+  // Use current location
   const handleUseCurrentLocation = () => {
-    // if (!selected) {
-    //   toast.error("Please select Home or Office first");
-    //   return;
-    // }
-
     if (!navigator.geolocation) {
       toast.error(t.common?.geoNotSupported ?? "Geolocation not supported");
       return;
@@ -68,14 +70,14 @@ export default function LocationSearchInput({
 
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
-       const res = await fetch(
-  `https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=en&lat=${coords.latitude}&lon=${coords.longitude}`
-);
-
-        const data = await res.json();
-        const loc = data.display_name ?? `${coords.latitude}, ${coords.longitude}`;
-        setInputValue(loc);
-        onChange(loc);
+        try {
+          const loc = await reverseGeocode(coords.latitude, coords.longitude);
+          setInputValue(loc);
+          onChange(loc);
+        } catch (err) {
+          console.error("Error fetching location:", err);
+          toast.error(t.common?.locationError ?? "Unable to fetch location");
+        }
       },
       () => toast.error(t.common?.locationError ?? "Unable to fetch location")
     );
@@ -116,16 +118,11 @@ export default function LocationSearchInput({
       <Button
         variant="ghost"
         onClick={handleUseCurrentLocation}
-        className="inline-flex items-center gap-2 mb-2 text-blue-600  cursor-pointer text-sm font-bold px-4 py-2 rounded-full hover:bg-blue-100"
+        className="inline-flex items-center gap-2 mb-2 text-blue-600 cursor-pointer text-sm font-bold px-4 py-2 rounded-full hover:bg-blue-100"
       >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <polygon points="3 11 22 2 13 21 11 13 3 11" />
-          </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polygon points="3 11 22 2 13 21 11 13 3 11" />
+        </svg>
         {t.location.useCurrent ?? "Use current location"}
       </Button>
     </>

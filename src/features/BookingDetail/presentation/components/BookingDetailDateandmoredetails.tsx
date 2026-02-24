@@ -1,3 +1,4 @@
+import { getCoordinatesFromAddress } from "@/features/utils/reverse";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useMemo, useState } from "react";
@@ -60,7 +61,19 @@ export default function BookingDetailDateandmoredetails() {
     commissionAmount = commissionValue;
   }
 
-  const totalCostToSend = basePrice - discount + commissionAmount;
+  const totalCostToSend = useMemo(() => {
+  const basePrice = duration * basePricePerHour;
+  const discount = (basePrice * discountPercent) / 100;
+  let commissionAmount = 0;
+
+  if (commissionType === "PERCENTAGE") {
+    commissionAmount = (basePrice * commissionValue) / 100;
+  } else {
+    commissionAmount = commissionValue;
+  }
+
+  return basePrice - discount + commissionAmount;
+}, [duration, basePricePerHour, discountPercent, commissionType, commissionValue]);
 
   // ==============================
   // ✅ BOOKING HANDLER
@@ -87,53 +100,63 @@ export default function BookingDetailDateandmoredetails() {
       if (selectedDateObj.getTime() <= new Date().getTime())
         return toast.error("Please select a future time");
 
-      let lat = 0;
-      let lng = 0;
 
-      const homeAddress = customerData?.current_location?.home;
-      if (!homeAddress) return toast.error("No home address found");
+            const addresses = customerData?.current_location?.addresses ?? [];
 
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            homeAddress
-          )}&limit=1&accept-language=en`
-        );
-        const data = await res.json();
+      const homeAddress =
+        addresses.find((addr) => addr.type === "home")?.value ||
+        addresses.find((addr) => addr.type === "inputValue")?.value ||
+        "";
 
-        if (data.length === 0)
-          return toast.error("Unable to find coordinates");
+            if (!homeAddress) return toast.error("No home address found");
 
-        lat = parseFloat(data[0].lat);
-        lng = parseFloat(data[0].lon);
-      } catch (error) {
-        console.error("Geocoding error:", error);
-        return toast.error("Failed to fetch coordinates");
-      }
+            const coords = await getCoordinatesFromAddress(homeAddress);
 
-      const payload = {
-        workDescription: notes || "Service booking",
-        serviceId: serviceId!,
-        serviceTierId: serviceTierId!,
-        pricingMode: "HOURLY" as const,
-        numberOfWorkers: 1,
-        bookingType: "SCHEDULED" as const,
-        startDateTime: selectedDateObj.toISOString(),
-        estimatedHours: duration,
-        estimatedDays: 0,
+            if (!coords) {
+              return toast.error("Unable to fetch location coordinates");
+            }
 
-        memberDiscount: discount,
-        // commissionValue,
-        // commissionType,
-        // commissionAmount,
-        serviceFee: commissionAmount,
-        totalCost: totalCostToSend,
+      const { lat, lng } = coords;
+     // Determine booking type
+const bookingType: "SCHEDULED" | "INSTANT" = selectedDate !== null ? "SCHEDULED" : "INSTANT";
 
-        location: {
-          type: "Point" as const,
-          coordinates: [lng, lat] as [number, number],
-        },
-      };
+// Determine pricing mode based on duration
+let pricingMode: "HOURLY" | "PER_DAY" = "HOURLY";
+let estimatedHours = duration;
+let estimatedDays = 0;
+
+// Switch to PER_DAY if duration > 24 hours
+if (duration > 24) {
+  pricingMode = "PER_DAY";
+  estimatedDays = Math.ceil(duration / 24);
+  estimatedHours = duration % 24; // leftover hours
+}
+
+// Set startDateTime only for scheduled bookings
+let startDateTime: string | undefined = undefined;
+if (bookingType === "SCHEDULED") {
+  startDateTime = selectedDateObj.toISOString();
+} else {
+  startDateTime = new Date().toISOString(); // optional: backend can override
+}
+
+const payload = {
+  workDescription: notes || "Service booking",
+  serviceId: serviceId!,
+  serviceTierId: serviceTierId!,
+  pricingMode,        // dynamic
+  numberOfWorkers: 1,
+  bookingType,        // INSTANT or SCHEDULED
+  startDateTime,
+  estimatedHours,     // leftover hours if any
+  estimatedDays,      // total full days if duration > 24
+  // memberDiscount: discount,
+  // serviceFee: commissionAmount,
+  location: {
+    type: "Point" as const,
+    coordinates: [lng, lat] as [number, number],
+  },
+};
 
       console.log("Booking Payload:", payload);
       await createBooking(payload);
@@ -211,6 +234,19 @@ export default function BookingDetailDateandmoredetails() {
           +
         </button>
       </div>
+      {/* ================= SPECIAL REQUIREMENTS ================= */}
+      <div className="mb-4">
+                <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">
+          Special Requirements
+        </h2>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="e.g. Focus on kitchen cabinets, be careful with the glass table..."
+          className="w-full h-32 p-4 bg-white border-2 border-gray-200 rounded-lg text-sm text-gray-900 font-sans resize-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+        />
+              </div>
+
 
       {/* ================= PRICE SUMMARY ================= */}
       <div className="border-t-2 border-dashed border-gray-200 pt-6 mb-6">

@@ -22,7 +22,7 @@ export default function QuickActions() {
       {/* Buttons Grid */}
       <div className="grid grid-cols-2 gap-3">
         {/* Security */}
-        <ActionButton>
+        <ActionButton onClick={()=>navigate('/security')}>
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -66,7 +66,7 @@ export default function QuickActions() {
         </ActionButton>
 
         {/* Help */}
-        <ActionButton>
+        <ActionButton onClick={()=>navigate('/help')}>
           <svg
             viewBox="0 0 24 24"
             fill="none"
