@@ -46,7 +46,7 @@ export default function BookingServiceModal({
 
     let total = 0;
     selectedTiers.forEach((tierId) => {
-      const tier = service.pricingTiers.find((t) => t.tierId === tierId);
+      const tier = service.pricingTiers.find((t) => t.tierId._id === tierId);
       if (!tier) return;
 
       if (pricingMode === "HOURLY" && tier.HOURLY?.ratePerHour) {

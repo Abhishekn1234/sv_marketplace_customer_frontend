@@ -88,12 +88,12 @@ export default function PricingSection({
       {/* Pricing Tier Buttons */}
       <div className="grid grid-cols-2 gap-2 mt-2">
         {service.pricingTiers.map(tier => {
-          const tierInfo = serviceTiers.find(st => st._id === tier.tierId);
+          const tierInfo = serviceTiers.find(st => st._id === tier.tierId._id);
           return (
             <Button
               key={tier._id}
-              variant={selectedTiers.includes(tier.tierId) ? "default" : "outline"}
-              onClick={() => toggleTier(tier.tierId)}
+              variant={selectedTiers.includes(tier.tierId._id) ? "default" : "outline"}
+              onClick={() => toggleTier(tier.tierId._id)}
             >
               {tierInfo?.displayName ?? "Tier"}
             </Button>
