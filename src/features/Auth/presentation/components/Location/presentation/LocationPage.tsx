@@ -1,6 +1,5 @@
 "use client";
 
-import RegisterHeader from "@/features/Layout/RegisterHeader";
 import LocationBadge from "./components/LocationBadge";
 
 import LocationHeader from "./components/LocationHeader";
