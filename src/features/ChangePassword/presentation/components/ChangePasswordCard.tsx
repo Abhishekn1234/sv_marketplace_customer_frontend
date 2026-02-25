@@ -69,7 +69,7 @@ export default function ChangePasswordCard() {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           required
-          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
           placeholder={placeholder}
         />
 
@@ -142,7 +142,7 @@ export default function ChangePasswordCard() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-xl transition hover:opacity-90 disabled:opacity-50"
+                className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
               >
                 {loading ? "Updating..." : "Update Password"}
               </button>

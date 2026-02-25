@@ -9,7 +9,7 @@ export default function ServiceTierSelectionBreadCrumb() {
     services?.find((s) => s._id === id)?.name || "Service";
 
   return (
-    <div className="w-full px-0 lg:px-8 py-6 mt-24">
+    <div className="w-full px-0 lg:px-8 py-6 mt-10">
       {/* Breadcrumb */}
       <nav className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 mb-6">
         <button

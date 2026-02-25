@@ -1,138 +1,197 @@
-import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocationName } from "@/features/utils/reverse";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import CommonNotificationFloater from "./CommonNotificationFloater";
+'use client';
 
-export default function CommonNavbar() {
-  const { customerData, addAddress, updateAddress } = useAuthStore();
-  const username = customerData.user?.fullName;
-  const profileurl = customerData.user?.profilePictureUrl;
-  const customerplace = customerData.current_location?.addresses;
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { MapPin, ChevronDown, Search } from "lucide-react";
+import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
+import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
 
-  const inputAddress = customerplace?.find((add) => add.type === "inputValue")?.value;
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [loadingLocation, setLoadingLocation] = useState(false);
-
-  const navigate = useNavigate();
-
-  const handleUseCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
-      return;
-    }
-
-    setLoadingLocation(true);
-
-    try {
-      const { placeName } = await getCurrentLocationName();
-
-      // Add or update 'home'
-      const hasHome = customerplace?.some((addr) => addr.type === "home");
-      if (hasHome) {
-        updateAddress("home", placeName);
-      } else {
-        addAddress("home", placeName);
-      }
-
-      // Add or update 'inputValue'
-      const hasInputValue = customerplace?.some((addr) => addr.type === "inputValue");
-      if (hasInputValue) {
-        updateAddress("inputValue", placeName);
-      } else {
-        addAddress("inputValue", placeName);
-      }
-
-      toast.success("Current location saved successfully!");
-      setDropdownOpen(false);
-    } catch (error) {
-      console.error("Geolocation error:", error);
-      toast.error("Unable to retrieve your location");
-    } finally {
-      setLoadingLocation(false);
-    }
+interface NavbarProps {
+  showBackButton?: boolean;
+  showSearch?: boolean;
+  showLocation?: boolean;
+  title?: string;
+  rightButton?: {
+    label: string;
+    to: string;
+    variant?: "primary" | "link";
   };
+  showUserControls?: boolean; 
+   showHomeLinks?: boolean;
+}
+
+const CommonNavbar: React.FC<NavbarProps> = ({
+  showBackButton = false,
+  showSearch = false,
+  showLocation = false,
+  title = "HomeEase",
+  rightButton,
+  showUserControls = true,
+  showHomeLinks=false
+}) => {
+  const navigate = useNavigate();
+  const { customerData, updateAddress } = useAuthStore();
+  const { searchTerm, setSearchTerm } = useSearchStore();
+  const { handleUseCurrentLocation } = useUpdateCurrentLocation();
+
+  const profilePic = customerData?.user?.profilePictureUrl;
+  const location = customerData?.current_location?.addresses ?? [];
+  const currentLocation =
+    location.find((addr) => addr.type === "home")?.value ||
+    location.find((addr) => addr.type === "inputValue")?.value;
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-[9999] bg-white border-b border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between px-6 lg:px-8 py-5">
-        {/* Left Section */}
-        <div className="flex items-center gap-8">
+    <header className="top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
+
+        {/* Left Section: Logo, Back Button, Location */}
+        <div className="flex items-center gap-4 min-w-0">
           {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+          <div
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(37,99,235,0.3)]">
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-                <path d="M12 3L4 9v12h16V9l-8-6zm0 2.2L18 9.5V19H6V9.5l6-4.3z" />
-                <path d="M12 7L9 10h6l-3-3z" />
+                <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
               </svg>
             </div>
-            <span className="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">HomeEase</span>
+            <span className="hidden sm:block font-bold text-lg truncate">{title}</span>
           </div>
 
-          {/* Location Button */}
-          <div className="relative">
+          {/* Back Button */}
+          {showBackButton && (
             <button
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-full text-sm font-semibold text-gray-900 transition-all hover:border-blue-600"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-blue-600">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                <circle cx="12" cy="10" r="3" />
+              <svg viewBox="0 0 24 24" className="w-4 h-4" stroke="currentColor" strokeWidth={2} fill="none">
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
               </svg>
-              {inputAddress || "Select location"}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 text-gray-400">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              Back
             </button>
+          )}
 
-            {/* Dropdown */}
-            {dropdownOpen && (
-              <div className="absolute top-full mt-2 w-56 bg-white border-2 border-gray-200 rounded-xl shadow-lg z-50">
-                {/* Use current location */}
-                <button
-                  onClick={handleUseCurrentLocation}
-                  className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center justify-between"
-                  disabled={loadingLocation}
-                >
-                  <span>Use Current Location</span>
-                  {loadingLocation && <span className="text-xs text-gray-500 ml-2">Loading...</span>}
-                </button>
+          {/* Location Dropdown */}
+          {showLocation && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown((prev) => !prev)}
+                className="flex items-center gap-1 px-3 py-2 bg-gray-50 border rounded-full text-sm font-medium hover:border-blue-600 transition truncate"
+              >
+                <MapPin className="w-4 h-4 text-blue-600" />
+                <span className="truncate">{currentLocation || "Select Location"}</span>
+                <ChevronDown className="w-3 h-3 text-gray-400" />
+              </button>
 
-              
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-6">
-          {/* Notification */}
-           <CommonNotificationFloater />
-
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-md">
-              {profileurl ? (
-                <img src={profileurl} alt={username} className="w-full h-full rounded-full object-cover" />
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5 text-white">
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+              {showDropdown && (
+                <div className="absolute left-0 mt-2 w-60 bg-white border rounded-xl shadow-lg overflow-hidden z-50">
+                  <button
+                    onClick={handleUseCurrentLocation}
+                    className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium"
+                  >
+                    Use Current Location
+                  </button>
+                  {location.map((addr) => (
+                    <button
+                      key={addr.id}
+                      onClick={() => {
+                        updateAddress("home", addr.value);
+                        updateAddress("inputValue", addr.value);
+                        setShowDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm font-medium"
+                    >
+                      {addr.value}
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-            <div className="hidden lg:flex flex-col text-left">
-              <span className="text-xs font-bold uppercase text-gray-400">Premium Member</span>
-              <span className="text-sm font-bold text-gray-900">{username}</span>
+          )}
+        </div>
+
+        {/* Right Section: Search, Right Button, User Controls */}
+        <div className="flex items-center gap-4">
+          {showSearch && (
+            <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl">
+              <Search className="w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search services..."
+                className="bg-transparent outline-none text-sm text-gray-900"
+              />
             </div>
-          </div>
+          )}
+          {showHomeLinks && (
+  <div className="hidden lg:flex items-center gap-2">
+    {[
+      { label: "Bookings", to: "/bookings" },
+      { label: "Job Progress", to: "/jobprogress" },
+      { label: "About", to: "/about" },
+      { label: "Privacy", to: "/privacy" },
+      { label: "Help", to: "/help" },
+    ].map((link) => (
+      <Link
+        key={link.to}
+        to={link.to}
+        className="px-4 py-2 text-sm font-medium rounded-full transition-all
+                   text-gray-700 hover:text-blue-600 
+                   hover:bg-blue-50 hover:shadow-sm"
+      >
+        {link.label}
+      </Link>
+    ))}
+  </div>
+)}
+
+          {/* Right Button (Sign In / Sign Up) */}
+          {rightButton && (
+            <Link
+              to={rightButton.to}
+              className={`${
+                rightButton.variant === "primary"
+                  ? "btn-primary text-sm px-6 py-2.5"
+                  : "btn-link text-sm"
+              }`}
+            >
+              {rightButton.label}
+            </Link>
+          )}
+
+          {/* User Controls */}
+          {showUserControls && customerData?.user && (
+            <>
+              <CommonNotificationFloater />
+              <img
+                onClick={() => navigate("/profile")}
+                src={profilePic || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"}
+                alt="User"
+                className="w-10 h-10 rounded-xl object-cover cursor-pointer border-2 border-transparent hover:border-blue-600 hover:scale-105 hover:shadow-md"
+              />
+            </>
+          )}
         </div>
       </div>
     </header>
   );
-}
+};
+
+export default CommonNavbar;

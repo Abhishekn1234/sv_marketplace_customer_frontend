@@ -6,13 +6,15 @@ import LocationBadge from "./components/LocationBadge";
 import LocationHeader from "./components/LocationHeader";
 import LocationInputs from "./components/LocationInputs";
 import ProgressStepper from "../../auth/Register/RegisterTab";
-import RegisterFooter from "../../auth/Register/RegisterFooter";
+
+import Footer from "@/components/common/CommonFooter";
+import CommonNavbar from "@/components/common/CommonNavbar";
 
 export default function LocationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900 flex flex-col">
      
-      <RegisterHeader/>
+      <CommonNavbar rightButton={{ label: "Sign In", to: "/login", variant: "primary" }} />
       <ProgressStepper/>
 
     
@@ -26,7 +28,7 @@ export default function LocationPage() {
       </main>
 
       
-      <RegisterFooter/>
+      <Footer/>
     </div>
   );
 }

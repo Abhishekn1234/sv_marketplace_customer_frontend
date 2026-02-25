@@ -175,12 +175,16 @@ const payload = {
       {/* ================= DATE ================= */}
       <h2 className="text-sm font-bold text-gray-900 mb-4">Select Date</h2>
 
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-6">
+            <div className="grid grid-cols-3 gap-3 mb-6 
+                      sm:flex sm:overflow-x-auto sm:pb-2">
         {dates.map((item, index) => (
           <div
             key={index}
             onClick={() => setSelectedDate(index)}
-            className={`min-w-[72px] h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition-all ${
+            className={`h-[80px] 
+                        flex flex-col items-center justify-center 
+                        rounded-xl border-2 cursor-pointer transition-all
+                        sm:min-w-[72px] ${
               selectedDate === index
                 ? "bg-blue-600 border-blue-600 text-white shadow-lg"
                 : "bg-white border-gray-200 hover:border-blue-600"
@@ -189,7 +193,9 @@ const payload = {
             <span className="text-xs font-bold uppercase">
               {item.day}
             </span>
-            <span className="text-2xl font-black">{item.date}</span>
+            <span className="text-2xl font-black">
+              {item.date}
+            </span>
           </div>
         ))}
       </div>

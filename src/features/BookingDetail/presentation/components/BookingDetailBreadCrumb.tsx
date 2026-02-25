@@ -15,7 +15,7 @@ export default function BookingDetailBreadCrumb() {
     <button
       onClick={() => navigate(`/services/${category}`)}
       className="
-        flex items-center gap-2 mb-6 text-sm font-semibold mt-24 
+        flex items-center gap-2 mb-6 text-sm font-semibold mt-10 
         text-gray-400 hover:text-blue-600 transition-colors duration-200
         focus:outline-none
       "

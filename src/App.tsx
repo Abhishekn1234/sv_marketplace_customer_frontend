@@ -5,7 +5,7 @@ import "react-toastify/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
 
-import ForgotPassword from "./features/Auth/presentation/components/ForgotPassword/ForgotPassword";
+
 import DashboardLayout from "./features/Layout/DashboardLayout";
 import WebsiteHome from "./features/Home/presentation/DashboardHome";
 import BookService from "./features/Bookings/presentation/components/bookings/BookService";
@@ -42,6 +42,7 @@ import HelpPage from "./features/Help/presentation/HelpPage";
 import SecurityPage from "./features/Security/presentation/SecurityPage";
 import ServiceRating from "./features/ServiceRating/presentation/ServiceRating";
 import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedPage";
+import ForgotPasswordLayout from "./features/Auth/presentation/components/ForgotPassword/presentation/components/ForgotPasswordLayout";
 
 function App() {
   useNotification();
@@ -74,7 +75,7 @@ useEffect(()=>{
   <Route path="/language" element={<LanguagePage />} />
   <Route path="/location" element={<LocationPage />} />
   
-  <Route path="/forgot-password" element={<DashboardLayout><ForgotPassword /></DashboardLayout>} />
+  <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
  <Route path="/verification" element={<VerificationPage/>}/>
   {/* Protected pages */}
   <Route path="/" element={<ProtectedRoute><DashboardLayout  /></ProtectedRoute>}>

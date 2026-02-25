@@ -18,7 +18,7 @@ const PopularService: React.FC<Props> = ({ categories }) => {
   }
 
   return (
-    <div className="mt-8 px-4 sm:px-6 lg:px-8">
+    <div className="mt-8 px-4 sm:px-6 lg:px-2">
       <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 text-center sm:text-left">
         Popular Services
       </h2>

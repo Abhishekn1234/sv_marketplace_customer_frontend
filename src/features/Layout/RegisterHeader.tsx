@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'; // import Link
+import { Link } from 'react-router-dom'; 
 
 const RegisterHeader = () => {
   return (
