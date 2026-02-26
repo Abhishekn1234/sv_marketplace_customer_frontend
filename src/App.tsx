@@ -43,6 +43,7 @@ import SecurityPage from "./features/Security/presentation/SecurityPage";
 import ServiceRating from "./features/ServiceRating/presentation/ServiceRating";
 import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedPage";
 import ForgotPasswordLayout from "./features/Auth/presentation/components/ForgotPassword/presentation/components/ForgotPasswordLayout";
+import NotificationsPage from "./features/Notifications/presentation/NotificationsPage";
 
 function App() {
   useNotification();
@@ -81,6 +82,7 @@ useEffect(()=>{
   <Route path="/" element={<ProtectedRoute><DashboardLayout  /></ProtectedRoute>}>
     <Route index element={<WebsiteHome />} />
     <Route path="bookingdetail/:serviceId/:serviceTierId"element={<BookingDetailPage/>}/>
+    <Route path="notifications" element={<NotificationsPage/>}/>
     <Route path="changepassword" element={<ChangePasswordPage/>}/>
     <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage/>}/>
     <Route path="bookings" element={<MyBookings/>}/>

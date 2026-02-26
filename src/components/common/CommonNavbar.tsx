@@ -31,10 +31,10 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   showHomeLinks=false
 }) => {
   const navigate = useNavigate();
-  const { customerData, updateAddress } = useAuthStore();
+  const { customerData,  } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
-
+  // updateAddress
   const profilePic = customerData?.user?.profilePictureUrl;
   const location = customerData?.current_location?.addresses ?? [];
   const currentLocation =
@@ -70,7 +70,9 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                 <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
               </svg>
             </div>
-            <span className="hidden sm:block font-bold text-lg truncate">{title}</span>
+           <span className="hidden sm:block font-bold text-lg truncate text-gray-900">
+              {title}
+            </span>
           </div>
 
           {/* Back Button */}
@@ -107,7 +109,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   >
                     Use Current Location
                   </button>
-                  {location.map((addr) => (
+                  {/* {location.map((addr) => (
                     <button
                       key={addr.id}
                       onClick={() => {
@@ -119,7 +121,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                     >
                       {addr.value}
                     </button>
-                  ))}
+                  ))} */}
                 </div>
               )}
             </div>

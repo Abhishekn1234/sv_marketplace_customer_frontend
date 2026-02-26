@@ -22,6 +22,7 @@ const navbarPropsMap: Record<string, NavbarProps> = {
   "/help": { showBackButton: true },
   "/changepassword": { showBackButton: true },
   "/about": { showBackButton: true },
+  "/servicerating":{showHomeLinks:true}
 };
 
 const getNavbarProps = (pathname: string): NavbarProps => {
@@ -47,6 +48,7 @@ export default function DashboardLayout({ children }: Props) {
   const { pathname } = useLocation();
 
   const isRegisterPage = pathname === "/register";
+ 
   const isConfirmationPage = pathname.startsWith("/confirmation/");
 
   const navbarProps = getNavbarProps(pathname);
