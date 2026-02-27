@@ -44,6 +44,7 @@ import ServiceRating from "./features/ServiceRating/presentation/ServiceRating";
 import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedPage";
 import ForgotPasswordLayout from "./features/Auth/presentation/components/ForgotPassword/presentation/components/ForgotPasswordLayout";
 import NotificationsPage from "./features/Notifications/presentation/NotificationsPage";
+import CookiePolicyPage from "./features/CookiePolicy/presentation/CookiePolicyPage";
 
 function App() {
   useNotification();
@@ -78,6 +79,7 @@ useEffect(()=>{
   
   <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
  <Route path="/verification" element={<VerificationPage/>}/>
+ <Route path="/cookiepolicy" element={<CookiePolicyPage/>}/>
   {/* Protected pages */}
   <Route path="/" element={<ProtectedRoute><DashboardLayout  /></ProtectedRoute>}>
     <Route index element={<WebsiteHome />} />
