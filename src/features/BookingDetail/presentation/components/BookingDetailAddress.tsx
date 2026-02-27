@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { toast } from "react-toastify";
+import { getSuggestions } from "@/features/utils/reverse";
 
 export default function BookingDetailAddress() {
   const { customerData, updateAddress } = useAuthStore();
 
   const addresses = customerData?.current_location?.addresses ?? [];
 
-  // Safely get home address
   const homeaddress =
     addresses.find((a) => a.type === "home")?.value ||
     addresses.find((a) => a.type === "inputValue")?.value ||
@@ -22,12 +22,8 @@ export default function BookingDetailAddress() {
   const [entryInstructions, setEntryInstructions] =
     useState(entryInstructionsSaved);
 
-  const [homeSuggestions, setHomeSuggestions] = useState<
-    { display_name: string }[]
-  >([]);
-  const [entrySuggestions, setEntrySuggestions] = useState<
-    { display_name: string }[]
-  >([]);
+  const [homeSuggestions, setHomeSuggestions] = useState<string[]>([]);
+  const [entrySuggestions, setEntrySuggestions] = useState<string[]>([]);
 
   const [loadingHome, setLoadingHome] = useState(false);
   const [loadingEntry, setLoadingEntry] = useState(false);
@@ -35,43 +31,59 @@ export default function BookingDetailAddress() {
   const homeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const entryDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const homeAbortRef = useRef<AbortController | null>(null);
+  const entryAbortRef = useRef<AbortController | null>(null);
+
   // Sync when store changes
   useEffect(() => {
     setNewAddress(homeaddress);
     setEntryInstructions(entryInstructionsSaved);
   }, [homeaddress, entryInstructionsSaved]);
 
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (homeAbortRef.current) homeAbortRef.current.abort();
+      if (entryAbortRef.current) entryAbortRef.current.abort();
+    };
+  }, []);
+
   const fetchSuggestions = async (
     input: string,
-    setSuggestions: React.Dispatch<
-      React.SetStateAction<{ display_name: string }[]>
-    >,
+    setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    debounceRef: React.MutableRefObject<
-      ReturnType<typeof setTimeout> | null
-    >
+    debounceRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
+    abortRef: React.MutableRefObject<AbortController | null>
   ) => {
+    // Clear previous debounce timer
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
     debounceRef.current = setTimeout(async () => {
-      if (!input.trim()) {
+      if (!input.trim() || input.length < 3) {
         setSuggestions([]);
         return;
       }
 
+      // Cancel previous API request
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       setLoading(true);
+
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            input
-          )}&limit=5`
-        );
-        const data = await res.json();
-        setSuggestions(data);
-      } catch (err) {
-        console.error("Error fetching suggestions:", err);
+        const results = await getSuggestions(input, controller.signal);
+        setSuggestions(results);
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          console.error("Suggestion error:", error);
+        }
+        setSuggestions([]);
       } finally {
         setLoading(false);
       }
@@ -93,7 +105,7 @@ export default function BookingDetailAddress() {
 
   return (
     <>
-      {/* Display */}
+      {/* Display Section */}
       <div className="mt-6 bg-white rounded-2xl p-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-bold text-gray-900">
@@ -124,12 +136,15 @@ export default function BookingDetailAddress() {
           type="text"
           value={entryInstructions}
           onChange={(e) => {
-            setEntryInstructions(e.target.value);
+            const value = e.target.value;
+            setEntryInstructions(value);
+
             fetchSuggestions(
-              e.target.value,
+              value,
               setEntrySuggestions,
               setLoadingEntry,
-              entryDebounceRef
+              entryDebounceRef,
+              entryAbortRef
             );
           }}
           placeholder="Apartment, street, building..."
@@ -148,12 +163,12 @@ export default function BookingDetailAddress() {
               <li
                 key={i}
                 onClick={() => {
-                  setEntryInstructions(s.display_name);
+                  setEntryInstructions(s);
                   setEntrySuggestions([]);
                 }}
                 className="p-2 text-sm hover:bg-blue-50 cursor-pointer"
               >
-                {s.display_name}
+                {s}
               </li>
             ))}
           </ul>
@@ -172,12 +187,15 @@ export default function BookingDetailAddress() {
               type="text"
               value={newAddress}
               onChange={(e) => {
-                setNewAddress(e.target.value);
+                const value = e.target.value;
+                setNewAddress(value);
+
                 fetchSuggestions(
-                  e.target.value,
+                  value,
                   setHomeSuggestions,
                   setLoadingHome,
-                  homeDebounceRef
+                  homeDebounceRef,
+                  homeAbortRef
                 );
               }}
               placeholder="Type your home address..."
@@ -196,12 +214,12 @@ export default function BookingDetailAddress() {
                   <li
                     key={i}
                     onClick={() => {
-                      setNewAddress(s.display_name);
+                      setNewAddress(s);
                       setHomeSuggestions([]);
                     }}
                     className="p-2 text-sm hover:bg-blue-50 cursor-pointer"
                   >
-                    {s.display_name}
+                    {s}
                   </li>
                 ))}
               </ul>

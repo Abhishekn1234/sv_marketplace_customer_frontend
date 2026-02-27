@@ -8,7 +8,7 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<string> 
 
     // ✅ Call your backend reverse geocode endpoint
     const response = await fetch(`${apiUrl}/geolocation/reverse?lat=${lat}&lon=${lng}`);
-
+    console.log(response);
     if (!response.ok) {
       throw new Error("Geocoding request failed");
     }
@@ -151,40 +151,3 @@ export const getSuggestions = async (
   return data.suggestions ?? [];
 };
 
-// export const getCoordinatesFromAddress = async (address: string) => {
-//   try {
-//     if (!address) return null;
-
-//     // Call your NestJS backend instead of Nominatim directly
-//     const response = await fetch(
-//       `${apiUrl}/geolocation/forward?address=${encodeURIComponent(address)}`, 
-//       {
-//         method: "GET",
-//         headers: {
-//           "Accept": "application/json",
-//         },
-//       }
-//     );
-
-//     if (!response.ok) {
-//       console.error("Backend geocoding error:", response.status);
-//       return null;
-//     }
-
-//     const data = await response.json();
-
-//     // Check if backend returned an error
-//     if (!data || data.error) {
-//       console.error("Geocoding error:", data?.error);
-//       return null;
-//     }
-
-//     return {
-//       lat: data.lat,
-//       lng: data.lng,
-//     };
-//   } catch (error) {
-//     console.error("Geocoding fetch error:", error);
-//     return null;
-//   }
-// };

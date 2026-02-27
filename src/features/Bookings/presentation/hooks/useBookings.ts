@@ -105,7 +105,7 @@ export const useBookings = () => {
           bookings: [mapped, ...(currentUser.bookings ?? [])],
         });
       }
-      navigate(`/confirmation/${newBooking._id}`)
+      navigate(`/confirmation`)
       
 
       toast.success("Booking created successfully ✅");

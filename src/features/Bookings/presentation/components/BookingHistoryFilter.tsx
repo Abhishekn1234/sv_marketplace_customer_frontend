@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-const tabs = ["All", "In Progress", "Completed", "Scheduled", "Cancelled"];
+const tabs = ["All", "In Progress", "Completed", "Requested", "Cancelled"];
 
 interface Props {
   activeTab: string;

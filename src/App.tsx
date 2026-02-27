@@ -97,7 +97,7 @@ useEffect(()=>{
     <Route path="book-service/:serviceId" element={<BookService />} />
      <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
      <Route path="jobprogress" element={<JobProgressPage />} />
-     <Route path="confirmation/:bookingId" element={<ConfirmationPage/>}/>
+     <Route path="confirmation" element={<ConfirmationPage/>}/>
   </Route>
 
   {/* Catch-all */}

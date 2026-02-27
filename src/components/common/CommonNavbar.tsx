@@ -2,7 +2,18 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { MapPin, ChevronDown, Search } from "lucide-react";
+import {
+  MapPin,
+  ChevronDown,
+  Search,
+  Menu,
+  X,
+  BookOpen,
+  Briefcase,
+  Info,
+  Shield,
+  HelpCircle,
+} from "lucide-react";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
@@ -17,8 +28,8 @@ interface NavbarProps {
     to: string;
     variant?: "primary" | "link";
   };
-  showUserControls?: boolean; 
-   showHomeLinks?: boolean;
+  showUserControls?: boolean;
+  showHomeLinks?: boolean;
 }
 
 const CommonNavbar: React.FC<NavbarProps> = ({
@@ -28,13 +39,13 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   title = "HomeEase",
   rightButton,
   showUserControls = true,
-  showHomeLinks=false
+  showHomeLinks = false,
 }) => {
   const navigate = useNavigate();
-  const { customerData,  } = useAuthStore();
+  const { customerData } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
-  // updateAddress
+
   const profilePic = customerData?.user?.profilePictureUrl;
   const location = customerData?.current_location?.addresses ?? [];
   const currentLocation =
@@ -42,6 +53,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     location.find((addr) => addr.type === "inputValue")?.value;
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -58,7 +70,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     <header className="top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
 
-        {/* Left Section: Logo, Back Button, Location */}
+        {/* LEFT SECTION */}
         <div className="flex items-center gap-4 min-w-0">
           {/* Logo */}
           <div
@@ -70,7 +82,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                 <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
               </svg>
             </div>
-           <span className="hidden sm:block font-bold text-lg truncate text-gray-900">
+            <span className="hidden sm:block font-bold text-lg truncate text-gray-900">
               {title}
             </span>
           </div>
@@ -81,23 +93,20 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               onClick={() => navigate(-1)}
               className="flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
             >
-              <svg viewBox="0 0 24 24" className="w-4 h-4" stroke="currentColor" strokeWidth={2} fill="none">
-                <path d="M19 12H5" />
-                <path d="M12 19l-7-7 7-7" />
-              </svg>
               Back
             </button>
           )}
 
-          {/* Location Dropdown */}
           {showLocation && (
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative hidden sm:block" ref={dropdownRef}>
               <button
                 onClick={() => setShowDropdown((prev) => !prev)}
                 className="flex items-center gap-1 px-3 py-2 bg-gray-50 border rounded-full text-sm font-medium hover:border-blue-600 transition truncate"
               >
                 <MapPin className="w-4 h-4 text-blue-600" />
-                <span className="truncate">{currentLocation || "Select Location"}</span>
+                <span className="truncate">
+                  {currentLocation || "Select Location"}
+                </span>
                 <ChevronDown className="w-3 h-3 text-gray-400" />
               </button>
 
@@ -109,27 +118,51 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   >
                     Use Current Location
                   </button>
-                  {/* {location.map((addr) => (
-                    <button
-                      key={addr.id}
-                      onClick={() => {
-                        updateAddress("home", addr.value);
-                        updateAddress("inputValue", addr.value);
-                        setShowDropdown(false);
-                      }}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm font-medium"
-                    >
-                      {addr.value}
-                    </button>
-                  ))} */}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Right Section: Search, Right Button, User Controls */}
+        {/* RIGHT SECTION */}
         <div className="flex items-center gap-4">
+                    {rightButton && (
+            <Link
+              to={rightButton.to}
+              className={`hidden sm:inline-flex ${
+                rightButton.variant === "primary"
+                  ? "px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                  : "text-sm font-semibold text-blue-600 hover:underline"
+              }`}
+            >
+              {rightButton.label}
+            </Link>
+          )}
+          {/* Desktop Links */}
+          {showHomeLinks && (
+            <div className="hidden lg:flex items-center gap-2">
+              {[
+                { label: "Bookings", to: "/bookings" },
+                { label: "Job Progress", to: "/jobprogress" },
+                { label: "About", to: "/about" },
+                { label: "Privacy", to: "/privacy" },
+                { label: "Help", to: "/help" },
+              ].map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="px-4 py-2 text-sm font-medium rounded-full transition-all
+                             text-gray-700 hover:text-blue-600
+                             hover:bg-blue-50 hover:shadow-sm"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+            
+          )}
+
+          {/* Search */}
           {showSearch && (
             <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl">
               <Search className="w-4 h-4 text-gray-400" />
@@ -142,41 +175,6 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               />
             </div>
           )}
-          {showHomeLinks && (
-  <div className="hidden lg:flex items-center gap-2">
-    {[
-      { label: "Bookings", to: "/bookings" },
-      { label: "Job Progress", to: "/jobprogress" },
-      { label: "About", to: "/about" },
-      { label: "Privacy", to: "/privacy" },
-      { label: "Help", to: "/help" },
-    ].map((link) => (
-      <Link
-        key={link.to}
-        to={link.to}
-        className="px-4 py-2 text-sm font-medium rounded-full transition-all
-                   text-gray-700 hover:text-blue-600 
-                   hover:bg-blue-50 hover:shadow-sm"
-      >
-        {link.label}
-      </Link>
-    ))}
-  </div>
-)}
-
-          {/* Right Button (Sign In / Sign Up) */}
-          {rightButton && (
-            <Link
-              to={rightButton.to}
-              className={`${
-                rightButton.variant === "primary"
-                  ? "btn-primary text-sm px-6 py-2.5"
-                  : "btn-link text-sm"
-              }`}
-            >
-              {rightButton.label}
-            </Link>
-          )}
 
           {/* User Controls */}
           {showUserControls && customerData?.user && (
@@ -184,14 +182,98 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               <CommonNotificationFloater />
               <img
                 onClick={() => navigate("/profile")}
-                src={profilePic || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"}
+                src={
+                  profilePic ||
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                }
                 alt="User"
                 className="w-10 h-10 rounded-xl object-cover cursor-pointer border-2 border-transparent hover:border-blue-600 hover:scale-105 hover:shadow-md"
               />
             </>
           )}
+
+          {/* Mobile Menu Button */}
+          {showHomeLinks && (
+            <div className="lg:hidden">
+              <button
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6 text-gray-700" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-700" />
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+    
+      {mobileMenuOpen && (
+  <div className="lg:hidden border-t bg-white shadow-md">
+    <div className="flex flex-col p-4 gap-3">
+
+      <Link
+        to="/bookings"
+        onClick={() => setMobileMenuOpen(false)}
+        className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+      >
+        <BookOpen className="w-5 h-5 text-gray-400" /> Bookings
+      </Link>
+
+      <Link
+        to="/jobprogress"
+        onClick={() => setMobileMenuOpen(false)}
+        className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+      >
+        <Briefcase className="w-5 h-5 text-gray-400" /> Job Progress
+      </Link>
+
+      <Link
+        to="/about"
+        onClick={() => setMobileMenuOpen(false)}
+        className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+      >
+        <Info className="w-5 h-5 text-gray-400" /> About
+      </Link>
+
+      <Link
+        to="/privacy"
+        onClick={() => setMobileMenuOpen(false)}
+        className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+      >
+        <Shield className="w-5 h-5 text-gray-400" /> Privacy
+      </Link>
+
+      <Link
+        to="/help"
+        onClick={() => setMobileMenuOpen(false)}
+        className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+      >
+        <HelpCircle className="w-5 h-5 text-gray-400" /> Help
+      </Link>
+
+      {/* Right Button in Mobile */}
+      {rightButton && (
+        <div className="pt-3 border-t mt-2">
+          <Link
+            to={rightButton.to}
+            onClick={() => setMobileMenuOpen(false)}
+            className={`w-full text-center block ${
+              rightButton.variant === "primary"
+                ? "px-5 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                : "text-sm font-semibold text-blue-600 hover:underline"
+            }`}
+          >
+            {rightButton.label}
+          </Link>
+        </div>
+      )}
+    </div>
+  </div>
+)}
     </header>
   );
 };

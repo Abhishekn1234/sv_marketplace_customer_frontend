@@ -66,74 +66,75 @@ export default function CommonNotificationFloater({
     };
   }, []);
 
-  return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Bell Button */}
-      <button
-        onClick={() => setOpen((prev) => !prev)}
-        className="relative p-2 text-gray-400 hover:text-blue-600 transition-colors"
+ return (
+  <div className="relative" ref={dropdownRef}>
+    {/* Bell Button */}
+    <button
+      onClick={() => setOpen((prev) => !prev)}
+      className="relative p-2 text-gray-400 hover:text-blue-600 transition-colors"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        className="w-5 h-5"
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          className="w-5 h-5"
-        >
-          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 01-3.46 0" />
-        </svg>
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 01-3.46 0" />
+      </svg>
 
-        {/* Optional Dot Badge (always visible if you want) */}
-        <span className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
-      </button>
+      {/* Dot Badge */}
+      <span className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
+    </button>
 
-      {/* Dropdown */}
-      {open && (
-        <div
-          className={`absolute right-0 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 overflow-hidden ${
-            direction === "up"
-              ? "bottom-full mb-3"
-              : "top-full mt-3"
-          }`}
-        >
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-            <h3 className="font-semibold text-gray-800">
-              Notifications
-            </h3>
-            <button
-              onClick={() => {
-                navigate("/notifications");
-                setOpen(false);
-              }}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Show all
-            </button>
-          </div>
-
-          {/* List */}
-          <div className="max-h-72 overflow-y-auto">
-            {latestThree.map((item) => (
-              <div
-                key={item.id}
-                className="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-200"
-              >
-                <p className="text-sm font-semibold text-gray-800">
-                  {item.title}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {item.message}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {item.time}
-                </p>
-              </div>
-            ))}
-          </div>
+    {/* Dropdown */}
+    {open && (
+      <div
+    className={`
+      absolute z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden
+     w-72 sm:w-80c
+      right-0
+      ${direction === "up" ? "left-1/2 -translate-x-1/2 right-0 bottom-full mb-3" : "top-full mt-3"}
+    `}
+  >
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
+            Notifications
+          </h3>
+          <button
+            onClick={() => {
+              navigate("/notifications");
+              setOpen(false);
+            }}
+            className="text-xs sm:text-sm text-blue-600 hover:underline"
+          >
+            Show all
+          </button>
         </div>
-      )}
-    </div>
-  );
+
+        {/* List */}
+        <div className="max-h-72 overflow-y-auto">
+          {latestThree.map((item) => (
+            <div
+              key={item.id}
+              className="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-200"
+            >
+              <p className="text-sm font-semibold text-gray-800">
+                {item.title}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {item.message}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                {item.time}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+);
 }

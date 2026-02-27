@@ -46,6 +46,7 @@ const tabStatusMap: Record<string, BookingStatus[]> = {
   "In Progress": [BookingStatus.IN_PROGRESS],
   Completed: [BookingStatus.COMPLETED],
   Scheduled: [BookingStatus.WORKER_ACCEPTED, BookingStatus.REQUESTED],
+  Requested:[BookingStatus.REQUESTED],
   Cancelled: [
     BookingStatus.CUSTOMER_CANCELLED,
     BookingStatus.WORKER_CANCELLED,
