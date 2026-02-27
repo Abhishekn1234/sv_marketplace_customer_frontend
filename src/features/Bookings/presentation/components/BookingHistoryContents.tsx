@@ -6,10 +6,12 @@ import { useState } from "react";
 import type { Booking } from "../../domain/entities/booking.types";
 import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   activeTab: string;
 }
+
 
 const statusStyles: Record<BookingStatus, string> = {
   [BookingStatus.COMPLETED]:
@@ -56,6 +58,7 @@ const tabStatusMap: Record<string, BookingStatus[]> = {
 
 export default function BookingHistoryContents({ activeTab }: Props) {
   const { bookings, loading, error } = useBookings();
+  const navigate = useNavigate();
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 const [modalOpen, setModalOpen] = useState(false);
   const filteredBookings =
@@ -151,19 +154,30 @@ const [modalOpen, setModalOpen] = useState(false);
             </span>
 
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
-              <button className="w-full cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-200 hover:bg-gray-50 transition-all">
-                {booking.status === BookingStatus.IN_PROGRESS
-                  ? "Track"
-                  : booking.status === BookingStatus.WORKER_ACCEPTED
-                  ? "Reschedule"
-                  : "Rebook"}
-              </button>
+              <button
+            onClick={() => {
+              if (
+                booking.status === BookingStatus.IN_PROGRESS ||
+                booking.status === BookingStatus.REQUESTED
+              ) {
+                navigate(`/jobtracking/${booking._id}`);
+              }
+            }}
+            className="w-full cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-200 hover:bg-gray-50 transition-all"
+          >
+            {booking.status === BookingStatus.IN_PROGRESS ||
+            booking.status === BookingStatus.REQUESTED
+              ? "Track"
+              : booking.status === BookingStatus.WORKER_ACCEPTED
+              ? "Reschedule"
+              : "Rebook"}
+          </button>
               <button onClick={() => {
-    setSelectedBooking(booking);
-    setModalOpen(true);
-  }} className="w-full  cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all">
-                View Details
-              </button>
+                setSelectedBooking(booking);
+                setModalOpen(true);
+              }} className="w-full  cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all">
+                            View Details
+                          </button>
             </div>
           </div>
         </CommandCard>

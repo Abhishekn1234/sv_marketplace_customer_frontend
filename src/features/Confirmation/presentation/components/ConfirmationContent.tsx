@@ -11,11 +11,11 @@ export default function ConfirmationContent() {
   const { bookings, error, loading: isLoading } = useBookings();
   const navigate = useNavigate();
 
-  // Latest booking (newest first)
-  const data = bookings[0];
-   
+  const data = bookings?.[0]; // latest booking safely
+
   const [placeName, setPlaceName] = useState<string>("Loading...");
 
+  // Fetch place name safely
   useEffect(() => {
     const fetchPlace = async () => {
       if (!data?.location?.coordinates) return;
@@ -23,12 +23,16 @@ export default function ConfirmationContent() {
       const lat = data.location.coordinates[1];
       const lng = data.location.coordinates[0];
 
-      const place = await getPlaceNameFromCoords(lat, lng);
-      setPlaceName(place);
+      try {
+        const place = await getPlaceNameFromCoords(lat, lng);
+        setPlaceName(place || "Location not found");
+      } catch {
+        setPlaceName("Location not available");
+      }
     };
 
     fetchPlace();
-  }, [data]);
+  }, [data?.location?.coordinates]);
 
   // Error State
   if (error) {
@@ -53,6 +57,18 @@ export default function ConfirmationContent() {
     );
   }
 
+  const formattedStatus = data.status
+    ? data.status.charAt(0).toUpperCase() +
+      data.status.slice(1).toLowerCase()
+    : "";
+
+  const duration =
+    data?.pricingMode === "HOURLY"
+      ? `${data?.schedule?.estimatedHours ?? 0} Hours`
+      : data?.pricingMode === "PER_DAY"
+      ? `${data?.schedule?.estimatedDays ?? 0} Days`
+      : "N/A";
+
   return (
     <main className="flex flex-col items-center justify-center min-h-[calc(100vh-81px)] px-4 sm:px-6 py-8 sm:py-12 bg-gray-50">
       <div className="max-w-[700px] w-full text-center">
@@ -70,16 +86,16 @@ export default function ConfirmationContent() {
           </svg>
         </div>
 
-       
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-          Booking{" "}
-          {data.status
-            ? data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase()
-            : ""}
+        {/* Heading */}
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          Booking {formattedStatus}
         </h1>
 
         <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
-          Your request has been successfully received and {data.status?`pending and confirmation will update by worker`:`confirmation`}.
+          Your request has been successfully received and{" "}
+          {data.status
+            ? "pending and confirmation will update by worker."
+            : "confirmed."}
         </p>
 
         {/* Reference */}
@@ -88,7 +104,7 @@ export default function ConfirmationContent() {
             Reference ID
           </span>
           <span className="text-sm font-bold text-gray-900">
-            {data._id}
+            {data?._id}
           </span>
         </div>
 
@@ -102,7 +118,10 @@ export default function ConfirmationContent() {
 
           <div className="px-6 py-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-              <SummaryItem label="Service" value={data?.serviceId.name} />
+              <SummaryItem
+                label="Service"
+                value={data?.serviceId?.name}
+              />
 
               <SummaryItem
                 label="Tier"
@@ -114,17 +133,14 @@ export default function ConfirmationContent() {
                 value={formatSmartDate(data?.schedule?.startDateTime)}
               />
 
-              <SummaryItem label="Location" value={placeName} />
+              <SummaryItem
+                label="Location"
+                value={placeName}
+              />
 
               <SummaryItem
                 label="Duration"
-                value={
-                  data?.pricingMode === "HOURLY"
-                    ? `${data.schedule?.estimatedHours ?? 0} Hours`
-                    : data?.pricingMode === "PER_DAY"
-                    ? `${data.schedule?.estimatedDays ?? 0} Days`
-                    : "N/A"
-                }
+                value={duration}
               />
 
               <SummaryItem
@@ -168,24 +184,28 @@ export default function ConfirmationContent() {
 
         {/* Track Button */}
         <button
-          className="w-full  cursor-pointer h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
-          onClick={() => navigate(`/jobtracking/${data._id}`)}
+          className="w-full cursor-pointer h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
+          onClick={() => navigate(`/jobtracking/${data?._id}`)}
         >
-          
-         <span className="flex gap-3 justify-center"> Track Job Status <ArrowRight className="w-5"/></span>
+          <span className="flex gap-3 justify-center">
+            Track Job Status <ArrowRight className="w-5" />
+          </span>
         </button>
 
         {/* Links */}
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
           <Link to="/" className="text-gray-900 hover:text-blue-600">
-          <span className="flex gap-2"><Home className="w-5"/>
-            Return Home</span>
-         
+            <span className="flex gap-2">
+              <Home className="w-5" />
+              Return Home
+            </span>
           </Link>
 
           <Link to="/bookings" className="text-gray-900 hover:text-blue-600">
-          <span className="flex gap-2"><Calendar className="w-5"/> View All Bookings</span>
-            
+            <span className="flex gap-2">
+              <Calendar className="w-5" />
+              View All Bookings
+            </span>
           </Link>
         </div>
 
@@ -217,7 +237,6 @@ export default function ConfirmationContent() {
     </main>
   );
 }
-
 
 
 

@@ -58,19 +58,20 @@ const RecentServices: React.FC = () => {
             const categoryId = serviceToCategoryMap.get(serviceId || "");
 
             return (
-              <RecentItem
-                key={booking._id}
-                categoryId={categoryId}
-                serviceId={serviceId}
-                title={booking.serviceId?.name || "Service"}
-                date={
-                  booking.bookingType === "SCHEDULED"
-                    ? formatDate(booking.schedule?.startDateTime)
-                    : formatDate(booking.createdAt)
-                }
-                price={`${booking.currency} ${getBookingPrice(booking)}`}
-                iconUrl={booking.serviceId?.iconUrl}
-              />
+             <RecentItem
+  key={booking._id}
+  categoryId={categoryId}
+  serviceId={serviceId}
+  title={booking.serviceId?.name || "Service"}
+  date={
+    booking.bookingType === "SCHEDULED"
+      ? formatDate(booking.schedule?.startDateTime)
+      : formatDate(booking.createdAt)
+  }
+  price={`${booking.currency} ${getBookingPrice(booking)}`}
+  iconUrl={booking.serviceId?.iconUrl}
+  status={booking.status}   
+/>
             );
           })}
         </div>

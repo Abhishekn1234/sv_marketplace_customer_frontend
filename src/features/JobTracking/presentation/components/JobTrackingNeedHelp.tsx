@@ -1,4 +1,65 @@
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+
 export default function JobTrackingNeedHelp() {
+ const { cancelBooking } = useBookings();
+  const { bookingId } = useParams<{ bookingId: string }>(); 
+     const navigate = useNavigate();
+     const helpnavigate=()=>{
+      navigate('/help');
+     }
+    const handleCancel = () => {
+    if (!bookingId) return;
+
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-semibold mb-3">
+            Are you sure you want to cancel this booking?
+          </p>
+
+          <div className="flex gap-2 justify-end">
+            {/* No */}
+            <button
+              onClick={() => closeToast?.()}
+              className="px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
+            >
+              No
+            </button>
+
+            {/* Yes */}
+            <button
+              onClick={async () => {
+                try {
+                  await cancelBooking({ bookingId });
+
+                  closeToast?.();
+
+                  toast.success("Your booking is cancelled ✅");
+
+                  setTimeout(() => {
+                    navigate("/"); 
+                  }, 1500);
+
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+              className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Yes, Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+      }
+    );
+  };
   const options = [
     {
       text: "Contact Support",
@@ -15,6 +76,7 @@ export default function JobTrackingNeedHelp() {
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
       ),
+      action:helpnavigate
     },
     {
       text: "Chat with Us",
@@ -45,6 +107,7 @@ export default function JobTrackingNeedHelp() {
           <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
         </svg>
       ),
+       action: handleCancel
     },
   ];
 
@@ -55,6 +118,7 @@ export default function JobTrackingNeedHelp() {
         {options.map((opt, idx) => (
           <div
             key={idx}
+              onClick={opt.action}
             className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer transition-all border border-transparent hover:bg-white hover:border-gray-200 hover:shadow-sm"
           >
             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 transition-colors group-hover:bg-blue-50 group-hover:border-blue-600">

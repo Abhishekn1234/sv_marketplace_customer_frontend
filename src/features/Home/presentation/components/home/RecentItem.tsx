@@ -7,6 +7,7 @@ interface RecentItemProps {
   date: string;
   price: string;
   iconUrl?: string;
+  status?: string;
 }
 
 export const RecentItem: React.FC<RecentItemProps> = ({
@@ -16,13 +17,18 @@ export const RecentItem: React.FC<RecentItemProps> = ({
   date,
   price,
   iconUrl,
+  status,
 }) => {
   const navigate = useNavigate();
 
-  const handleNavigate = () => {
-    if (!categoryId || !serviceId) return;
+  const normalizedStatus = status?.toLowerCase();
 
- 
+  const isDisabled =
+    normalizedStatus === "customer_cancelled" ||
+    normalizedStatus === "requested";
+
+  const handleNavigate = () => {
+    if (!categoryId || !serviceId || isDisabled) return;
     navigate(`/services/${categoryId}`);
   };
 
@@ -31,14 +37,17 @@ export const RecentItem: React.FC<RecentItemProps> = ({
       role="button"
       tabIndex={0}
       onClick={handleNavigate}
-      className="
+      className={`
         flex items-center gap-3.5
         p-2 -m-2 rounded-xl
-        cursor-pointer
         transition-all duration-200
-        hover:bg-gray-50 hover:translate-x-1
         group
-      "
+        ${
+          isDisabled
+            ? "bg-gray-100 opacity-70 cursor-not-allowed"
+            : "cursor-pointer hover:bg-gray-50 hover:translate-x-1"
+        }
+      `}
     >
       {/* Icon */}
       <div className="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -63,14 +72,27 @@ export const RecentItem: React.FC<RecentItemProps> = ({
         </div>
       </div>
 
-      {/* Price */}
+      {/* Price / Status */}
       <div className="text-right flex-shrink-0">
-        <div className="text-[15px] font-semibold text-gray-900">
+        <div
+          className={`text-[15px] font-semibold ${
+            isDisabled ? "text-gray-400" : "text-gray-900"
+          }`}
+        >
           {price}
         </div>
-        <div className="text-[13px] font-semibold text-amber-600 group-hover:text-amber-700 transition-all">
-          Rebook →
-        </div>
+
+        {!isDisabled ? (
+          <div className="text-[13px] font-semibold text-amber-600 group-hover:text-amber-700 transition-all">
+            Rebook →
+          </div>
+        ) : (
+          <div className="text-[13px] font-semibold text-gray-500">
+            {normalizedStatus === "requested"
+              ? "Request Pending"
+              : "Cancelled"}
+          </div>
+        )}
       </div>
     </div>
   );
