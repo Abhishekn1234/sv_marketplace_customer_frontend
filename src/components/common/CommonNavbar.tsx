@@ -126,18 +126,22 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-4">
-                    {rightButton && (
-            <Link
-              to={rightButton.to}
-              className={`hidden sm:inline-flex ${
-                rightButton.variant === "primary"
-                  ? "px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
-                  : "text-sm font-semibold text-blue-600 hover:underline"
-              }`}
-            >
-              {rightButton.label}
-            </Link>
-          )}
+                 {rightButton && (
+  <Link
+    to={rightButton.to}
+    className="hidden sm:inline-flex items-center justify-center
+               px-6 py-2.5
+               bg-transparent
+               text-blue-600
+               border-2 border-blue-600
+               rounded-full
+               text-sm font-semibold
+               transition-all duration-200 ease-in-out
+               hover:bg-blue-600 hover:text-white"
+  >
+    {rightButton.label}
+  </Link>
+)}
           {/* Desktop Links */}
           {showHomeLinks && (
             <div className="hidden lg:flex items-center gap-2">
@@ -256,21 +260,22 @@ const CommonNavbar: React.FC<NavbarProps> = ({
       </Link>
 
       {/* Right Button in Mobile */}
-      {rightButton && (
-        <div className="pt-3 border-t mt-2">
-          <Link
-            to={rightButton.to}
-            onClick={() => setMobileMenuOpen(false)}
-            className={`w-full text-center block ${
-              rightButton.variant === "primary"
-                ? "px-5 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
-                : "text-sm font-semibold text-blue-600 hover:underline"
-            }`}
-          >
-            {rightButton.label}
-          </Link>
-        </div>
-      )}
+     {rightButton && (
+  <Link
+    to={rightButton.to}
+    className="hidden sm:inline-flex items-center justify-center
+               px-6 py-2.5
+               bg-transparent
+               text-blue-600
+               border-2 border-blue-600
+               rounded-full
+               text-sm font-semibold
+               transition-all duration-200 ease-in-out
+               hover:bg-blue-600 hover:text-white"
+  >
+    {rightButton.label}
+  </Link>
+)}
     </div>
   </div>
 )}
