@@ -1,7 +1,16 @@
 
+import CookiePolicyContent from "./components/CookieContents";
+import CookieHeader from "./components/CookieHeader";
+
+
 
 export default function CookiePolicyPage() {
   return (
-    <div>CookiePolicyPage</div>
+    <div>
+     
+      <CookieHeader/>
+      <CookiePolicyContent/>
+  
+    </div>
   )
 }

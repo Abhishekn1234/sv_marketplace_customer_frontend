@@ -93,7 +93,7 @@ export default function CommonNotificationFloater({
       <div
     className={`
       absolute z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden
-     w-72 sm:w-80c
+     w-72 sm:w-80
       right-0
       ${direction === "up" ? "left-1/2 -translate-x-1/2 right-0 bottom-full mb-3" : "top-full mt-3"}
     `}
