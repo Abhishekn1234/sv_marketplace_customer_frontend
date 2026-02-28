@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 
 const BottomNav: React.FC = () => {
-  const { customerData } = useAuthStore();
-  const userphoto = customerData.user?.profilePictureUrl;
+  const { user } = useAuthStore();
+  const userphoto = user?.profilePictureUrl;
   const navigate = useNavigate();
 
   return (

@@ -6,12 +6,12 @@ import { toast } from "react-toastify";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 
 const HomeHeader: React.FC = () => {
-  const { customerData, addAddress, updateAddress } = useAuthStore();
+  const { user, current_location,addAddress, updateAddress } = useAuthStore();
   const navigate = useNavigate();
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const userphoto = customerData.user?.profilePictureUrl;
-  const addresses = customerData.current_location?.addresses || [];
+  const userphoto = user?.profilePictureUrl;
+  const addresses = current_location.addresses || [];
   const userlocation =
     addresses.find((add) => add.type === "inputValue")?.value ||
     addresses.find((add) => add.type === "home")?.value;

@@ -2,9 +2,9 @@ import React from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useNavigate } from "react-router-dom";
 const UserProfile: React.FC = () => {
-    const {customerData}=useAuthStore();
-    const name=customerData.user?.fullName;
-    const profilephoto=customerData.user?.profilePictureUrl;
+    const {user}=useAuthStore();
+    const name=user?.fullName;
+    const profilephoto=user?.profilePictureUrl;
     const navigate=useNavigate();
     return(
        <div className="flex items-center gap-3 cursor-pointer">

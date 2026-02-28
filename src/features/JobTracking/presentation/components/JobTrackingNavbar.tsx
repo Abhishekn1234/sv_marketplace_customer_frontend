@@ -7,16 +7,17 @@ import { toast } from "react-toastify";
 
 export default function JobTrackingNavbar() {
   const navigate = useNavigate();
-  const { customerData, addAddress, updateAddress } = useAuthStore();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [loadingLocation, setLoadingLocation] = useState(false);
+const { user, current_location, addAddress, updateHome } = useAuthStore();
 
-  const profilephoto = customerData.user?.profilePictureUrl;
-  const addresses = customerData.current_location?.addresses || [];
-  const current_location =
-    addresses.find((add) => add.type === "home")?.value ||
-    addresses.find((add) => add.type === "inputValue")?.value;
+const [dropdownOpen, setDropdownOpen] = useState(false);
+const [loadingLocation, setLoadingLocation] = useState(false);
 
+const profilephoto = user?.profilePictureUrl;
+const addresses = current_location?.addresses || [];
+
+const selectedLocation =
+  addresses.find((add) => add.type === "home")?.value ||
+  addresses.find((add) => add.type === "inputValue")?.value;
   /* ---------------------------
      Use Current Location
   ----------------------------*/
@@ -34,7 +35,8 @@ export default function JobTrackingNavbar() {
       // Add or update 'home'
       const hasHome = addresses.some((addr) => addr.type === "home");
       if (hasHome) {
-        updateAddress("home", placeName);
+       updateHome("home", placeName);
+       addAddress("inputValue", placeName);
       } else {
         addAddress("home", placeName);
       }
@@ -42,7 +44,8 @@ export default function JobTrackingNavbar() {
       // Add or update 'inputValue'
       const hasInputValue = addresses.some((addr) => addr.type === "inputValue");
       if (hasInputValue) {
-        updateAddress("inputValue", placeName);
+      updateHome("home", placeName);
+       addAddress("inputValue", placeName);
       } else {
         addAddress("inputValue", placeName);
       }
@@ -91,7 +94,11 @@ export default function JobTrackingNavbar() {
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          <span>{loadingLocation ? "Detecting..." : current_location || "Select Current Location"}</span>
+          <span>
+              {loadingLocation
+                ? "Detecting..."
+                : selectedLocation || "Select Current Location"}
+            </span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3 h-3 text-gray-400">
             <polyline points="6 9 12 15 18 9" />
           </svg>

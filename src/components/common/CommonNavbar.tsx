@@ -42,12 +42,12 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   showHomeLinks = false,
 }) => {
   const navigate = useNavigate();
-  const { customerData } = useAuthStore();
+  const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
 
-  const profilePic = customerData?.user?.profilePictureUrl;
-  const location = customerData?.current_location?.addresses ?? [];
+const profilePic = user?.profilePictureUrl;
+const location = current_location?.addresses ?? [];
   const currentLocation =
     location.find((addr) => addr.type === "home")?.value ||
     location.find((addr) => addr.type === "inputValue")?.value;
@@ -181,7 +181,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           )}
 
           {/* User Controls */}
-          {showUserControls && customerData?.user && (
+          {showUserControls && user && (
             <>
               <CommonNotificationFloater />
               <img

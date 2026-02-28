@@ -11,8 +11,8 @@ import HomeHeader from "./HomeHeader";
 
 export default function DashboardHeader() {
   const location = useLocation();
-  const customerData = useAuthStore((s) => s.customerData);
-  const user = customerData?.user;
+  const customerData = useAuthStore((s) => s.user);
+  const user = customerData;
 
   const pathname = location.pathname;
 

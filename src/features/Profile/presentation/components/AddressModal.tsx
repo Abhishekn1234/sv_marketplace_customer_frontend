@@ -11,7 +11,7 @@ export default function AddressModal({
   open,
   onClose,
 }: AddressModalProps) {
-  const { customerData, updateHome } = useAuthStore();
+ const { current_location, updateHome } = useAuthStore();
 
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
   const [address, setAddress] = useState("");
@@ -21,16 +21,16 @@ export default function AddressModal({
   const debouncedAddress = useDebounce(address, 400);
 
   /* Load existing address */
-  useEffect(() => {
-    if (!open) return;
+useEffect(() => {
+  if (!open) return;
 
-    const addresses = customerData.current_location?.addresses ?? [];
+  const addresses = current_location?.addresses ?? [];
 
-    const existing =
-      addresses.find((addr) => addr.type === selectedType)?.value || "";
+  const existing =
+    addresses.find((addr) => addr.type === selectedType)?.value || "";
 
-    setAddress(existing);
-  }, [open, selectedType, customerData]);
+  setAddress(existing);
+}, [open, selectedType, current_location]);
 
   /* Fetch suggestions only when debounced value changes */
 useEffect(() => {

@@ -2,9 +2,10 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { useNavigate } from "react-router-dom";
 
 const ConfirmationNavbar = () => {
-    const {customerData}=useAuthStore();
-    const userprofilephoto=customerData.user?.profilePictureUrl;
-     const navigate=useNavigate();
+    const { user } = useAuthStore();
+  const userprofilephoto = user?.profilePictureUrl;
+  const navigate = useNavigate();
+   
   return (
     <header className="flex items-center justify-between px-8 py-5 border-b border-gray-200 bg-white">
 

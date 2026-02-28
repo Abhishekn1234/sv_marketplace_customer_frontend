@@ -3,13 +3,14 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfileNavbar() {
-  const { customerData } = useAuthStore();
+  const { user } = useAuthStore();
+
 
   const profilepic =
-    customerData.user?.profilePictureUrl ||
+    user?.profilePictureUrl ||
     "https://ui-avatars.com/api/?name=User";
 
-  const name = customerData.user?.fullName || "User";
+  const name = user?.fullName || "User";
   const navigate=useNavigate();
 
   return (

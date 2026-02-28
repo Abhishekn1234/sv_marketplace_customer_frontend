@@ -4,10 +4,11 @@ import { getSuggestions } from "@/features/utils/reverse";
 import { useDebounce } from "../utils/debouncer";
 
 export default function SavedAddress() {
-  const { customerData, addAddress, updateAddress, deleteAddress } =
-    useAuthStore();
+const { current_location, addAddress, updateAddress, deleteAddress } =
+  useAuthStore();
 
-  const addresses = customerData?.current_location?.addresses ?? [];
+const addresses = current_location?.addresses ?? [];
+
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAddress, setNewAddress] = useState("");

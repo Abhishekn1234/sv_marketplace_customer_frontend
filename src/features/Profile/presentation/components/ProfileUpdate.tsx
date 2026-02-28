@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 export default function ProfileUpdate() {
   const { data: profile } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
-  const { customerData, setUser } = useAuthStore(); // get setter and address updater
+  const { user, setUser } = useAuthStore();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -46,18 +46,17 @@ const handleSubmit = (e: React.FormEvent) => {
     `${formData.firstName} ${formData.lastName}`.trim()
   );
 
-  updateProfile(form, {
-    onSuccess: (updatedUser) => {
-      if (customerData.user) {
-       setUser({
-  ...customerData.user,
-  fullName: updatedUser.fullName ?? "",
-});
+updateProfile(form, {
+  onSuccess: (updatedUser) => {
+    if (!user) return;
 
-      }
-    },
-  });
-};
+    setUser({
+      ...user,
+      fullName: updatedUser.fullName ?? "",
+    });
+  },
+});
+}
 
 
 

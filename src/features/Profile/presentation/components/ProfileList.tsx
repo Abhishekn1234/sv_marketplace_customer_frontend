@@ -7,7 +7,7 @@ import { useAuthStore } from "@/features/core/store/auth";
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
-  const {setUser,customerData}=useAuthStore();
+  const { setUser, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -41,13 +41,13 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   updateProfile(formData, {
     onSuccess: (updatedProfile) => {
-      if (!customerData?.user) return;
+  if (!user) return;
 
-      setUser({
-        ...customerData.user,
-        profilePictureUrl: updatedProfile.profilePictureUrl,
-      });
-    },
+  setUser({
+    ...user,
+    profilePictureUrl: updatedProfile.profilePictureUrl,
+  });
+},
   });
 };
 
