@@ -32,7 +32,7 @@ export interface AuthState {
 
   addAddress: (type: "home" | "office" | "inputValue" | "other", value: string) => void;
   updateAddress: (id: string, value: string) => void;
-  updateHome: (type: "home" | "office", value: string) => void;
+  updateHome: (type: "home" | "office"|"inputValue", value: string) => void;
   deleteAddress: (id: string) => void;
 }
 

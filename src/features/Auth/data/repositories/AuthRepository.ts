@@ -79,7 +79,7 @@ class AuthRepository {
     request: ResetPasswordRequest
   ): Promise<{ message: string }> {
     const token =
-      useAuthStore.getState().customerData.accessToken;
+      useAuthStore.getState().accessToken;
 
     const headers: Record<string, string> = {};
     if (token) {
@@ -101,7 +101,7 @@ class AuthRepository {
     refreshToken: string;
   }> {
     const refreshToken =
-      useAuthStore.getState().customerData.refreshToken;
+      useAuthStore.getState().refreshToken;
 
     if (!refreshToken) {
       throw new Error("No refresh token available");

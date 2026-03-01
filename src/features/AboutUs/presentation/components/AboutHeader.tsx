@@ -3,9 +3,9 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function AboutHeader() {
-    const {customerData}=useAuthStore();
-    const name=customerData.user?.fullName;
-    const profileurl=customerData.user?.profilePictureUrl;
+    const {user}=useAuthStore();
+    const name=user?.fullName;
+    const profileurl=user?.profilePictureUrl;
     const navigate=useNavigate();
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">

@@ -4,12 +4,12 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export default function BookingDetailNavbar() {
-  const { customerData, updateAddress } = useAuthStore();
-  const username = customerData.user?.fullName;
-  const profileurl = customerData.user?.profilePictureUrl;
+  const { user,current_location, updateAddress } = useAuthStore();
+  const username = user?.fullName;
+  const profileurl = user?.profilePictureUrl;
 
   // Safely get home address
-  const homeAddress = customerData.current_location?.addresses?.find(
+  const homeAddress = current_location?.addresses?.find(
     (a) => a.type === "home"
   )?.value;
 

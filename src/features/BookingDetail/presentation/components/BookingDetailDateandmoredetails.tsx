@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
   const { serviceId, serviceTierId } = useParams();
-  const { customerData } = useAuthStore();
+  const { current_location } = useAuthStore();
 
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
@@ -101,7 +101,7 @@ export default function BookingDetailDateandmoredetails() {
         return toast.error("Please select a future time");
 
 
-            const addresses = customerData?.current_location?.addresses ?? [];
+            const addresses = current_location?.addresses ?? [];
 
       const homeAddress =
         addresses.find((addr) => addr.type === "home")?.value ||

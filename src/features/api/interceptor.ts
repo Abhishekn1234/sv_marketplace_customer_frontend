@@ -42,8 +42,8 @@ const processQueue = (error: any, token: string | null = null) => {
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfigWithMetadata) => {
-    const { customerData } = useAuthStore.getState();
-    const accessToken = customerData.accessToken;
+    const { accessToken } = useAuthStore.getState();
+ 
 
     if (accessToken) {
       config.headers = config.headers ?? {};
@@ -91,12 +91,12 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       const {
-        customerData,
+      refreshToken,
         setTokens,
         clearAuth,
       } = useAuthStore.getState();
 
-      const refreshToken = customerData.refreshToken;
+   
       if (!refreshToken) return Promise.reject(error);
 
       if (isRefreshing) {

@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   
-  const theme = useAuthStore((s) => s.customerData.theme);
+  const theme = useAuthStore((s) => s.theme);
   const toggleTheme = useAuthStore((s) => s.toggleTheme);
 
   useEffect(() => {

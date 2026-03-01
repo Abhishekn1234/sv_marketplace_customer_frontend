@@ -7,53 +7,40 @@ import { toast } from "react-toastify";
 
 export default function BookingHistoryNavbar() {
   const navigate = useNavigate();
-  const { customerData, addAddress, updateAddress } = useAuthStore();
+ const { user, current_location,  updateHome } = useAuthStore();
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const current_location =
-    customerData.current_location?.addresses?.find((add) => add.type === "home")?.value ||
-    customerData.current_location?.addresses?.find((add) => add.type === "inputValue")?.value;
+ const selectedLocation =
+  current_location?.addresses?.find((add) => add.type === "home")?.value ||
+  current_location?.addresses?.find((add) => add.type === "inputValue")?.value;
 
-  const profilephoto = customerData.user?.profilePictureUrl;
+  const profilephoto = user?.profilePictureUrl;
 
   /* ---------------------------
      Use Current Location
   ----------------------------*/
-  const handleUseCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
-      return;
-    }
+const handleUseCurrentLocation = async () => {
+  if (!navigator.geolocation) {
+    toast.error("Geolocation is not supported by your browser");
+    return;
+  }
 
-    setLoadingLocation(true);
+  setLoadingLocation(true);
 
-    try {
-      const { placeName } = await getCurrentLocationName();
+  try {
+    const { placeName } = await getCurrentLocationName();
 
-      // Add or update 'home'
-      const hasHome = customerData.current_location?.addresses?.some((addr) => addr.type === "home");
-      if (hasHome) {
-        updateAddress("home", placeName);
-      } else {
-        addAddress("home", placeName);
-      }
+    updateHome("home", placeName);
+    updateHome("inputValue", placeName);
 
-      // Add or update 'inputValue'
-      const hasInputValue = customerData.current_location?.addresses?.some((addr) => addr.type === "inputValue");
-      if (hasInputValue) {
-        updateAddress("inputValue", placeName);
-      } else {
-        addAddress("inputValue", placeName);
-      }
-
-      toast.success("Current location updated successfully!");
-    } catch (error) {
-      console.error("Geolocation error:", error);
-      toast.error("Unable to retrieve your location");
-    } finally {
-      setLoadingLocation(false);
-    }
-  };
+    toast.success("Current location updated successfully!");
+  } catch (error) {
+    console.error("Geolocation error:", error);
+    toast.error("Unable to retrieve your location");
+  } finally {
+    setLoadingLocation(false);
+  }
+};
 
   return (
     <header className="top-0 z-50 w-full px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between bg-white border-b border-gray-200 shadow-sm">
@@ -87,7 +74,11 @@ export default function BookingHistoryNavbar() {
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
           <circle cx="12" cy="10" r="3" />
         </svg>
-        <span>{loadingLocation ? "Detecting..." : current_location || "Select Current Location"}</span>
+       <span>
+  {loadingLocation
+    ? "Detecting..."
+    : selectedLocation || "Select Current Location"}
+</span>
       </div>
 
       {/* 🔹 Right Actions */}

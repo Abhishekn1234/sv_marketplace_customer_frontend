@@ -38,10 +38,10 @@ export const BOOKINGS_QUERY_KEY = ["bookings"] as const;
 export const useBookings = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const customerData = useAuthStore((s) => s.customerData);
+  const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
 
-  const user = customerData?.user;
+  
 
   const { data, isLoading, isError } = useQuery<Booking[], Error>({
     queryKey: BOOKINGS_QUERY_KEY,
@@ -90,8 +90,8 @@ export const useBookings = () => {
         old ? [newBooking, ...old] : [newBooking]
       );
 
-      const { customerData } = useAuthStore.getState();
-      const currentUser = customerData?.user;
+      const { user } = useAuthStore.getState();
+      const currentUser = user;
 
       if (currentUser) {
         const mapped = mapBookingToAuthBooking(
@@ -128,8 +128,8 @@ export const useBookings = () => {
         );
       });
 
-      const { customerData } = useAuthStore.getState();
-      const currentUser = customerData?.user;
+      const { user} = useAuthStore.getState();
+      const currentUser = user;
 
       if (currentUser?.bookings) {
         setUser({

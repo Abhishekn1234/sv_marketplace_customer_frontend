@@ -22,7 +22,7 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   
-  const storeLang = useAuthStore((state) => state.customerData?.language);
+  const storeLang = useAuthStore((state) => state.language);
 
 
   const lang: SupportedLang = (storeLang in languagesMap

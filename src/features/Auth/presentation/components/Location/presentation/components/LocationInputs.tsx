@@ -10,7 +10,7 @@ import ConfirmLocationFooter from "./ConfirmLocationFooter";
 import { useAddLocation } from "../hooks/useAddLocation";
 
 export default function LocationInputs() {
-  const { customerData, updateUserLocation } = useAuthStore();
+  const { user, updateUserLocation } = useAuthStore();
   const navigate = useNavigate();
   const { mutate: addLocation } = useAddLocation();
 
@@ -19,10 +19,10 @@ export default function LocationInputs() {
   const [inputValue, setInputValue] = useState("");
 
   const homeLocation =
-    customerData?.user?.current_location?.home ?? "";
+   user?.current_location?.home ?? "";
 
   const officeLocation =
-    customerData?.user?.current_location?.office ?? "";
+    user?.current_location?.office ?? "";
 
   const handleInputChange = (value: string) => {
     setInputValue(value);

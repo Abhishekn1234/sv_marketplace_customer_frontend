@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 export default function LocationFooter() {
   const { t } = useLanguage();
-  const current_location = useAuthStore((s) => s.customerData.user?.current_location);
+  const current_location = useAuthStore((s) => s.current_location);
  const navigate=useNavigate();
   const handleContinue = () => {
   

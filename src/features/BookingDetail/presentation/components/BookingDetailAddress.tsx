@@ -4,9 +4,9 @@ import { toast } from "react-toastify";
 import { getSuggestions } from "@/features/utils/reverse";
 
 export default function BookingDetailAddress() {
-  const { customerData, updateAddress } = useAuthStore();
+  const { current_location, updateAddress } = useAuthStore();
 
-  const addresses = customerData?.current_location?.addresses ?? [];
+  const addresses = current_location?.addresses ?? [];
 
   const homeaddress =
     addresses.find((a) => a.type === "home")?.value ||

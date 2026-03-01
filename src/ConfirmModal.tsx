@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "./features/core/store/auth";
 
 export default function ConfirmModal() {
-  const { customerData} = useAuthStore();
+  const { accessToken} = useAuthStore();
   const [open, setOpen] = useState(false);
- const accessToken=customerData.accessToken;
+ const accessTokens=accessToken;
  
   useEffect(() => {
-    if (accessToken) {
+    if (accessTokens) {
       setOpen(true);
     } else {
       setOpen(false);

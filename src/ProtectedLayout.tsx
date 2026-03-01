@@ -7,12 +7,12 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { customerData } = useAuthStore();
+  const { user,accessToken,refreshToken,isLoggedIn } = useAuthStore();
 
-  const { accessToken, refreshToken, isLoggedIn } = customerData;
+  
 
 
-  if (!isLoggedIn || !accessToken || !refreshToken) {
+  if (!isLoggedIn || !accessToken || !refreshToken || !user) {
     return <Navigate to="/login" replace />;
   }
 
