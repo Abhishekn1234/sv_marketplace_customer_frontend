@@ -126,7 +126,7 @@ const location = current_location?.addresses ?? [];
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-4">
-                 {rightButton && (
+                {rightButton && (
   <Link
     to={rightButton.to}
     className="hidden sm:inline-flex items-center justify-center
@@ -263,15 +263,14 @@ const location = current_location?.addresses ?? [];
      {rightButton && (
   <Link
     to={rightButton.to}
-    className="hidden sm:inline-flex items-center justify-center
-               px-6 py-2.5
-               bg-transparent
-               text-blue-600
-               border-2 border-blue-600
-               rounded-full
+    onClick={() => setMobileMenuOpen(false)}
+    className="w-full flex items-center justify-center
+               px-6 py-3 mt-2
+               bg-blue-600 text-white
+               rounded-xl
                text-sm font-semibold
-               transition-all duration-200 ease-in-out
-               hover:bg-blue-600 hover:text-white"
+               transition-all duration-200
+               hover:bg-blue-700"
   >
     {rightButton.label}
   </Link>

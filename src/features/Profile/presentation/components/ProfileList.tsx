@@ -3,13 +3,17 @@ import { useRef, useState } from "react";
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useAuthStore } from "@/features/core/store/auth";
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { setUser, user } = useAuthStore();
+  const {bookings}=useBookings();
+  const bookingcount=bookings.length;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+
 
   if (isLoading) {
     return <div className="text-center py-10">Loading profile...</div>;
@@ -23,41 +27,37 @@ export default function ProfileList() {
     );
   }
 
-  // Open file picker
   const handleEditClick = () => {
     fileInputRef.current?.click();
   };
 
-  // Handle file change
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const imageUrl = URL.createObjectURL(file);
-  setPreview(imageUrl);
+    const imageUrl = URL.createObjectURL(file);
+    setPreview(imageUrl);
 
-  const formData = new FormData();
-  formData.append("profileImage", file);
+    const formData = new FormData();
+    formData.append("profileImage", file);
 
-  updateProfile(formData, {
-    onSuccess: (updatedProfile) => {
-  if (!user) return;
+    updateProfile(formData, {
+      onSuccess: (updatedProfile) => {
+        if (!user) return;
 
-  setUser({
-    ...user,
-    profilePictureUrl: updatedProfile.profilePictureUrl,
-  });
-},
-  });
-};
-
-
+        setUser({
+          ...user,
+          profilePictureUrl: updatedProfile.profilePictureUrl,
+        });
+      },
+    });
+  };
 
   return (
     <div className="w-full flex justify-center px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-sm border border-gray-200 text-center">
-
-        {/* Avatar */}
+        
+        {/* Avatar Section */}
         <div className="relative inline-block mb-5">
           <img
             src={preview || profile.profilePictureUrl}
@@ -78,7 +78,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           <button
             onClick={handleEditClick}
             disabled={isPending}
-            className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-full flex items-center justify-center border-4 border-white shadow-md hover:scale-105"
+            className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-full flex items-center justify-center border-4 border-white shadow-md hover:scale-105 disabled:opacity-60"
           >
             <Pencil className="w-4 h-4 text-white" />
           </button>
@@ -99,9 +99,38 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           <Star className="w-3.5 h-3.5" />
           Premium Member
         </span>
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200"> <div className="text-center"> <span className="block text-2xl font-bold text-blue-600"> 47 </span> <span className="text-xs text-gray-500 uppercase tracking-wide"> Bookings </span> </div> <div className="text-center"> <span className="block text-2xl font-bold text-blue-600"> 12 </span> <span className="text-xs text-gray-500 uppercase tracking-wide"> Reviews </span> </div> <div className="text-center"> <span className="block text-2xl font-bold text-blue-600"> 3 </span> <span className="text-xs text-gray-500 uppercase tracking-wide"> Favorites </span> </div> </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+          <div className="text-center">
+            <span className="block text-2xl font-bold text-blue-600">
+             {bookingcount}
+            </span>
+            <span className="text-xs text-gray-500 uppercase tracking-wide">
+              Bookings
+            </span>
+          </div>
+
+          <div className="text-center">
+            <span className="block text-2xl font-bold text-blue-600">
+              12
+            </span>
+            <span className="text-xs text-gray-500 uppercase tracking-wide">
+              Reviews
+            </span>
+          </div>
+
+          <div className="text-center">
+            <span className="block text-2xl font-bold text-blue-600">
+              3
+            </span>
+            <span className="text-xs text-gray-500 uppercase tracking-wide">
+              Favorites
+            </span>
+          </div>
+        </div>
+
       </div>
-      
     </div>
   );
 }
