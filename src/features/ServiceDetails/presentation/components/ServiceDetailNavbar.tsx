@@ -9,19 +9,19 @@ import CommonNotificationFloater from "@/components/common/CommonNotificationFlo
 
 export default function ServiceDetailNavbar() {
   const navigate = useNavigate();
-  const { customerData, updateAddress } = useAuthStore();
+  const { user,current_location, updateAddress } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
 const { handleUseCurrentLocation } = useUpdateCurrentLocation();
 
-  const username = customerData?.user?.fullName;
-  const location = customerData?.current_location?.addresses ?? [];
+  const username = user?.fullName;
+  const location = current_location?.addresses ?? [];
 
   // Prefer home, fallback to inputValue
   const homecustomer =
     location.find((address) => address.type === "home")?.value ||
     location.find((address) => address.type === "inputValue")?.value;
 
-  const profileimageurl = customerData?.user?.profilePictureUrl;
+  const profileimageurl = user?.profilePictureUrl;
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);

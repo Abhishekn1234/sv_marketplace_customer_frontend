@@ -15,7 +15,7 @@ export const useUpdateCurrentLocation = () => {
       const {  placeName } = await getCurrentLocationName();
 
       // Check if 'home' already exists, else add
-      const current = JSON.parse(JSON.stringify(useAuthStore.getState().customerData.current_location)) || { addresses: [] };
+      const current = JSON.parse(JSON.stringify(useAuthStore.getState().current_location)) || { addresses: [] };
       const hasHome = current.addresses.some((addr: any) => addr.type === "home");
       const hasInputValue = current.addresses.some((addr: any) => addr.type === "inputValue");
 
