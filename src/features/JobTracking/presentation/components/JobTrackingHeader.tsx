@@ -64,55 +64,64 @@ export default function JobTrackingHeader() {
     );
   };
 
-  return (
-    <div className="mb-8 flex items-start justify-between">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
-          Job Tracking
-        </h1>
-        <p className="text-base sm:text-lg font-medium text-gray-500">
-          Track your service request in real-time
-        </p>
-      </div>
+ return (
+  <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
 
-      {/* OTP Buttons */}
-      <div className="flex gap-4">
-        {showOtpButton && (
-          <button
-            className="px-6 py-2 cursor-pointer rounded-full border-2 border-blue-600 text-blue-600 font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white"
-            onClick={handleGenerateOtp}
-          >
-            Generate Work Start OTP
-          </button>
-        )}
-        {showCompletedOtpButton && (
-          <button
-            className="px-6 py-2 cursor-pointer rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
-            onClick={handleGenerateCompletedOtp}
-          >
-            Generate Work Completed OTP
-          </button>
-        )}
-      </div>
-
-      {/* OTP Modal */}
-      {otpModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-xl font-semibold mb-4">{otpPurpose}</h2>
-            <p className="text-lg font-mono text-center mb-4">
-              {otpData ?? "No OTP returned"}
-            </p>
-            <button
-              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              onClick={() => setOtpModalOpen(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+    {/* Header Section */}
+    <div className="flex-1">
+      <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
+        Job Tracking
+      </h1>
+      <p className="text-sm sm:text-lg font-medium text-gray-500">
+        Track your service request in real-time
+      </p>
     </div>
-  );
+
+    {/* OTP Buttons Section */}
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+
+      {showOtpButton && (
+        <button
+          className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white"
+          onClick={handleGenerateOtp}
+        >
+          Generate Work Start OTP
+        </button>
+      )}
+
+      {showCompletedOtpButton && (
+        <button
+          className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
+          onClick={handleGenerateCompletedOtp}
+        >
+          Generate Work Completed OTP
+        </button>
+      )}
+
+    </div>
+
+    {/* OTP Modal */}
+    {otpModalOpen && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
+        <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center">
+            {otpPurpose}
+          </h2>
+
+          <p className="text-xl sm:text-2xl font-mono text-center mb-6 tracking-widest">
+            {otpData ?? "No OTP returned"}
+          </p>
+
+          <button
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => setOtpModalOpen(false)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+
+  </div>
+);
 }
