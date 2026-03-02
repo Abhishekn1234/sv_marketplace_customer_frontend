@@ -8,4 +8,8 @@ export class GenerateOtpImplement implements GenerateOtp{
      console.log(response);
      return response.data;
     }
+    async generatecompleteOtp(data:GenerateotpRequest):Promise<GenerateotpRequest>{
+        const response=await apiClient.post("/booking/generate-completion-otp",data);
+        return response.data;
+    }
 }

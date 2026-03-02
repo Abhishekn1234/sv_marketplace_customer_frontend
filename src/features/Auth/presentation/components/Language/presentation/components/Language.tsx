@@ -5,11 +5,11 @@ import LanguageBadge from "./LanguageBadge";
 import LanguageFooter from "./LanguageFooter";
 
 
-import ProgressStepper from "../../../auth/Register/RegisterTab";
+
 
 import { useLang } from "../hooks/useLang";
-import Footer from "@/components/common/CommonFooter";
-import CommonNavbar from "@/components/common/CommonNavbar";
+
+
 
 export default function Language() {
   const { language, setLanguage: saveLanguage, loading } = useLang();
@@ -26,9 +26,7 @@ export default function Language() {
 
   return (
     <div className="bg-gray-50">
-      <CommonNavbar rightButton={{ label: "Sign In", to: "/login", variant: "primary" }}  />
-      <ProgressStepper />
-
+      
       <LanguageBadge />
       <LanguageHeader />
 
@@ -48,7 +46,6 @@ export default function Language() {
         }}
       />
 
-      <Footer />
     </div>
   );
 }

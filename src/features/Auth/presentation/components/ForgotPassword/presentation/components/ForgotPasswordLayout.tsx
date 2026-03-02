@@ -7,8 +7,7 @@ import ForgotPasswordVerify from "./ForgotPasswordVerify";
 import ForgotResetPassword from "./ForgotResetPassword";
 import { useAuth } from "@/features/Auth/presentation/hooks/useAuth";
 
-import Footer from "@/components/common/CommonFooter";
-import CommonNavbar from "@/components/common/CommonNavbar";
+
 
 export default function ForgotPasswordLayout() {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ export default function ForgotPasswordLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <ToastContainer position="top-right" />
-         <CommonNavbar  rightButton={{ label: "Sign Up", to: "/register", variant: "primary" }}  />
+         
       {/* Centered Form */}
       <div className="flex-grow flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 border border-gray-200">
@@ -79,8 +78,7 @@ export default function ForgotPasswordLayout() {
         </div>
       </div>
 
-   
-      <Footer />
+  
     </div>
   );
 }
