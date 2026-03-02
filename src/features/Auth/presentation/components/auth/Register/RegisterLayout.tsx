@@ -1,7 +1,7 @@
 'use client';
 
 import RegistrationCard from "./RegisterCard";
-import ProgressStepper from "./RegisterTab";
+
 
 
 

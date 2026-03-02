@@ -129,8 +129,8 @@ const location = current_location?.addresses ?? [];
                 {rightButton && (
   <Link
     to={rightButton.to}
-    className="hidden sm:inline-flex items-center justify-center
-               px-6 py-2.5
+    className="inline-flex sm:inline-flex items-center justify-center
+               px-5 py-2
                bg-transparent
                text-blue-600
                border-2 border-blue-600
