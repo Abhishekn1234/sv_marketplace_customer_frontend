@@ -4,7 +4,6 @@ import BottomNav from "./BottomNav";
 import CommonNavbar from "@/components/common/CommonNavbar";
 import Footer from "@/components/common/CommonFooter";
 import ProgressStepper from "../Auth/presentation/components/auth/Register/RegisterTab";
-
 interface Props {
   children?: React.ReactNode;
 }
