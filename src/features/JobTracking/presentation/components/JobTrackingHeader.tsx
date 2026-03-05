@@ -49,7 +49,7 @@ export default function JobTrackingHeader() {
     if (!bookingId) return;
 
     generateCompletedOtpMutation.mutate(
-      { bookingId, purpose: "WORK_COMPLETED" },
+      { bookingId, purpose: "WORK_COMPLETE" },
       {
         onSuccess: (data) => {
           setOtpData(data?.otp ?? "");

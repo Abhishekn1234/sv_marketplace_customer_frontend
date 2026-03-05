@@ -99,16 +99,22 @@ const location = current_location?.addresses ?? [];
 
           {showLocation && (
             <div className="relative hidden sm:block" ref={dropdownRef}>
-              <button
-                onClick={() => setShowDropdown((prev) => !prev)}
-                className="flex items-center gap-1 px-3 py-2 bg-gray-50 border rounded-full text-sm font-medium hover:border-blue-600 transition truncate"
-              >
-                <MapPin className="w-4 h-4 text-blue-600" />
-                <span className="truncate">
-                  {currentLocation || "Select Location"}
-                </span>
-                <ChevronDown className="w-3 h-3 text-gray-400" />
-              </button>
+            <button
+              onClick={() => setShowDropdown((prev) => !prev)}
+              className="flex items-center gap-2 px-3 py-2 
+                        bg-gray-50 border rounded-full 
+                        text-sm font-medium 
+                        hover:border-blue-600 transition 
+                        max-w-[340px] overflow-hidden"
+            >
+              <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
+
+              <span className="truncate">
+                {currentLocation || "Select Location"}
+              </span>
+
+              <ChevronDown className="w-3 h-3 text-gray-400 shrink-0" />
+            </button>
 
               {showDropdown && (
                 <div className="absolute left-0 mt-2 w-60 bg-white border rounded-xl shadow-lg overflow-hidden z-50">

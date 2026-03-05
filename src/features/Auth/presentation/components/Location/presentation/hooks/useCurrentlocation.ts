@@ -1,9 +1,12 @@
+
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocationName } from "@/features/utils/reverse";
 
 export const useUpdateCurrentLocation = () => {
-  const { addAddress, updateAddress } = useAuthStore();
+  const addAddress = useAuthStore((state) => state.addAddress);
+  const updateHome = useAuthStore((state) => state.updateHome);
+  const addresses = useAuthStore((state) => state.current_location.addresses);
 
   const handleUseCurrentLocation = async () => {
     if (!navigator.geolocation) {
@@ -12,21 +15,20 @@ export const useUpdateCurrentLocation = () => {
     }
 
     try {
-      const {  placeName } = await getCurrentLocationName();
+      const { placeName } = await getCurrentLocationName();
 
-      // Check if 'home' already exists, else add
-      const current = JSON.parse(JSON.stringify(useAuthStore.getState().current_location)) || { addresses: [] };
-      const hasHome = current.addresses.some((addr: any) => addr.type === "home");
-      const hasInputValue = current.addresses.some((addr: any) => addr.type === "inputValue");
+      // Check if 'home' exists
+      const homeAddr = addresses.find((addr) => addr.type === "home");
+      const inputAddr = addresses.find((addr) => addr.type === "inputValue");
 
-      if (hasHome) {
-        updateAddress("home", placeName);
+      if (homeAddr) {
+        updateHome("home", placeName); // update existing home
       } else {
-        addAddress("home", placeName);
+        addAddress("home", placeName); // add new home
       }
 
-      if (hasInputValue) {
-        updateAddress("inputValue", placeName);
+      if (inputAddr) {
+        updateHome("inputValue", placeName);
       } else {
         addAddress("inputValue", placeName);
       }
