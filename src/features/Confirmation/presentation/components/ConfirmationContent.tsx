@@ -33,8 +33,17 @@ export default function ConfirmationContent() {
 
     fetchPlace();
   }, [data?.location?.coordinates]);
-
-  // Error State
+ const statusMessageMap: Record<string, string> = {
+  PENDING: "Your booking request is pending. Worker will confirm soon.",
+  ASSIGNED: "A worker has been assigned to your booking.",
+  STARTED: "Work has started.",
+  IN_PROGRESS: "Work is currently in progress.",
+  WORK_COMPLETED_PENDING:
+    "Work completed. Waiting for OTP confirmation from worker.",
+  COMPLETED: "Work is completed successfully.",
+  CANCELLED: "This booking has been cancelled.",
+  REQUESTED:"Booking has been requested and work will be accepted by the worker."
+};
   if (error) {
     return (
       <p className="text-red-500 text-center mt-10">
@@ -91,12 +100,9 @@ export default function ConfirmationContent() {
           Booking {formattedStatus}
         </h1>
 
-        <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
-          Your request has been successfully received and{" "}
-          {data.status
-            ? "pending and confirmation will update by worker."
-            : "confirmed."}
-        </p>
+                <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
+            {statusMessageMap[data.status] || "Booking status updated."}
+          </p>
 
         {/* Reference */}
         <div className="inline-flex items-center justify-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">

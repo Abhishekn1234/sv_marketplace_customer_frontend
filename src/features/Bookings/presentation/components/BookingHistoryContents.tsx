@@ -1,146 +1,160 @@
 import { CommandCard } from "@/components/common/CommonCards";
 import { Home } from "lucide-react";
 import { BookingStatus } from "../../domain/entities/bookingstatus.types";
-import { useBookings } from "../hooks/useBookings";
-import { useState } from "react";
-import type { Booking } from "../../domain/entities/booking.types";
+import { useState, useRef, useEffect } from "react";
+import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 import { useNavigate } from "react-router-dom";
+import { useBookingHistory } from "../hooks/useBookingHistory";
 
 interface Props {
   activeTab: string;
 }
 
-
 const statusStyles: Record<BookingStatus, string> = {
-  [BookingStatus.COMPLETED]:
-    "bg-emerald-50 text-emerald-600 border border-emerald-200",
-  [BookingStatus.IN_PROGRESS]:
-    "bg-blue-50 text-blue-600 border border-blue-200",
-  [BookingStatus.WORKER_ACCEPTED]:
-    "bg-amber-50 text-amber-600 border border-amber-200",
-  [BookingStatus.CUSTOMER_CANCELLED]:
-    "bg-red-50 text-red-600 border border-red-200",
-  [BookingStatus.WORKER_REJECTED]:
-    "bg-blue-100 text-blue-700 border border-blue-300",
-  [BookingStatus.REQUESTED]:
-    "bg-gray-50 text-gray-600 border border-gray-200",
-  [BookingStatus.WORKER_CANCELLED]:
-    "bg-red-100 text-red-700 border border-red-300",
-  [BookingStatus.WORK_COMPLETED_PENDING]:
-    "bg-yellow-50 text-yellow-600 border border-yellow-200",
-  [BookingStatus.INVOICE_GENERATED]:
-    "bg-purple-50 text-purple-600 border border-purple-200",
-  [BookingStatus.PAYMENT_PENDING]:
-    "bg-orange-50 text-orange-600 border border-orange-200",
-  [BookingStatus.PAID]:
-    "bg-green-50 text-green-600 border border-green-200",
-  [BookingStatus.CUSTOMER_REJECTED]:
-    "bg-pink-50 text-pink-600 border border-pink-200",
+  [BookingStatus.COMPLETED]: "bg-emerald-50 text-emerald-600 border border-emerald-200",
+  [BookingStatus.IN_PROGRESS]: "bg-blue-50 text-blue-600 border border-blue-200",
+  [BookingStatus.WORKER_ACCEPTED]: "bg-amber-50 text-amber-600 border border-amber-200",
+  [BookingStatus.CUSTOMER_CANCELLED]: "bg-red-50 text-red-600 border border-red-200",
+  [BookingStatus.WORKER_REJECTED]: "bg-blue-100 text-blue-700 border border-blue-300",
+  [BookingStatus.REQUESTED]: "bg-gray-50 text-gray-600 border border-gray-200",
+  [BookingStatus.WORKER_CANCELLED]: "bg-red-100 text-red-700 border border-red-300",
+  [BookingStatus.WORK_COMPLETED_PENDING]: "bg-yellow-50 text-yellow-600 border border-yellow-200",
+  [BookingStatus.INVOICE_GENERATED]: "bg-purple-50 text-purple-600 border border-purple-200",
+  [BookingStatus.PAYMENT_PENDING]: "bg-orange-50 text-orange-600 border border-orange-200",
+  [BookingStatus.PAID]: "bg-green-50 text-green-600 border border-green-200",
+  [BookingStatus.CUSTOMER_REJECTED]: "bg-pink-50 text-pink-600 border border-pink-200",
 };
 
-const formatStatus = (status: BookingStatus) =>
-  status.replaceAll("_", " ");
+const formatStatus = (status: BookingStatus) => status.replaceAll("_", " ");
 
-/* 🔥 Tab → Status Mapping */
 const tabStatusMap: Record<string, BookingStatus[]> = {
   "In Progress": [BookingStatus.IN_PROGRESS],
   Completed: [BookingStatus.COMPLETED],
   Scheduled: [BookingStatus.WORKER_ACCEPTED, BookingStatus.REQUESTED],
-  Requested:[BookingStatus.REQUESTED],
+  Requested: [BookingStatus.REQUESTED],
   Cancelled: [
     BookingStatus.CUSTOMER_CANCELLED,
     BookingStatus.WORKER_CANCELLED,
     BookingStatus.WORKER_REJECTED,
   ],
+  "Invoice Generated": [BookingStatus.INVOICE_GENERATED],
+  "Worker Accepted":[BookingStatus.WORKER_ACCEPTED]
 };
 
 export default function BookingHistoryContents({ activeTab }: Props) {
-  const { bookings, loading, error } = useBookings();
   const navigate = useNavigate();
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-const [modalOpen, setModalOpen] = useState(false);
-  const filteredBookings =
-    bookings?.filter((booking) =>
-      activeTab === "All" ? true : tabStatusMap[activeTab]?.includes(booking.status)
-    ) ?? [];
+  const [selectedBooking, setSelectedBooking] = useState<BookingHistory | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  if (loading) {
-    return (
-      <div className="text-center py-10 text-gray-400">
-        Loading bookings...
-      </div>
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useBookingHistory({ limit: 10 });
+
+  const allBookings = data?.pages.flatMap(page => page.data) ?? [];
+
+  const filteredBookings = allBookings.filter(booking =>
+    activeTab === "All"
+      ? true
+      : tabStatusMap[activeTab]?.includes(booking.status as BookingStatus)
+  );
+
+  // Ref for infinite scroll
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "200px" } // start loading slightly before reaching bottom
     );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [fetchNextPage, hasNextPage]);
+
+  if (isLoading) {
+    return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">Loading bookings...</div>;
   }
 
-  if (error) {
-    return (
-      <div className="text-center py-10 text-red-500">
-        Failed to load bookings.
-      </div>
-    );
+  if (isError) {
+    return <div className="text-center py-16 text-red-500 text-sm sm:text-base">Failed to load bookings.</div>;
+  }
+
+  if (filteredBookings.length === 0) {
+    return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">No bookings found.</div>;
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {filteredBookings.map((booking) => (
+    <div className="flex flex-col gap-5 sm:gap-6">
+      {filteredBookings.map(booking => (
         <CommandCard
           key={booking._id}
-          className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
+          className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition"
         >
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4 sm:gap-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 rounded-xl flex items-center justify-center">
                 <Home className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
               </div>
-              <div>
-                <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-900 truncate max-w-[200px] sm:max-w-xs">
-                  {booking.serviceId?.name ?? "Service Name"}
+
+              <div className="min-w-0">
+                <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 truncate">
+                  {booking.service?.name ?? "Service Name"}
                 </h3>
-                <p className="text-sm sm:text-[14px] text-gray-500 font-medium truncate max-w-[200px] sm:max-w-xs">
-                  {booking.serviceTierId?.displayName ?? "Tier"} • {"Worker Name"}
+
+                <p className="text-xs sm:text-sm text-gray-500 truncate">
+                  {booking.serviceTier?.displayName ?? "Tier"} • Worker Name
                 </p>
               </div>
             </div>
 
             <span
-              className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide ${
-                statusStyles[booking.status]
+              className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wide whitespace-nowrap ${
+                statusStyles[booking.status as BookingStatus]
               }`}
             >
-              {formatStatus(booking.status)}
+              {formatStatus(booking.status as BookingStatus)}
             </span>
           </div>
 
-          {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-5 bg-gray-50 rounded-xl mb-4">
+          {/* Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl mb-5">
             <div>
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                Date
-              </span>
+              <span className="text-xs text-gray-500">Date</span>
               <p className="text-sm sm:text-base font-semibold">
                 {formatSmartDate(booking.schedule?.startDateTime)}
               </p>
             </div>
+
             <div>
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                Duration
-              </span>
-             <p className="text-sm sm:text-base font-semibold">
+              <span className="text-xs text-gray-500">Duration</span>
+              <p className="text-sm sm:text-base font-semibold">
                 {booking.schedule
-                    ? booking.pricingMode === "HOURLY"
+                  ? booking.pricingMode === "HOURLY"
                     ? `${booking.schedule.estimatedHours ?? "-"} hrs`
                     : `${booking.schedule.estimatedDays ?? "-"} days`
-                    : "-"}
-                </p>
-
+                  : "-"}
+              </p>
             </div>
+
             <div>
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                Booking ID
-              </span>
+              <span className="text-xs text-gray-500">Booking ID</span>
               <p className="text-sm sm:text-base font-semibold truncate">
                 {booking._id}
               </p>
@@ -148,51 +162,57 @@ const [modalOpen, setModalOpen] = useState(false);
           </div>
 
           {/* Footer */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <span className="text-lg sm:text-xl font-bold text-gray-900">
-             {booking.currency} {booking.amount.toFixed(2)} 
+              {booking.currency} {booking.amount.toFixed(2)}
             </span>
 
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
-            onClick={() => {
-              if (
-                booking.status === BookingStatus.IN_PROGRESS ||
+                onClick={() => {
+                  if (
+                    booking.status === BookingStatus.IN_PROGRESS ||
+                    booking.status === BookingStatus.REQUESTED
+                  ) {
+                    navigate(`/jobtracking/${booking._id}`);
+                  }
+                }}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition"
+              >
+                {booking.status === BookingStatus.IN_PROGRESS ||
                 booking.status === BookingStatus.REQUESTED
-              ) {
-                navigate(`/jobtracking/${booking._id}`);
-              }
-            }}
-            className="w-full cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-200 hover:bg-gray-50 transition-all"
-          >
-            {booking.status === BookingStatus.IN_PROGRESS ||
-            booking.status === BookingStatus.REQUESTED
-              ? "Track"
-              : booking.status === BookingStatus.WORKER_ACCEPTED
-              ? "Reschedule"
-              : "Rebook"}
-          </button>
-              <button onClick={() => {
-                setSelectedBooking(booking);
-                setModalOpen(true);
-              }} className="w-full  cursor-pointer sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all">
-                            View Details
-                          </button>
+                  ? "Track"
+                  : booking.status === BookingStatus.WORKER_ACCEPTED
+                  ? "Reschedule"
+                  : "Rebook"}
+              </button>
+
+              <button
+                onClick={() => {
+                  setSelectedBooking(booking);
+                  setModalOpen(true);
+                }}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                View Details
+              </button>
             </div>
           </div>
         </CommandCard>
       ))}
-      <BookingHistoryViewDetailsModal
-  booking={selectedBooking}
-  isOpen={modalOpen}
-  onClose={() => setModalOpen(false)}
-/>
 
-      {filteredBookings.length === 0 && (
-        <div className="text-center text-gray-400 py-10">
-          No bookings found.
-        </div>
+      {/* Invisible div for intersection observer */}
+      <div ref={loadMoreRef} className="h-1"></div>
+
+      {isFetchingNextPage && (
+        <div className="text-center py-4 text-gray-500 text-sm">Loading more...</div>
       )}
+
+      <BookingHistoryViewDetailsModal
+        booking={selectedBooking}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }

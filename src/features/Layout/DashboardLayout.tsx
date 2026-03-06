@@ -22,7 +22,8 @@ const navbarPropsMap: Record<string, NavbarProps> = {
   "/help": { showBackButton: true },
   "/changepassword": { showBackButton: true },
   "/about": { showBackButton: true },
-  "/servicerating": { showHomeLinks: true },
+  "/servicerating": { },
+  "/bookings":{showLocation:true},
 };
 
 const getNavbarProps = (pathname: string): NavbarProps => {

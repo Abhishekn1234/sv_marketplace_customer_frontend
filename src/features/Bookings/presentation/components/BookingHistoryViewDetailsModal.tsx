@@ -1,9 +1,10 @@
 import { X } from "lucide-react";
-import type { Booking } from "../../domain/entities/booking.types";
+
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
+import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 
 interface Props {
-  booking: Booking | null;
+  booking: BookingHistory | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,10 +26,10 @@ export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClos
 
         {/* Header */}
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          {booking.serviceId?.name ?? "Service Details"}
+          {booking.service.name ?? "Service Details"}
         </h2>
         <p className="text-sm text-gray-500 mb-6">
-          {booking.serviceTierId?.displayName ?? "Tier"} • {"Worker Name"}
+          {booking.serviceTier?.displayName ?? "Tier"} • {"Worker Name"}
         </p>
 
         {/* Booking Info Grid */}

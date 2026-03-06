@@ -9,6 +9,7 @@ import type { GetBookingsResponse } from "../../domain/entities/getbookingrespon
 import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
 import apiClient from "../../../api/interceptor";
 import type { BookingById } from "../../domain/entities/bookingbyid.types";
+import type { BookingHistoryQueryParams, BookingHistoryResponse } from "../../domain/entities/bookinghistory.types";
 
 export class BookingRepository implements IBookingRepository {
   private readonly baseUrl = "/booking";
@@ -24,7 +25,7 @@ export class BookingRepository implements IBookingRepository {
   }
 
 async getBookings(): Promise<GetBookingsResponse> {
-  const response = await apiClient.get(this.baseUrl);
+  const response = await apiClient.get(`${this.baseUrl}`);
   console.log("Data part:", response.data);
 
  
@@ -32,7 +33,17 @@ async getBookings(): Promise<GetBookingsResponse> {
 
   return { bookings: bookingsArray };
 }
+async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHistoryResponse> {
 
+  const response = await apiClient.get<BookingHistoryResponse>(
+    `${this.baseUrl}/history`,
+    {
+      params
+    }
+  );
+
+  return response.data;
+}
 
   
   async getBookingById(bookingId: string): Promise<BookingById> {

@@ -16,7 +16,9 @@ export default function JobTrackingHeader() {
   // // Normalize status to avoid casing/space issues
   const bookingStatus = booking?.status?.trim().toUpperCase();
   //  console.log(bookingStatus);
-  const showOtpButton = bookingStatus === "WORKER_ACCEPTED";
+const showOtpButton =
+  bookingStatus === "WORKER_ACCEPTED" ||
+  bookingStatus === "ASSIGNED";
   const showCompletedOtpButton = bookingStatus === "WORK_COMPLETED_PENDING";
   console.log(showCompletedOtpButton);
   const [otpModalOpen, setOtpModalOpen] = useState(false);
