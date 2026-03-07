@@ -7,42 +7,13 @@ import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 import { useNavigate } from "react-router-dom";
 import { useBookingHistory } from "../hooks/useBookingHistory";
-
+import { getBookingButtonConfig } from "../helpers/bookingstatusbuttonmap";
+import { formatStatus } from "../helpers/formatstatusmap";
+import { tabStatusMap } from "../helpers/tabstatusmap";
+import { statusStyles } from "../helpers/statusmap";
 interface Props {
   activeTab: string;
 }
-
-const statusStyles: Record<BookingStatus, string> = {
-  [BookingStatus.COMPLETED]: "bg-emerald-50 text-emerald-600 border border-emerald-200",
-  [BookingStatus.IN_PROGRESS]: "bg-blue-50 text-blue-600 border border-blue-200",
-  [BookingStatus.WORKER_ACCEPTED]: "bg-amber-50 text-amber-600 border border-amber-200",
-  [BookingStatus.CUSTOMER_CANCELLED]: "bg-red-50 text-red-600 border border-red-200",
-  [BookingStatus.WORKER_REJECTED]: "bg-blue-100 text-blue-700 border border-blue-300",
-  [BookingStatus.REQUESTED]: "bg-gray-50 text-gray-600 border border-gray-200",
-  [BookingStatus.WORKER_CANCELLED]: "bg-red-100 text-red-700 border border-red-300",
-  [BookingStatus.WORK_COMPLETED_PENDING]: "bg-yellow-50 text-yellow-600 border border-yellow-200",
-  [BookingStatus.INVOICE_GENERATED]: "bg-purple-50 text-purple-600 border border-purple-200",
-  [BookingStatus.PAYMENT_PENDING]: "bg-orange-50 text-orange-600 border border-orange-200",
-  [BookingStatus.PAID]: "bg-green-50 text-green-600 border border-green-200",
-  [BookingStatus.CUSTOMER_REJECTED]: "bg-pink-50 text-pink-600 border border-pink-200",
-};
-
-const formatStatus = (status: BookingStatus) => status.replaceAll("_", " ");
-
-const tabStatusMap: Record<string, BookingStatus[]> = {
-  "In Progress": [BookingStatus.IN_PROGRESS],
-  Completed: [BookingStatus.COMPLETED],
-  Scheduled: [BookingStatus.WORKER_ACCEPTED, BookingStatus.REQUESTED],
-  Requested: [BookingStatus.REQUESTED],
-  Cancelled: [
-    BookingStatus.CUSTOMER_CANCELLED,
-    BookingStatus.WORKER_CANCELLED,
-    BookingStatus.WORKER_REJECTED,
-  ],
-  "Invoice Generated": [BookingStatus.INVOICE_GENERATED],
-  "Worker Accepted":[BookingStatus.WORKER_ACCEPTED]
-};
-
 export default function BookingHistoryContents({ activeTab }: Props) {
   const navigate = useNavigate();
   const [selectedBooking, setSelectedBooking] = useState<BookingHistory | null>(null);
@@ -168,24 +139,24 @@ export default function BookingHistoryContents({ activeTab }: Props) {
             </span>
 
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                onClick={() => {
-                  if (
-                    booking.status === BookingStatus.IN_PROGRESS ||
-                    booking.status === BookingStatus.REQUESTED
-                  ) {
-                    navigate(`/jobtracking/${booking._id}`);
-                  }
-                }}
-                className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition"
-              >
-                {booking.status === BookingStatus.IN_PROGRESS ||
-                booking.status === BookingStatus.REQUESTED
-                  ? "Track"
-                  : booking.status === BookingStatus.WORKER_ACCEPTED
-                  ? "Reschedule"
-                  : "Rebook"}
-              </button>
+             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              {(() => {
+                const { label, clickable } = getBookingButtonConfig(booking);
+
+                return (
+                  <button
+                    onClick={() => {
+                      if (clickable) navigate(`/jobtracking/${booking._id}`);
+                    }}
+                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
+                      !clickable ? "cursor-not-allowed opacity-60" : ""
+                    }`}
+                    disabled={!clickable}
+                  >
+                    {label}
+                  </button>
+                );
+              })()}
 
               <button
                 onClick={() => {
@@ -196,6 +167,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
               >
                 View Details
               </button>
+            </div>
             </div>
           </div>
         </CommandCard>
