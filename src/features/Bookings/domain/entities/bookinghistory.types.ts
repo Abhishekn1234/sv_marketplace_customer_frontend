@@ -1,8 +1,10 @@
+
 import type { AssignedWorker } from "./assignedworkers.type";
 import type { BookingSchedule } from "./bookingschedule.types";
 import type { BookingStatus } from "./bookingstatus.types";
 import type { Service } from "./service.types";
 import type { ServiceTierRef } from "./servicetier.types";
+import type { Geopoint } from "./geopoint.types";
 
 export interface BookingHistoryResponse{
   data:BookingHistory[];
@@ -42,7 +44,7 @@ export interface BookingHistory {
   memberDiscount: number;
   serviceFee: number;
 
-  location: Location;
+  location: Geopoint;
 
   schedule?: BookingSchedule;
 

@@ -95,7 +95,7 @@ function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="book-service/:serviceId" element={<BookService />} />
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
-                <Route path="jobprogress" element={<JobProgressPage />} />
+                <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
                 <Route path="confirmation" element={<ConfirmationPage />} />
               </Route>
 

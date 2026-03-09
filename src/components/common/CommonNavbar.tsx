@@ -63,7 +63,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   const isBookingPage = routerLocation.pathname === "/bookings";
   const isHomePage = routerLocation.pathname === "/";
    const serviceratingpage=routerLocation.pathname==="/servicerating";
-   const jobpresspage=routerLocation.pathname==="/jobprogress";
+   const jobpresspage=routerLocation.pathname.startsWith('/jobprogress/')
    const jobtrackingpage=routerLocation.pathname.startsWith('/jobtracking/')
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -168,7 +168,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             <div className="hidden lg:flex items-center gap-2">
               {[
                 { label: "Bookings", to: "/bookings" },
-                { label: "Job Progress", to: "/jobprogress" },
+               
                 { label: "About", to: "/about" },
                 { label: "Privacy", to: "/privacy" },
                 { label: "Help", to: "/help" },

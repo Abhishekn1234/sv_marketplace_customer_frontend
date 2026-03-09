@@ -11,6 +11,8 @@ import { getBookingButtonConfig } from "../helpers/bookingstatusbuttonmap";
 import { formatStatus } from "../helpers/formatstatusmap";
 import { tabStatusMap } from "../helpers/tabstatusmap";
 import { statusStyles } from "../helpers/statusmap";
+import InvoiceModal from "@/features/JobTracking/presentation/components/InvoiceModal";
+import { useServices } from "../hooks/useServices";
 interface Props {
   activeTab: string;
 }
@@ -18,7 +20,9 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   const navigate = useNavigate();
   const [selectedBooking, setSelectedBooking] = useState<BookingHistory | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
+  const {services,categories,serviceTiers}=useServices();
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const {
     data,
     isLoading,
@@ -141,23 +145,35 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {(() => {
-                const { label, clickable } = getBookingButtonConfig(booking);
+                          {(() => {
+  const { label, clickable } = getBookingButtonConfig(booking);
 
-                return (
-                  <button
-                    onClick={() => {
-                      if (clickable) navigate(`/jobtracking/${booking._id}`);
-                    }}
-                    className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
-                      !clickable ? "cursor-not-allowed opacity-60" : ""
-                    }`}
-                    disabled={!clickable}
-                  >
-                    {label}
-                  </button>
-                );
-              })()}
+  return (
+    <button
+      onClick={() => {
+        if (!clickable) return;
+
+        if (
+          booking.status === "IN_PROGRESS" ||
+          booking.status === "REQUESTED"
+        ) {
+          navigate(`/jobtracking/${booking._id}`);
+        }
+
+        if (booking.status === "INVOICE_GENERATED") {
+  setSelectedInvoice(booking);
+  setIsInvoiceOpen(true);
+}
+      }}
+      className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
+        !clickable ? "cursor-not-allowed opacity-60" : ""
+      }`}
+      disabled={!clickable}
+    >
+      {label}
+    </button>
+  );
+})()}
 
               <button
                 onClick={() => {
@@ -186,6 +202,14 @@ export default function BookingHistoryContents({ activeTab }: Props) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
+      <InvoiceModal
+  invoice={selectedInvoice}
+  services={services}
+  categories={categories}
+  serviceTiers={serviceTiers}
+  open={isInvoiceOpen}
+  onClose={() => setIsInvoiceOpen(false)}
+/>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClos
           {booking.service.name ?? "Service Details"}
         </h2>
         <p className="text-sm text-gray-500 mb-6">
-          {booking.serviceTier?.displayName ?? "Tier"} • {"Worker Name"}
+          {booking.serviceTier?.displayName ?? "Tier"} • {booking?.assignedWorkers?.[0].worker.fullName}
         </p>
 
         {/* Booking Info Grid */}

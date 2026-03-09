@@ -15,7 +15,7 @@ export const getBookingButtonConfig = (booking: BookingHistory) => {
   }
 
   if (status === "COMPLETED") return { label: "Completed", clickable: false };
-  if (status === "INVOICE_GENERATED") return { label: "Invoice", clickable: false };
+  if (status === "INVOICE_GENERATED") return { label: "Invoice", clickable: true };
   if (status === "WORK_COMPLETED_PENDING") return { label: "Pending Completion", clickable: false };
   if (status === "PAYMENT_PENDING") return { label: "Payment Pending", clickable: false };
   if (status === "PAID") return { label: "Paid", clickable: false };
