@@ -35,10 +35,10 @@ export default function JobTrackingTimeline() {
         title: "Service Started",
         time: formatDates(worker?.startedAt),
         status: worker?.startedAt
-          ? "completed"
-          : booking.status === "IN_PROGRESS"
-          ? "active"
-          : "pending",
+  ? "completed"
+  : booking.status === "IN_PROGRESS" || booking.status === "WORK_COMPLETED_PENDING"
+  ? "active"
+  : "pending",
       },
       {
         title: "Service Completed",

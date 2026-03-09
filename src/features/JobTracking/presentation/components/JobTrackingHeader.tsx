@@ -10,17 +10,15 @@ import { toast } from "react-toastify";
 export default function JobTrackingHeader() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { bookings } = useBookings();
-  console.log(bookings);
   const booking = bookings?.find((item) => item._id === bookingId);
-  // console.log(booking);
-  // // Normalize status to avoid casing/space issues
+
+  // Normalize status
   const bookingStatus = booking?.status?.trim().toUpperCase();
-  //  console.log(bookingStatus);
-const showOtpButton =
-  bookingStatus === "WORKER_ACCEPTED" ||
-  bookingStatus === "ASSIGNED";
+
+  // OTP button visibility
+  const showOtpButton = bookingStatus === "WORKER_ACCEPTED";
   const showCompletedOtpButton = bookingStatus === "WORK_COMPLETED_PENDING";
-  console.log(showCompletedOtpButton);
+
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpData, setOtpData] = useState<string | number>();
   const [otpPurpose, setOtpPurpose] = useState<string>("");
@@ -28,6 +26,7 @@ const showOtpButton =
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
 
+  // Generate Work Start OTP
   const handleGenerateOtp = () => {
     if (!bookingId) return;
 
@@ -47,6 +46,7 @@ const showOtpButton =
     );
   };
 
+  // Generate Work Completed OTP
   const handleGenerateCompletedOtp = () => {
     if (!bookingId) return;
 
@@ -66,64 +66,67 @@ const showOtpButton =
     );
   };
 
- return (
-  <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-
-    {/* Header Section */}
-    <div className="flex-1">
-      <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
-        Job Tracking
-      </h1>
-      <p className="text-sm sm:text-lg font-medium text-gray-500">
-        Track your service request in real-time
-      </p>
-    </div>
-
-    {/* OTP Buttons Section */}
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+  return (
+    <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+      {/* Header Section */}
+      <div className="flex-1">
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
+          Job Tracking
+        </h1>
+        <p className="text-sm sm:text-lg font-medium text-gray-500">
+          Track your service request in real-time
+        </p>
+      </div>
 
       {showOtpButton && (
+        <>
+         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
         <button
-          className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white"
+          disabled={!showOtpButton}
+          className={`w-full sm:w-auto px-5 py-2 rounded-full border-2 font-semibold transition-all duration-300 ${
+            showOtpButton
+              ? "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+              : "border-gray-300 text-gray-400 cursor-not-allowed"
+          }`}
           onClick={handleGenerateOtp}
         >
           Generate Work Start OTP
         </button>
-      )}
 
-      {showCompletedOtpButton && (
-        <button
-          className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
-          onClick={handleGenerateCompletedOtp}
-        >
-          Generate Work Completed OTP
-        </button>
-      )}
-
-    </div>
-
-    {/* OTP Modal */}
-    {otpModalOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
-        <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
-          <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center">
-            {otpPurpose}
-          </h2>
-
-          <p className="text-xl sm:text-2xl font-mono text-center mb-6 tracking-widest">
-            {otpData ?? "No OTP returned"}
-          </p>
-
+        {showCompletedOtpButton && (
           <button
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            onClick={() => setOtpModalOpen(false)}
+            className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
+            onClick={handleGenerateCompletedOtp}
           >
-            Close
+            Generate Work Completed OTP
           </button>
-        </div>
+        )}
       </div>
-    )}
+        </>
+      )}
+      
 
-  </div>
-);
+      {/* OTP Modal */}
+      {otpModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center">
+              {otpPurpose}
+            </h2>
+
+            <p className="text-xl sm:text-2xl font-mono text-center mb-6 tracking-widest">
+              {otpData ?? "No OTP returned"}
+            </p>
+
+            <button
+              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => setOtpModalOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,10 +1,8 @@
-import { calculateAmount } from "@/features/Home/presentation/helpers/amountcalculation";
-
 
 
 
 interface Props {
-  invoice: any| null;
+  invoice: any;
   services: any[];
   categories: any[];
   serviceTiers: any[];
@@ -16,20 +14,20 @@ export default function InvoiceModal({
   invoice,
   services,
   categories,
+
   open,
   onClose,
 }: Props) {
   if (!open || !invoice) return null;
 
-  const booking = invoice;
+  const booking = invoice.bookingId;
 
   const service = services?.find((s) => s._id === booking.serviceId);
-
-  const category = categories?.find((c) => c._id === service?.category?._id);
-
+  console.log(service);
+  const category = categories?.find((c) => c._id === service?.category._id);
   const pricingTier = service?.pricingTiers?.find(
-    (tier: any) => tier.tierId?._id === booking.serviceTierId
-  );
+  (tier:any) => tier.tierId?._id === booking.serviceTierId
+);
 
 const tier = pricingTier?.tierId;
 
@@ -38,28 +36,15 @@ const tier = pricingTier?.tierId;
   const hours = Math.floor(workHours);
   const minutes = Math.round((workHours - hours) * 60);
 
- const workedDuration =
-  booking.pricingMode === "HOURLY"
-    ? `${hours} hr ${minutes} min`
-    : `${invoice.actualWorkDays} days`;
-
-const rate =
+  const workedDuration =
+    booking.pricingMode === "HOURLY"
+      ? `${hours} hr ${minutes} min`
+      : `${invoice.actualWorkDays} days`;
+      const rate =
   booking.pricingMode === "HOURLY"
     ? pricingTier?.HOURLY?.ratePerHour
     : pricingTier?.PER_DAY?.ratePerDay;
 
-const minutesWorked =
-  (new Date(booking.completedAt).getTime() -
-    new Date(booking.startedAt).getTime()) /
-  (1000 * 60);
- console.log(minutesWorked);
- 
-const finalAmount = calculateAmount(
-  booking.pricingMode,
-  rate,
-  minutesWorked,
-  booking.numberOfWorkers
-);
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-lg shadow-xl p-6 space-y-5">
@@ -72,7 +57,7 @@ const finalAmount = calculateAmount(
 
         {/* BOOKING INFO */}
         <div className="space-y-2 text-sm">
-          <p><b>Invoice No:</b> {invoice.invoiceId}</p>
+          <p><b>Invoice No:</b> {invoice.invoiceNumber}</p>
           <p><b>Status:</b> {booking.status}</p>
           <p><b>Category:</b> {category?.name}</p>
           <p><b>Service:</b> {service?.name}</p>
@@ -93,7 +78,7 @@ const finalAmount = calculateAmount(
           <p><b>Worker Pool Amount:</b> {invoice.workerPoolAmount} {invoice.currency}</p>
           <p><b>Commission:</b> {invoice.commissionAmount} {invoice.currency}</p> */}
           <p className="font-semibold text-base">
-            Final Amount: {finalAmount.toFixed(2)} {invoice.currency}
+            Final Amount: {invoice.finalAmount} {invoice.currency}
           </p>
         </div>
 
