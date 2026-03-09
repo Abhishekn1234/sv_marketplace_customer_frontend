@@ -41,6 +41,7 @@ async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHisto
       params
     }
   );
+  console.log(response);
 
   return response.data;
 }

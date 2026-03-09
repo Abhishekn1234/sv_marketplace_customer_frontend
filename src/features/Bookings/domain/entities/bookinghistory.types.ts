@@ -1,3 +1,4 @@
+import type { AssignedWorker } from "./assignedworkers.type";
 import type { BookingSchedule } from "./bookingschedule.types";
 import type { BookingStatus } from "./bookingstatus.types";
 import type { Service } from "./service.types";
@@ -20,7 +21,7 @@ export interface BookingHistory {
   userId: string;
   serviceId: string;
   serviceTierId: string;
-
+  assignedWorkers?:AssignedWorker[];
   bookingType: "SCHEDULED" | "INSTANT";
   status: string;
 

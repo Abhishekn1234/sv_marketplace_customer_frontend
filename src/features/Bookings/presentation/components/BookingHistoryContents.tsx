@@ -90,7 +90,8 @@ export default function BookingHistoryContents({ activeTab }: Props) {
                 </h3>
 
                 <p className="text-xs sm:text-sm text-gray-500 truncate">
-                  {booking.serviceTier?.displayName ?? "Tier"} • Worker Name
+                  {booking.serviceTier?.displayName ?? "Tier"} •{" "}
+                  {booking.assignedWorkers?.[0]?.worker?.fullName ?? "Not assigned"}
                 </p>
               </div>
             </div>

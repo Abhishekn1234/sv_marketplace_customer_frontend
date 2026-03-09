@@ -3,6 +3,7 @@ import type { Service } from './service.types';
 import type { GeoLocation } from './location.types';
 import type { BookingSchedule } from './bookingschedule.types';
 import type { BookingStatus } from './bookingstatus.types';
+import type { AssignedWorker } from './assignedworkers.type';
 
 export interface Booking {
   _id: string;
@@ -49,6 +50,7 @@ export interface Booking {
 
   createdAt: string;
   updatedAt: string;
+  assignedWorkers?:AssignedWorker;
 }
 
 
