@@ -12,12 +12,12 @@ export default function JobTrackingHeader() {
   const { bookings } = useBookings();
   const booking = bookings?.find((item) => item._id === bookingId);
 
-  // Normalize status
-  const bookingStatus = booking?.status?.trim().toUpperCase();
+  
+  const bookingStatus = booking?.status?.trim().toUpperCase() || "";
 
   // OTP button visibility
   const showOtpButton = bookingStatus === "WORKER_ACCEPTED";
-  const showCompletedOtpButton = bookingStatus === "WORK_COMPLETED_PENDING";
+ const showCompletedOtpButton = bookingStatus.includes("WORK_COMPLETED_PENDING");
 
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpData, setOtpData] = useState<string | number>();
@@ -46,7 +46,7 @@ export default function JobTrackingHeader() {
     );
   };
 
-  // Generate Work Completed OTP
+  
   const handleGenerateCompletedOtp = () => {
     if (!bookingId) return;
 
@@ -78,32 +78,25 @@ export default function JobTrackingHeader() {
         </p>
       </div>
 
-      {showOtpButton && (
-        <>
-         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-        <button
-          disabled={!showOtpButton}
-          className={`w-full sm:w-auto px-5 py-2 rounded-full border-2 font-semibold transition-all duration-300 ${
-            showOtpButton
-              ? "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-              : "border-gray-300 text-gray-400 cursor-not-allowed"
-          }`}
-          onClick={handleGenerateOtp}
-        >
-          Generate Work Start OTP
-        </button>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+  {showOtpButton && (
+    <button
+      className="w-full sm:w-auto px-5 py-2 rounded-full border-2 font-semibold transition-all duration-300 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+      onClick={handleGenerateOtp}
+    >
+      Generate Work Start OTP
+    </button>
+  )}
 
-        {showCompletedOtpButton && (
-          <button
-            className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
-            onClick={handleGenerateCompletedOtp}
-          >
-            Generate Work Completed OTP
-          </button>
-        )}
-      </div>
-        </>
-      )}
+  {showCompletedOtpButton && (
+    <button
+      className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
+      onClick={handleGenerateCompletedOtp}
+    >
+      Generate Work Completed OTP
+    </button>
+  )}
+</div>
       
 
       {/* OTP Modal */}

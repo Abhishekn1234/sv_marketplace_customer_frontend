@@ -64,7 +64,8 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   const isHomePage = routerLocation.pathname === "/";
    const serviceratingpage=routerLocation.pathname==="/servicerating";
    const jobpresspage=routerLocation.pathname.startsWith('/jobprogress/')
-   const jobtrackingpage=routerLocation.pathname.startsWith('/jobtracking/')
+   const jobtrackingpage=routerLocation.pathname.startsWith('/jobtracking/');
+   const jobcompletepage=routerLocation.pathname==="/jobcompleted";
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -82,13 +83,13 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           ? "bg-transparent shadow-none"
           : isHomePage
           ? "bg-transparent":jobtrackingpage?"bg-transparent shadow-none":
-          serviceratingpage?"bg-transparent shadow-none":jobpresspage?"bg-transparent shadow-none"
+          serviceratingpage?"bg-transparent shadow-none":jobpresspage?"bg-transparent shadow-none":jobcompletepage?"bg-transparent shadow-none"
           : "bg-white border-b border-gray-200 shadow-sm"
       }`}
     >
       <div
         className={`flex items-center py-3 px-4 sm:px-6 lg:px-8 ${
-          isBookingPage || isHomePage || serviceratingpage || jobpresspage ||jobtrackingpage? "max-w-7xl mx-auto justify-between" : "w-full justify-between"
+          isBookingPage || isHomePage || serviceratingpage || jobpresspage ||jobtrackingpage || jobcompletepage? "max-w-7xl mx-auto justify-between" : "w-full justify-between"
         }`}
       >
         {/* LEFT SECTION */}

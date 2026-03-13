@@ -34,6 +34,9 @@ export interface AuthState {
   updateAddress: (id: string, value: string) => void;
   updateHome: (type: "home" | "office"|"inputValue", value: string) => void;
   deleteAddress: (id: string) => void;
+    mobileForVerification?: string; 
+
+  setMobileForVerification: (phone: string) => void;
 }
 
 const initialState = {
@@ -126,6 +129,8 @@ export const useAuthStore = create<AuthState>()(
             ),
           },
         })),
+         setMobileForVerification: (phone: string) =>
+        set({ mobileForVerification: phone }),
 
       deleteAddress: (id) =>
         set((state) => ({

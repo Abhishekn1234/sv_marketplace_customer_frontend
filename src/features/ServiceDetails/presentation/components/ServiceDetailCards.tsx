@@ -29,16 +29,12 @@ export default function ServiceDetailCards({
     return <p className="text-red-500">Failed to load services.</p>;
   }
 
-  // =========================
-  // CATEGORY FILTER
-  // =========================
+
   let filteredServices = services?.filter(
     (service) => service.category?._id === id
   );
 
-  // =========================
-  // SEARCH FILTER
-  // =========================
+
   if (searchTerm?.trim()) {
     filteredServices = filteredServices?.filter((service) =>
       service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -46,9 +42,7 @@ export default function ServiceDetailCards({
     );
   }
 
-  // =========================
-  // CUSTOM FILTERS
-  // =========================
+  
   if (activeFilter === "Popular") {
     filteredServices = filteredServices?.filter(
       (service) => service.avgRating >= 4
@@ -67,9 +61,7 @@ export default function ServiceDetailCards({
     );
   }
 
-  // =========================
-  // PRICE HELPER
-  // =========================
+
   const getPrice = (service: any) => {
     const tier = service.pricingTiers?.[0];
     if (!tier) return 0;
@@ -78,9 +70,7 @@ export default function ServiceDetailCards({
     return 0;
   };
 
-  // =========================
-  // SORTING
-  // =========================
+ 
   if (sortBy === "Price Low to High") {
     filteredServices = [...(filteredServices || [])].sort(
       (a, b) => getPrice(a) - getPrice(b)
@@ -99,9 +89,7 @@ export default function ServiceDetailCards({
     );
   }
 
-  // =========================
-  // EMPTY STATE
-  // =========================
+ 
   if (!filteredServices?.length) {
     return (
       <p className="text-gray-500">
@@ -112,9 +100,6 @@ export default function ServiceDetailCards({
     );
   }
 
-  // =========================
-  // RENDER
-  // =========================
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 mb-8">
       {filteredServices.map((service) => {
@@ -167,6 +152,9 @@ export default function ServiceDetailCards({
                 </span>
               )}
             </div>
+            <h3>
+              {service.totalRatings}
+            </h3>
 
             <h3 className="text-[20px] font-bold text-gray-900 mb-2">
               {service.name}

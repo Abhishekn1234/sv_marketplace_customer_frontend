@@ -1,42 +1,87 @@
+"use client";
+
+import { useState } from "react";
 import ServiceRatingSection from "./ServiceRatingsection";
 import SuccessTagSection from "./SuccessTagSection";
 import ServiceReviewSection from "./ServiceReviewSection";
+import { useParams } from "react-router-dom";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
 
 export default function SuccessProviderCard() {
+  const { bookingId } = useParams<{ bookingId: string }>();
+  const { data, isLoading } = useBookingHistory();
+
+  // ✅ Hooks must always be called
+  const [serviceRating, setServiceRating] = useState(4);
+  const [workerRating, setWorkerRating] = useState(4);
+  const [tags, setTags] = useState(
+    [
+      "Professional",
+      "On Time",
+      "Quality Work",
+      "Friendly",
+      "Good Communication",
+      "Clean",
+    ].map((label) => ({ label, selected: false }))
+  );
+  const [feedback, setFeedback] = useState("");
+
+  const { mutate: submitReview } = useSubmitServiceReview();
+
+  // Flatten bookings and find the current one
+  const bookings = data?.pages?.flatMap((page) => page.data || []) || [];
+  const booking = bookings.find((b) => b._id === bookingId);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!booking) return <div>Booking not found</div>;
+
+  const handleSubmit = () => {
+    submitReview({
+      bookingId: bookingId || "",
+      serviceRating,
+      workerRating,
+      feedback,
+    });
+  };
+
   return (
     <div className="bg-white rounded-4xl p-10 sm:p-8 xs:p-6 border border-gray-200 shadow-lg max-w-xl mx-auto">
       {/* Provider Section */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 px-4 sm:px-6">
         <img
-          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-          alt="Provider"
-          className="w-24 h-24 sm:w-20 sm:h-20 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
+          src={booking.assignedWorkers?.[0]?.worker.profilePictureUrl || "https://via.placeholder.com/150"}
+          alt={booking.assignedWorkers?.[0]?.worker.fullName || "Provider"}
+          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
         />
-        <div className="flex items-center justify-center gap-2 text-lg sm:text-base font-bold text-gray-900 mb-1">
-          Mike Johnson
-          <div className="w-5.5 h-5.5 sm:w-5 sm:h-5 bg-blue-600 rounded-full flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg>
-          </div>
-        </div>
-        <p className="text-sm sm:text-xs text-gray-500 font-medium">
-          Plumbing Repair Service
+        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 truncate">
+          {booking.assignedWorkers?.[0]?.worker.fullName || "Provider Name"}
+        </h2>
+        <p className="text-sm sm:text-base md:text-lg text-gray-500 truncate">
+          {booking.service?.name || "Service Name"}
         </p>
       </div>
 
       {/* Rating Section */}
-      <ServiceRatingSection />
+      <ServiceRatingSection
+        serviceRating={serviceRating}
+        setServiceRating={setServiceRating}
+        workerRating={workerRating}
+        setWorkerRating={setWorkerRating}
+      />
 
       {/* Tag Section */}
-      <SuccessTagSection />
+      <SuccessTagSection tags={tags} setTags={setTags} />
 
       {/* Review Section */}
-      <ServiceReviewSection />
+      <ServiceReviewSection
+        feedback={feedback}
+        setFeedback={setFeedback}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }
-
 
 
 

@@ -55,7 +55,7 @@ export interface BookingHistory {
   actualWorkHours?: number;
 
   invoiceId?: string;
-
+  paymentId?:string;
   service: Service;
   serviceTier: ServiceTierRef;
 

@@ -1,5 +1,4 @@
 import { X } from "lucide-react";
-
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 
@@ -9,13 +8,39 @@ interface Props {
   onClose: () => void;
 }
 
-export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClose }: Props) {
+export default function BookingHistoryViewDetailsModal({
+  booking,
+  isOpen,
+  onClose,
+}: Props) {
   if (!isOpen || !booking) return null;
 
+  // Safe values
+  const serviceName = booking.service?.name ?? "Service Details";
+  const tierName = booking.serviceTier?.displayName ?? "Tier";
+  const workerName =
+    booking?.assignedWorkers?.[0]?.worker?.fullName ?? "Not Assigned";
+
+  const bookingDate = booking.schedule?.startDateTime
+    ? formatSmartDate(booking.schedule.startDateTime)
+    : "-";
+
+  const duration = booking.schedule
+    ? booking.pricingMode === "HOURLY"
+      ? `${booking.schedule.estimatedHours ?? "-"} hrs`
+      : `${booking.schedule.estimatedDays ?? "-"} days`
+    : "-";
+
+  const price =
+    booking.amount !== undefined
+      ? `${booking.currency} ${booking.amount.toFixed(2)}`
+      : "-";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       {/* Modal Container */}
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 sm:p-8 relative">
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -25,49 +50,56 @@ export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClos
         </button>
 
         {/* Header */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          {booking.service.name ?? "Service Details"}
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {serviceName}
         </h2>
+
         <p className="text-sm text-gray-500 mb-6">
-          {booking.serviceTier?.displayName ?? "Tier"} • {booking?.assignedWorkers?.[0].worker.fullName}
+          {tierName} • {workerName}
         </p>
 
         {/* Booking Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div>
-            <span className="text-xs text-gray-500 font-medium">Booking ID</span>
-            <p className="text-sm font-semibold">{booking._id}</p>
-          </div>
 
           <div>
-            <span className="text-xs text-gray-500 font-medium">Date</span>
-            <p className="text-sm font-semibold">
-              {formatSmartDate(booking.schedule?.startDateTime)}
+            <span className="text-xs text-gray-500 font-medium">
+              Booking ID
+            </span>
+            <p className="text-sm font-semibold break-all">
+              {booking._id ?? "-"}
             </p>
           </div>
 
           <div>
-            <span className="text-xs text-gray-500 font-medium">Duration</span>
-            <p className="text-sm font-semibold">
-              {booking.schedule
-                ? booking.pricingMode === "HOURLY"
-                  ? `${booking.schedule.estimatedHours ?? "-"} hrs`
-                  : `${booking.schedule.estimatedDays ?? "-"} days`
-                : "-"}
-            </p>
+            <span className="text-xs text-gray-500 font-medium">
+              Date
+            </span>
+            <p className="text-sm font-semibold">{bookingDate}</p>
           </div>
 
           <div>
-            <span className="text-xs text-gray-500 font-medium">Price</span>
-            <p className="text-sm font-semibold">
-              {booking.currency} {booking.amount.toFixed(2)}
-            </p>
+            <span className="text-xs text-gray-500 font-medium">
+              Duration
+            </span>
+            <p className="text-sm font-semibold">{duration}</p>
+          </div>
+
+          <div>
+            <span className="text-xs text-gray-500 font-medium">
+              Price
+            </span>
+            <p className="text-sm font-semibold">{price}</p>
           </div>
 
           <div className="sm:col-span-2">
-            <span className="text-xs text-gray-500 font-medium">Work Description</span>
-            <p className="text-sm font-semibold">{booking.workDescription ?? "-"}</p>
+            <span className="text-xs text-gray-500 font-medium">
+              Work Description
+            </span>
+            <p className="text-sm font-semibold">
+              {booking.workDescription ?? "-"}
+            </p>
           </div>
+
         </div>
 
         {/* Footer */}
@@ -79,6 +111,7 @@ export default function BookingHistoryViewDetailsModal({ booking, isOpen, onClos
             Close
           </button>
         </div>
+
       </div>
     </div>
   );

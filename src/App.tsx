@@ -86,7 +86,7 @@ function App() {
                 <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage />} />
                 <Route path="bookings" element={<MyBookings />} />
                 <Route path="about" element={<AboutPage />} />
-                <Route path="servicerating" element={<ServiceRating />} />
+                <Route path="servicerating/:bookingId" element={<ServiceRating />} />
                 <Route path="jobcompleted" element={<JobCompletedPage />} />
                 <Route path="services/:id" element={<ServiceDetailPage />} />
                 <Route path="privacy" element={<PrivacyPolicyPage />} />

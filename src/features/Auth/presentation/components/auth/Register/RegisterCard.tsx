@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { toast } from "react-toastify";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useAuthStore } from "@/features/core/store/auth";
 
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const RegistrationCard = () => {
     agreeToTerms: false,
   });
   const {t}=useLanguage();
-
+ const { setMobileForVerification,setTokens,setUser } = useAuthStore();
   const { register } = useAuth();
   const navigate=useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +26,7 @@ const RegistrationCard = () => {
     }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   try {
@@ -37,12 +38,16 @@ const RegistrationCard = () => {
     };
 
     const response = await register(payload);
+
+    // Save full response in auth store
+    setTokens(response.accessToken, response.refreshToken); // access & refresh
+    setUser(response.user); // user object
+    setMobileForVerification(formData.phone); // for OTP verification
+
     toast.success(response.message || "Registration successful");
-    navigate('/verification');
+    navigate("/verification"); // navigate to OTP verification
   } catch (err: any) {
-    toast.error(
-      err?.message?.[0] || err.message || "Registration failed"
-    );
+    toast.error(err?.message?.[0] || err.message || "Registration failed");
   }
 };
 
