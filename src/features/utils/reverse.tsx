@@ -46,27 +46,29 @@ export const getCurrentLocationName = async (): Promise<{ lat: number; lng: numb
   });
 };
 
-// Get suggestions (search for address and get coordinates)
+
+
 export const getSuggestions = async (
   query: string,
   signal?: AbortSignal
 ): Promise<{ lat: number; lng: number; display_name: string }[]> => {
-  if (!query) return [];
+  if (!query.trim()) return [];
 
   try {
-    const res = await fetch(
-      `${apiUrl}/geolocation/suggestions?q=${encodeURIComponent(query)}`,
-      { signal }
-    );
+    const limit = 5; 
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+      query
+    )}&limit=${limit}&accept-language=en&addressdetails=1`;
 
+    const res = await fetch(url, { signal });
     if (!res.ok) return [];
 
-    const data: { coordinates: { coordinates: { lat: number; lng: number } }; display_name: string }[] = await res.json();
+    const data = await res.json();
+    console.log("Nominatim suggestions response:", data);
 
-    // Map backend DTO to simple frontend object
-    return data.map((item) => ({
-      lat: item.coordinates.coordinates.lat,
-      lng: item.coordinates.coordinates.lng,
+    return data.map((item: any) => ({
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon),
       display_name: item.display_name,
     }));
   } catch (error) {
@@ -75,17 +77,17 @@ export const getSuggestions = async (
   }
 };
 
-// Get first suggestion coordinates from query
 export const getCoordinatesFromQuery = async (
   query: string
 ): Promise<{ lat: number; lng: number; placeName: string } | null> => {
   const suggestions = await getSuggestions(query);
   if (suggestions.length === 0) return null;
+
   const first = suggestions[0];
   return { lat: first.lat, lng: first.lng, placeName: first.display_name };
 };
 
-// Get place name from lat/lng
+
 export const getPlaceNameFromCoords = async (
   lat: number,
   lng: number

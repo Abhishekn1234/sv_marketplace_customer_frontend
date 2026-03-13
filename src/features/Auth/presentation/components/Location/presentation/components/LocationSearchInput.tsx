@@ -6,6 +6,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
 import debounce from "lodash.debounce";
 import { getSuggestions, reverseGeocode } from "@/features/utils/reverse";
+
 type Props = {
   selected: "home" | "office" | null;
   inputValue: string;
@@ -19,7 +20,7 @@ export default function LocationSearchInput({
   onChange,
 }: Props) {
   const { t } = useLanguage();
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<{ lat: number; lng: number; display_name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch suggestions via backend
@@ -55,9 +56,9 @@ export default function LocationSearchInput({
   };
 
   // When a suggestion is clicked
-  const handleSuggestionClick = (loc: string) => {
-    setInputValue(loc);
-    onChange(loc);
+  const handleSuggestionClick = (loc: { lat: number; lng: number; display_name: string }) => {
+    setInputValue(loc.display_name);
+    onChange(loc.display_name);
     setSuggestions([]);
   };
 
@@ -102,7 +103,7 @@ export default function LocationSearchInput({
                 onClick={() => handleSuggestionClick(loc)}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-100"
               >
-                {loc}
+                {loc.display_name}
               </li>
             ))}
           </ul>

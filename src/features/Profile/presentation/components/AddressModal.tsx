@@ -2,70 +2,62 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getSuggestions } from "@/features/utils/reverse";
 import { useDebounce } from "../utils/debouncer";
+
 interface AddressModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-export default function AddressModal({
-  open,
-  onClose,
-}: AddressModalProps) {
- const { current_location, updateHome } = useAuthStore();
+export default function AddressModal({ open, onClose }: AddressModalProps) {
+  const { current_location, updateHome } = useAuthStore();
 
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
   const [address, setAddress] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<{ lat: number; lng: number; display_name: string }[]>([]);
 
   // ✅ Debounce input (400ms)
   const debouncedAddress = useDebounce(address, 400);
 
-  /* Load existing address */
-useEffect(() => {
-  if (!open) return;
+  // Load existing address
+  useEffect(() => {
+    if (!open) return;
 
-  const addresses = current_location?.addresses ?? [];
+    const addresses = current_location?.addresses ?? [];
+    const existing = addresses.find((addr) => addr.type === selectedType)?.value || "";
+    setAddress(existing);
+  }, [open, selectedType, current_location]);
 
-  const existing =
-    addresses.find((addr) => addr.type === selectedType)?.value || "";
-
-  setAddress(existing);
-}, [open, selectedType, current_location]);
-
-  /* Fetch suggestions only when debounced value changes */
-useEffect(() => {
-  if (!debouncedAddress || debouncedAddress.length < 3) {
-    setSuggestions([]);
-    return;
-  }
-
-  const controller = new AbortController();
-
-  const fetchSuggestions = async () => {
-    try {
-      const results = await getSuggestions(debouncedAddress, controller.signal);
-      setSuggestions(results);
-    } catch (error) {
-      if ((error as any).name !== "AbortError") {
-        console.error(error);
-      }
+  // Fetch suggestions when debounced input changes
+  useEffect(() => {
+    if (!debouncedAddress || debouncedAddress.length < 3) {
+      setSuggestions([]);
+      return;
     }
-  };
 
-  fetchSuggestions();
+    const controller = new AbortController();
 
-  return () => controller.abort(); // ✅ cancel previous request
-}, [debouncedAddress]);
+    const fetchSuggestions = async () => {
+      try {
+        const results = await getSuggestions(debouncedAddress, controller.signal);
+        setSuggestions(results);
+      } catch (error) {
+        if ((error as any).name !== "AbortError") console.error(error);
+      }
+    };
+
+    fetchSuggestions();
+
+    return () => controller.abort(); // cancel previous request
+  }, [debouncedAddress]);
 
   const handleSave = () => {
     if (!address.trim()) return;
-
     updateHome(selectedType, address.trim());
     onClose();
   };
 
-  const handleSelect = (value: string) => {
-    setAddress(value);
+  const handleSelect = (item: { lat: number; lng: number; display_name: string }) => {
+    setAddress(item.display_name);
     setSuggestions([]);
   };
 
@@ -73,32 +65,23 @@ useEffect(() => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
-        <h2 className="text-xl font-bold mb-6 text-gray-900">
-          Select Address Type
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-gray-900">Select Address Type</h2>
 
         <div className="flex gap-4 mb-6">
           {["home", "office"].map((type) => (
             <label
               key={type}
               className={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-                selectedType === type
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-200"
+                selectedType === type ? "border-blue-600 bg-blue-50" : "border-gray-200"
               }`}
             >
               <input
                 type="radio"
                 checked={selectedType === type}
-                onChange={() =>
-                  setSelectedType(type as "home" | "office")
-                }
+                onChange={() => setSelectedType(type as "home" | "office")}
                 className="hidden"
               />
               <span className="font-medium capitalize">{type}</span>
@@ -123,7 +106,7 @@ useEffect(() => {
                   onClick={() => handleSelect(item)}
                   className="p-3 cursor-pointer hover:bg-blue-50 text-sm"
                 >
-                  {item}
+                  {item.display_name}
                 </li>
               ))}
             </ul>
