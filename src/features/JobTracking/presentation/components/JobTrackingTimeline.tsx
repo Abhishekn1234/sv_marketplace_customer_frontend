@@ -18,14 +18,14 @@ export default function JobTrackingTimeline() {
   const [hasRated, setHasRated] = useState(false);
   const verifyPaymentMutation = useVerifyPayment();
 
-  // Load booking from hook or cache
+
   useEffect(() => {
     if (!data?.pages || !bookingId) return;
     const found = data.pages.flatMap((page) => page.data).find((b) => b._id === bookingId);
     setLocalBooking(found);
   }, [data, bookingId]);
 
-  // Timeline steps
+ 
 const steps = useMemo(() => {
   if (!localBooking) return [];
 
@@ -79,7 +79,7 @@ const steps = useMemo(() => {
       showPaymentButton: localBooking.status === "INVOICE_GENERATED",
       showVerifyButton: localBooking.status === "PAYMENT_PENDING" && !!localBooking.invoiceId,
     },
-    // ✅ New step after payment
+    
     {
       title: "Payment Done",
       time: localBooking.status === "PAID" ? formatDates(localBooking.paymentDate ?? new Date()) : "Pending",
@@ -89,7 +89,7 @@ const steps = useMemo(() => {
   ];
 }, [localBooking]);
 
-  // Auto-scroll to first active step
+
   useEffect(() => {
     if (!timelineRef.current) return;
     const firstActive = timelineRef.current.querySelector(".active");
@@ -102,7 +102,7 @@ const steps = useMemo(() => {
 
   return (
     <div className="bg-white rounded-2xl p-7 border border-gray-200 shadow-sm">
-      {/* Header */}
+   
       <div className="flex justify-between items-center mb-7">
         <h2 className="text-lg font-bold text-gray-900">Service Progress</h2>
         <div className="px-4 py-1 bg-emerald-100 text-emerald-600 text-xs font-semibold rounded-full">
@@ -110,7 +110,6 @@ const steps = useMemo(() => {
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="relative pl-8" ref={timelineRef}>
         <div className="absolute left-2 top-2 bottom-10 w-0.5 bg-gray-200"></div>
 
@@ -145,7 +144,7 @@ const steps = useMemo(() => {
 
                 <div className="text-xs text-gray-500 font-medium mb-2">{step.time}</div>
 
-                {/* Pay Now */}
+               
                 {step.showPaymentButton && (
                   <button
                     onClick={() => setOpenPayment(true)}
@@ -155,49 +154,49 @@ const steps = useMemo(() => {
                   </button>
                 )}
 
-                {/* Verify Payment */}
-             {step.showVerifyButton && (
-  <button
-    onClick={() => {
-      if (!localBooking.paymentId) return;
+               
+                {step.showVerifyButton && (
+                  <button
+                    onClick={() => {
+                      if (!localBooking.paymentId) return;
 
-      verifyPaymentMutation.mutate(localBooking.paymentId, {
-        onSuccess: () => {
-          // ✅ Only update local state here
-          setLocalBooking((prev: any) => ({
-            ...prev,
-            status: "PAID",
-            paymentDate: new Date().toLocaleString(),
-          }));
-        },
-      });
-    }}
-    className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-green-500 text-white hover:bg-green-600 transition mt-2"
-  >
-    Verify Payment
-  </button>
-)}
+                      verifyPaymentMutation.mutate(localBooking.paymentId, {
+                        onSuccess: () => {
+                          // ✅ Only update local state here
+                          setLocalBooking((prev: any) => ({
+                            ...prev,
+                            status: "PAID",
+                            paymentDate: new Date().toLocaleString(),
+                          }));
+                        },
+                      });
+                    }}
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-green-500 text-white hover:bg-green-600 transition mt-2"
+                  >
+                    Verify Payment
+                  </button>
+                )}
 
                 
-               {step.showServiceRatingButton && (
-  <button
-    onClick={() => {
-      if (!localBooking) return;
+              {step.showServiceRatingButton && (
+                  <button
+                    onClick={() => {
+                      if (!localBooking) return;
 
-      if (!hasRated) {
-        // First click → go to service rating
-        setHasRated(true);
-        navigate(`/servicerating/${localBooking._id}`);
-      } else {
-      
-        navigate("/bookings");
-      }
-    }}
-    className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-yellow-500 text-white hover:bg-yellow-600 transition mt-2"
-  >
-    Rate Service
-  </button>
-)}
+                      if (!hasRated) {
+                        // First click → go to service rating
+                        setHasRated(true);
+                        navigate(`/servicerating/${localBooking._id}`);
+                      } else {
+                      
+                        navigate("/bookings");
+                      }
+                    }}
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-yellow-500 text-white hover:bg-yellow-600 transition mt-2"
+                  >
+                    Rate Service
+                  </button>
+                )}
               </div>
             </div>
           );
