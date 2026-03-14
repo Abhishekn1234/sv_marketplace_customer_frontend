@@ -11,8 +11,8 @@ export interface ServiceTierDetails {
 export interface PricingTier {
   _id: string;
 
-  tierId: ServiceTierDetails;   // ✅ now full object
-
+  tierId: ServiceTierDetails | string ;   // ✅ now full object
+  tier?:ServiceTierDetails;
   HOURLY: {
     ratePerHour: number;
   };

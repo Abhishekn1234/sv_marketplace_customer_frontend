@@ -22,14 +22,17 @@ export default function InvoiceModal({
 
   const booking = invoice.bookingId;
 
-  const service = services?.find((s) => s._id === booking.serviceId);
-  console.log(service);
-  const category = categories?.find((c) => c._id === service?.category._id);
-  const pricingTier = service?.pricingTiers?.find(
-  (tier:any) => tier.tierId?._id === booking.serviceTierId
+const service = services?.find((s) => s._id === booking.serviceId);
+
+const categoryId = service?.category?.[0]?._id;
+
+const category = categories?.find((c) => c._id === categoryId);
+
+const pricingTier = service?.pricingTiers?.find(
+  (tier: any) => tier.tierId === booking.serviceTierId
 );
 
-const tier = pricingTier?.tierId;
+const tier = pricingTier?.tier;
 
   const workHours = invoice.actualWorkHours || 0;
 

@@ -1,19 +1,31 @@
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
-  const { services } = useServices();
- const navigate=useNavigate();
+  const navigate = useNavigate();
+
+  const { data: apiResponse, isPending } = useServiceCategory();
+
+  // ✅ Flatten services from categories
+  const services = useMemo(() => {
+    return apiResponse?.flatMap((category: any) => category.services) ?? [];
+  }, [apiResponse]);
+
   const serviceName =
-    services?.find((s) => s._id === id)?.name || "Service";
+    services.find((s: any) => s._id === id)?.name || "Service";
+
+  if (isPending) {
+    return <p className="text-gray-500 text-center">Loading...</p>;
+  }
 
   return (
     <div className="w-full px-0 lg:px-8 py-6 mt-10">
       {/* Breadcrumb */}
       <nav className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 mb-6">
         <button
-          onClick={()=>navigate(-1)}
+          onClick={() => navigate(-1)}
           className="hover:text-blue-600 transition-colors cursor-pointer"
         >
           Service
@@ -21,9 +33,7 @@ export default function ServiceTierSelectionBreadCrumb() {
 
         <Chevron />
 
-        <span className="text-gray-900 font-semibold">
-          Select Tier
-        </span>
+        <span className="text-gray-900 font-semibold">Select Tier</span>
 
         <Chevron />
 

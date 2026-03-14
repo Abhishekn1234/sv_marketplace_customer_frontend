@@ -22,7 +22,7 @@ export default function WebsiteHome() {
       setFilteredServices(apiResponse);
     }
   }, [apiResponse]);
-
+    console.log(apiResponse)
   const categories = apiResponse?.map((c: { name: string }) => c.name) ?? [];
 
   // ✅ Filter handler

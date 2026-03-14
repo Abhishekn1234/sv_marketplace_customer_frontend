@@ -4,7 +4,7 @@ import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/us
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 // import { generateInvoicePdf } from "@/features/utils/generatePdf";
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useState } from "react";
 import InvoiceModal from "./InvoiceModal";
 export default function JobTrackingNeedHelp() {
@@ -13,8 +13,18 @@ export default function JobTrackingNeedHelp() {
   const navigate = useNavigate();
  const [showInvoice, setShowInvoice] = useState(false);
   const { data: invoice, isLoading, isError } = useGenerateInvoice(bookingId ?? "");
-  const { categories, services, serviceTiers } = useServices();
-  
+  const { data:categories } = useServiceCategory();
+   const categoriesList = categories ?? [];
+
+// flatten services from categories
+const services =
+  categoriesList.flatMap((cat: any) => cat.services ?? []);
+
+// flatten service tiers from services
+const serviceTiers =
+  services.flatMap((service: any) =>
+    service.pricingTiers?.map((tier: any) => tier.tier) ?? []
+  );
   const helpNavigate = () => navigate("/help");
 
   const handleCancel = () => {
@@ -132,13 +142,13 @@ export default function JobTrackingNeedHelp() {
         ))}
         {showInvoice && invoice && (
   <InvoiceModal
-    invoice={invoice}
-    services={services}
-    categories={categories}
-    serviceTiers={serviceTiers}
-    open={showInvoice}
-    onClose={() => setShowInvoice(false)}
-  />
+  invoice={invoice}
+  services={services}
+  categories={categoriesList}
+  serviceTiers={serviceTiers}
+  open={showInvoice}
+  onClose={() => setShowInvoice(false)}
+/>
 )}
       </div>
     </div>

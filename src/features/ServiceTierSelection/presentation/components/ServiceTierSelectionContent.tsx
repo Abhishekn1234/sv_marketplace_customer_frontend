@@ -1,43 +1,56 @@
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import type { Feature } from "../../domain/entities/feature";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
-  const {  services } = useServices();
+  const {data:categories}=useServiceCategory();
+  console.log(categories);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
 
-  if (!services) return null;
+  if (!categories) return <p className="text-center">Loading services...</p>;
 
-  
-  const currentService = services.find((s) => s._id === id);
+  // ✅ Flatten services from categories
+  const servicess =
+    categories?.flatMap((category: any) => category.services) ?? [];
+    console.log(servicess);
 
+  // ✅ Find the current service
+  const currentService = servicess.find((s: any) => s._id === id);
+
+  if (!currentService) return <p className="text-center">Service not found!</p>;
 
   const parseFeatures = (rawFeatures: any): Feature[] => {
     if (!rawFeatures) return [];
+
     try {
       if (Array.isArray(rawFeatures) && typeof rawFeatures[0] === "string") {
         return JSON.parse(rawFeatures[0]);
       }
+
       if (Array.isArray(rawFeatures)) return rawFeatures;
+
       if (typeof rawFeatures === "string") return JSON.parse(rawFeatures);
     } catch (error) {
       console.error("Feature parsing error:", error);
     }
+
     return [];
   };
 
-
   const getTierPrices = (tierId?: string) => {
-    if (!tierId || !currentService) return { hourly: 0, daily: 0, currency: "SAR" };
+    if (!tierId)
+      return { hourly: 0, daily: 0, currency: currentService.currency || "SAR" };
 
     const matchedPricing = currentService.pricingTiers?.find(
-      (pt: any) => pt?.tierId?._id === tierId
+      (pt: any) => pt?.tierId === tierId
     );
 
-    if (!matchedPricing) return { hourly: 0, daily: 0, currency: currentService.currency || "SAR" };
+    if (!matchedPricing)
+      return { hourly: 0, daily: 0, currency: currentService.currency || "SAR" };
 
     const currency = currentService.currency || "SAR";
     const commissionType = matchedPricing?.commissionType;
@@ -62,29 +75,29 @@ export default function ServiceTierSelectionContent() {
       alert("Please select a tier before continuing!");
       return;
     }
+
     navigate(`/bookingdetail/${id}/${selectedTierId}`);
   };
-
-  if (!currentService) return <p>Service not found!</p>;
 
   return (
     <div className="px-6 lg:px-8 pb-20">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto">
         {currentService.pricingTiers?.map((tier: any, index: number) => {
-  const features = parseFeatures(tier.tierId.features);
-  return (
-    <TierCard
-      key={tier.tierId._id}
-      name={tier.tierId?.displayName ?? tier.tierId?.code} 
-      description={tier.description}
-      prices={getTierPrices(tier.tierId?._id)}
-      features={features}
-      recommended={index === 1}
-      selected={selectedTierId === tier.tierId?._id}
-      onSelect={() => setSelectedTierId(tier.tierId?._id)}
-    />
-  );
-})}
+          const features = parseFeatures(tier?.tier?.features);
+
+          return (
+            <TierCard
+              key={tier?.tierId}
+              name={tier?.tier?.displayName ?? tier?.tier?.code}
+              description={tier?.description}
+              prices={getTierPrices(tier?.tierId)}
+              features={features}
+              recommended={index === 1}
+              selected={selectedTierId === tier?.tierId}
+              onSelect={() => setSelectedTierId(tier?.tierId)}
+            />
+          );
+        })}
       </div>
 
       <div className="flex flex-col items-center gap-4">
@@ -115,9 +128,7 @@ export default function ServiceTierSelectionContent() {
       </div>
     </div>
   );
-};
-
-
+}
 
 interface TierCardProps {
   name: string;
@@ -168,6 +179,7 @@ function TierCard({
             <span className="text-gray-400 font-semibold">/hr</span>
           </div>
         )}
+
         {prices.daily > 0 && (
           <div className="flex justify-between items-center">
             <span className="text-2xl font-bold text-gray-900">
@@ -183,9 +195,7 @@ function TierCard({
           <li
             key={index}
             className={`flex items-start gap-3 text-sm font-medium ${
-              feature.included
-                ? "text-gray-600"
-                : "text-gray-400 opacity-60"
+              feature.included ? "text-gray-600" : "text-gray-400 opacity-60"
             }`}
           >
             <CheckIcon included={feature.included} />
@@ -233,12 +243,7 @@ function StarIcon() {
 
 function ArrowRight() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className="w-5 h-5 stroke-current"
-      fill="none"
-      strokeWidth={2}
-    >
+    <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current" fill="none" strokeWidth={2}>
       <path d="M5 12h14" />
       <path d="M12 5l7 7-7 7" />
     </svg>
@@ -247,12 +252,7 @@ function ArrowRight() {
 
 function ArrowLeft() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className="w-5 h-5 stroke-current"
-      fill="none"
-      strokeWidth={2}
-    >
+    <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current" fill="none" strokeWidth={2}>
       <path d="M19 12H5" />
       <path d="M12 19l-7-7 7-7" />
     </svg>

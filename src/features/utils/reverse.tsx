@@ -17,13 +17,11 @@ export const reverseGeocode = async (
     const data = await response.json();
 
     if (data.error) {
-      console.warn("Backend returned error:", data.error);
       return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     }
 
-    return data.address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   } catch (error) {
-    console.error("Reverse geocode error:", error);
     toast.error("Failed to fetch address");
     return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
@@ -90,7 +88,7 @@ export const getSuggestions = async (
 
     console.log("Backend suggestions:", data);
 
-    return data.map((item: any) => ({
+    return (data.suggestions || []).map((item: any) => ({
       lat: parseFloat(item.lat),
       lng: parseFloat(item.lng),
       display_name: item.display_name,

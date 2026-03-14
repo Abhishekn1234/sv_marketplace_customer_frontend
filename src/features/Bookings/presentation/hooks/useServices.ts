@@ -39,34 +39,32 @@ export const useServices = () => {
     },
   } as UseQueryOptions<Service[], Error>);
 
-  const categories: Category[] = servicesQuery.data
-    ? Object.values(
-        servicesQuery.data.reduce((acc, service) => {
-          const categoryObj =
-            typeof service.category === "string" ? null : service.category;
+ const categories: Category[] = servicesQuery.data
+  ? Object.values(
+      servicesQuery.data.reduce((acc, service) => {
+        const categoryObj = service.category?.[0]; // ✅ first category object
 
-          const categoryId =
-            typeof service.category === "string"
-              ? service.category
-              : service.category._id;
-          console.log(categoryId);
-          if (!acc[categoryId]) {
-            acc[categoryId] = {
-              _id: categoryId,
-              name: categoryObj?.name ?? "Category",
-              slug: categoryObj?.slug ?? "",
-              iconUrl: categoryObj?.iconUrl,
-              iconPublicId: categoryObj?.iconPublicId,
-              services: [],
-            };
-          }
+        const categoryId = categoryObj?._id;
 
-          acc[categoryId].services.push(service);
-          return acc;
-        }, {} as Record<string, Category>)
-      )
-    : [];
+        if (!categoryId) return acc;
 
+        if (!acc[categoryId]) {
+          acc[categoryId] = {
+            _id: categoryId,
+            name: categoryObj.name ?? "Category",
+            slug: categoryObj.slug ?? "",
+            iconUrl: categoryObj.iconUrl,
+            iconPublicId: categoryObj.iconPublicId,
+            services: [],
+          };
+        }
+
+        acc[categoryId].services.push(service);
+
+        return acc;
+      }, {} as Record<string, Category>)
+    )
+  : [];
   return {
     categories,
     services: servicesQuery.data ?? [],

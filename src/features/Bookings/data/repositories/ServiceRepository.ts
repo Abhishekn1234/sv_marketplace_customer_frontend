@@ -14,12 +14,14 @@ export class ServiceRepository implements IServiceRepository {
  private readonly baseUrl = "booking"; 
 
 
-  async getServices(): Promise<APIResponse<Category[]>> {
-    const response = await apiClient.get<APIResponse<Category[]>>(
-      `${this.baseUrl}/services`
-    );
-    return response.data;
-  }
+async getServices(): Promise<APIResponse<Category[]>> {
+  const response = await apiClient.get<APIResponse<Category[]>>("/services");
+
+  console.log("Full Axios Response:", response); 
+  console.log("Actual API Data:", response.data);
+
+  return response.data;
+}
   async getBookings(): Promise<GetBookingsResponse> {
   const response = await apiClient.get<GetBookingsResponse>(`/booking`);
   console.log("Single booking object:", response.data);
@@ -44,15 +46,13 @@ export class ServiceRepository implements IServiceRepository {
   }
 
   async getCategories(): Promise<Category[]> {
-    const response = await apiClient.get<Category[]>(
-      `${this.baseUrl}/categories`
-    );
+  const response = await apiClient.get<APIResponse<Category[]>>("/services");
 
-    console.log("Full API response:", response.data); // full object
-    console.log("Categories array:", response.data); // just the array
+  console.log("Full API response:", response);
+  console.log("Categories array:", response.data.data);
 
-    return response.data; // ✅ return full APIResponse
-  }
+  return response.data.data;
+}
   async searchServices(query: string): Promise<APIResponse<Service[]>> {
     const response = await apiClient.get<APIResponse<Service[]>>(
       `${this.baseUrl}?search=${query}`

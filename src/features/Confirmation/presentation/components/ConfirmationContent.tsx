@@ -11,18 +11,17 @@ export default function ConfirmationContent() {
   const { bookings, error, loading: isLoading } = useBookings();
   const navigate = useNavigate();
 
-  const data = bookings?.[0]; // latest booking safely
+  const data = bookings?.[0];
 
   const [placeName, setPlaceName] = useState<string>("Loading...");
 
-  // Fetch place name safely
+  // Fetch place name from coordinates
   useEffect(() => {
+    if (!data?.location?.coordinates?.length) return;
+
+    const [lng, lat] = data.location.coordinates;
+
     const fetchPlace = async () => {
-      if (!data?.location?.coordinates) return;
-
-      const lat = data.location.coordinates[1];
-      const lng = data.location.coordinates[0];
-
       try {
         const place = await getPlaceNameFromCoords(lat, lng);
         setPlaceName(place || "Location not found");
@@ -32,18 +31,24 @@ export default function ConfirmationContent() {
     };
 
     fetchPlace();
-  }, [data?.location?.coordinates]);
- const statusMessageMap: Record<string, string> = {
-  PENDING: "Your booking request is pending. Worker will confirm soon.",
-  ASSIGNED: "A worker has been assigned to your booking.",
-  STARTED: "Work has started.",
-  IN_PROGRESS: "Work is currently in progress.",
-  WORK_COMPLETED_PENDING:
-    "Work completed. Waiting for OTP confirmation from worker.",
-  COMPLETED: "Work is completed successfully.",
-  CANCELLED: "This booking has been cancelled.",
-  REQUESTED:"Booking has been requested and work will be accepted by the worker."
-};
+  }, [
+    data?.location?.coordinates?.[0],
+    data?.location?.coordinates?.[1],
+  ]);
+
+  const statusMessageMap: Record<string, string> = {
+    PENDING: "Your booking request is pending. Worker will confirm soon.",
+    ASSIGNED: "A worker has been assigned to your booking.",
+    STARTED: "Work has started.",
+    IN_PROGRESS: "Work is currently in progress.",
+    WORK_COMPLETED_PENDING:
+      "Work completed. Waiting for OTP confirmation from worker.",
+    COMPLETED: "Work is completed successfully.",
+    CANCELLED: "This booking has been cancelled.",
+    REQUESTED:
+      "Booking has been requested and work will be accepted by the worker.",
+  };
+
   if (error) {
     return (
       <p className="text-red-500 text-center mt-10">
@@ -52,7 +57,6 @@ export default function ConfirmationContent() {
     );
   }
 
-  // Loading State
   if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-81px)] bg-gray-50">
@@ -78,9 +82,16 @@ export default function ConfirmationContent() {
       ? `${data?.schedule?.estimatedDays ?? 0} Days`
       : "N/A";
 
+  // Handle service tier safely
+  const tierName =
+    typeof data?.serviceTierId === "object"
+      ? data?.serviceTierId?.displayName
+      : "Loading...";
+
   return (
     <main className="flex flex-col items-center justify-center min-h-[calc(100vh-81px)] px-4 sm:px-6 py-8 sm:py-12 bg-gray-50">
       <div className="max-w-[700px] w-full text-center">
+
         {/* Success Icon */}
         <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-6 sm:mb-8 rounded-full bg-emerald-100 border-4 border-emerald-200 flex items-center justify-center animate-[bounce_0.6s_ease-in-out]">
           <svg
@@ -95,20 +106,20 @@ export default function ConfirmationContent() {
           </svg>
         </div>
 
-        {/* Heading */}
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
           Booking {formattedStatus}
         </h1>
 
-                <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
-            {statusMessageMap[data.status] || "Booking status updated."}
-          </p>
+        <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
+          {statusMessageMap[data.status] || "Booking status updated."}
+        </p>
 
-        {/* Reference */}
+        {/* Reference ID */}
         <div className="inline-flex items-center justify-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">
           <span className="text-xs font-bold uppercase text-gray-400">
             Reference ID
           </span>
+
           <span className="text-sm font-bold text-gray-900">
             {data?._id}
           </span>
@@ -124,6 +135,7 @@ export default function ConfirmationContent() {
 
           <div className="px-6 py-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+
               <SummaryItem
                 label="Service"
                 value={data?.serviceId?.name}
@@ -131,7 +143,7 @@ export default function ConfirmationContent() {
 
               <SummaryItem
                 label="Tier"
-                value={data?.serviceTierId?.displayName}
+                value={tierName}
               />
 
               <SummaryItem
@@ -179,16 +191,18 @@ export default function ConfirmationContent() {
                 <h4 className="text-sm font-bold text-gray-900 mb-1">
                   Provider Assignment in Progress
                 </h4>
+
                 <p className="text-sm text-gray-500">
                   We're assigning the best provider for your location.
                   You'll receive a notification once confirmed.
                 </p>
               </div>
             </div>
+
           </div>
         </div>
 
-        {/* Track Button */}
+        {/* Track Job */}
         <button
           className="w-full cursor-pointer h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
           onClick={() => navigate(`/jobtracking/${data?._id}`)}
@@ -200,6 +214,7 @@ export default function ConfirmationContent() {
 
         {/* Links */}
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
+
           <Link to="/" className="text-gray-900 hover:text-blue-600">
             <span className="flex gap-2">
               <Home className="w-5" />
@@ -213,36 +228,40 @@ export default function ConfirmationContent() {
               View All Bookings
             </span>
           </Link>
+
         </div>
 
         {/* What's Next */}
         <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-left">
+
           <h3 className="text-xs font-bold uppercase text-gray-400 mb-5">
             What's Next?
           </h3>
 
           <div className="flex flex-col gap-4">
+
             <NextStep
               number="1"
               title="Provider Assignment"
               description="We'll match you with a top-rated professional"
             />
+
             <NextStep
               number="2"
               title="Confirmation Call"
               description="Your provider will contact you"
             />
+
             <NextStep
               number="3"
               title="Service Delivery"
               description="Enjoy professional service at your scheduled time"
             />
+
           </div>
         </div>
+
       </div>
     </main>
   );
 }
-
-
-

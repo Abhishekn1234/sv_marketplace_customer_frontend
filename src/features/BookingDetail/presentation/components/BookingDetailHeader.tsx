@@ -1,42 +1,42 @@
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useParams } from "react-router-dom";
 import BookingDetailAddress from "./BookingDetailAddress";
 import BookingDetailDateandmoredetails from "./BookingDetailDateandmoredetails";
 
-
 export default function BookingDetailHeader() {
   const { serviceId, serviceTierId } = useParams();
-  const { services, categories, serviceTiers } = useServices();
- 
-  const service = services?.find(
-    (service) => service._id === serviceId
+
+  const { data: categories } = useServiceCategory();
+
+  // 🔎 Find service inside categories
+  const service = categories
+    ?.flatMap((cat) => cat.services)
+    ?.find((service) => service._id === serviceId);
+    console.log(service);
+
+  // 🔎 Find category of that service
+  const category = categories?.find((cat) =>
+    cat.services?.some((s) => s._id === serviceId)
   );
 
-  const category = categories?.find(
-    (cat) => cat._id === service?.category?._id
+  console.log(category);
+  const tier = service?.pricingTiers?.find(
+    (tier) => tier.tierId === serviceTierId
   );
-
-  const tier = serviceTiers?.find(
-    (tier) => tier._id === serviceTierId
-  );
+  console.log(tier);
 
   const servicename = service?.name;
   const servicedescription = service?.description;
   const servicetype = category?.name;
-  const tiername = tier?.displayName;
+  const tiername = tier?.tier?.displayName;
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 pb-16">
-       <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-gray-900 mb-10 tracking-[-0.02em]">
-          Booking Details
-        </h1>
-      {/* Centered Container */}
+      <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-gray-900 mb-10 tracking-[-0.02em]">
+        Booking Details
+      </h1>
+
       <div className="max-w-7xl">
-
-        {/* Page Title */}
-       
-
-        {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
 
           {/* LEFT SIDE */}
@@ -49,7 +49,6 @@ export default function BookingDetailHeader() {
                 Service Summary
               </h2>
 
-              {/* Service Info */}
               <div className="flex items-start gap-4 mb-6">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-600/10 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <svg
@@ -69,6 +68,7 @@ export default function BookingDetailHeader() {
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5">
                     {servicename}
                   </h3>
+
                   <p className="text-sm text-gray-500 leading-[1.6]">
                     {servicedescription}
                   </p>
@@ -82,6 +82,7 @@ export default function BookingDetailHeader() {
                   <span className="text-sm text-gray-500 font-medium">
                     Service Type
                   </span>
+
                   <span className="text-sm font-semibold text-gray-900">
                     {servicetype}
                   </span>
@@ -91,6 +92,7 @@ export default function BookingDetailHeader() {
                   <span className="text-sm text-gray-500 font-medium">
                     Service Professional
                   </span>
+
                   <span className="text-sm font-semibold text-gray-900">
                     {tiername}
                   </span>
@@ -100,6 +102,7 @@ export default function BookingDetailHeader() {
                   <span className="text-sm text-gray-500 font-medium">
                     Equipment
                   </span>
+
                   <span className="text-sm font-semibold text-blue-600">
                     Included
                   </span>
@@ -108,14 +111,13 @@ export default function BookingDetailHeader() {
               </div>
             </div>
 
-            {/* Address Card */}
             <BookingDetailAddress />
 
           </div>
 
           {/* RIGHT SIDE */}
           <div className="lg:sticky lg:top-24 h-fit">
-           <BookingDetailDateandmoredetails/>
+            <BookingDetailDateandmoredetails />
           </div>
 
         </div>

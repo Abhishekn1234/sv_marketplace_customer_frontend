@@ -5,29 +5,30 @@ import { VerifyPaymentUseCase } from "../../domain/usecase/BookingPaymentVerifyU
 import type { VerifyPaymentResponse } from "../../domain/entities/verifypayment";
 import type { AxiosError } from "axios";
 
+interface ApiError {
+  message: string;
+}
+
 const repository = new BookingPaymentVerifyRepositoryImpl();
 const useCase = new VerifyPaymentUseCase(repository);
 
 export const useVerifyPayment = () => {
-  return useMutation<VerifyPaymentResponse, AxiosError, string>({
+  return useMutation<VerifyPaymentResponse, AxiosError<ApiError>, string>({
     mutationFn: async (paymentId: string) => {
       return await useCase.execute({ paymentId });
     },
+
     onSuccess: (_data, paymentId) => {
-  toast.success(`Payment Verified ✅ for paymentId: ${paymentId}`);
-},
-   onError: (error, paymentId) => {
-  // Safe extraction of error message
-  let msg = "Unknown error";
+      toast.success(`Payment Verified ✅ for paymentId: ${paymentId}`);
+    },
 
-  // If AxiosError, response?.data?.message might exist
-  if ((error as any)?.response?.data?.message) {
-    msg = (error as any).response.data.message;
-  } else if ((error as any)?.message) {
-    msg = (error as any).message;
-  }
+    onError: (error, paymentId) => {
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Unknown error";
 
-  toast.error(`Failed to verify payment for ${paymentId}: ${msg}`);
-},
+      toast.error(`Failed to verify payment for ${paymentId}: ${msg}`);
+    },
   });
 };

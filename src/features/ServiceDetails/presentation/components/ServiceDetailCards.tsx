@@ -1,5 +1,5 @@
+import { useMemo } from "react";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useSearchStore } from "@/features/core/store/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomQuote from "./GetCustomQuote";
@@ -9,19 +9,19 @@ interface Props {
   sortBy: string;
 }
 
-export default function ServiceDetailCards({
-  activeFilter,
-  sortBy,
-}: Props) {
+export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
   const { id } = useParams();
   const { searchTerm } = useSearchStore();
   const navigate = useNavigate();
-  
-  const { services, loading: loadingServices, error } = useServices();
- 
-  const { isPending: loadingCategories } = useServiceCategory();
 
-  if (loadingServices || loadingCategories) {
+  const { data: apiResponse, isPending, error } = useServiceCategory();
+
+  // ✅ Flatten services from categories
+  const services = useMemo(() => {
+    return apiResponse?.flatMap((category: any) => category.services) ?? [];
+  }, [apiResponse]);
+
+  if (isPending) {
     return <p className="text-gray-500">Loading services...</p>;
   }
 
@@ -29,39 +29,40 @@ export default function ServiceDetailCards({
     return <p className="text-red-500">Failed to load services.</p>;
   }
 
-
-  let filteredServices = services?.filter(
-    (service) => service.category?._id === id
+  // ✅ Filter by category id
+  let filteredServices = services.filter(
+    (service: any) => service.category?.[0]?._id === id
   );
 
-
+  // ✅ Search filter
   if (searchTerm?.trim()) {
-    filteredServices = filteredServices?.filter((service) =>
-      service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    filteredServices = filteredServices.filter(
+      (service: any) =>
+        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
-  
+  // ✅ Custom filters
   if (activeFilter === "Popular") {
-    filteredServices = filteredServices?.filter(
-      (service) => service.avgRating >= 4
+    filteredServices = filteredServices.filter(
+      (service: any) => service.avgRating >= 4
     );
   }
 
   if (activeFilter === "Same Day") {
-    filteredServices = filteredServices?.filter((service) =>
-      service.pricingTiers?.some((tier) => tier.HOURLY)
+    filteredServices = filteredServices.filter((service: any) =>
+      service.pricingTiers?.some((tier: any) => tier.HOURLY)
     );
   }
 
   if (activeFilter === "Eco-friendly") {
-    filteredServices = filteredServices?.filter((service) =>
+    filteredServices = filteredServices.filter((service: any) =>
       service.description?.toLowerCase().includes("eco")
     );
   }
 
-
+  // ✅ Get price helper
   const getPrice = (service: any) => {
     const tier = service.pricingTiers?.[0];
     if (!tier) return 0;
@@ -70,27 +71,26 @@ export default function ServiceDetailCards({
     return 0;
   };
 
- 
+  // ✅ Sorting
   if (sortBy === "Price Low to High") {
-    filteredServices = [...(filteredServices || [])].sort(
-      (a, b) => getPrice(a) - getPrice(b)
+    filteredServices = [...filteredServices].sort(
+      (a: any, b: any) => getPrice(a) - getPrice(b)
     );
   }
 
   if (sortBy === "Price High to Low") {
-    filteredServices = [...(filteredServices || [])].sort(
-      (a, b) => getPrice(b) - getPrice(a)
+    filteredServices = [...filteredServices].sort(
+      (a: any, b: any) => getPrice(b) - getPrice(a)
     );
   }
 
   if (sortBy === "Recommended") {
-    filteredServices = [...(filteredServices || [])].sort(
-      (a, b) => b.avgRating - a.avgRating
+    filteredServices = [...filteredServices].sort(
+      (a: any, b: any) => b.avgRating - a.avgRating
     );
   }
 
- 
-  if (!filteredServices?.length) {
+  if (!filteredServices.length) {
     return (
       <p className="text-gray-500">
         {searchTerm
@@ -102,17 +102,16 @@ export default function ServiceDetailCards({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 mb-8">
-      {filteredServices.map((service) => {
+      {filteredServices.map((service: any) => {
         const isPremium = service.pricingTiers?.some(
-          (tier) =>
-            tier.commissionType === "PERCENTAGE" &&
-            tier.commissionValue >= 20
+          (tier: any) =>
+            tier.commissionType === "PERCENTAGE" && tier.commissionValue >= 20
         );
 
         const isInstant = service.pricingTiers?.some(
-          (tier) => tier.HOURLY || tier.PER_DAY
+          (tier: any) => tier.HOURLY || tier.PER_DAY
         );
-       console.log(isInstant);
+
         const tier = service.pricingTiers?.[0];
         const price = getPrice(service);
 
@@ -152,9 +151,6 @@ export default function ServiceDetailCards({
                 </span>
               )}
             </div>
-            <h3>
-              {service.totalRatings}
-            </h3>
 
             <h3 className="text-[20px] font-bold text-gray-900 mb-2">
               {service.name}
@@ -171,17 +167,12 @@ export default function ServiceDetailCards({
                 </div>
 
                 <div className="text-[22px] font-bold text-gray-900">
-            {service.currency} {price}
+                  {service.currency} {price}
 
-            <span className="text-sm font-medium text-gray-500 ml-1">
-              {tier?.HOURLY
-                ? "/hr"
-                : tier?.PER_DAY
-                ? "/day"
-                : ""}
-            </span>
-          </div>
-
+                  <span className="text-sm font-medium text-gray-500 ml-1">
+                    {tier?.HOURLY ? "/hr" : tier?.PER_DAY ? "/day" : ""}
+                  </span>
+                </div>
               </div>
 
               <button
@@ -196,7 +187,8 @@ export default function ServiceDetailCards({
           </div>
         );
       })}
-       <CustomQuote/>
+
+      <CustomQuote />
     </div>
   );
 }

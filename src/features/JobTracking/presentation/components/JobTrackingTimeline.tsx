@@ -62,7 +62,7 @@ const steps = useMemo(() => {
       title: "Invoice Generated",
       time: localBooking.invoiceId ? formatDates(localBooking.updatedAt) : "Pending",
       status: localBooking.invoiceId ? "completed" : "pending",
-      showPaymentButton: localBooking.invoiceId && localBooking.status === "INVOICE_GENERATED",
+      // showPaymentButton: localBooking.invoiceId && localBooking.status === "INVOICE_GENERATED",
     },
     {
       title: "Payment",
