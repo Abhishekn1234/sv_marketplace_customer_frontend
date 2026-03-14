@@ -1,7 +1,7 @@
 
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocationName } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/features/utils/reverse";
 
 export const useUpdateCurrentLocation = () => {
   const addAddress = useAuthStore((state) => state.addAddress);
@@ -15,16 +15,15 @@ export const useUpdateCurrentLocation = () => {
     }
 
     try {
-      const { placeName } = await getCurrentLocationName();
+      const { placeName } = await getCurrentLocation();
 
-      // Check if 'home' exists
       const homeAddr = addresses.find((addr) => addr.type === "home");
       const inputAddr = addresses.find((addr) => addr.type === "inputValue");
 
       if (homeAddr) {
-        updateHome("home", placeName); // update existing home
+        updateHome("home", placeName);
       } else {
-        addAddress("home", placeName); // add new home
+        addAddress("home", placeName);
       }
 
       if (inputAddr) {

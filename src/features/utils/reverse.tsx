@@ -1,52 +1,74 @@
 import { toast } from "react-toastify";
 import { apiUrl } from "../api/apiConfig";
 
-
-export const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
+export const reverseGeocode = async (
+  lat: number,
+  lng: number
+): Promise<string> => {
   try {
-    const response = await fetch(`${apiUrl}/geolocation/reverse?lat=${lat}&lon=${lng}`);
-    if (!response.ok) throw new Error("Geocoding request failed");
+    const response = await fetch(
+      `${apiUrl}/geolocation/reverse?lat=${lat}&lon=${lng}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Reverse geocode request failed");
+    }
 
     const data = await response.json();
+
     if (data.error) {
-      console.warn("Backend returned an error:", data.error);
+      console.warn("Backend returned error:", data.error);
       return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     }
 
     return data.address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   } catch (error) {
-    console.error("Reverse geocoding error:", error);
-    toast.error("Failed to fetch address from backend");
+    console.error("Reverse geocode error:", error);
+    toast.error("Failed to fetch address");
     return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
 };
 
-
-export const getCurrentLocationName = async (): Promise<{ lat: number; lng: number; placeName: string }> => {
+export const getCurrentLocation = async (): Promise<{
+  lat: number;
+  lng: number;
+  placeName: string;
+}> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error("Geolocation not supported"));
       return;
     }
 
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+
         try {
           const placeName = await reverseGeocode(lat, lng);
           resolve({ lat, lng, placeName });
         } catch {
-          resolve({ lat, lng, placeName: `Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
+          resolve({
+            lat,
+            lng,
+            placeName: `Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+          });
         }
       },
-      (error) => reject(error),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      (error) => {
+        console.error("Geolocation error:", error);
+        toast.error("Unable to get your location");
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
     );
   });
 };
-
-
 
 export const getSuggestions = async (
   query: string,
@@ -55,20 +77,22 @@ export const getSuggestions = async (
   if (!query.trim()) return [];
 
   try {
-    const limit = 5; 
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-      query
-    )}&limit=${limit}&accept-language=en&addressdetails=1`;
+    const response = await fetch(
+      `${apiUrl}/geolocation/suggestions?q=${encodeURIComponent(query)}`,
+      { signal }
+    );
 
-    const res = await fetch(url, { signal });
-    if (!res.ok) return [];
+    if (!response.ok) {
+      throw new Error("Suggestions request failed");
+    }
 
-    const data = await res.json();
-    console.log("Nominatim suggestions response:", data);
+    const data = await response.json();
+
+    console.log("Backend suggestions:", data);
 
     return data.map((item: any) => ({
       lat: parseFloat(item.lat),
-      lng: parseFloat(item.lon),
+      lng: parseFloat(item.lng),
       display_name: item.display_name,
     }));
   } catch (error) {
@@ -80,13 +104,23 @@ export const getSuggestions = async (
 export const getCoordinatesFromQuery = async (
   query: string
 ): Promise<{ lat: number; lng: number; placeName: string } | null> => {
-  const suggestions = await getSuggestions(query);
-  if (suggestions.length === 0) return null;
+  try {
+    const suggestions = await getSuggestions(query);
 
-  const first = suggestions[0];
-  return { lat: first.lat, lng: first.lng, placeName: first.display_name };
+    if (!suggestions.length) return null;
+
+    const first = suggestions[0];
+
+    return {
+      lat: first.lat,
+      lng: first.lng,
+      placeName: first.display_name,
+    };
+  } catch (error) {
+    console.error("Coordinates fetch error:", error);
+    return null;
+  }
 };
-
 
 export const getPlaceNameFromCoords = async (
   lat: number,
