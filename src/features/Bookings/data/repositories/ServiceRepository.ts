@@ -11,7 +11,7 @@ import apiClient from "../../../api/interceptor";
 import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
 import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 export class ServiceRepository implements IServiceRepository {
- private readonly baseUrl = "booking"; // remove leading slash
+ private readonly baseUrl = "booking"; 
 
 
   async getServices(): Promise<APIResponse<Category[]>> {
