@@ -5,7 +5,7 @@ import { Home } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 
@@ -117,9 +117,11 @@ export default function BookingHistoryContents({ activeTab }: Props) {
             {/* Info */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl mb-5">
               <div>
-                <span className="text-xs text-gray-500">Date</span>
-                <p className="text-sm sm:text-base font-semibold">{booking.schedule?.startDateTime}</p>
-              </div>
+  <span className="text-xs text-gray-500">Date</span>
+  <p className="text-sm sm:text-base font-semibold">
+    {formatDates(booking.schedule?.startDateTime)}
+  </p>
+</div>
               <div>
                 <span className="text-xs text-gray-500">Duration</span>
                 <p className="text-sm sm:text-base font-semibold">
