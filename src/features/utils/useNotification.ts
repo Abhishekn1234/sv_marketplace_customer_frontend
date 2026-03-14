@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { getCurrentLocationName} from "./reverse";
+import { getCurrentLocation} from "./reverse";
 import type { Location } from "./getdistance";
 import { haversineDistance } from "./getdistance";
 const NOTIFY_INTERVAL = 60_000; 
@@ -38,7 +38,7 @@ export const useNotification = () => {
         const distanceKm = haversineDistance(previous, current);
         if (distanceKm < MIN_DISTANCE_KM) return;
 
-       const { placeName } = await getCurrentLocationName();
+       const { placeName } = await getCurrentLocation();
 
         new Notification("Location Changed", {
           body: `Moved ${Math.round(distanceKm)} km — ${placeName}`,

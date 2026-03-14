@@ -8,7 +8,7 @@ import BookingServiceHeader from "./BookingServiceHeader";
 import BookingServiceForm from "./BookingServiceForm";
 import BookingServiceLocation from "./BookingServiceLocation";
 import BookingServiceFooter from "./BookingServiceFooter";
-import { getCurrentLocationName } from "../../../../utils/reverse";
+import { getCurrentLocation } from "../../../../utils/reverse";
 
 interface BookingServiceModalProps {
   isOpen: boolean;
@@ -89,7 +89,7 @@ export default function BookingServiceModal({
 
     if (locationMode === "current") {
       setIsGeocoding(true);
-      getCurrentLocationName()
+      getCurrentLocation()
         .then(({ lat, lng, placeName }) => {
           setLat(lat);
           setLng(lng);

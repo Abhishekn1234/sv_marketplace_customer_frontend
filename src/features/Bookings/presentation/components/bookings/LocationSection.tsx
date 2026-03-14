@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { reverseGeocode,getCurrentLocationName } from "../../../../utils/reverse";
+import { reverseGeocode,getCurrentLocation } from "../../../../utils/reverse";
 import { toast } from "react-toastify";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -55,7 +55,7 @@ export default function LocationSelector(props: LocationSelectorProps) {
   const handleUseCurrent = useCallback(async () => {
     setIsGeocoding(true);
     try {
-      const location = await getCurrentLocationName();
+      const location = await getCurrentLocation();
       setLat(location.lat);
       setLng(location.lng);
       setPlaceName(location.placeName);

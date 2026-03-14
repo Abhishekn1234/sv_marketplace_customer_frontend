@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import CommonMap from "@/components/common/CommonMap";
-import { reverseGeocode, getCurrentLocationName } from "../../../../utils/reverse";
+import { reverseGeocode, getCurrentLocation } from "../../../../utils/reverse";
 
 interface BookingServiceLocationProps {
   lat: number;
@@ -33,7 +33,7 @@ export default function BookingServiceLocation({
   const handleSetCurrentLocation = useCallback(async () => {
     setIsGeocoding(true);
     try {
-      const location = await getCurrentLocationName();
+      const location = await getCurrentLocation();
       setLat(location.lat);
       setLng(location.lng);
       setPlaceName(location.placeName);

@@ -1,6 +1,6 @@
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocationName } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/features/utils/reverse";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ const handleUseCurrentLocation = async () => {
   setLoadingLocation(true);
 
   try {
-    const { placeName } = await getCurrentLocationName();
+    const { placeName } = await getCurrentLocation();
 
     updateHome("home", placeName);
     updateHome("inputValue", placeName);

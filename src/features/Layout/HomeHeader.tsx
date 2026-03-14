@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../core/store/auth";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { getCurrentLocationName } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/features/utils/reverse";
 import { toast } from "react-toastify";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 
@@ -25,7 +25,7 @@ const HomeHeader: React.FC = () => {
     setLoadingLocation(true);
 
     try {
-      const { placeName } = await getCurrentLocationName();
+      const { placeName } = await getCurrentLocation();
 
       // Update or add 'home'
       const hasHome = addresses.some((addr) => addr.type === "home");
