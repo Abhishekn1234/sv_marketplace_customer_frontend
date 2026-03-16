@@ -2,7 +2,7 @@
 import JobTrackingTimeline from "./JobTrackingTimeline";
 import JobTrackingWorkerDetails from "./JobTrackingWorkerDetails";
 import JobTrackingServiceDetails from "./JobTrackingServiceDetails";
-import JobTrackingLocation from "./JobTrackingLocation";
+// import JobTrackingLocation from "./JobTrackingLocation";
 import JobTrackingNeedHelp from "./JobTrackingNeedHelp";
 
 export default function JobTrackingLayout() {
@@ -17,7 +17,7 @@ export default function JobTrackingLayout() {
 
       {/* Right Column */}
       <div className="flex flex-col gap-5 sticky top-6">
-        <JobTrackingLocation />
+        {/* <JobTrackingLocation /> */}
         <JobTrackingNeedHelp />
       </div>
     </div>

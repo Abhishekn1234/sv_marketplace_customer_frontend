@@ -139,64 +139,67 @@ export default function BookingHistoryContents({ activeTab }: Props) {
             </div>
 
             {/* Footer Buttons: Only 2 buttons */}
-          {/* Footer Buttons: Only 2 buttons, aligned right */}
+        {/* Footer Buttons */}
 <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
-  {/* Main Button */}
-  <button
-    onClick={() => {
-      if (!clickable) return;
+  {/* Check if booking is PAID for > 10 days */}
+  {!(booking.status === "PAID" && booking.updatedAt && ((new Date().getTime() - new Date(booking.updatedAt).getTime()) / (1000 * 60 * 60 * 24) > 10)) && (
+    <>
+      {/* Main Button */}
+      <button
+        onClick={() => {
+          if (!clickable) return;
 
-      switch (booking.status) {
-        case "IN_PROGRESS":
-        case "REQUESTED":
-          navigate(`/jobtracking/${booking._id}`);
-          break;
-        case "INVOICE_GENERATED":
-          navigate(`/invoice/${booking._id}`);
-          break;
-        case "WORKER_ACCEPTED":
-          handleGenerateStartOtp(booking._id);
-          break;
-        case "WORK_COMPLETED_PENDING":
-          handleGenerateCompletedOtp(booking._id);
-          break;
-        case "PAYMENT_PENDING":
-          if (booking.paymentId) {
-            verifyPaymentMutation.mutate(booking.paymentId, {
-              onSuccess: () => {
-                toast.success("Payment verified!");
-              },
-            });
+          switch (booking.status) {
+            case "IN_PROGRESS":
+            case "REQUESTED":
+              navigate(`/jobtracking/${booking._id}`);
+              break;
+            case "INVOICE_GENERATED":
+              navigate(`/invoice/${booking._id}`);
+              break;
+            case "WORKER_ACCEPTED":
+              handleGenerateStartOtp(booking._id);
+              break;
+            case "WORK_COMPLETED_PENDING":
+              handleGenerateCompletedOtp(booking._id);
+              break;
+            case "PAYMENT_PENDING":
+              if (booking.paymentId) {
+                verifyPaymentMutation.mutate(booking.paymentId, {
+                  onSuccess: () => toast.success("Payment verified!"),
+                });
+              }
+              break;
+            case "PAID":
+              navigate(`/servicerating/${booking._id}`);
+              break;
+            default:
+              break;
           }
-          break;
-        case "PAID":
-          navigate(`/servicerating/${booking._id}`);
-          break;
-        default:
-          break;
-      }
-    }}
-    className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${!clickable ? "cursor-not-allowed opacity-60" : ""}`}
-    disabled={!clickable}
-  >
-    {label}
-  </button>
+        }}
+        className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${!clickable ? "cursor-not-allowed opacity-60" : ""}`}
+        disabled={!clickable}
+      >
+        {label}
+      </button>
 
-  {/* Secondary Button */}
-  <button
-    onClick={() => {
-      if (booking.status === "COMPLETED" && !booking.invoiceId) {
-        setPaymentBookingId(booking._id);
-        setPaymentModalOpen(true);
-      } else {
-        setSelectedBooking(booking);
-        setModalOpen(true);
-      }
-    }}
-    className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
-  >
-    {booking.status === "COMPLETED" && !booking.invoiceId ? "Pay Now" : "View Details"}
-  </button>
+      {/* Secondary Button */}
+      <button
+        onClick={() => {
+          if (booking.status === "COMPLETED" && !booking.invoiceId) {
+            setPaymentBookingId(booking._id);
+            setPaymentModalOpen(true);
+          } else {
+            setSelectedBooking(booking);
+            setModalOpen(true);
+          }
+        }}
+        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+      >
+        {booking.status === "COMPLETED" && !booking.invoiceId ? "Pay Now" : "View Details"}
+      </button>
+    </>
+  )}
 </div>
           </CommandCard>
         );

@@ -15,18 +15,30 @@ export default function BookingDetailDateandmoredetails() {
   const [duration, setDuration] = useState(1);
   const [notes, setNotes] = useState("");
 
-  // ✅ Dynamic Dates (Today + next 6 days)
-  const dates = useMemo(() => {
+ const allDates = useMemo(() => {
     const today = new Date();
-    return Array.from({ length: 7 }).map((_, i) => {
+    return Array.from({ length: 15 }).map((_, i) => {
       const current = new Date(today);
       current.setDate(today.getDate() + i);
       return {
         day: current.toLocaleDateString("en-US", { weekday: "short" }),
         date: current.getDate(),
+        fullDate: new Date(current),
       };
     });
   }, []);
+
+  // ==============================
+  // DATE PAGINATION
+  // ==============================
+  const datesPerPage = 7;
+  const [pageStart, setPageStart] = useState(0);
+  const visibleDates = allDates.slice(pageStart, pageStart + datesPerPage);
+
+  const handlePrev = () => setPageStart((prev) => Math.max(prev - datesPerPage, 0));
+  const handleNext = () =>
+    setPageStart((prev) => Math.min(prev + datesPerPage, allDates.length - datesPerPage));
+
 
   // ✅ Time Slots
   const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
@@ -129,22 +141,46 @@ export default function BookingDetailDateandmoredetails() {
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
       {/* ================= DATE ================= */}
-      <h2 className="text-sm font-bold text-gray-900 mb-4">Select Date</h2>
-      <div className="grid grid-cols-3 gap-3 mb-6 sm:flex sm:overflow-x-auto sm:pb-2">
-        {dates.map((item, index) => (
-          <div
-            key={index}
-            onClick={() => setSelectedDate(index)}
-            className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition sm:min-w-[72px] ${
-              selectedDate === index
-                ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-                : "bg-white border-gray-200 hover:border-blue-600"
-            }`}
-          >
-            <span className="text-xs font-bold uppercase">{item.day}</span>
-            <span className="text-2xl font-black">{item.date}</span>
+     
+     <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-sm font-bold text-gray-900">Select Date</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrev}
+              disabled={pageStart === 0}
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+            >
+              ←
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={pageStart + datesPerPage >= allDates.length}
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+            >
+              →
+            </button>
           </div>
-        ))}
+        </div>
+        <div className="flex gap-3 overflow-x-auto">
+          {visibleDates.map((item, index) => {
+            const globalIndex = pageStart + index;
+            return (
+              <div
+                key={globalIndex}
+                onClick={() => setSelectedDate(globalIndex)}
+                className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition min-w-[72px] ${
+                  selectedDate === globalIndex
+                    ? "bg-blue-600 border-blue-600 text-white shadow-lg"
+                    : "bg-white border-gray-200 hover:border-blue-600"
+                }`}
+              >
+                <span className="text-xs font-bold uppercase">{item.day}</span>
+                <span className="text-2xl font-black">{item.date}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* ================= TIME ================= */}
