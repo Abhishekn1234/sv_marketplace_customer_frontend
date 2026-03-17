@@ -28,9 +28,7 @@ export default function BookingDetailDateandmoredetails() {
     });
   }, []);
 
-  // ==============================
-  // DATE PAGINATION
-  // ==============================
+ 
   const datesPerPage = 7;
   const [pageStart, setPageStart] = useState(0);
   const visibleDates = allDates.slice(pageStart, pageStart + datesPerPage);
@@ -40,12 +38,8 @@ export default function BookingDetailDateandmoredetails() {
     setPageStart((prev) => Math.min(prev + datesPerPage, allDates.length - datesPerPage));
 
 
-  // ✅ Time Slots
   const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
 
-  // ==============================
-  // 🔥 PRICING LOGIC
-  // ==============================
   const basePricePerHour = 30;
   const discountPercent = 15;
   const commissionValue = 10;
@@ -61,9 +55,7 @@ export default function BookingDetailDateandmoredetails() {
     return basePrice - discount + commission;
   }, [duration, basePrice, discount, commissionType, commissionValue]);
 
-  // ==============================
-  // ✅ BOOKING HANDLER
-  // ==============================
+
   const handleBooking = async () => {
     try {
       if (selectedDate === null) return toast.error("Please select a date");
@@ -73,7 +65,7 @@ export default function BookingDetailDateandmoredetails() {
       const selectedDateObj = new Date(today);
       selectedDateObj.setDate(today.getDate() + selectedDate);
 
-      // ⏰ Convert 12hr to 24hr format
+      
       const [time, modifier] = times[selectedTime].split(" ");
       let [hours, minutes] = time.split(":").map(Number);
       if (modifier === "PM" && hours !== 12) hours += 12;
@@ -83,34 +75,53 @@ export default function BookingDetailDateandmoredetails() {
       if (selectedDateObj.getTime() <= new Date().getTime())
         return toast.error("Please select a future time");
 
-      // ==============================
-      // ✅ GET USER HOME ADDRESS AND COORDINATES
-      // ==============================
+     
       const addresses = current_location?.addresses ?? [];
       const homeAddress =
         addresses.find((addr) => addr.type === "home")?.value ||
         addresses.find((addr) => addr.type === "office")?.value ||
         addresses.find((addr)=>addr.type==="inputValue")?.value;
 
-      if (!homeAddress) return toast.error("No address found");
+        if (!homeAddress) return toast.error("No address found");
 
-      const coords = await getCoordinatesFromQuery(homeAddress);
+       let lat: number | undefined;
+        let lng: number | undefined;
 
-      if (!coords) return toast.error("Unable to fetch location coordinates");
 
-      const { lat, lng } = coords;
+        try {
+          const coords = await getCoordinatesFromQuery(homeAddress);
 
-      // ==============================
-      // 🔹 DETERMINE BOOKING TYPE & PRICING MODE
-      // ==============================
+          if (coords) {
+            lat = coords.lat;
+            lng = coords.lng;
+          }
+        } catch (e) {
+          console.warn("Geocoding failed, using fallback location");
+        }
+
+        if ((!lat || !lng) && current_location?.lat && current_location?.lng) {
+          lat = current_location.lat;
+          lng = current_location.lng;
+        }
+
+        
+        if ((!lat || !lng) && current_location?.coordinates?.coordinates) {
+          const coords = current_location.coordinates.coordinates;
+
+          lng = coords[0];
+          lat = coords[1];
+        }
+
+
+        if (!lat || !lng) {
+          return toast.error("Unable to determine location");
+        }
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
       let pricingMode: "HOURLY" | "PER_DAY" = duration > 24 ? "PER_DAY" : "HOURLY";
       const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;
       const estimatedHours = duration > 24 ? duration % 24 : duration;
 
-      // ==============================
-      // 🔹 BUILD PAYLOAD
-      // ==============================
+    
       const payload = {
         workDescription: notes || "Service booking",
         serviceId: serviceId!,
@@ -140,8 +151,7 @@ export default function BookingDetailDateandmoredetails() {
 
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
-      {/* ================= DATE ================= */}
-     
+    
      <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-sm font-bold text-gray-900">Select Date</h2>
@@ -201,7 +211,6 @@ export default function BookingDetailDateandmoredetails() {
         ))}
       </div>
 
-      {/* ================= DURATION ================= */}
       <h2 className="text-sm font-bold text-gray-900 mb-4">Estimated Duration</h2>
       <div className="flex items-center gap-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
         <button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">−</button>
@@ -212,7 +221,6 @@ export default function BookingDetailDateandmoredetails() {
         <button onClick={increaseDuration} className="w-10 h-10 bg-white rounded-lg">+</button>
       </div>
 
-      {/* ================= SPECIAL REQUIREMENTS ================= */}
       <div className="mb-4">
         <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">Special Requirements</h2>
         <textarea
@@ -223,7 +231,6 @@ export default function BookingDetailDateandmoredetails() {
         />
       </div>
 
-      {/* ================= PRICE SUMMARY ================= */}
       <div className="border-t-2 border-dashed border-gray-200 pt-6 mb-6">
         <div className="flex justify-between mb-2 text-sm">
           <span>Base Price ({duration} hrs)</span>

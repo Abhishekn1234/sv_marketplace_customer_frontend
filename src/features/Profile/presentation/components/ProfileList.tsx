@@ -3,14 +3,17 @@ import { useRef, useState } from "react";
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useAuthStore } from "@/features/core/store/auth";
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { setUser, user } = useAuthStore();
-  const {bookings}=useBookings();
-  const bookingcount=bookings.length;
+  const {data:bookings}=useBookingHistory();
+  const bookingcount = bookings?.pages
+  ?.flatMap(page => page.data || []) // adjust 'data' key if different
+  .length || 0;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 

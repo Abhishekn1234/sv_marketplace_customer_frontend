@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 interface RecentItemProps {
+  bookingId?: string;
   categoryId?: string;
   serviceId?: string;
   title: string;
@@ -11,6 +12,7 @@ interface RecentItemProps {
 }
 
 export const RecentItem: React.FC<RecentItemProps> = ({
+  bookingId,
   categoryId,
   serviceId,
   title,
@@ -23,13 +25,39 @@ export const RecentItem: React.FC<RecentItemProps> = ({
 
   const normalizedStatus = status?.toLowerCase();
 
-  const isDisabled =
-    normalizedStatus === "customer_cancelled" ||
-    normalizedStatus === "requested";
+ 
+  const trackStatuses = [
+    "requested",
+    "in_progress",
+    "completed",
+    "work_completed_pending",
+  ];
+
+  const isTrack = trackStatuses.includes(normalizedStatus || "");
+  const isPaid = normalizedStatus === "paid";
+  const isCancelled = normalizedStatus === "customer_cancelled";
+
+  const isDisabled = isCancelled;
 
   const handleNavigate = () => {
-    if (!categoryId || !serviceId || isDisabled) return;
-    navigate(`/services/${categoryId}`);
+    if (isDisabled) return;
+
+  
+    if (isTrack && bookingId) {
+      navigate(`/jobtracking/${bookingId}`);
+      return;
+    }
+
+    
+    if (isPaid) {
+      navigate(`/bookings`);
+      return;
+    }
+
+   
+    if (categoryId && serviceId) {
+      navigate(`/services/${categoryId}`);
+    }
   };
 
   return (
@@ -72,7 +100,7 @@ export const RecentItem: React.FC<RecentItemProps> = ({
         </div>
       </div>
 
-      {/* Price / Status */}
+      {/* Price / Action */}
       <div className="text-right flex-shrink-0">
         <div
           className={`text-[15px] font-semibold ${
@@ -84,13 +112,15 @@ export const RecentItem: React.FC<RecentItemProps> = ({
 
         {!isDisabled ? (
           <div className="text-[13px] font-semibold text-amber-600 group-hover:text-amber-700 transition-all">
-            Rebook →
+            {isTrack
+              ? "Track →"
+              : isPaid
+              ? "View →"
+              : "Rebook →"}
           </div>
         ) : (
           <div className="text-[13px] font-semibold text-gray-500">
-            {normalizedStatus === "requested"
-              ? "Request Pending"
-              : "Cancelled"}
+            Cancelled
           </div>
         )}
       </div>

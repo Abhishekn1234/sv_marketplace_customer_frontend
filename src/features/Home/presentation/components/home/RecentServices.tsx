@@ -10,7 +10,6 @@ const RecentServices: React.FC = () => {
   const { bookings = [] } = useBookings();
   const { data: categories = [] } = useServiceCategory();
 
-  
   const serviceToCategoryMap = React.useMemo(() => {
     const map = new Map<string, string>();
 
@@ -23,7 +22,6 @@ const RecentServices: React.FC = () => {
     return map;
   }, [categories]);
 
-  
   const sortedBookings = bookings
     .slice()
     .sort(
@@ -37,15 +35,13 @@ const RecentServices: React.FC = () => {
   return (
     <aside className="flex flex-col gap-5 top-6">
       <div className="bg-white rounded-[20px] p-6 border border-gray-200 transition-all duration-300 hover:shadow-lg">
-        
-    
+
         <div className="flex items-center justify-between mb-5">
           <span className="text-[18px] font-bold text-gray-900">
             Recent
           </span>
         </div>
 
-     
         <div className="flex flex-col gap-4">
           {recentBookings.length === 0 && (
             <p className="text-sm text-gray-400">
@@ -54,24 +50,29 @@ const RecentServices: React.FC = () => {
           )}
 
           {recentBookings.map((booking) => {
-            const serviceId = booking.serviceId?._id;
+            const serviceId =
+              typeof booking.serviceId === "object"
+                ? booking.serviceId._id
+                : booking.serviceId;
+
             const categoryId = serviceToCategoryMap.get(serviceId || "");
 
             return (
-             <RecentItem
-  key={booking._id}
-  categoryId={categoryId}
-  serviceId={serviceId}
-  title={booking.serviceId?.name || "Service"}
-  date={
-    booking.bookingType === "SCHEDULED"
-      ? formatDate(booking.schedule?.startDateTime)
-      : formatDate(booking.createdAt)
-  }
-  price={`${booking.currency} ${getBookingPrice(booking)}`}
-  iconUrl={booking.serviceId?.iconUrl}
-  status={booking.status}   
-/>
+              <RecentItem
+                key={booking._id}
+                bookingId={booking._id}   
+                categoryId={categoryId}
+                serviceId={serviceId}
+                title={booking.serviceId?.name || "Service"}
+                date={
+                  booking.bookingType === "SCHEDULED"
+                    ? formatDate(booking.schedule?.startDateTime)
+                    : formatDate(booking.createdAt)
+                }
+                price={`${booking.currency} ${getBookingPrice(booking)}`}
+                iconUrl={booking.serviceId?.iconUrl}
+                status={booking.status}
+              />
             );
           })}
         </div>

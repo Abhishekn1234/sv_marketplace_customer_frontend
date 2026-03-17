@@ -8,4 +8,5 @@ export const tabStatusMap: Record<string, BookingStatus[]> = {
   Cancelled: ["CUSTOMER_CANCELLED", "WORKER_CANCELLED", "WORKER_REJECTED"],
   "Invoice Generated": ["INVOICE_GENERATED"],
   "Worker Accepted": ["WORKER_ACCEPTED"],
+  "Paid":["PAID"]
 };

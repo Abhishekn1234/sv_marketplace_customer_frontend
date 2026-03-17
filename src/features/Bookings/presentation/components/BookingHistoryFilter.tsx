@@ -7,7 +7,8 @@ const tabs = [
   "Requested",
   "Cancelled",
   "Invoice Generated",
-  "Worker Accepted"
+  "Worker Accepted",
+  "Paid"
 ];
 
 interface Props {

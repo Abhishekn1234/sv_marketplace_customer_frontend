@@ -6,11 +6,12 @@ import { formatSmartDate } from "../helpers/formatdatetime";
 import { getPlaceNameFromCoords } from "@/features/utils/reverse";
 import { useEffect, useState } from "react";
 import { ArrowRight, Calendar, Home } from "lucide-react";
-
+// import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 export default function ConfirmationContent() {
   const { bookings, error, loading: isLoading } = useBookings();
   const navigate = useNavigate();
-
+  // const {data:servicetier}=useServiceCategory();
+  // // console.log(servicetier);
   const data = bookings?.[0];
 
   const [placeName, setPlaceName] = useState<string>("Loading...");
@@ -35,6 +36,7 @@ export default function ConfirmationContent() {
     data?.location?.coordinates?.[0],
     data?.location?.coordinates?.[1],
   ]);
+  const tierName =data.serviceTier?.displayName ?? data.serviceTierId?.displayName
 
   const statusMessageMap: Record<string, string> = {
     PENDING: "Your booking request is pending. Worker will confirm soon.",
@@ -82,11 +84,8 @@ export default function ConfirmationContent() {
       ? `${data?.schedule?.estimatedDays ?? 0} Days`
       : "N/A";
 
-  // Handle service tier safely
-  const tierName =
-    typeof data?.serviceTierId === "object"
-      ? data?.serviceTierId?.displayName
-      : "Loading...";
+
+  
 
   return (
     <main className="flex flex-col items-center justify-center min-h-[calc(100vh-81px)] px-4 sm:px-6 py-8 sm:py-12 bg-gray-50">

@@ -2,7 +2,7 @@ import type { Worker } from "./worker.types";
 
 export interface AssignedWorker {
   _id: string;
-  workerId: string;
+  workerId: Worker;
   bookingId: string;
 
   status: string;

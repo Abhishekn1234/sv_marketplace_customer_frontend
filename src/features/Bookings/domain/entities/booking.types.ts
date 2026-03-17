@@ -50,7 +50,7 @@ export interface Booking {
 
   createdAt: string;
   updatedAt: string;
-  assignedWorkers?:AssignedWorker;
+  assignedWorkers?:AssignedWorker[];
 }
 
 
