@@ -7,16 +7,17 @@ export class BookingPaymentVerifyRepositoryImpl implements IBookingPaymentVerify
     try {
       const response = await apiClient.post("/booking/payment/verify-mock", request);
 
-      // ✅ Throw if HTTP status is not 2xx
-      if (response.status !== 200) {
-        throw new Error(response.data?.message || "Payment verification failed");
+      // Use actual API response
+      const data = response.data;
+
+      // Example: API returns { success: boolean, message: string }
+      if (!data.success) {
+        throw new Error(data.message || "Payment verification failed");
       }
 
-      // Only return success if the request was OK
-      return { success: true, message: "Payment Verified" };
+      return { success: true, message: data.message || "Payment Verified" };
 
     } catch (error: any) {
-      // ✅ Throw error instead of returning an object
       const message = error?.response?.data?.message ?? error.message ?? "Payment verification failed";
       throw new Error(message);
     }
