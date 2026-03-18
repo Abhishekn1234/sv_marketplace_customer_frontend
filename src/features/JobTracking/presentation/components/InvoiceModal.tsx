@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function InvoiceModal({ invoice, booking, services, categories,  open, onClose }: Props) {
-  if (!open || !invoice || !booking) return null;
+  if (!open || !invoice) return null;
 
   // Get the service object
   const service = services?.find((s) => s._id === booking.serviceId);
