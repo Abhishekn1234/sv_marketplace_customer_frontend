@@ -17,9 +17,13 @@ import { statusStyles } from "../helpers/statusmap";
 
 import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
 import PaymentModal from "@/features/Payment/presentation/Paymentpage";
+import InvoiceModal from "@/features/JobTracking/presentation/components/InvoiceModal";
+
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
 import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
+import { useServiceCategory } from "../hooks/useServiceCategory";
+import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
 
 interface Props {
   activeTab: string;
@@ -27,7 +31,7 @@ interface Props {
 
 export default function BookingHistoryContents({ activeTab }: Props) {
   const navigate = useNavigate();
-
+  
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookingHistory({ limit: 10 });
   const allBookings = data?.pages.flatMap(page => page.data) ?? [];
 
@@ -41,6 +45,9 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   const [paymentBookingId, setPaymentBookingId] = useState<string>("");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpData, setOtpData] = useState<string | number>();
   const [otpPurpose, setOtpPurpose] = useState<string>("");
@@ -51,9 +58,16 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   const generateCompletedOtpMutation = useGenerateOtpComplete();
   const verifyPaymentMutation = useVerifyPayment();
 
+  
+  const { data: categoriesData } = useServiceCategory();
+  const categories = categoriesData ?? [];
+  const allServices = categories.flatMap((cat: any) => cat.services ?? []);
+  const allServiceTiers = allServices.flatMap((service: any) => service.pricingTiers?.map((tier: any) => tier.tier) ?? []);
+ const { refetch: fetchInvoice } = useGenerateInvoice(selectedBooking?._id ?? "");
+ 
+
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
-
     const observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) fetchNextPage();
     }, { rootMargin: "200px" });
@@ -84,6 +98,20 @@ export default function BookingHistoryContents({ activeTab }: Props) {
     });
   };
 
+
+  const handleInvoiceClick = async (booking: BookingHistory) => {
+    setSelectedBooking(booking); // set the booking ID first
+    try {
+      const { data } = await fetchInvoice(); // safely call refetch
+      if (!data) throw new Error("Invoice not found");
+      setSelectedInvoice(data);
+      setInvoiceModalOpen(true);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch invoice ❌");
+    }
+  };
+
   if (isLoading) return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">Loading bookings...</div>;
   if (isError) return <div className="text-center py-16 text-red-500 text-sm sm:text-base">Failed to load bookings.</div>;
   if (!filteredBookings.length) return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">No bookings found.</div>;
@@ -95,7 +123,6 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
         return (
           <CommandCard key={booking._id} className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
-
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center gap-4">
@@ -118,9 +145,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl mb-5">
               <div>
                 <span className="text-xs text-gray-500">Date</span>
-                <p className="text-sm sm:text-base font-semibold">
-                  {formatDates(booking.schedule?.startDateTime)}
-                </p>
+                <p className="text-sm sm:text-base font-semibold">{formatDates(booking.schedule?.startDateTime)}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-500">Duration</span>
@@ -138,23 +163,23 @@ export default function BookingHistoryContents({ activeTab }: Props) {
               </div>
             </div>
 
-           
+            {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
-              
-              {!(booking.status === "PAID" && booking.updatedAt && ((new Date().getTime() - new Date(booking.updatedAt).getTime()) / (1000 * 60 * 60 * 24) > 10)) && (
+              {!(booking.status === "PAID" &&
+                booking.updatedAt &&
+                ((new Date().getTime() - new Date(booking.updatedAt).getTime()) / (1000 * 60 * 60 * 24) > 10)
+              ) && (
                 <>
-                
                   <button
                     onClick={() => {
                       if (!clickable) return;
-
                       switch (booking.status) {
                         case "IN_PROGRESS":
                         case "REQUESTED":
                           navigate(`/jobtracking/${booking._id}`);
                           break;
                         case "INVOICE_GENERATED":
-                          navigate(`/invoice/${booking._id}`);
+                          handleInvoiceClick(booking);
                           break;
                         case "WORKER_ACCEPTED":
                           handleGenerateStartOtp(booking._id);
@@ -182,7 +207,15 @@ export default function BookingHistoryContents({ activeTab }: Props) {
                     {label}
                   </button>
 
-                  {/* Secondary Button */}
+                  {["IN_PROGRESS", "COMPLETED", "WORK_COMPLETED_PENDING", "REQUESTED"].includes(booking.status) && (
+                    <button
+                      onClick={() => navigate(`/jobprogress/${booking._id}`)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                    >
+                      Check Progress
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       if (booking.status === "COMPLETED" && !booking.invoiceId) {
@@ -207,7 +240,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
       <div ref={loadMoreRef} className="h-1"></div>
       {isFetchingNextPage && <div className="text-center py-4 text-gray-500 text-sm">Loading more...</div>}
 
-     
+      {/* Modals */}
       <BookingHistoryViewDetailsModal
         booking={selectedBooking}
         isOpen={modalOpen}
@@ -228,6 +261,18 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           />
         );
       })()}
+
+      {invoiceModalOpen && selectedInvoice && selectedBooking && (
+        <InvoiceModal
+          invoice={selectedInvoice}
+          booking={selectedBooking}
+          services={allServices}
+          categories={categories}
+          serviceTiers={allServiceTiers}
+          open={invoiceModalOpen}
+          onClose={() => setInvoiceModalOpen(false)}
+        />
+      )}
 
       {otpModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">

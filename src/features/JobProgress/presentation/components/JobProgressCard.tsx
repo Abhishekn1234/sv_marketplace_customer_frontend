@@ -1,4 +1,33 @@
+import { useMemo } from "react";
+import { getStepStatus } from "../helpers/getstatusprogress";
+import { useParams } from "react-router-dom";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+
 export function JobProgressCard() {
+  const { data } = useBookingHistory();
+  const { bookingId } = useParams();
+
+  const booking = useMemo(() => {
+    if (!data?.pages) return null;
+
+    const allBookings = data.pages.flatMap((p: any) => p.data || []);
+    return allBookings.find((b: any) => b._id === bookingId);
+  }, [data, bookingId]);
+
+  const status = booking?.status;
+
+  const tasks = [
+    "Booking requested",
+    "Worker assigned",
+    "Work in progress",
+    "Work completed",
+    "Invoice Generated",
+    "Payment completed",
+  ].map((title, index) => ({
+    title,
+    status: getStepStatus(index + 1, status),
+  }));
+
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
@@ -6,13 +35,7 @@ export function JobProgressCard() {
       </h2>
 
       <div className="flex flex-col gap-3">
-        {[
-          { title: "Initial inspection and diagnosis", status: "completed" },
-          { title: "Gather necessary tools and parts", status: "completed" },
-          { title: "Repair and fix the issue", status: "progress" },
-          { title: "Test and verify the repair", status: "pending" },
-          { title: "Clean up work area", status: "pending" },
-        ].map((task, i) => (
+        {tasks.map((task, i) => (
           <div
             key={i}
             className={`flex items-center gap-4 p-4 rounded-xl border transition

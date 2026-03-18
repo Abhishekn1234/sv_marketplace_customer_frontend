@@ -7,35 +7,26 @@ interface Props {
   categories: any[];
   serviceTiers: any[];
   open: boolean;
+  booking?:any;
   onClose: () => void;
 }
 
-export default function InvoiceModal({
-  invoice,
-  services,
-  categories,
+export default function InvoiceModal({ invoice, booking, services, categories,  open, onClose }: Props) {
+  if (!open || !invoice || !booking) return null;
 
-  open,
-  onClose,
-}: Props) {
-  if (!open || !invoice) return null;
+  // Get the service object
+  const service = services?.find((s) => s._id === booking.serviceId);
 
-  const booking = invoice.bookingId;
+  const categoryId = service?.category?.[0]?._id;
+  const category = categories?.find((c) => c._id === categoryId);
 
-const service = services?.find((s) => s._id === booking.serviceId);
+  const pricingTier = service?.pricingTiers?.find(
+    (tier: any) => tier.tierId === booking.serviceTierId
+  );
 
-const categoryId = service?.category?.[0]?._id;
-
-const category = categories?.find((c) => c._id === categoryId);
-
-const pricingTier = service?.pricingTiers?.find(
-  (tier: any) => tier.tierId === booking.serviceTierId
-);
-
-const tier = pricingTier?.tier;
+  const tier = pricingTier?.tier;
 
   const workHours = invoice.actualWorkHours || 0;
-
   const hours = Math.floor(workHours);
   const minutes = Math.round((workHours - hours) * 60);
 
@@ -43,10 +34,11 @@ const tier = pricingTier?.tier;
     booking.pricingMode === "HOURLY"
       ? `${hours} hr ${minutes} min`
       : `${invoice.actualWorkDays} days`;
-      const rate =
-  booking.pricingMode === "HOURLY"
-    ? pricingTier?.HOURLY?.ratePerHour
-    : pricingTier?.PER_DAY?.ratePerDay;
+
+  const rate =
+    booking.pricingMode === "HOURLY"
+      ? pricingTier?.HOURLY?.ratePerHour
+      : pricingTier?.PER_DAY?.ratePerDay;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -81,7 +73,7 @@ const tier = pricingTier?.tier;
           <p><b>Worker Pool Amount:</b> {invoice.workerPoolAmount} {invoice.currency}</p>
           <p><b>Commission:</b> {invoice.commissionAmount} {invoice.currency}</p> */}
           <p className="font-semibold text-base">
-            Final Amount: {invoice.finalAmount} {invoice.currency}
+            Final Amount: {invoice.finalAmount?.toFixed(2)} {invoice.currency}
           </p>
         </div>
 

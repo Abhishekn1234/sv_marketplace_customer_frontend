@@ -1,4 +1,27 @@
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { getStatusText } from "../helpers/getstatustexts";
 export default function ProviderWorkingCard() {
+  const { data } = useBookingHistory();
+  const { bookingId } = useParams();
+
+  const booking = useMemo(() => {
+    if (!data?.pages) return null;
+
+    const allBookings = data.pages.flatMap((p: any) => p.data || []);
+    return allBookings.find((b: any) => b._id === bookingId);
+  }, [data, bookingId]);
+
+  const worker = booking?.assignedWorkers?.[0]?.worker;
+
+  const name = worker?.fullName || "Not Assigned";
+  const image =
+    worker?.profilePictureUrl ||
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
+
+  const status = booking?.status;
+
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
@@ -7,34 +30,56 @@ export default function ProviderWorkingCard() {
 
       <div className="flex items-center gap-4 mb-5">
         <img
-          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+          src={image}
           className="w-16 h-16 rounded-2xl object-cover border-4 border-gray-100"
         />
 
         <div>
           <div className="flex items-center gap-2 text-[17px] font-bold text-gray-900">
-            Mike Johnson
-            <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-            </div>
+            {name}
+
+            {worker && (
+              <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+            )}
           </div>
 
-          <div className="text-sm text-emerald-600 font-medium">
-            Currently working on your service
+          <div
+            className={`text-sm font-medium ${
+              status === "IN_PROGRESS"
+                ? "text-emerald-600"
+                : "text-gray-500"
+            }`}
+          >
+            {getStatusText(status)}
           </div>
         </div>
       </div>
 
+      {/* Buttons */}
       <div className="flex gap-3">
-        <button className="flex-1 h-11 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition active:scale-95">
+        <a
+          href={worker?.phone ? `tel:${worker.phone}` : "#"}
+          className="flex-1 h-11 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center justify-center"
+        >
           Call
-        </button>
+        </a>
 
-        <button className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95">
+        <a
+          href={
+            worker?.phone
+              ? `https://wa.me/${worker.phone}`
+              : "#"
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95 flex items-center justify-center"
+        >
           Message
-        </button>
+        </a>
       </div>
     </div>
   );

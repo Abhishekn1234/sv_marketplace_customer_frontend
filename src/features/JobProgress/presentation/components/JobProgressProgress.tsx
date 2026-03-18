@@ -1,7 +1,33 @@
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { progressMap } from "@/features/Home/presentation/helpers/progressmap";
+import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 export function JobProgressProgress() {
+  const { data } = useBookingHistory();
+  const { bookingId } = useParams();
+
+
+//  console.log(data);
+  const booking = useMemo(() => {
+    if (!data?.pages) return null;
+
+    const allBookings = data.pages.flatMap((page: any) => page?.data || []);
+
+    return allBookings.find((b: any) => b._id === bookingId);
+  }, [data, bookingId]);
+
+  const status = booking?.status?.toLowerCase() || "requested";
+  const progress = progressMap[status] || 20;
+
+
+    const worker = booking?.assignedWorkers?.[0];
+
+    const startTime = formatDates(worker?.startedAt);
+    const endTime = formatDates(worker?.completedAt);
+
   return (
     <div className="bg-white rounded-[20px] p-7 border border-gray-200 shadow-sm">
-      
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-[18px] font-bold text-gray-900">
           Overall Progress
@@ -17,7 +43,7 @@ export function JobProgressProgress() {
           >
             <circle cx="12" cy="12" r="10" />
           </svg>
-          Working
+          {status.replace("_", " ")}
         </div>
       </div>
 
@@ -25,16 +51,20 @@ export function JobProgressProgress() {
       <div className="mb-4">
         <div className="flex justify-between text-sm font-medium mb-2">
           <span className="text-gray-500">Task Completion</span>
-          <span className="text-blue-600 font-semibold">65%</span>
+          <span className="text-blue-600 font-semibold">{progress}%</span>
         </div>
 
         <div className="h-3 bg-gray-100 rounded-md overflow-hidden">
-          <div className="h-full w-[65%] bg-gradient-to-r from-blue-600 to-blue-500 rounded-md relative overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-md relative overflow-hidden"
+            style={{ width: `${progress}%` }}
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_infinite]" />
           </div>
         </div>
       </div>
 
+      {/* Time */}
       <div className="flex items-center gap-2 text-sm text-gray-500 mt-4 pt-4 border-t border-gray-100">
         <svg
           viewBox="0 0 24 24"
@@ -46,7 +76,7 @@ export function JobProgressProgress() {
           <circle cx="12" cy="12" r="10" />
           <polyline points="12 6 12 12 16 14" />
         </svg>
-        Started at 11:15 AM • Est. completion: 12:30 PM
+        Started at {startTime} • Est. completion: {endTime}
       </div>
     </div>
   );
