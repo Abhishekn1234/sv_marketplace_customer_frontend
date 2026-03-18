@@ -1,30 +1,32 @@
-
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-// import { generateInvoicePdf } from "@/features/utils/generatePdf";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import InvoiceModal from "./InvoiceModal";
+
 export default function JobTrackingNeedHelp() {
-  const { cancelBooking } = useBookings();
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
- const [showInvoice, setShowInvoice] = useState(false);
+  const { bookings: allBookings = [], cancelBooking } = useBookings(); // fetch all bookings
   const { data: invoice, isLoading, isError } = useGenerateInvoice(bookingId ?? "");
-  const { data:categories } = useServiceCategory();
-   const categoriesList = categories ?? [];
+  const { data: categories } = useServiceCategory();
+  const categoriesList = categories ?? [];
+  const [showInvoice, setShowInvoice] = useState(false);
 
-// flatten services from categories
-const services =
-  categoriesList.flatMap((cat: any) => cat.services ?? []);
-
-// flatten service tiers from services
-const serviceTiers =
-  services.flatMap((service: any) =>
-    service.pricingTiers?.map((tier: any) => tier.tier) ?? []
+  // Find the booking by ID
+  const booking = useMemo(
+    () => allBookings.find((b: any) => b._id === bookingId),
+    [allBookings, bookingId]
   );
+
+  // Flatten services and tiers
+  const services = categoriesList.flatMap((cat: any) => cat.services ?? []);
+  const serviceTiers = services.flatMap(
+    (service: any) => service.pricingTiers?.map((tier: any) => tier.tier) ?? []
+  );
+
   const helpNavigate = () => navigate("/help");
 
   const handleCancel = () => {
@@ -36,7 +38,6 @@ const serviceTiers =
           <p className="font-semibold mb-3">
             Are you sure you want to cancel this booking?
           </p>
-
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => closeToast?.()}
@@ -44,7 +45,6 @@ const serviceTiers =
             >
               No
             </button>
-
             <button
               onClick={async () => {
                 try {
@@ -109,14 +109,13 @@ const serviceTiers =
         </svg>
       ),
       action: () => {
-        if (isLoading) {
+        if (!booking) {
+          toast.error("Booking not found ❌");
+        } else if (isLoading) {
           toast.info("Generating invoice...");
         } else if (isError || !invoice) {
           toast.error("Invoice not ready ❌");
-          toast.error(isError);
         } else {
-          console.log("Invoice data:", invoice);
-          // generateInvoicePdf(invoice, categories, services, serviceTiers);
           setShowInvoice(true);
           toast.success("Invoice generated ✅");
         }
@@ -140,16 +139,18 @@ const serviceTiers =
             <span className="text-sm font-semibold text-gray-900">{opt.text}</span>
           </div>
         ))}
-        {showInvoice && invoice && (
-  <InvoiceModal
-  invoice={invoice}
-  services={services}
-  categories={categoriesList}
-  serviceTiers={serviceTiers}
-  open={showInvoice}
-  onClose={() => setShowInvoice(false)}
-/>
-)}
+
+        {showInvoice && invoice && booking && (
+          <InvoiceModal
+            invoice={invoice}
+            booking={booking} // <-- pass the full booking
+            services={services}
+            categories={categoriesList}
+            serviceTiers={serviceTiers}
+            open={showInvoice}
+            onClose={() => setShowInvoice(false)}
+          />
+        )}
       </div>
     </div>
   );
