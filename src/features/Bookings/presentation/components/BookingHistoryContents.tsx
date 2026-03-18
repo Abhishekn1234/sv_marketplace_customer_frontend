@@ -24,6 +24,7 @@ import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hook
 import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
 import { useServiceCategory } from "../hooks/useServiceCategory";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
+import OtpModal from "@/components/common/CommonOtpModal";
 
 interface Props {
   activeTab: string;
@@ -31,17 +32,19 @@ interface Props {
 
 export default function BookingHistoryContents({ activeTab }: Props) {
   const navigate = useNavigate();
-  
+
+  // --- Booking data ---
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookingHistory({ limit: 10 });
   const allBookings = data?.pages.flatMap(page => page.data) ?? [];
-
   const filteredBookings = allBookings.filter(
     b => activeTab === "All" || tabStatusMap[activeTab]?.includes(b.status as BookingStatus)
   );
 
+  // --- State ---
   const [selectedBooking, setSelectedBooking] = useState<BookingHistory | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
 
+  const [modalOpen, setModalOpen] = useState(false);
   const [paymentBookingId, setPaymentBookingId] = useState<string>("");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
@@ -54,18 +57,19 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
+  // --- Hooks ---
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
   const verifyPaymentMutation = useVerifyPayment();
 
-  
   const { data: categoriesData } = useServiceCategory();
   const categories = categoriesData ?? [];
   const allServices = categories.flatMap((cat: any) => cat.services ?? []);
-  const allServiceTiers = allServices.flatMap((service: any) => service.pricingTiers?.map((tier: any) => tier.tier) ?? []);
- const { refetch: fetchInvoice } = useGenerateInvoice(selectedBooking?._id ?? "");
- 
+  const allServiceTiers = allServices.flatMap((s: any) => s.pricingTiers?.map((tier: any) => tier.tier) ?? []);
 
+ const { refetch: fetchInvoice } = useGenerateInvoice(selectedBookingId);
+
+  // --- Infinite scroll for bookings ---
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
     const observer = new IntersectionObserver(entries => {
@@ -76,6 +80,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
     return () => { if (loadMoreRef.current) observer.unobserve(loadMoreRef.current); };
   }, [fetchNextPage, hasNextPage]);
 
+  // --- OTP handlers ---
   const handleGenerateStartOtp = (bookingId: string) => {
     generateOtpMutation.mutate({ bookingId, purpose: "WORK_START" }, {
       onSuccess: (data) => {
@@ -98,20 +103,26 @@ export default function BookingHistoryContents({ activeTab }: Props) {
     });
   };
 
+  // --- Invoice handler ---
+  const handleInvoiceClick = (booking: BookingHistory) => {
+    if (!booking._id) return toast.error("Booking ID missing");
 
-  const handleInvoiceClick = async (booking: BookingHistory) => {
-    setSelectedBooking(booking); // set the booking ID first
-    try {
-      const { data } = await fetchInvoice(); // safely call refetch
-      if (!data) throw new Error("Invoice not found");
-      setSelectedInvoice(data);
-      setInvoiceModalOpen(true);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to fetch invoice ❌");
-    }
+    setSelectedBooking(booking);
+    setSelectedBookingId(booking._id); // triggers the hook
+
+    fetchInvoice()
+      .then((res) => {
+        if (!res.data) throw new Error("Invoice not found");
+        setSelectedInvoice(res.data);
+        setInvoiceModalOpen(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to fetch invoice ❌");
+      });
   };
 
+  // --- Render loading/error ---
   if (isLoading) return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">Loading bookings...</div>;
   if (isError) return <div className="text-center py-16 text-red-500 text-sm sm:text-base">Failed to load bookings.</div>;
   if (!filteredBookings.length) return <div className="text-center py-16 text-gray-400 text-sm sm:text-base">No bookings found.</div>;
@@ -274,20 +285,12 @@ export default function BookingHistoryContents({ activeTab }: Props) {
         />
       )}
 
-      {otpModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center">{otpPurpose}</h2>
-            <p className="text-xl sm:text-2xl font-mono text-center mb-6 tracking-widest">{otpData ?? "No OTP returned"}</p>
-            <button
-              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              onClick={() => setOtpModalOpen(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+            <OtpModal
+          isOpen={otpModalOpen}
+          otpData={otpData}
+          purpose={otpPurpose}
+          onClose={() => setOtpModalOpen(false)}
+        />
     </div>
   );
 }
