@@ -146,7 +146,7 @@ export default function JobTrackingNeedHelp() {
         {showInvoice && invoice && booking && (
           <InvoiceModal
             invoice={invoice}
-            booking={booking} // <-- pass the full booking
+            booking={booking} 
             services={services}
             categories={categoriesList}
             serviceTiers={serviceTiers}
