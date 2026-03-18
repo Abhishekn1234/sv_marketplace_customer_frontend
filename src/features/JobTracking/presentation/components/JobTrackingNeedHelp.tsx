@@ -5,23 +5,26 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useState, useMemo } from "react";
 import InvoiceModal from "./InvoiceModal";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 
 export default function JobTrackingNeedHelp() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
-  const { bookings: allBookings = [], cancelBooking } = useBookings(); // fetch all bookings
+  const {cancelBooking}=useBookings();
+  const { data: allBookings,  } = useBookingHistory(); // fetch all bookings
   const { data: invoice, isLoading, isError } = useGenerateInvoice(bookingId ?? "");
   const { data: categories } = useServiceCategory();
   const categoriesList = categories ?? [];
   const [showInvoice, setShowInvoice] = useState(false);
 
-  // Find the booking by ID
-  const booking = useMemo(
-    () => allBookings.find((b: any) => b._id === bookingId),
-    [allBookings, bookingId]
-  );
+  
+  const booking = useMemo(() => {
 
-  // Flatten services and tiers
+  const bookings = allBookings?.pages?.flatMap((page: any) => page.data) ?? [];
+
+  return bookings.find((b: any) => b._id === bookingId);
+}, [allBookings, bookingId]);
+ 
   const services = categoriesList.flatMap((cat: any) => cat.services ?? []);
   const serviceTiers = services.flatMap(
     (service: any) => service.pricingTiers?.map((tier: any) => tier.tier) ?? []
