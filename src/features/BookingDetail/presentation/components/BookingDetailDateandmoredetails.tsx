@@ -85,37 +85,66 @@ export default function BookingDetailDateandmoredetails() {
         if (!homeAddress) return toast.error("No address found");
 
        let lat: number | undefined;
-        let lng: number | undefined;
+let lng: number | undefined;
 
+console.log("🏠 Home Address:", homeAddress);
+console.log("📍 Current Location (raw):", current_location);
 
-        try {
-          const coords = await getCoordinatesFromQuery(homeAddress);
+// 🔹 Try geocoding
+try {
+  const coords = await getCoordinatesFromQuery(homeAddress);
+  console.log("🌍 Geocoded coords:", coords);
 
-          if (coords) {
-            lat = coords.lat;
-            lng = coords.lng;
-          }
-        } catch (e) {
-          console.warn("Geocoding failed, using fallback location");
-        }
+  if (coords?.lat !== undefined && coords?.lng !== undefined) {
+    lat = coords.lat;
+    lng = coords.lng;
+    console.log("✅ Using geocoded coords:", lat, lng);
+  }
+} catch (e) {
+  console.error("❌ Geocoding failed:", e);
+}
 
-        if ((!lat || !lng) && current_location?.lat && current_location?.lng) {
-          lat = current_location.lat;
-          lng = current_location.lng;
-        }
+// 🔹 Fallback 1 (direct lat/lng)
+if (lat === undefined || lng === undefined) {
+  console.log("⚠️ Fallback 1 triggered");
 
-        
-        if ((!lat || !lng) && current_location?.coordinates?.coordinates) {
-          const coords = current_location.coordinates.coordinates;
+  if (
+    current_location?.lat !== undefined &&
+    current_location?.lng !== undefined
+  ) {
+    lat = current_location.lat;
+    lng = current_location.lng;
 
-          lng = coords[0];
-          lat = coords[1];
-        }
+    console.log("✅ Using current_location.lat/lng:", lat, lng);
+  } else {
+    console.log("❌ current_location.lat/lng not available");
+  }
+}
 
+// 🔹 Fallback 2 (GeoJSON format)
+if (lat === undefined || lng === undefined) {
+  console.log("⚠️ Fallback 2 triggered");
 
-        if (!lat || !lng) {
-          return toast.error("Unable to determine location");
-        }
+  const coords = current_location?.coordinates?.coordinates;
+  console.log("📦 GeoJSON coords:", coords);
+
+  if (coords?.length === 2) {
+    lng = coords[0];
+    lat = coords[1];
+
+    console.log("✅ Using GeoJSON coords:", lat, lng);
+  } else {
+    console.log("❌ GeoJSON coords invalid");
+  }
+}
+
+// 🔹 Final check
+console.log("🎯 Final coords:", lat, lng);
+
+if (lat === undefined || lng === undefined) {
+  console.error("🚨 Unable to determine location");
+  return toast.error("Unable to determine location");
+}
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
       let pricingMode: "HOURLY" | "PER_DAY" = duration > 24 ? "PER_DAY" : "HOURLY";
       const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;
