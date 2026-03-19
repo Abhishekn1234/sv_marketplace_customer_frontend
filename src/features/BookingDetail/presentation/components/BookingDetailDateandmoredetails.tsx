@@ -135,46 +135,51 @@ export default function BookingDetailDateandmoredetails() {
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
     
-     <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-sm font-bold text-gray-900">Select Date</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handlePrev}
-              disabled={pageStart === 0}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-            >
-              ←
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={pageStart + datesPerPage >= allDates.length}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-            >
-              →
-            </button>
-          </div>
+    <div>
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-sm font-bold text-gray-900">Select Date</h2>
+
+    <div className="flex gap-2">
+      <button
+        onClick={handlePrev}
+        disabled={pageStart === 0}
+        className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+      >
+        ←
+      </button>
+
+      <button
+        onClick={handleNext}
+        disabled={pageStart + datesPerPage >= allDates.length}
+        className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+      >
+        →
+      </button>
+    </div>
+  </div>
+
+  {/* ✅ Responsive layout */}
+  <div className="grid grid-cols-4 sm:flex sm:overflow-x-auto gap-3">
+    {visibleDates.map((item, index) => {
+      const globalIndex = pageStart + index;
+
+      return (
+        <div
+          key={globalIndex}
+          onClick={() => setSelectedDate(globalIndex)}
+          className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition ${
+            selectedDate === globalIndex
+              ? "bg-blue-600 border-blue-600 text-white shadow-lg"
+              : "bg-white border-gray-200 hover:border-blue-600"
+          }`}
+        >
+          <span className="text-xs font-bold uppercase">{item.day}</span>
+          <span className="text-2xl font-black">{item.date}</span>
         </div>
-        <div className="flex gap-3 overflow-x-auto">
-          {visibleDates.map((item, index) => {
-            const globalIndex = pageStart + index;
-            return (
-              <div
-                key={globalIndex}
-                onClick={() => setSelectedDate(globalIndex)}
-                className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition min-w-[72px] ${
-                  selectedDate === globalIndex
-                    ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-                    : "bg-white border-gray-200 hover:border-blue-600"
-                }`}
-              >
-                <span className="text-xs font-bold uppercase">{item.day}</span>
-                <span className="text-2xl font-black">{item.date}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      );
+    })}
+  </div>
+</div>
 
     
       <h2 className="text-sm font-bold text-gray-900 mb-4">Select Time</h2>

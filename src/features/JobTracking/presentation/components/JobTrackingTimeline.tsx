@@ -10,6 +10,9 @@ import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerif
 
 export default function JobTrackingTimeline() {
   const { data } = useBookingHistory();
+//   const allBookings = data?.pages.flatMap((page) => page.data) ?? [];
+
+// // console.log(allBookings);
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
   const [openPayment, setOpenPayment] = useState(false);
@@ -26,70 +29,90 @@ export default function JobTrackingTimeline() {
   }, [data, bookingId]);
 
  
-const steps = useMemo(() => {
-  if (!localBooking) return [];
+        const steps = useMemo(() => {
+          if (!localBooking) return [];
 
-  const worker = localBooking.assignedWorkers?.[0];
+          const worker = localBooking.assignedWorkers?.[0];
 
-  return [
-    {
-      title: "Booking Confirmed",
-      time: formatDates(localBooking.createdAt),
-      status: "completed",
-    },
-    {
-      title: "Professional Assigned",
-      time: formatDates(worker?.assignedAt),
-      status: worker?.assignedAt ? "completed" : "pending",
-    },
-    {
-      title: "Service Started",
-      time:
-        worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
-          ? formatDates(worker?.startedAt || new Date())
-          : "Pending",
-      status:
-        worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
-          ? "active"
-          : "pending",
-    },
-    {
-      title: "Service Completed",
-      time: worker?.completedAt ? formatDates(worker.completedAt) : "Pending",
-      status: worker?.completedAt || localBooking.status === "COMPLETED" ? "active" : "pending",
-    },
-    {
-      title: "Invoice Generated",
-      time: localBooking.invoiceId ? formatDates(localBooking.updatedAt) : "Pending",
-      status: localBooking.invoiceId ? "completed" : "pending",
-      // showPaymentButton: localBooking.invoiceId && localBooking.status === "INVOICE_GENERATED",
-    },
-    {
-      title: "Payment",
-      time:
-        localBooking.status === "PAID"
-          ? formatDates(localBooking.paymentDate ?? new Date())
-          : "Pending",
-      status:
-        localBooking.status === "PAID"
-          ? "completed"
-          : localBooking.status === "PAYMENT_PENDING"
-          ? "active"
-          : "pending",
-      showPaymentButton: localBooking.status === "INVOICE_GENERATED",
-      showVerifyButton: localBooking.status === "PAYMENT_PENDING" && !!localBooking.invoiceId,
-    },
-    
-    {
-      title: "Payment Done",
-      time: localBooking.status === "PAID" ? formatDates(localBooking.paymentDate ?? new Date()) : "Pending",
-      status: localBooking.status === "PAID" ? "active" : "pending",
-      showServiceRatingButton: localBooking.status === "PAID",
-    },
-  ];
-}, [localBooking]);
+          return [
+            {
+              title: "Booking Confirmed",
+              time: formatDates(localBooking.createdAt),
+              status: "completed",
+            },
+            {
+              title: "Professional Assigned",
+              time: formatDates(worker?.assignedAt),
+              status: worker?.assignedAt ? "completed" : "pending",
+            },
+            {
+              title: "Service Started",
+              time:
+                worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
+                  ? formatDates(worker?.startedAt || new Date())
+                  : "Pending",
+              status:
+                worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
+                  ? "active"
+                  : "pending",
+            },
+            {
+              title: "Service Completed",
+              time: worker?.completedAt ? formatDates(worker.completedAt) : "Pending",
+              status: worker?.completedAt || localBooking.status === "COMPLETED" ? "active" : "pending",
+            },
+            {
+              title: "Invoice Generated",
+              time: localBooking.invoiceId ? formatDates(localBooking.updatedAt) : "Pending",
+              status: localBooking.invoiceId ? "completed" : "pending",
+              // showPaymentButton: localBooking.invoiceId && localBooking.status === "INVOICE_GENERATED",
+            },
+            {
+              title: "Payment",
+              time:
+                localBooking.status === "PAID"
+                  ? formatDates(localBooking.paymentDate ?? new Date())
+                  : "Pending",
+              status:
+                localBooking.status === "PAID"
+                  ? "completed"
+                  : localBooking.status === "PAYMENT_PENDING"
+                  ? "active"
+                  : "pending",
+              showPaymentButton: localBooking.status === "INVOICE_GENERATED",
+              showVerifyButton: localBooking.status === "PAYMENT_PENDING" && !!localBooking.invoiceId,
+            },
+            
+            {
+              title: "Payment Done",
+              time: localBooking.status === "PAID" ? formatDates(localBooking.paymentDate ?? new Date()) : "Pending",
+              status: localBooking.status === "PAID" ? "active" : "pending",
+              showServiceRatingButton: localBooking.status === "PAID",
+            },
+          ];
+        }, [localBooking]);
 
+        const pricingTier = localBooking?.service?.pricingTiers?.find(
+          (tier: any) => tier.tierId === localBooking.serviceTierId
+        );
+        const calculatedAmount = useMemo(() => {
+          if (!localBooking || !pricingTier) return 0;
 
+          if (localBooking.pricingMode === "HOURLY") {
+            const rate = pricingTier?.HOURLY?.ratePerHour ?? 0;
+            const hours = localBooking.actualWorkHours ?? 0;
+            return rate * hours;
+          }
+
+          if (localBooking.pricingMode === "PER_DAY") {
+            const rate = pricingTier?.PER_DAY?.ratePerDay ?? 0;
+            const days = localBooking.actualWorkDays ?? 0;
+            return rate * days;
+          }
+
+          return 0;
+        }, [localBooking, pricingTier]);
+          // console.log(calculatedAmount);
   useEffect(() => {
     if (!timelineRef.current) return;
     const firstActive = timelineRef.current.querySelector(".active");
@@ -208,7 +231,7 @@ const steps = useMemo(() => {
         <PaymentModal
           bookingId={localBooking._id}
           serviceName={localBooking.service?.name ?? "Service Name"}
-          price={localBooking.amount}
+          price={calculatedAmount}
           currency={localBooking.currency}
           isOpen={openPayment}
           onClose={() => setOpenPayment(false)}
