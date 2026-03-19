@@ -19,7 +19,7 @@ export function BookingActions({
   onViewDetails,
   onPayNow,
   onCheckProgress,
-  onInvoiceClick,
+//   onInvoiceClick,
 }: BookingActionsProps) {
   const shouldShowButtons = !(
     booking.status === "PAID" &&
@@ -52,7 +52,7 @@ export function BookingActions({
           Check Progress
         </button>
       )}
-
+    
       <button
         onClick={() => {
           if (booking.status === "COMPLETED" && !booking.invoiceId) {
