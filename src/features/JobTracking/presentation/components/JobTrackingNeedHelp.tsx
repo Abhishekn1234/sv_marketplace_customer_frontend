@@ -12,7 +12,8 @@ export default function JobTrackingNeedHelp() {
   const navigate = useNavigate();
   const {cancelBooking}=useBookings();
   const { data: allBookings,  } = useBookingHistory(); // fetch all bookings
-  const { data: invoice, isLoading, isError } = useGenerateInvoice(bookingId ?? "");
+const generateInvoice = useGenerateInvoice();
+const [invoice, setInvoice] = useState<any>(null);
   const { data: categories } = useServiceCategory();
   const categoriesList = categories ?? [];
   const [showInvoice, setShowInvoice] = useState(false);
@@ -111,18 +112,25 @@ export default function JobTrackingNeedHelp() {
           <path d="M3 8h18v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" />
         </svg>
       ),
-      action: () => {
-        if (!booking) {
-          toast.error("Booking not found ❌");
-        } else if (isLoading) {
-          toast.info("Generating invoice...");
-        } else if (isError || !invoice) {
-          toast.error("Invoice not ready ❌");
-        } else {
-          setShowInvoice(true);
-          toast.success("Invoice generated ✅");
-        }
-      },
+          action: () => {
+        if (!bookingId) return toast.error("Booking not found ❌");
+
+        const loadingToast = toast.loading("Generating invoice...");
+
+        generateInvoice.mutate(bookingId, {
+          onSuccess: (data) => {
+            toast.dismiss(loadingToast);
+            setInvoice(data);
+            setShowInvoice(true);
+            toast.success("Invoice generated ✅");
+          },
+          onError: (err) => {
+            toast.dismiss(loadingToast);
+            console.error(err);
+            toast.error("Failed to generate invoice ❌");
+          },
+        });
+      }
     },
   ];
 

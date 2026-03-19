@@ -36,7 +36,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
   // Modal states
   const [selectedBooking, setSelectedBooking] = useState<BookingHistory | null>(null);
-  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+
   const [modalOpen, setModalOpen] = useState(false);
   
   const [paymentBookingId, setPaymentBookingId] = useState<string>("");
@@ -54,7 +54,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   const generateCompletedOtpMutation = useGenerateOtpComplete();
   const verifyPaymentMutation = useVerifyPayment();
   const { data: categoriesData } = useServiceCategory();
-  const { refetch: fetchInvoice } = useGenerateInvoice(selectedBookingId);
+
 
   // Derived data
   const categories = categoriesData ?? [];
@@ -115,23 +115,25 @@ export default function BookingHistoryContents({ activeTab }: Props) {
     });
   };
 
+  const generateInvoice = useGenerateInvoice();
   const handleInvoiceClick = (booking: BookingHistory) => {
-    if (!booking._id) return toast.error("Booking ID missing");
+  if (!booking._id) return toast.error("Booking ID missing");
 
-    setSelectedBooking(booking);
-    setSelectedBookingId(booking._id);
+  setSelectedBooking(booking);
 
-    fetchInvoice()
-      .then((res) => {
-        if (!res.data) throw new Error("Invoice not found");
-        setSelectedInvoice(res.data);
-        setInvoiceModalOpen(true);
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Failed to fetch invoice ❌");
-      });
-  };
+  generateInvoice.mutate(booking._id, {
+    onSuccess: (data) => {
+      console.log("✅ Invoice:", data);
+
+      setSelectedInvoice(data);
+      setInvoiceModalOpen(true);
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to fetch invoice ❌");
+    },
+  });
+};
 
   // Render states
   if (isLoading) {
