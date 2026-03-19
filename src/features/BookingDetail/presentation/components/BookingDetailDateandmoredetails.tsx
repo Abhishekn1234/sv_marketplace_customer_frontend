@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCoordinatesFromQuery } from "@/features/utils/reverse";
+import { resolveLocation } from "../helpers/resolvelocation";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
@@ -76,75 +77,28 @@ export default function BookingDetailDateandmoredetails() {
         return toast.error("Please select a future time");
 
      
-      const addresses = current_location?.addresses ?? [];
-      const homeAddress =
-        addresses.find((addr) => addr.type === "home")?.value ||
-        addresses.find((addr) => addr.type === "office")?.value ||
-        addresses.find((addr)=>addr.type==="inputValue")?.value;
+      
+        const addresses = current_location?.addresses ?? [];
+
+        const homeAddress =
+          addresses.find((addr) => addr.type === "home")?.value ||
+          addresses.find((addr) => addr.type === "office")?.value ||
+          addresses.find((addr) => addr.type === "inputValue")?.value;
 
         if (!homeAddress) return toast.error("No address found");
-let lat: number | undefined;
-let lng: number | undefined;
 
-console.log("🏠 Home Address:", homeAddress);
+      
+        const coords = await resolveLocation(
+          homeAddress,
+          current_location,
+          getCoordinatesFromQuery
+        );
 
-// 🔹 1. Check if it's "lat,lng" format
-const isLatLngString = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(homeAddress);
+        if (!coords) {
+          return toast.error("Unable to determine location");
+        }
 
-if (isLatLngString) {
-  const [parsedLat, parsedLng] = homeAddress.split(",").map(Number);
-
-  lat = parsedLat;
-  lng = parsedLng;
-
-  console.log("✅ Parsed from lat,lng string:", lat, lng);
-}
-
-// 🔹 2. If not coords → use geocoder
-if (lat === undefined || lng === undefined) {
-  try {
-    const coords = await getCoordinatesFromQuery(homeAddress);
-    console.log("🌍 Geocoded coords:", coords);
-
-    if (coords?.lat !== undefined && coords?.lng !== undefined) {
-      lat = coords.lat;
-      lng = coords.lng;
-      console.log("✅ Using geocoded coords:", lat, lng);
-    }
-  } catch (e) {
-    console.error("❌ Geocoding failed:", e);
-  }
-}
-
-// 🔹 3. Fallback → current_location.lat/lng
-if (lat === undefined || lng === undefined) {
-  if (
-    current_location?.lat !== undefined &&
-    current_location?.lng !== undefined
-  ) {
-    lat = current_location.lat;
-    lng = current_location.lng;
-    console.log("✅ Using current_location lat/lng:", lat, lng);
-  }
-}
-
-// 🔹 4. Fallback → GeoJSON
-if (lat === undefined || lng === undefined) {
-  const coords = current_location?.coordinates?.coordinates;
-
-  if (coords?.length === 2) {
-    lng = coords[0];
-    lat = coords[1];
-    console.log("✅ Using GeoJSON coords:", lat, lng);
-  }
-}
-
-// 🔹 Final check
-console.log("🎯 Final coords:", lat, lng);
-
-if (lat === undefined || lng === undefined) {
-  return toast.error("Unable to determine location");
-}
+        const { lat, lng } = coords;
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
       let pricingMode: "HOURLY" | "PER_DAY" = duration > 24 ? "PER_DAY" : "HOURLY";
       const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;
@@ -222,7 +176,7 @@ if (lat === undefined || lng === undefined) {
         </div>
       </div>
 
-      {/* ================= TIME ================= */}
+    
       <h2 className="text-sm font-bold text-gray-900 mb-4">Select Time</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         {times.map((time, index) => (
