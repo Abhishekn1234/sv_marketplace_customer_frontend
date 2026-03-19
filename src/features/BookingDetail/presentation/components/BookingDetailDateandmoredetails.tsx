@@ -83,58 +83,59 @@ export default function BookingDetailDateandmoredetails() {
         addresses.find((addr)=>addr.type==="inputValue")?.value;
 
         if (!homeAddress) return toast.error("No address found");
-
-       let lat: number | undefined;
+let lat: number | undefined;
 let lng: number | undefined;
 
 console.log("🏠 Home Address:", homeAddress);
-console.log("📍 Current Location (raw):", current_location);
 
-// 🔹 Try geocoding
-try {
-  const coords = await getCoordinatesFromQuery(homeAddress);
-  console.log("🌍 Geocoded coords:", coords);
+// 🔹 1. Check if it's "lat,lng" format
+const isLatLngString = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(homeAddress);
 
-  if (coords?.lat !== undefined && coords?.lng !== undefined) {
-    lat = coords.lat;
-    lng = coords.lng;
-    console.log("✅ Using geocoded coords:", lat, lng);
-  }
-} catch (e) {
-  console.error("❌ Geocoding failed:", e);
+if (isLatLngString) {
+  const [parsedLat, parsedLng] = homeAddress.split(",").map(Number);
+
+  lat = parsedLat;
+  lng = parsedLng;
+
+  console.log("✅ Parsed from lat,lng string:", lat, lng);
 }
 
-// 🔹 Fallback 1 (direct lat/lng)
+// 🔹 2. If not coords → use geocoder
 if (lat === undefined || lng === undefined) {
-  console.log("⚠️ Fallback 1 triggered");
+  try {
+    const coords = await getCoordinatesFromQuery(homeAddress);
+    console.log("🌍 Geocoded coords:", coords);
 
+    if (coords?.lat !== undefined && coords?.lng !== undefined) {
+      lat = coords.lat;
+      lng = coords.lng;
+      console.log("✅ Using geocoded coords:", lat, lng);
+    }
+  } catch (e) {
+    console.error("❌ Geocoding failed:", e);
+  }
+}
+
+// 🔹 3. Fallback → current_location.lat/lng
+if (lat === undefined || lng === undefined) {
   if (
     current_location?.lat !== undefined &&
     current_location?.lng !== undefined
   ) {
     lat = current_location.lat;
     lng = current_location.lng;
-
-    console.log("✅ Using current_location.lat/lng:", lat, lng);
-  } else {
-    console.log("❌ current_location.lat/lng not available");
+    console.log("✅ Using current_location lat/lng:", lat, lng);
   }
 }
 
-// 🔹 Fallback 2 (GeoJSON format)
+// 🔹 4. Fallback → GeoJSON
 if (lat === undefined || lng === undefined) {
-  console.log("⚠️ Fallback 2 triggered");
-
   const coords = current_location?.coordinates?.coordinates;
-  console.log("📦 GeoJSON coords:", coords);
 
   if (coords?.length === 2) {
     lng = coords[0];
     lat = coords[1];
-
     console.log("✅ Using GeoJSON coords:", lat, lng);
-  } else {
-    console.log("❌ GeoJSON coords invalid");
   }
 }
 
@@ -142,7 +143,6 @@ if (lat === undefined || lng === undefined) {
 console.log("🎯 Final coords:", lat, lng);
 
 if (lat === undefined || lng === undefined) {
-  console.error("🚨 Unable to determine location");
   return toast.error("Unable to determine location");
 }
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
