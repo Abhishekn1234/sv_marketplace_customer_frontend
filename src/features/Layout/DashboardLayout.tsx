@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import BottomNav from "./BottomNav";
 import CommonNavbar from "@/components/common/CommonNavbar";
 import Footer from "@/components/common/CommonFooter";
-import ProgressStepper from "../Auth/presentation/components/auth/Register/RegisterTab";
+import ProgressStepper from "../../components/common/ProgressStepper";
 import VerificationStepper from "../Auth/presentation/components/Verification/presentation/components/VerificationStepper";
 // import { useVerificationStore } from "../core/store/usestep";
 

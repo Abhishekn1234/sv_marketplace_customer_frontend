@@ -1,6 +1,6 @@
-export default function BookingDetailFaq(){
-    return(
-        <>
-        </>
-    )
-}
+// export default function BookingDetailFaq(){
+//     return(
+//         <>
+//         </>
+//     )
+// }
