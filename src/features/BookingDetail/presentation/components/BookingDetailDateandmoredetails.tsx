@@ -159,26 +159,26 @@ export default function BookingDetailDateandmoredetails() {
   </div>
 
   {/* ✅ Responsive layout */}
-  <div className="grid grid-cols-4 sm:flex sm:overflow-x-auto gap-3">
-    {visibleDates.map((item, index) => {
-      const globalIndex = pageStart + index;
+  <div className="grid grid-cols-4 lg:grid-cols-7 gap-3">
+  {visibleDates.map((item, index) => {
+    const globalIndex = pageStart + index;
 
-      return (
-        <div
-          key={globalIndex}
-          onClick={() => setSelectedDate(globalIndex)}
-          className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition ${
-            selectedDate === globalIndex
-              ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-              : "bg-white border-gray-200 hover:border-blue-600"
-          }`}
-        >
-          <span className="text-xs font-bold uppercase">{item.day}</span>
-          <span className="text-2xl font-black">{item.date}</span>
-        </div>
-      );
-    })}
-  </div>
+    return (
+      <div
+        key={globalIndex}
+        onClick={() => setSelectedDate(globalIndex)}
+        className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition ${
+          selectedDate === globalIndex
+            ? "bg-blue-600 border-blue-600 text-white shadow-lg"
+            : "bg-white border-gray-200 hover:border-blue-600"
+        }`}
+      >
+        <span className="text-xs font-bold uppercase">{item.day}</span>
+        <span className="text-2xl font-black">{item.date}</span>
+      </div>
+    );
+  })}
+</div>
 </div>
 
     
