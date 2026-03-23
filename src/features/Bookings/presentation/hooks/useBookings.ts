@@ -40,10 +40,11 @@ export const useBookings = () => {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
-
+   const services = queryClient.getQueryData(SERVICES_QUERY_KEY);
+  const tiers = queryClient.getQueryData(SERVICE_TIERS_QUERY_KEY);
   
 
-  const { data, isLoading, isError } = useQuery<Booking[], Error>({
+  const { data, isLoading, isError,refetch } = useQuery<Booking[], Error>({
     queryKey: BOOKINGS_QUERY_KEY,
     queryFn: async (): Promise<Booking[]> => {
       const res: GetBookingsResponse = await getBookingsUseCase.execute();
@@ -80,7 +81,9 @@ export const useBookings = () => {
 
       return res.bookings;
     },
+     enabled: !!services && !!tiers, // 🔥 wait until services + tiers loaded
     staleTime: 60 * 1000,
+    refetchOnMount: "always",
   });
   
   const createBooking = useMutation<Booking, Error, BookingPayload>({
@@ -154,6 +157,7 @@ export const useBookings = () => {
     bookings: data ?? [],
     loading: isLoading,
     error: isError,
+      refetch,
     createBooking: createBooking.mutateAsync,
     cancelBooking: cancelBooking.mutateAsync,
   };

@@ -5,12 +5,12 @@ import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings"
 import { useEffect } from "react";
 
 export default function ConfirmationContent() {
-  const { bookings, loading: isLoading } = useBookings();
+  const { bookings, loading: isLoading ,refetch} = useBookings();
 
   const data = bookings?.[0];
 
   useEffect(() => {
-  window.location.reload();
+ refetch()
 }, []);
 
   if (isLoading || !data) {
