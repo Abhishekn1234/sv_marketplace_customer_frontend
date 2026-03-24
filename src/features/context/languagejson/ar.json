@@ -68,5 +68,8 @@
     "registration": "التسجيل",
      "mobileVerification": "التحقق من رقم الهاتف",
     "accountDetails": "تفاصيل الحساب"
+  },
+  "home":{
+    
   }
 }

@@ -1,41 +1,53 @@
 import { useMemo } from "react";
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { progressMap } from "../../helpers/progressmap";
 import { getBookingFlags } from "../../helpers/getbookingflags";
 
 export default function ActiveService() {
-  const { bookings = [] } = useBookings();
+  const { data: bookings } = useBookingHistory();
+
+  // ✅ Flatten infinite query data safely
+  const datas = useMemo(() => {
+    return bookings?.pages?.flatMap((page) => page.data) || [];
+  }, [bookings]);
+
   const today = new Date().toDateString();
 
+  // ✅ Find today's booking
   const todayBooking = useMemo(() => {
-    return bookings.find((b: any) => {
+    return datas.find((b) => {
       const dateStr = b?.schedule?.startDateTime || b?.createdAt;
       if (!dateStr) return false;
+
       const date = new Date(dateStr);
       return !isNaN(date.getTime()) && date.toDateString() === today;
     });
-  }, [bookings]);
+  }, [datas, today]);
 
+  // ✅ Find next upcoming booking
   const nextBooking = useMemo(() => {
     if (todayBooking) return null;
 
-    const upcoming = bookings
-      .filter((b: any) => b?.schedule?.startDateTime)
+    const upcoming = datas
+      .filter((b) => b?.schedule?.startDateTime)
       .sort((a, b) => {
         const aTime = a.schedule?.startDateTime
           ? new Date(a.schedule.startDateTime).getTime()
           : Infinity;
+
         const bTime = b.schedule?.startDateTime
           ? new Date(b.schedule.startDateTime).getTime()
           : Infinity;
+
         return aTime - bTime;
       });
 
     return upcoming[0] || null;
-  }, [bookings, todayBooking]);
+  }, [datas, todayBooking]);
 
   const booking = todayBooking || nextBooking;
 
+  // ✅ Empty state
   if (!booking) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
@@ -44,28 +56,33 @@ export default function ActiveService() {
     );
   }
 
+  // ✅ Safe values
   const serviceName =
     typeof booking.serviceId === "object"
-      ? booking.serviceId?.name
+      ? booking.service.name
       : "Service";
 
   const firstWorker = booking.assignedWorkers?.[0]?.workerId;
+
   const workerName = firstWorker?.fullName || "No worker assigned";
+
   const workerImage =
     firstWorker?.profilePictureUrl ||
     "https://via.placeholder.com/100?text=No+Worker";
 
   const status = booking.status || "REQUESTED";
 
- const { isAssigned, isStarted, showTracking, isPaid } =
-  getBookingFlags(status, !!firstWorker);
+  const { isAssigned, isStarted, showTracking, isPaid } =
+    getBookingFlags(status, !!firstWorker);
 
   const progress =
-    progressMap[status?.toLowerCase()] || progressMap[status] || 20;
+    progressMap[status?.toLowerCase()] ||
+    progressMap[status] ||
+    20;
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:border-blue-500 hover:-translate-y-0.5">
-
+      
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
@@ -77,7 +94,7 @@ export default function ActiveService() {
             {serviceName}
           </span>
 
-          {(showTracking) && (
+          {showTracking && (
             <span className="px-3 py-1 text-green-700 bg-green-100 border border-green-200 rounded-full text-xs font-semibold uppercase tracking-wider">
               {isAssigned && !isStarted
                 ? "assigned"
@@ -117,7 +134,6 @@ export default function ActiveService() {
       {/* TRACKING FLOW */}
       {showTracking ? (
         <>
-          {/* Progress bar only when actually started */}
           {isStarted && (
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-5">
               <div
@@ -154,7 +170,6 @@ export default function ActiveService() {
           )}
         </>
       ) : isPaid ? (
-        /* PAID FLOW */
         <button
           onClick={() =>
             (window.location.href = `/servicerating/${booking._id}`)
@@ -164,7 +179,6 @@ export default function ActiveService() {
           Rate Your Service
         </button>
       ) : (
-        /* NOT STARTED */
         <button
           onClick={() =>
             (window.location.href = `/bookings`)
