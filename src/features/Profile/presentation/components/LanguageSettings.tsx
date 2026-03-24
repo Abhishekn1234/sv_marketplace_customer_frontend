@@ -18,16 +18,16 @@ export default function LanguageSettings() {
       <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-md border">
         
         <div className="flex items-center gap-3 mb-5">
-  {/* Icon */}
-  <div className="w-8 h-8 flex items-center justify-center rounded-lg  text-black text-sm">
-    🌐
-  </div>
+                {/* Icon */}
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg  text-black text-sm">
+                    🌐
+                </div>
 
-  {/* Title */}
-  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-    Select Language
-  </h2>
-</div>
+                {/* Title */}
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+                    Select Language
+                </h2>
+                </div>
 
         <div className="space-y-4">
           {languages.map((lang) => {
