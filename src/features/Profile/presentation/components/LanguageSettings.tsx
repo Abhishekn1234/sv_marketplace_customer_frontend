@@ -61,7 +61,7 @@ export default function LanguageSettings() {
                   className={`text-xs sm:text-sm px-3 py-1 rounded-full font-bold ${
                     isActive
                       ? "bg-black/30 text-white"
-                      : "bg-gray-200 text-gray-600"
+                      : "bg-gray-200 text-black"
                   }`}
                 >
                   {lang.code}
