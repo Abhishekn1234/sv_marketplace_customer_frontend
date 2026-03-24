@@ -17,9 +17,17 @@ export default function LanguageSettings() {
       {/* Card Container */}
       <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-md border">
         
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">
-          Select Language
-        </h2>
+        <div className="flex items-center gap-3 mb-5">
+  {/* Icon */}
+  <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm">
+    🌐
+  </div>
+
+  {/* Title */}
+  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+    Select Language
+  </h2>
+</div>
 
         <div className="space-y-4">
           {languages.map((lang) => {
