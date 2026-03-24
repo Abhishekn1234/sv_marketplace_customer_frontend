@@ -28,7 +28,8 @@ const handleUseCurrentLocation = async () => {
   setLoadingLocation(true);
 
   try {
-    const { placeName } = await getCurrentLocation();
+    const { lat, lng } = await getCurrentLocation();
+    const placeName = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
 
     updateHome("home", placeName);
     updateHome("inputValue", placeName);

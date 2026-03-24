@@ -1,12 +1,10 @@
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useParams } from "react-router-dom";
-import { useMemo, useEffect, useState } from "react";
-import { reverseGeocode } from "@/features/utils/reverse";
+import { useMemo } from "react";
 
 export function JobProgressInfo() {
   const { data } = useBookingHistory();
   const { bookingId } = useParams();
-  const [address, setAddress] = useState("Loading...");
 
   const booking = useMemo(() => {
     if (!data?.pages) return null;
@@ -25,7 +23,6 @@ export function JobProgressInfo() {
   const estimatedDays = booking?.actualWorkDays ?? 0;
 
   let basePrice = 0;
-
   if (pricingMode === "HOURLY") {
     basePrice = estimatedHours ? total / estimatedHours : total;
   } else if (pricingMode === "DAILY") {
@@ -43,17 +40,14 @@ export function JobProgressInfo() {
     : "N/A";
 
   let duration = "N/A";
-
   if (booking?.startedAt && booking?.completedAt) {
     const start = new Date(booking.startedAt).getTime();
     const end = new Date(booking.completedAt).getTime();
-
     if (!isNaN(start) && !isNaN(end)) {
       const diff = end - start;
       const mins = Math.floor(diff / (1000 * 60));
       const hrs = Math.floor(mins / 60);
       const remaining = mins % 60;
-
       duration = `${hrs > 0 ? `${hrs} hr ` : ""}${remaining} min`;
     }
   } else if (booking?.startedAt && !booking?.completedAt) {
@@ -63,23 +57,14 @@ export function JobProgressInfo() {
   const lat = booking?.location?.coordinates?.[1];
   const lng = booking?.location?.coordinates?.[0];
 
-  useEffect(() => {
-    const fetchAddress = async () => {
-      if (lat && lng) {
-        try {
-          const place = await reverseGeocode(lat, lng);
-          setAddress(place || "Location not found");
-        } catch {
-          setAddress("Failed to load location");
-        }
-      }
-    };
-
-    fetchAddress();
-  }, [lat, lng]);
+  const formattedCoordinates =
+    lat != null && lng != null
+      ? `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`
+      : "No coordinates";
 
   return (
     <div className="flex flex-col gap-5 sticky top-6">
+      {/* Service Summary */}
       <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
         <h3 className="text-[16px] font-bold text-gray-900 mb-5">
           Service Summary
@@ -94,12 +79,8 @@ export function JobProgressInfo() {
             key={i}
             className="flex justify-between py-2 border-b border-gray-100"
           >
-            <span className="text-sm text-gray-500 font-medium">
-              {label}
-            </span>
-            <span className="text-sm font-semibold text-gray-900">
-              {value}
-            </span>
+            <span className="text-sm text-gray-500 font-medium">{label}</span>
+            <span className="text-sm font-semibold text-gray-900">{value}</span>
           </div>
         ))}
 
@@ -111,31 +92,24 @@ export function JobProgressInfo() {
         </div>
       </div>
 
+      {/* Service Info */}
       <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
-        <h3 className="text-[16px] font-bold text-gray-900 mb-4">
-          Service Info
-        </h3>
+        <h3 className="text-[16px] font-bold text-gray-900 mb-4">Service Info</h3>
 
         <div className="space-y-4 text-sm">
           <div>
             <div className="text-gray-500 text-[13px]">Date</div>
-            <div className="font-semibold text-gray-900">
-              {startDate}
-            </div>
+            <div className="font-semibold text-gray-900">{startDate}</div>
           </div>
 
           <div>
             <div className="text-gray-500 text-[13px]">Duration</div>
-            <div className="font-semibold text-gray-900">
-              {duration}
-            </div>
+            <div className="font-semibold text-gray-900">{duration}</div>
           </div>
 
           <div>
-            <div className="text-gray-500 text-[13px]">Location</div>
-            <div className="font-semibold text-gray-900">
-              {address}
-            </div>
+            <div className="text-gray-500 text-[13px]">Coordinates</div>
+            <div className="font-semibold text-gray-900">{formattedCoordinates}</div>
           </div>
         </div>
       </div>

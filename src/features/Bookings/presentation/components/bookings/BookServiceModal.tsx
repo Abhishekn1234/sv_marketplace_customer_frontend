@@ -90,7 +90,7 @@ export default function BookingServiceModal({
     if (locationMode === "current") {
       setIsGeocoding(true);
       getCurrentLocation()
-        .then(({ lat, lng, placeName }) => {
+        .then(({ lat, lng }) => {
           setLat(lat);
           setLng(lng);
           setPlaceName(placeName);

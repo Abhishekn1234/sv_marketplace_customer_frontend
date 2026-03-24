@@ -1,22 +1,9 @@
 import { useCallback } from "react";
-
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { reverseGeocode,getCurrentLocation } from "../../../../utils/reverse";
 import { toast } from "react-toastify";
+import { getCurrentLocation } from "../../../../utils/reverse";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import CommonMap from "@/components/common/CommonMap";
-
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
 
 interface LocationSelectorProps {
   lat: number;
@@ -31,50 +18,66 @@ interface LocationSelectorProps {
   setIsGeocoding: (val: boolean) => void;
 }
 
-
-
-export default function LocationSelector(props: LocationSelectorProps) {
-  const { lat, lng, setLat, setLng, placeName, setPlaceName, locationMode, setLocationMode, isGeocoding, setIsGeocoding } = props;
-
-  const handleLocationChange = useCallback(async (newLat: number, newLng: number) => {
-    if (locationMode !== "new") return;
-
-    setIsGeocoding(true);
-    try {
-      const name = await reverseGeocode(newLat, newLng);
-      setLat(newLat);
-      setLng(newLng);
-      setPlaceName(name);
-    } catch {
-      setPlaceName(`Custom Location (${newLat.toFixed(4)}, ${newLng.toFixed(4)})`);
-    } finally {
-      setIsGeocoding(false);
-    }
-  }, [locationMode]);
-
+export default function LocationSelector({
+  lat,
+  lng,
+  setLat,
+  setLng,
+  placeName,
+  setPlaceName,
+  locationMode,
+  setLocationMode,
+  isGeocoding,
+  setIsGeocoding,
+}: LocationSelectorProps) {
+  // Handle user clicking "Use Current Location"
   const handleUseCurrent = useCallback(async () => {
     setIsGeocoding(true);
     try {
       const location = await getCurrentLocation();
       setLat(location.lat);
       setLng(location.lng);
-      setPlaceName(location.placeName);
+      setPlaceName(`Lat: ${location.lat.toFixed(5)}, Lng: ${location.lng.toFixed(5)}`);
       setLocationMode("current");
     } catch (err: any) {
       toast.error(err.message || "Unable to get location");
     } finally {
       setIsGeocoding(false);
     }
-  }, []);
+  }, [setLat, setLng, setPlaceName, setLocationMode, setIsGeocoding]);
+
+  // Handle user selecting a custom location on map
+  const handleLocationChange = useCallback(
+    (newLat: number, newLng: number) => {
+      if (locationMode !== "new") return;
+
+      setLat(newLat);
+      setLng(newLng);
+      setPlaceName(`Lat: ${newLat.toFixed(5)}, Lng: ${newLng.toFixed(5)}`);
+    },
+    [locationMode, setLat, setLng, setPlaceName]
+  );
 
   return (
     <div className="space-y-2">
       <div className="flex gap-4">
         <Label>
-          <Input type="radio" checked={locationMode === "current"} onChange={handleUseCurrent} disabled={isGeocoding} /> Current Location
+          <Input
+            type="radio"
+            checked={locationMode === "current"}
+            onChange={handleUseCurrent}
+            disabled={isGeocoding}
+          />{" "}
+          Current Location
         </Label>
         <Label>
-          <Input type="radio" checked={locationMode === "new"} onChange={() => setLocationMode("new")} disabled={isGeocoding} /> Set New
+          <Input
+            type="radio"
+            checked={locationMode === "new"}
+            onChange={() => setLocationMode("new")}
+            disabled={isGeocoding}
+          />{" "}
+          Set New
         </Label>
       </div>
 
@@ -83,7 +86,7 @@ export default function LocationSelector(props: LocationSelectorProps) {
         <p>Coordinates: {lat.toFixed(6)}, {lng.toFixed(6)}</p>
       </div>
 
-       <CommonMap
+      <CommonMap
         lat={lat}
         lng={lng}
         setLat={setLat}
@@ -94,4 +97,3 @@ export default function LocationSelector(props: LocationSelectorProps) {
     </div>
   );
 }
-

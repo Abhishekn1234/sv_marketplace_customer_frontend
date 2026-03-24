@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { toast } from "react-toastify";
-import { getSuggestions } from "@/features/utils/reverse";
-import type { Suggestion } from "../../domain/entities/suggestions";
 
 export default function BookingDetailAddress() {
   const { current_location, updateAddress } = useAuthStore();
@@ -15,70 +13,11 @@ export default function BookingDetailAddress() {
   const [homeAddress, setHomeAddress] = useState(homeAddressSaved);
   const [entryInstructions, setEntryInstructions] = useState(entryInstructionsSaved);
 
-  const [homeSuggestions, setHomeSuggestions] = useState<Suggestion[]>([]);
-  const [entrySuggestions, setEntrySuggestions] = useState<Suggestion[]>([]);
-
-  const [loadingHome, setLoadingHome] = useState(false);
-  const [loadingEntry, setLoadingEntry] = useState(false);
-
-  const homeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const entryDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const homeAbortRef = useRef<AbortController | null>(null);
-  const entryAbortRef = useRef<AbortController | null>(null);
-
   // Sync with store
   useEffect(() => {
     setHomeAddress(homeAddressSaved);
     setEntryInstructions(entryInstructionsSaved);
   }, [homeAddressSaved, entryInstructionsSaved]);
-
-  // Clean up abort controllers on unmount
-  useEffect(() => {
-    return () => {
-      homeAbortRef.current?.abort();
-      entryAbortRef.current?.abort();
-    };
-  }, []);
-
-  const fetchSuggestions = async (
-  input: string,
-  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  debounceRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
-  abortRef: React.MutableRefObject<AbortController | null>
-) => {
-  // Clear previous debounce timer
-  if (debounceRef.current) {
-    clearTimeout(debounceRef.current);
-  }
-
-  debounceRef.current = setTimeout(async () => {
-    if (!input.trim() || input.length < 3) {
-      setSuggestions([]);
-      return;
-    }
-
-    // Cancel previous API request
-    if (abortRef.current) abortRef.current.abort();
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    setLoading(true);
-
-    try {
-      const results = await getSuggestions(input, controller.signal);
-      // ✅ set full object array
-      setSuggestions(results);
-    } catch (error: any) {
-      if (error.name !== "AbortError") console.error(error);
-      setSuggestions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, 400);
-};
 
   const handleSave = () => {
     if (!homeAddress.trim()) {
@@ -117,37 +56,10 @@ export default function BookingDetailAddress() {
         <input
           type="text"
           value={entryInstructions}
-          onChange={(e) => {
-            setEntryInstructions(e.target.value);
-            fetchSuggestions(
-              e.target.value,
-              setEntrySuggestions,
-              setLoadingEntry,
-              entryDebounceRef,
-              entryAbortRef
-            );
-          }}
+          onChange={(e) => setEntryInstructions(e.target.value)}
           placeholder="Apartment, street, building..."
           className="w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 mb-2"
         />
-
-        {loadingEntry && <p className="text-sm text-gray-500 mt-1">Loading suggestions...</p>}
-        {entrySuggestions.length > 0 && (
-          <ul className="border border-gray-200 rounded-xl mt-1 max-h-60 overflow-auto">
-            {entrySuggestions.map((s, i) => (
-              <li
-                key={i}
-                onClick={() => {
-                  setEntryInstructions(s.display_name);
-                  setEntrySuggestions([]);
-                }}
-                className="p-2 text-sm hover:bg-blue-50 cursor-pointer"
-              >
-                {s.display_name}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       {/* Modal for editing */}
@@ -159,36 +71,10 @@ export default function BookingDetailAddress() {
             <input
               type="text"
               value={homeAddress}
-              onChange={(e) => {
-                setHomeAddress(e.target.value);
-                fetchSuggestions(
-                  e.target.value,
-                  setHomeSuggestions,
-                  setLoadingHome,
-                  homeDebounceRef,
-                  homeAbortRef
-                );
-              }}
+              onChange={(e) => setHomeAddress(e.target.value)}
               placeholder="Type your home address..."
               className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none mb-2"
             />
-            {loadingHome && <p className="text-sm text-gray-500 mt-1">Loading suggestions...</p>}
-            {homeSuggestions.length > 0 && (
-              <ul className="border border-gray-200 rounded-xl mt-1 max-h-60 overflow-auto">
-                {homeSuggestions.map((s, i) => (
-                  <li
-                    key={i}
-                    onClick={() => {
-                     setHomeAddress(s.display_name);
-                      setHomeSuggestions([]);
-                    }}
-                    className="p-2 text-sm hover:bg-blue-50 cursor-pointer"
-                  >
-                    {s.display_name}
-                  </li>
-                ))}
-              </ul>
-            )}
 
             <div className="flex justify-end gap-3 mt-6">
               <button

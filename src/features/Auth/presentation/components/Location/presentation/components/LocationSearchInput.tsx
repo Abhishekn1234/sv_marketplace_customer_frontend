@@ -1,17 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
-import debounce from "lodash.debounce";
-import { getSuggestions, reverseGeocode } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/features/utils/reverse";
 
 type Props = {
   selected: "home" | "office" | null;
   inputValue: string;
   setInputValue: (v: string) => void;
-  onChange: (v: string) => void;
+  onChange: (v: { lat: number; lng: number; display_name: string }) => void;
 };
 
 export default function LocationSearchInput({
@@ -20,68 +19,27 @@ export default function LocationSearchInput({
   onChange,
 }: Props) {
   const { t } = useLanguage();
-  const [suggestions, setSuggestions] = useState<{ lat: number; lng: number; display_name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch suggestions via backend
-  const fetchSuggestions = async (query: string) => {
-    if (!query) {
-      setSuggestions([]);
-      return;
-    }
-
+  // Use current location
+  const handleUseCurrentLocation = async () => {
     setIsLoading(true);
     try {
-      const results = await getSuggestions(query);
-      setSuggestions(results);
+      const { lat, lng } = await getCurrentLocation();
+
+      // Create display string
+      const display_name = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+
+      setInputValue(display_name);
+      onChange({ lat, lng, display_name });
+
+      toast.success(t.location?.title ?? "Location updated!");
     } catch (err) {
-      console.error("Error fetching suggestions:", err);
-      setSuggestions([]);
+      console.error(err);
+      toast.error(t.common?.locationError ?? "Unable to fetch location");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Debounced version of fetchSuggestions (500ms)
-  const debouncedFetch = useMemo(
-    () => debounce((query: string) => fetchSuggestions(query), 500),
-    []
-  );
-
-  // Handle input change
-  const handleChange = (value: string) => {
-    setInputValue(value);
-    onChange(value);
-    debouncedFetch(value);
-  };
-
-  // When a suggestion is clicked
-  const handleSuggestionClick = (loc: { lat: number; lng: number; display_name: string }) => {
-    setInputValue(loc.display_name);
-    onChange(loc.display_name);
-    setSuggestions([]);
-  };
-
-  // Use current location
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error(t.common?.geoNotSupported ?? "Geolocation not supported");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async ({ coords }) => {
-        try {
-          const loc = await reverseGeocode(coords.latitude, coords.longitude);
-          setInputValue(loc);
-          onChange(loc);
-        } catch (err) {
-          console.error("Error fetching location:", err);
-          toast.error(t.common?.locationError ?? "Unable to fetch location");
-        }
-      },
-      () => toast.error(t.common?.locationError ?? "Unable to fetch location")
-    );
   };
 
   return (
@@ -90,24 +48,10 @@ export default function LocationSearchInput({
         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
         <Input
           value={inputValue}
-          onChange={(e) => handleChange(e.target.value)}
-          placeholder={t.location.searchPlaceholder ?? "Enter location"}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={t.location?.searchPlaceholder ?? "Enter location"}
           className="h-14 w-full rounded-2xl px-12"
         />
-
-        {suggestions.length > 0 && (
-          <ul className="absolute top-full mt-1 w-full bg-white border rounded-lg shadow-md z-50 max-h-60 overflow-y-auto">
-            {suggestions.map((loc, i) => (
-              <li
-                key={i}
-                onClick={() => handleSuggestionClick(loc)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-              >
-                {loc.display_name}
-              </li>
-            ))}
-          </ul>
-        )}
 
         {isLoading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
@@ -124,7 +68,7 @@ export default function LocationSearchInput({
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polygon points="3 11 22 2 13 21 11 13 3 11" />
         </svg>
-        {t.location.useCurrent ?? "Use current location"}
+        {t.location?.useCurrent ?? "Use current location"}
       </Button>
     </>
   );

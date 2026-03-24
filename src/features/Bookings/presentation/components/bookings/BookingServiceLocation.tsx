@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import CommonMap from "@/components/common/CommonMap";
-import { reverseGeocode, getCurrentLocation } from "../../../../utils/reverse";
+import { getCurrentLocation } from "@/features/utils/reverse";
 
 interface BookingServiceLocationProps {
   lat: number;
@@ -30,55 +30,44 @@ export default function BookingServiceLocation({
   isGeocoding,
   setIsGeocoding,
 }: BookingServiceLocationProps) {
+
+  // ✅ Set current location using getCurrentLocation
   const handleSetCurrentLocation = useCallback(async () => {
     setIsGeocoding(true);
     try {
       const location = await getCurrentLocation();
       setLat(location.lat);
       setLng(location.lng);
-      setPlaceName(location.placeName);
+      setPlaceName(`Lat: ${location.lat.toFixed(5)}, Lng: ${location.lng.toFixed(5)}`);
       setLocationMode("current");
+    } catch (err) {
+      console.error("Failed to get current location:", err);
+      setPlaceName("Unable to detect location");
     } finally {
       setIsGeocoding(false);
     }
   }, [setLat, setLng, setPlaceName, setLocationMode, setIsGeocoding]);
 
-  const handleLocationChange = useCallback(
-    async (newLat: number, newLng: number) => {
-      if (locationMode !== "new") return;
-
-      setIsGeocoding(true);
-      try {
-        const name = await reverseGeocode(newLat, newLng);
-        setPlaceName(name);
-      } catch {
-        setPlaceName(`Custom Location (${newLat.toFixed(4)}, ${newLng.toFixed(4)})`);
-      } finally {
-        setIsGeocoding(false);
-      }
-    },
-    [locationMode, setPlaceName, setIsGeocoding]
-  );
-
+  // When user clicks "current" or "new" radio
   const handleLocationModeChange = useCallback(
     async (mode: "current" | "new") => {
       setLocationMode(mode);
       if (mode === "current") {
         await handleSetCurrentLocation();
-        return;
-      }
-      
-      setIsGeocoding(true);
-      try {
-        const name = await reverseGeocode(lat, lng);
-        setPlaceName(name);
-      } catch {
-        setPlaceName(`Custom Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
-      } finally {
-        setIsGeocoding(false);
       }
     },
-    [lat, lng, handleSetCurrentLocation, setLocationMode, setPlaceName, setIsGeocoding]
+    [handleSetCurrentLocation, setLocationMode]
+  );
+
+  // Handle map clicks in "new" mode
+  const handleMapLocationChange = useCallback(
+    (newLat: number, newLng: number) => {
+      if (locationMode !== "new") return;
+      setLat(newLat);
+      setLng(newLng);
+      setPlaceName(`Custom Location (${newLat.toFixed(5)}, ${newLng.toFixed(5)})`);
+    },
+    [locationMode, setLat, setLng, setPlaceName]
   );
 
   return (
@@ -116,7 +105,6 @@ export default function BookingServiceLocation({
         <Badge variant="secondary">{locationMode === "current" ? "📍 Current" : "🗺️ Custom"}</Badge>
       </div>
 
-      
       <div className="relative">
         <CommonMap
           lat={lat}
@@ -124,7 +112,7 @@ export default function BookingServiceLocation({
           setLat={setLat}
           setLng={setLng}
           locationMode={locationMode}
-          onLocationChange={handleLocationChange}
+          onLocationChange={handleMapLocationChange}
         />
 
         <div className="absolute bottom-2 left-2 bg-black/80 text-white text-xs p-2 rounded backdrop-blur-sm">

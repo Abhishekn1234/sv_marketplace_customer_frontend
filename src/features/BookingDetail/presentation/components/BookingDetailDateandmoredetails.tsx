@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCoordinatesFromQuery } from "@/features/utils/reverse";
+import { getCurrentLocation} from "@/features/utils/reverse";
 import { resolveLocation } from "../helpers/resolvelocation";
 
 export default function BookingDetailDateandmoredetails() {
@@ -91,14 +91,14 @@ export default function BookingDetailDateandmoredetails() {
         const coords = await resolveLocation(
           homeAddress,
           current_location,
-          getCoordinatesFromQuery
+         getCurrentLocation
         );
 
         if (!coords) {
           return toast.error("Unable to determine location");
         }
 
-        const { lat, lng } = coords;
+         const { lat, lng } = await getCurrentLocation();
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
       let pricingMode: "HOURLY" | "PER_DAY" = duration > 24 ? "PER_DAY" : "HOURLY";
       const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;

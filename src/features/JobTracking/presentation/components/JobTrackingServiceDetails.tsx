@@ -2,29 +2,26 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
-import { reverseGeocode } from "@/features/utils/reverse";
 
 export default function JobTrackingServiceDetails() {
   const { bookingId } = useParams();
   const { data } = useBookingHistory();
 
-  const [address, setAddress] = useState("Loading...");
+  const [coordinates, setCoordinates] = useState("Loading...");
 
   const bookings = data?.pages.flatMap((page) => page.data) ?? [];
   const booking = bookings.find((b) => b._id === bookingId);
 
   useEffect(() => {
-    async function getAddress() {
-      if (!booking?.location?.coordinates) return;
-
-      const lat = booking.location.coordinates[1];
-      const lng = booking.location.coordinates[0];
-
-      const addr = await reverseGeocode(lat, lng);
-      setAddress(addr);
+    if (!booking?.location?.coordinates) {
+      setCoordinates("No coordinates");
+      return;
     }
 
-    getAddress();
+    const lat = booking.location.coordinates[1];
+    const lng = booking.location.coordinates[0];
+
+    setCoordinates(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
   }, [booking]);
 
   const serviceDetails = [
@@ -37,8 +34,8 @@ export default function JobTrackingServiceDetails() {
         : "—",
     },
     {
-      label: "Address",
-      value: address,
+      label: "Coordinates",
+      value: coordinates,
       isSmall: true,
     },
     {
@@ -57,10 +54,7 @@ export default function JobTrackingServiceDetails() {
       <div className="flex flex-col divide-y divide-gray-100">
         {serviceDetails.map((item, idx) => (
           <div key={idx} className="flex justify-between items-start py-3">
-            <span className="text-sm font-medium text-gray-500">
-              {item.label}
-            </span>
-
+            <span className="text-sm font-medium text-gray-500">{item.label}</span>
             <span
               className={`font-semibold text-right ${
                 item.isSmall

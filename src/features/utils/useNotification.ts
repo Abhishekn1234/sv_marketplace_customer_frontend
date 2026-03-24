@@ -38,7 +38,8 @@ export const useNotification = () => {
         const distanceKm = haversineDistance(previous, current);
         if (distanceKm < MIN_DISTANCE_KM) return;
 
-       const { placeName } = await getCurrentLocation();
+       const { lat,lng } = await getCurrentLocation();
+       const placeName=`Lat ${lat}, Lng ${lng}`;
 
         new Notification("Location Changed", {
           body: `Moved ${Math.round(distanceKm)} km — ${placeName}`,

@@ -30,7 +30,8 @@ const selectedLocation =
     setLoadingLocation(true);
 
     try {
-      const { placeName } = await getCurrentLocation();
+      const { lat,lng } = await getCurrentLocation();
+      const placeName=`Lat ${lat},Long ${lng}`
 
       // Add or update 'home'
       const hasHome = addresses.some((addr) => addr.type === "home");

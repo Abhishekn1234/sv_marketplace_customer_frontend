@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getSuggestions } from "@/features/utils/reverse";
-import { useDebounce } from "../utils/debouncer";
 
 interface AddressModalProps {
   open: boolean;
@@ -13,12 +11,8 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
 
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
   const [address, setAddress] = useState("");
-  const [suggestions, setSuggestions] = useState<{ lat: number; lng: number; display_name: string }[]>([]);
 
-  // ✅ Debounce input (400ms)
-  const debouncedAddress = useDebounce(address, 400);
-
-  // Load existing address
+  // Load existing address when modal opens or type changes
   useEffect(() => {
     if (!open) return;
 
@@ -27,38 +21,10 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
     setAddress(existing);
   }, [open, selectedType, current_location]);
 
-  // Fetch suggestions when debounced input changes
-  useEffect(() => {
-    if (!debouncedAddress || debouncedAddress.length < 3) {
-      setSuggestions([]);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    const fetchSuggestions = async () => {
-      try {
-        const results = await getSuggestions(debouncedAddress, controller.signal);
-        setSuggestions(results);
-      } catch (error) {
-        if ((error as any).name !== "AbortError") console.error(error);
-      }
-    };
-
-    fetchSuggestions();
-
-    return () => controller.abort(); // cancel previous request
-  }, [debouncedAddress]);
-
   const handleSave = () => {
     if (!address.trim()) return;
     updateHome(selectedType, address.trim());
     onClose();
-  };
-
-  const handleSelect = (item: { lat: number; lng: number; display_name: string }) => {
-    setAddress(item.display_name);
-    setSuggestions([]);
   };
 
   if (!open) return null;
@@ -97,20 +63,6 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
             placeholder="Enter address..."
             className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
-
-          {suggestions.length > 0 && (
-            <ul className="absolute z-10 bg-white border border-gray-200 rounded-xl mt-2 w-full max-h-60 overflow-y-auto shadow-lg">
-              {suggestions.map((item, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleSelect(item)}
-                  className="p-3 cursor-pointer hover:bg-blue-50 text-sm"
-                >
-                  {item.display_name}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
         <div className="flex gap-4 pt-6">
