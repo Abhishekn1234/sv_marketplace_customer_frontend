@@ -1,4 +1,5 @@
 import DangerZone from "./components/Dangerzone";
+import LanguageSettings from "./components/LanguageSettings";
 import PrefeneceandNotifications from "./components/Preferenceandnotifications";
 import ProfileList from "./components/ProfileList";
 import ProfileTop from "./components/ProfileTop";
@@ -20,6 +21,7 @@ export default function Profile() {
           <div className="lg:col-span-5 flex flex-col gap-6">
             <ProfileList />
             <QuickActions />
+            <LanguageSettings/>
           </div>
 
           {/* RIGHT SIDE */}
