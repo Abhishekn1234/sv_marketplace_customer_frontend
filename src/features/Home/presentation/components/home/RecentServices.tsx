@@ -1,5 +1,5 @@
 import React from "react";
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { RecentItem } from "./RecentItem";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
@@ -7,9 +7,15 @@ import { getBookingPrice } from "../../helpers/getbookprice";
 import { formatDate } from "../../helpers/formatdate";
 
 const RecentServices: React.FC = () => {
-  const { bookings = [] } = useBookings();
+  const { data: bookingsData } = useBookingHistory();
   const { data: categories = [] } = useServiceCategory();
 
+
+  const bookings: Booking[] = React.useMemo(() => {
+    return bookingsData?.pages?.flatMap((page: any) => page.data) || [];
+  }, [bookingsData]);
+
+  
   const serviceToCategoryMap = React.useMemo(() => {
     const map = new Map<string, string>();
 
@@ -22,14 +28,18 @@ const RecentServices: React.FC = () => {
     return map;
   }, [categories]);
 
-  const sortedBookings = bookings
-    .slice()
-    .sort(
-      (a: Booking, b: Booking) =>
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
-    );
 
+  const sortedBookings = React.useMemo(() => {
+    return bookings
+      .slice()
+      .sort(
+        (a: Booking, b: Booking) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
+      );
+  }, [bookings]);
+
+ 
   const recentBookings = sortedBookings.slice(0, 3);
 
   return (
@@ -52,25 +62,33 @@ const RecentServices: React.FC = () => {
           {recentBookings.map((booking) => {
             const serviceId =
               typeof booking.serviceId === "object"
-                ? booking.serviceId._id
-                : booking.serviceId;
+                ? booking.service?._id
+                : booking.service?._id;
 
             const categoryId = serviceToCategoryMap.get(serviceId || "");
 
             return (
               <RecentItem
                 key={booking._id}
-                bookingId={booking._id}   
+                bookingId={booking._id}
                 categoryId={categoryId}
                 serviceId={serviceId}
-                title={booking.serviceId?.name || "Service"}
+                title={
+                  typeof booking.service === "object"
+                    ? booking.service?.name
+                    : "Service"
+                }
                 date={
                   booking.bookingType === "SCHEDULED"
                     ? formatDate(booking.schedule?.startDateTime)
                     : formatDate(booking.createdAt)
                 }
                 price={`${booking.currency} ${getBookingPrice(booking)}`}
-                iconUrl={booking.serviceId?.iconUrl}
+                iconUrl={
+                  typeof booking.service === "object"
+                    ? booking.service?.iconUrl
+                    : undefined
+                }
                 status={booking.status}
               />
             );

@@ -57,12 +57,10 @@ export default function ActiveService() {
   }
 
   // ✅ Safe values
-  const serviceName =
-    typeof booking.serviceId === "object"
-      ? booking.service.name
-      : "Service";
+  const serviceName=booking.service.name
+      console.log(booking.service);
 
-  const firstWorker = booking.assignedWorkers?.[0]?.workerId;
+  const firstWorker = booking.assignedWorkers?.[0]?.worker;
 
   const workerName = firstWorker?.fullName || "No worker assigned";
 
