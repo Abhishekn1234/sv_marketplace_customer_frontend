@@ -13,10 +13,10 @@ export default function LanguageSettings() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-white rounded-2xl p-8 shadow-sm border mt-6">
+      <div className="w-full max-w-md backdrop-blur-xl  rounded-3xl p-6 sm:p-8 shadow-2xl">
         
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">
           Select Language
         </h2>
 
@@ -64,9 +64,7 @@ export default function LanguageSettings() {
           })}
         </div>
 
-        <p className="text-center text-gray-400 text-xs sm:text-sm mt-6">
-          Your preference is saved automatically
-        </p>
+       
       </div>
     </div>
   );
