@@ -34,7 +34,7 @@ export default function JobTrackingServiceDetails() {
         : "—",
     },
     {
-      label: "Coordinates",
+      label: "Location",
       value: coordinates,
       isSmall: true,
     },
