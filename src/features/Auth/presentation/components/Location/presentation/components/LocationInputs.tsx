@@ -24,9 +24,9 @@ export default function LocationInputs() {
   const officeLocation =
     user?.current_location?.office ?? "";
 
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-  };
+  const handleInputChange = (location: { lat: number; lng: number; display_name: string }) => {
+  setInputValue(location.display_name);
+};
 
   const handleSelect = (type: "home" | "office") => {
     setSelected(type);

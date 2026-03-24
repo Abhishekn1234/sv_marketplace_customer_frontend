@@ -1,18 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { reverseGeocode } from "../../../utils/reverse";
 
+/**
+ * Formats coordinates as "Lat: xx.xxxxx, Lng: yy.yyyyy"
+ */
 const fetchLocationName = async (
   coordinates: [number, number]
 ): Promise<string> => {
   const [lng, lat] = coordinates;
-
-  const placeName = await reverseGeocode(lat, lng);
-
-  if (!placeName) {
-    throw new Error("Failed to fetch location");
-  }
-
-  return placeName;
+  return `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
 };
 
 export const useLocationName = (coordinates?: [number, number]) => {
@@ -23,7 +18,7 @@ export const useLocationName = (coordinates?: [number, number]) => {
     queryFn: () => fetchLocationName(coordinates!),
     enabled,
     staleTime: 1000 * 60 * 5,
-    retry: 1,
+    retry: 0, // no retry needed since no API call
   });
 
   return {
