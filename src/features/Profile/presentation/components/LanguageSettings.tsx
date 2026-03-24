@@ -19,7 +19,7 @@ export default function LanguageSettings() {
         
         <div className="flex items-center gap-3 mb-5">
   {/* Icon */}
-  <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm">
+  <div className="w-8 h-8 flex items-center justify-center rounded-lg  text-black text-sm">
     🌐
   </div>
 
