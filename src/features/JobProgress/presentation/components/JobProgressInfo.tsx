@@ -108,7 +108,7 @@ export function JobProgressInfo() {
           </div>
 
           <div>
-            <div className="text-gray-500 text-[13px]">Coordinates</div>
+            <div className="text-gray-500 text-[13px]">Location</div>
             <div className="font-semibold text-gray-900">{formattedCoordinates}</div>
           </div>
         </div>
