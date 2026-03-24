@@ -5,7 +5,7 @@ import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { formatSmartDate } from "../helpers/formatdatetime";
-import { getPlaceNameFromCoords } from "@/features/utils/reverse";
+
 import { useEffect, useState } from "react";
 import { ArrowRight, Calendar, Home } from "lucide-react";
 import { statusMessageMap } from "../helpers/statusmessagemapping";
@@ -20,26 +20,17 @@ export default function ConfirmationContent() {
   const [initialLoading, setInitialLoading] = useState(true);
 
   // 🔹 Fetch place name
-  useEffect(() => {
-    if (!data?.location?.coordinates?.length) return;
+useEffect(() => {
+  if (!data?.location?.coordinates?.length) return;
 
-    const [lng, lat] = data.location.coordinates;
+  const [lng, lat] = data.location.coordinates;
 
-    const fetchPlace = async () => {
-      try {
-        const place = await getPlaceNameFromCoords(lat, lng);
-        setPlaceName(place || "Location not found");
-      } catch {
-        setPlaceName("Location not available");
-      }
-    };
-
-    fetchPlace();
-  }, [
-    data?.location?.coordinates?.[0],
-    data?.location?.coordinates?.[1],
-  ]);
-
+  // ✅ Directly use coordinates from booking
+  setPlaceName(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
+}, [
+  data?.location?.coordinates?.[0],
+  data?.location?.coordinates?.[1],
+]);
   // 🔹 Initial loader control
   useEffect(() => {
     if (!isLoading && data) {
