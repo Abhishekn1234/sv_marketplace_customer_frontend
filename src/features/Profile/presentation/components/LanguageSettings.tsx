@@ -34,15 +34,15 @@ export default function LanguageSettings() {
             const isActive = language === lang.code;
 
             return (
-              <label
-                key={lang.code}
-                className={`flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 border
-                ${
-                  isActive
-                    ? "border-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white shadow-lg"
-                    : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
-                }`}
-              >
+             <label
+                    key={lang.code}
+                    className={`flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 border
+                    ${
+                        isActive
+                        ? "border-blue-500 bg-blue-600 text-white shadow-md"
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-600 hover:text-white"
+                    }`}
+                    >
                 <div className="flex items-center gap-4">
                   <input
                     type="radio"
