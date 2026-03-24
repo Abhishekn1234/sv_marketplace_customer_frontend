@@ -13,8 +13,8 @@ export default function LanguageSettings() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#020617] px-4">
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
         
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-6">
           Select Language
