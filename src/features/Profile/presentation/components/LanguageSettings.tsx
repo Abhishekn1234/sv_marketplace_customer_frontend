@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/features/core/store/auth"
+import { useAuthStore } from "@/features/core/store/auth";
 
 export default function LanguageSettings() {
   const language = useAuthStore((state) => state.language);
@@ -13,8 +13,9 @@ export default function LanguageSettings() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white rounded-2xl p-8 shadow-sm border mt-6">
-      <div className="w-full max-w-md backdrop-blur-xl  rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <div className="flex justify-center mt-10 px-4">
+      {/* Card Container */}
+      <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-md border">
         
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">
           Select Language
@@ -31,10 +32,9 @@ export default function LanguageSettings() {
                 ${
                   isActive
                     ? "border-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white shadow-lg"
-                    : "border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
+                    : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                {/* Left */}
                 <div className="flex items-center gap-4">
                   <input
                     type="radio"
@@ -49,12 +49,11 @@ export default function LanguageSettings() {
                   </span>
                 </div>
 
-                {/* Code Badge */}
                 <span
                   className={`text-xs sm:text-sm px-3 py-1 rounded-full font-bold ${
                     isActive
                       ? "bg-black/30 text-white"
-                      : "bg-white/10 text-gray-400"
+                      : "bg-gray-200 text-gray-600"
                   }`}
                 >
                   {lang.code}
@@ -63,8 +62,6 @@ export default function LanguageSettings() {
             );
           })}
         </div>
-
-       
       </div>
     </div>
   );
