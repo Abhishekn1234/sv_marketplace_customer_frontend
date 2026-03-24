@@ -79,9 +79,7 @@ const RecentServices: React.FC = () => {
                     : "Service"
                 }
                 date={
-                  booking.bookingType === "SCHEDULED"
-                    ? formatDate(booking.schedule?.startDateTime)
-                    : formatDate(booking.createdAt)
+                  booking.bookingType === "SCHEDULED"?formatDate(booking.schedule?.startDateTime):formatDate(booking.updatedAt)
                 }
                 price={`${booking.currency} ${getBookingPrice(booking)}`}
                 iconUrl={
