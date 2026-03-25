@@ -69,5 +69,8 @@
   "submit": "Create Account",
   "already": "Already have an account?",
   "login": "Log In"
+  },
+  "home":{
+    "Search for cleaning, repair":"Search for cleaning, repair"
   }
 }

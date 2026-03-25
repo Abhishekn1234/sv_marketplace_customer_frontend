@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
 import { toast } from "react-toastify";
@@ -10,10 +10,16 @@ import OtpModal from "@/components/common/CommonOtpModal";
 
 export default function JobTrackingHeader() {
   const { bookingId } = useParams<{ bookingId: string }>();
-  const { bookings } = useBookings();
-  const booking = bookings?.find((item) => item._id === bookingId);
+const { data: bookings } = useBookingHistory();
 
-  
+// ✅ flatten all pages into one array
+const allBookings =
+  bookings?.pages.flatMap((page) => page.data) || [];
+
+// ✅ find booking
+const booking = allBookings.find(
+  (item) => item._id === bookingId
+);
   const bookingStatus = booking?.status?.trim().toUpperCase() || "";
 
   // OTP button visibility

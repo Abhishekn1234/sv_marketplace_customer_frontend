@@ -6,61 +6,73 @@ import { getBookingFlags } from "../../helpers/getbookingflags";
 export default function ActiveService() {
   const { data: bookings } = useBookingHistory();
 
-  // ✅ Flatten infinite query data safely
+  
   const datas = useMemo(() => {
     return bookings?.pages?.flatMap((page) => page.data) || [];
   }, [bookings]);
 
+ 
+ const ACTIVE_STATUSES = [
+  "REQUESTED",
+  "ASSIGNED",
+  "WORKER_ACCEPTED",  
+  "ACCEPTED",
+  "IN_PROGRESS",
+  "WORK_COMPLETED_PENDING",
+  "COMPLETED", 
+];
+
+  const activeBookings = useMemo(() => {
+    return datas.filter((b) => ACTIVE_STATUSES.includes(b.status));
+  }, [datas]);
+
   const today = new Date().toDateString();
 
-  // ✅ Find today's booking
   const todayBooking = useMemo(() => {
-    return datas.find((b) => {
+    return activeBookings.find((b) => {
       const dateStr = b?.schedule?.startDateTime || b?.createdAt;
       if (!dateStr) return false;
 
       const date = new Date(dateStr);
       return !isNaN(date.getTime()) && date.toDateString() === today;
     });
-  }, [datas, today]);
+  }, [activeBookings, today]);
 
-  // ✅ Find next upcoming booking
+  
   const nextBooking = useMemo(() => {
     if (todayBooking) return null;
 
-    const upcoming = datas
-      .filter((b) => b?.schedule?.startDateTime)
-      .sort((a, b) => {
-        const aTime = a.schedule?.startDateTime
-          ? new Date(a.schedule.startDateTime).getTime()
-          : Infinity;
+    const upcoming = activeBookings
+  .filter((b) => b?.schedule?.startDateTime) 
+  .sort((a, b) => {
+    const aTime = a?.schedule?.startDateTime
+      ? new Date(a.schedule.startDateTime).getTime()
+      : Infinity;
 
-        const bTime = b.schedule?.startDateTime
-          ? new Date(b.schedule.startDateTime).getTime()
-          : Infinity;
+    const bTime = b?.schedule?.startDateTime
+      ? new Date(b.schedule.startDateTime).getTime()
+      : Infinity;
 
-        return aTime - bTime;
-      });
-
-    return upcoming[0] || null;
-  }, [datas, todayBooking]);
+    return aTime - bTime;
+  });
+     return upcoming[0] || null;
+  }, [activeBookings, todayBooking]);
 
   const booking = todayBooking || nextBooking;
 
-  // ✅ Empty state
+  
   if (!booking) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
-        No recent booking found
+        No active booking found
       </div>
     );
   }
 
-  // ✅ Safe values
-  const serviceName=booking.service.name
-      console.log(booking.service);
 
-  const firstWorker = booking.assignedWorkers?.[0]?.worker;
+  const serviceName = booking?.service?.name || "Service";
+
+  const firstWorker = booking?.assignedWorkers?.[0]?.worker;
 
   const workerName = firstWorker?.fullName || "No worker assigned";
 
@@ -68,7 +80,7 @@ export default function ActiveService() {
     firstWorker?.profilePictureUrl ||
     "https://via.placeholder.com/100?text=No+Worker";
 
-  const status = booking.status || "REQUESTED";
+  const status = booking?.status || "REQUESTED";
 
   const { isAssigned, isStarted, showTracking, isPaid } =
     getBookingFlags(status, !!firstWorker);
@@ -81,7 +93,7 @@ export default function ActiveService() {
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:border-blue-500 hover:-translate-y-0.5">
       
-      {/* Header */}
+     
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <span className="relative w-2.5 h-2.5 bg-green-500 rounded-full">
@@ -108,7 +120,7 @@ export default function ActiveService() {
         )}
       </div>
 
-      {/* Worker Info */}
+      
       <div className="flex items-center gap-3.5 mb-4">
         <img
           src={workerImage}
@@ -129,7 +141,7 @@ export default function ActiveService() {
         </div>
       </div>
 
-      {/* TRACKING FLOW */}
+      
       {showTracking ? (
         <>
           {isStarted && (

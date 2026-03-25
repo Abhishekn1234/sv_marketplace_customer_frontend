@@ -68,5 +68,8 @@
     "registration": "पंजीकरण",
      "mobileVerification": "मोबाइल सत्यापन",
     "accountDetails": "खाता विवरण"
+  },
+  "home":{
+    "Search for cleaning, repair":"सफाई और मरम्मत खोजें"
   }
 }

@@ -3,7 +3,7 @@ export const getBookingFlags = (
   hasWorker?: boolean
 ) => {
   const safeStatus = status || "REQUESTED";
-
+  
   const isAssigned =
     safeStatus === "WORKER_ACCEPTED" && !!hasWorker;
 

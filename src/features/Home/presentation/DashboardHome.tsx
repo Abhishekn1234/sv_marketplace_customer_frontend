@@ -16,7 +16,7 @@ export default function WebsiteHome() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
 
-  // ✅ Initialize data when API loads
+
   useEffect(() => {
     if (apiResponse) {
       setFilteredServices(apiResponse);
@@ -25,7 +25,6 @@ export default function WebsiteHome() {
     console.log(apiResponse)
   const categories = apiResponse?.map((c: { name: string }) => c.name) ?? [];
 
-  // ✅ Filter handler
   const handleCategoryChange = (categoryName: string) => {
     setActiveCategory(categoryName);
 
@@ -47,7 +46,7 @@ export default function WebsiteHome() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
-        {/* LEFT COLUMN */}
+       
         <div className="flex flex-col gap-6">
           <ServiceSearch
             services={apiResponse ?? []}
@@ -63,11 +62,11 @@ export default function WebsiteHome() {
 
           <ActiveService />
 
-          {/* ✅ Now filtered */}
+         
           <PopularService categories={filteredServices} />
         </div>
 
-        {/* RIGHT COLUMN */}
+      
         <div className="flex flex-col gap-6">
           <RecentServices />
           <SecurePayment />
