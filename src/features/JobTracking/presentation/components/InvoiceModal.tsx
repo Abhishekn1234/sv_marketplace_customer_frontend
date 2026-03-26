@@ -34,7 +34,7 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
     booking.pricingMode === "HOURLY"
       ? `${hours} hr ${minutes} min`
       : `${invoice.actualWorkDays} days`;
-
+   console.log(workedDuration);
   const rate =
     booking.pricingMode === "HOURLY"
       ? pricingTier?.HOURLY?.ratePerHour

@@ -1,3 +1,5 @@
+"use client";
+
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
@@ -46,19 +48,28 @@ export default function JobTrackingServiceDetails() {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
+      
       <h3 className="text-base font-bold text-gray-900 mb-5">
         Service Details
       </h3>
 
       <div className="flex flex-col divide-y divide-gray-100">
         {serviceDetails.map((item, idx) => (
-          <div key={idx} className="flex justify-between items-start py-3">
-            <span className="text-sm font-medium text-gray-500">{item.label}</span>
+          <div
+            key={idx}
+            className="flex justify-between items-start gap-3 py-3 min-w-0"
+          >
+            {/* Left Label */}
+            <span className="text-sm font-medium text-gray-500 shrink-0">
+              {item.label}
+            </span>
+
+            {/* Right Value */}
             <span
-              className={`font-semibold text-right ${
+              className={`font-semibold text-right break-words min-w-0 ${
                 item.isSmall
-                  ? "text-xs text-gray-700 max-w-[220px] break-words"
+                  ? "text-xs text-gray-700"
                   : item.isPrice
                   ? "text-blue-600 text-base"
                   : "text-sm text-gray-900"
