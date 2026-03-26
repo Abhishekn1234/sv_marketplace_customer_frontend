@@ -12,7 +12,7 @@ export default function ProfileList() {
   const { setUser, user } = useAuthStore();
   const {data:bookings}=useBookingHistory();
   const bookingcount = bookings?.pages
-  ?.flatMap(page => page.data || []) // adjust 'data' key if different
+  ?.flatMap(page => page.pagination.totalItems || []) // adjust 'data' key if different
   .length || 0;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
