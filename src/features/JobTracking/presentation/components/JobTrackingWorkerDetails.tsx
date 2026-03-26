@@ -54,31 +54,31 @@ export default function JobTrackingWorkerDetails() {
         />
 
         {/* Info */}
-    <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
 
-  {/* Name + Verified */}
-  <div className="flex flex-wrap items-start gap-2 font-bold text-gray-900 text-lg mb-1 min-w-0">
-    
-    <span className="break-words leading-tight w-full">
-      {worker.fullName}
-    </span>
+      {/* Name + Verified */}
+      <div className="flex flex-wrap items-start gap-2 font-bold text-gray-900 text-lg mb-1 min-w-0">
+        
+        <span className="break-words leading-tight w-full">
+          {worker.fullName}
+        </span>
 
-    {worker.isVerified && (
-      <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
-        <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
+        {worker.isVerified && (
+          <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg>
+          </div>
+        )}
       </div>
-    )}
-  </div>
 
-  {/* Service Info */}
-  <div className="text-sm text-gray-500 break-words leading-snug">
-    {booking?.service?.name ?? "Service"} •{" "}
-    {booking?.serviceTier?.displayName ?? "Tier"}
-  </div>
+      {/* Service Info */}
+      <div className="text-sm text-gray-500 break-words leading-snug">
+        {booking?.service?.name ?? "Service"} •{" "}
+        {booking?.serviceTier?.displayName ?? "Tier"}
+      </div>
 
-</div>
+    </div>
       </div>
 
       {/* Actions */}
