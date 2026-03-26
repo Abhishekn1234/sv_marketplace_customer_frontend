@@ -1,5 +1,6 @@
 
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 import React, { useState, useEffect } from "react";
 
@@ -12,7 +13,7 @@ interface Props {
 
 const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
   const [query, setQuery] = useState("");
-
+  const {t}=useLanguage();
   useEffect(() => {
     if (!query) {
       onSearchResults(services); 
@@ -30,9 +31,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
     <div className="flex flex-col gap-7 max-w-4xl">
       {/* Title */}
       <h1 className="text-[36px] font-bold leading-[1.2] tracking-[-0.02em] text-gray-900">
-        What service do you
-        <br />
-        need?
+       {t.home["What service do you need?"]}
       </h1>
 
       {/* Search Bar */}
@@ -52,7 +51,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
         {/* Input */}
         <input
           type="text"
-          placeholder="Search for cleaning, repair..."
+          placeholder={t.home["Search for cleaning, repair"]}
           aria-label="Search services"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

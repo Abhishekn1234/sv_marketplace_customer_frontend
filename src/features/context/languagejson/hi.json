@@ -70,6 +70,9 @@
     "accountDetails": "खाता विवरण"
   },
   "home":{
-    "Search for cleaning, repair":"सफाई और मरम्मत खोजें"
+    "Search for cleaning, repair":"सफाई और मरम्मत खोजें",
+    "What service do you need?":"आपको कौन सी सेवा चाहिए?",
+    "Popular Services": "लोकप्रिय सेवाएं",
+    "No categories found.":"कोई श्रेणियाँ नहीं मिलीं।"
   }
 }

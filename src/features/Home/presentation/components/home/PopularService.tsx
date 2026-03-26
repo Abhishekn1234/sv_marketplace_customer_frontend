@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   categories: Category[];
@@ -8,11 +9,11 @@ interface Props {
 
 const PopularService: React.FC<Props> = ({ categories }) => {
   const navigate = useNavigate();
-
+  const {t}=useLanguage();
   if (!categories.length) {
     return (
       <p className="text-gray-400 font-medium text-center py-10">
-        No categories found.
+      {t.home["No categories found."]}
       </p>
     );
   }
@@ -20,7 +21,7 @@ const PopularService: React.FC<Props> = ({ categories }) => {
   return (
     <div className="mt-8 px-4 sm:px-6 lg:px-2">
       <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 text-center sm:text-left">
-        Popular Services
+       {t.home["Popular Services"]}
       </h2>
 
     

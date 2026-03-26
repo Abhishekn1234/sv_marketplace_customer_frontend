@@ -70,6 +70,9 @@
     "accountDetails": "تفاصيل الحساب"
   },
   "home":{
-    "Search for cleaning, repair":"ابحث عن التنظيف والإصلاح"
+    "Search for cleaning, repair":"ابحث عن التنظيف والإصلاح",
+    "What service do you need?":"ما الخدمة التي تحتاجها؟",
+     "Popular Services": "الخدمات الشائعة",
+     "No categories found.":"لم يتم العثور على فئات."
   }
 }
