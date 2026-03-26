@@ -1,5 +1,7 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function SatisfactionGuarantee() {
+  const {t}=useLanguage();
   return (
     <div className="flex items-center gap-3.5 p-4 rounded-xl cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 bg-yellow-50 hover:bg-yellow-100 hover:shadow-lg">
       {/* Icon */}
@@ -18,10 +20,10 @@ export default function SatisfactionGuarantee() {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="text-xs font-bold uppercase tracking-wide mb-0.5 text-yellow-600">
-          Satisfaction Guarantee
+         {t.home["Satisfaction Guarantee"]}
         </div>
         <div className="text-sm text-gray-500">
-          Money back if not happy
+        {t.home["Money Back"]}
         </div>
       </div>
     </div>

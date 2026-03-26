@@ -6,10 +6,15 @@ import ServiceDetailHeader from "./components/ServiceDetailHeader";
 
 import CommonFaq from "@/components/common/CommonFaq";
 
+import type{ SortKey, FilterKey } from "../domain/entities/filterkeys";
+
 export default function ServiceDetailPage() {
-  const [activeFilter, setActiveFilter] = useState("All Services");
-  const [sortBy, setSortBy] = useState("Recommended");
   
+const [activeFilter, setActiveFilter] =
+    useState<FilterKey>("All Services");
+
+  const [sortBy, setSortBy] =
+    useState<SortKey>("Recommended");
 
   return (
     <>

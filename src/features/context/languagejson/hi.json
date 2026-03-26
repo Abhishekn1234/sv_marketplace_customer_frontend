@@ -73,6 +73,60 @@
     "Search for cleaning, repair":"सफाई और मरम्मत खोजें",
     "What service do you need?":"आपको कौन सी सेवा चाहिए?",
     "Popular Services": "लोकप्रिय सेवाएं",
-    "No categories found.":"कोई श्रेणियाँ नहीं मिलीं।"
+    "No categories found.":"कोई श्रेणियाँ नहीं मिलीं।",
+    "No active bookings found":"कोई सक्रिय बुकिंग नहीं मिली",
+     "Track": "ट्रैक करें",
+    "Chat": "चैट",
+    "View Booking": "बुकिंग देखें",
+    "Rate Service": "सेवा को रेट करें",
+     "Recent": "हाल ही में",
+    "Secure Payment": "सुरक्षित भुगतान",
+    "SSL Encrypted": "256-बिट SSL एन्क्रिप्टेड",
+    "Satisfaction Guarantee": "संतुष्टि की गारंटी",
+    "Money Back": "यदि संतुष्ट नहीं हैं तो पैसे वापस"
+  },
+  "navbar":{
+    "Bookings": "बुकिंग्स",
+      "About": "हमारे बारे में",
+      "Privacy": "गोपनीयता",
+      "Help": "मदद",
+      "SearchPlaceholder":"सेवाएं खोजें...."
+  },
+   "servicedetailpage": {
+    "breadcrumb": {
+      "Home": "होम"
+    },
+    "filters": {
+      "All Services": "सभी सेवाएं",
+      "Popular": "लोकप्रिय",
+      "Same Day": "उसी दिन",
+      "Eco Friendly": "पर्यावरण के अनुकूल",
+      "Recommended": "अनुशंसित",
+      "Price Low To High": "कीमत: कम से ज्यादा",
+      "Price High To Low": "कीमत: ज्यादा से कम",
+      "Sort By": "क्रमबद्ध करें"
+    }
+  },
+  "servicetierselectionpage": {
+    "steps": {
+      "service": "सेवा",
+      "selectTier": "टियर चुनें",
+      "schedule": "शेड्यूल"
+    },
+    "title": "अपनी सेवा का स्तर चुनें",
+    "description": "वह टियर चुनें जो आपके घर की आवश्यकताओं के लिए सबसे उपयुक्त हो। सभी योजनाओं में हमारी 100% संतुष्टि गारंटी शामिल है। आपके घर के क्षेत्रफल के आधार पर कीमतें भिन्न हो सकती हैं।",
+    "buttons": {
+      "back": "सेवा चयन पर वापस जाएं",
+      "continue": "शेड्यूल पर जारी रखें"
+    }
+  },
+   "bookingdetailpage":{
+     "backToServices": "सेवाओं पर वापस जाएं",
+      "title": "बुकिंग विवरण",
+    "serviceSummary": "सेवा सारांश",
+    "serviceType": "सेवा प्रकार",
+    "serviceProfessional": "सेवा विशेषज्ञ",
+    "equipment": "उपकरण",
+    "included": "शामिल"
   }
 }

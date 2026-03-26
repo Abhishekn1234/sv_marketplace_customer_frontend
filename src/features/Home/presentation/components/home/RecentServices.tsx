@@ -5,12 +5,13 @@ import { RecentItem } from "./RecentItem";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { getBookingPrice } from "../../helpers/getbookprice";
 import { formatDate } from "../../helpers/formatdate";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 const RecentServices: React.FC = () => {
   const { data: bookingsData } = useBookingHistory();
   const { data: categories = [] } = useServiceCategory();
 
-
+  const {t}=useLanguage();
   const bookings: Booking[] = React.useMemo(() => {
     return bookingsData?.pages?.flatMap((page: any) => page.data) || [];
   }, [bookingsData]);
@@ -48,7 +49,7 @@ const RecentServices: React.FC = () => {
 
         <div className="flex items-center justify-between mb-5">
           <span className="text-[18px] font-bold text-gray-900">
-            Recent
+            {t.home.Recent}
           </span>
         </div>
 

@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { progressMap } from "../../helpers/progressmap";
 import { getBookingFlags } from "../../helpers/getbookingflags";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ActiveService() {
   const { data: bookings } = useBookingHistory();
 
-  
+   const {t}=useLanguage();
   const datas = useMemo(() => {
     return bookings?.pages?.flatMap((page) => page.data) || [];
   }, [bookings]);
@@ -64,7 +65,7 @@ export default function ActiveService() {
   if (!booking) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
-        No active booking found
+       {t.home["No active bookings found"]}
       </div>
     );
   }
@@ -160,11 +161,11 @@ export default function ActiveService() {
               }
               className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
             >
-              Track
+              {t.home.Track}
             </button>
 
             <button className="flex-1 h-12 rounded-xl bg-white border border-blue-100 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition">
-              Chat
+              {t.home.Chat}
             </button>
           </div>
 
@@ -175,7 +176,7 @@ export default function ActiveService() {
               }
               className="mt-3 w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
             >
-              View Booking
+             {t.home["View Booking"]}
             </button>
           )}
         </>
@@ -186,7 +187,7 @@ export default function ActiveService() {
           }
           className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
         >
-          Rate Your Service
+          {t.home["Rate Service"]}
         </button>
       ) : (
         <button

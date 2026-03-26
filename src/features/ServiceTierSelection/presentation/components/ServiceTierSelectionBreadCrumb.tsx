@@ -1,14 +1,15 @@
 import { useMemo } from "react";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useNavigate, useParams } from "react-router-dom";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data: apiResponse, isPending } = useServiceCategory();
-
-  // ✅ Flatten services from categories
+  const {t}=useLanguage();
+ 
   const services = useMemo(() => {
     return apiResponse?.flatMap((category: any) => category.services) ?? [];
   }, [apiResponse]);
@@ -28,16 +29,16 @@ export default function ServiceTierSelectionBreadCrumb() {
           onClick={() => navigate(-1)}
           className="hover:text-blue-600 transition-colors cursor-pointer"
         >
-          Service
+          {t.servicetierselectionpage.steps.service}
         </button>
 
         <Chevron />
 
-        <span className="text-gray-900 font-semibold">Select Tier</span>
+        <span className="text-gray-900 font-semibold">{t.servicetierselectionpage.steps.selectTier}</span>
 
         <Chevron />
 
-        <span className="text-gray-400">Schedule</span>
+        <span className="text-gray-400">{t.servicetierselectionpage.steps.schedule}</span>
       </nav>
 
       {/* Service Badge */}

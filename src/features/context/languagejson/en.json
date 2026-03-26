@@ -74,7 +74,62 @@
     "Search for cleaning, repair":"Search for cleaning, repair",
     "What service do you need?":"What service do you need?",
      "Popular Services": "Popular Services",
-     "No categories found.":"No categories found."
+     "No categories found.":"No categories found.",
+     "No active bookings found":"No active bookings found",
+     "Track": "Track",
+    "Chat": "Chat",
+    "View Booking": "View Booking",
+    "Rate Service": "Rate Your Service",
+     "Recent": "Recent",
+    "Secure Payment": "Secure Payment",
+    "SSL Encrypted": "256-Bit SSL Encrypted",
+    "Satisfaction Guarantee": "Satisfaction Guarantee",
+    "Money Back": "Money Back If Not Happy"
     
+  },
+  "navbar":{
+     "Bookings": "Bookings",
+      "About": "About",
+      "Privacy": "Privacy",
+      "Help": "Help",
+      "SearchPlaceholder": "Search services..."
+  },
+    "servicedetailpage": {
+    "breadcrumb": {
+      "Home": "Home"
+    },
+    "filters": {
+      "All Services": "All Services",
+      "Popular": "Popular",
+      "Same Day": "Same Day",
+      "Eco Friendly": "Eco-friendly",
+      "Recommended": "Recommended",
+      "Price Low To High": "Price: Low to High",
+      "Price High To Low": "Price: High to Low",
+      "Sort By": "Sort By"
+    }
+  },
+   "servicetierselectionpage": {
+    "steps": {
+      "service": "Service",
+      "selectTier": "Select Tier",
+      "schedule": "Schedule"
+    },
+    "title": "Choose Your Service Level",
+    "description": "Select the tier that best fits your home's needs. All plans include our 100% satisfaction guarantee. Prices may vary based on your home's square footage.",
+    "buttons": {
+      "back": "Back to Service Selection",
+      "continue": "Continue to Schedule"
+    }
+  },
+   "bookingdetailpage":{
+    "backToServices": "Back to Services",
+    "title": "Booking Details",
+    "serviceSummary": "Service Summary",
+    "serviceType": "Service Type",
+    "serviceProfessional": "Service Professional",
+    "equipment": "Equipment",
+    "included": "Included"
   }
+  
 }

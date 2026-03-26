@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import type { Feature } from "../../domain/entities/feature";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function ServiceTierSelectionContent() {
   console.log(categories);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
-
+ const {t}=useLanguage();
   if (!categories) return <p className="text-center">Loading services...</p>;
 
   // ✅ Flatten services from categories
@@ -110,7 +111,7 @@ export default function ServiceTierSelectionContent() {
           }`}
           disabled={!selectedTierId}
         >
-          Continue to Schedule
+          {t.servicetierselectionpage.buttons.continue}
           <ArrowRight />
         </button>
 
@@ -123,7 +124,7 @@ export default function ServiceTierSelectionContent() {
           className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline"
         >
           <ArrowLeft />
-          Back to Service Selection
+        {t.servicetierselectionpage.buttons.back}
         </button>
       </div>
     </div>

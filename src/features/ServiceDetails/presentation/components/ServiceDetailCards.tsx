@@ -18,8 +18,8 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
 
   // ✅ Flatten services from categories
   const services = useMemo(() => {
-    return apiResponse?.flatMap((category: any) => category.services) ?? [];
-  }, [apiResponse]);
+        return apiResponse?.flatMap((category: any) => category.services) ?? [];
+      }, [apiResponse]);
 
   if (isPending) {
     return <p className="text-gray-500">Loading services...</p>;
@@ -56,11 +56,11 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
     );
   }
 
-  if (activeFilter === "Eco-friendly") {
-    filteredServices = filteredServices.filter((service: any) =>
-      service.description?.toLowerCase().includes("eco")
-    );
-  }
+ if (activeFilter === "Eco Friendly") {
+  filteredServices = filteredServices.filter((service: any) =>
+    service.description?.toLowerCase().includes("eco")
+  );
+}
 
   // ✅ Get price helper
   const getPrice = (service: any) => {
@@ -72,13 +72,13 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
   };
 
   // ✅ Sorting
-  if (sortBy === "Price Low to High") {
+  if (sortBy === "Price Low To High") {
     filteredServices = [...filteredServices].sort(
       (a: any, b: any) => getPrice(a) - getPrice(b)
     );
   }
 
-  if (sortBy === "Price High to Low") {
+  if (sortBy === "Price High To Low") {
     filteredServices = [...filteredServices].sort(
       (a: any, b: any) => getPrice(b) - getPrice(a)
     );

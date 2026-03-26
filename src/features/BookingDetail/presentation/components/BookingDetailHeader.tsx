@@ -2,12 +2,13 @@ import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useSe
 import { useParams } from "react-router-dom";
 import BookingDetailAddress from "./BookingDetailAddress";
 import BookingDetailDateandmoredetails from "./BookingDetailDateandmoredetails";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function BookingDetailHeader() {
   const { serviceId, serviceTierId } = useParams();
 
   const { data: categories } = useServiceCategory();
-
+  const {t}=useLanguage();
   // 🔎 Find service inside categories
   const service = categories
     ?.flatMap((cat) => cat.services)
@@ -33,7 +34,7 @@ export default function BookingDetailHeader() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 pb-16">
       <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-gray-900 mb-10 tracking-[-0.02em]">
-        Booking Details
+       {t.bookingdetailpage.title}
       </h1>
 
       <div className="max-w-7xl">
@@ -46,7 +47,7 @@ export default function BookingDetailHeader() {
             <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 transition-all duration-200 hover:border-blue-300">
 
               <h2 className="text-xs font-bold uppercase tracking-[0.5px] text-gray-400 mb-4">
-                Service Summary
+                {t.bookingdetailpage.serviceSummary}
               </h2>
 
               <div className="flex items-start gap-4 mb-6">
@@ -80,7 +81,7 @@ export default function BookingDetailHeader() {
 
                 <div className="flex justify-between items-center py-3 border-b border-gray-200">
                   <span className="text-sm text-gray-500 font-medium">
-                    Service Type
+                  {t.bookingdetailpage.serviceType}
                   </span>
 
                   <span className="text-sm font-semibold text-gray-900">
@@ -90,7 +91,7 @@ export default function BookingDetailHeader() {
 
                 <div className="flex justify-between items-center py-3 border-b border-gray-200">
                   <span className="text-sm text-gray-500 font-medium">
-                    Service Professional
+                    {t.bookingdetailpage.serviceProfessional}
                   </span>
 
                   <span className="text-sm font-semibold text-gray-900">
@@ -100,11 +101,11 @@ export default function BookingDetailHeader() {
 
                 <div className="flex justify-between items-center py-3">
                   <span className="text-sm text-gray-500 font-medium">
-                    Equipment
+                   {t.bookingdetailpage.equipment}
                   </span>
 
                   <span className="text-sm font-semibold text-blue-600">
-                    Included
+                    {t.bookingdetailpage.included}
                   </span>
                 </div>
 

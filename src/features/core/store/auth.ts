@@ -45,7 +45,7 @@ const initialState = {
   user: null,
   isLoggedIn: false,
   theme: "light" as Theme,
-  language: "EN",
+  language: "en",
   current_location: { addresses: [] },
   last_location: undefined,
 };

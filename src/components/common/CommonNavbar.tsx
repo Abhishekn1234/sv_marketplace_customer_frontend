@@ -18,6 +18,7 @@ import {
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -44,7 +45,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 }) => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
-
+  const {t}=useLanguage();
   const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
@@ -168,11 +169,11 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           {showHomeLinks && (
             <div className="hidden lg:flex items-center gap-2">
               {[
-                { label: "Bookings", to: "/bookings" },
+                { label: t.navbar.Bookings, to: "/bookings" },
                
-                { label: "About", to: "/about" },
-                { label: "Privacy", to: "/privacy" },
-                { label: "Help", to: "/help" },
+                { label: t.navbar.About, to: "/about" },
+                { label: t.navbar.Privacy, to: "/privacy" },
+                { label: t.navbar.Help, to: "/help" },
               ].map((link) => (
                 <Link
                   key={link.to}
@@ -192,7 +193,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search services..."
+                placeholder={t.navbar.SearchPlaceholder}
                 className="bg-transparent outline-none text-sm"
               />
             </div>
@@ -225,42 +226,41 @@ const CommonNavbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* MOBILE MENU */}
+    
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t bg-white shadow-md">
-          <div className="flex flex-col p-4 gap-3">
-            {[
-              { icon: BookOpen, label: "Bookings", to: "/bookings" },
-              // { icon: Briefcase, label: "Job Progress", to: "/jobprogress" },
-              { icon: Info, label: "About", to: "/about" },
-              { icon: Shield, label: "Privacy", to: "/privacy" },
-              { icon: HelpCircle, label: "Help", to: "/help" },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
-                >
-                  <Icon className="w-5 h-5 text-gray-400" />
-                  {item.label}
-                </Link>
-              );
-            })}
+          <div className="lg:hidden border-t bg-white shadow-md">
+            <div className="flex flex-col p-4 gap-3">
+              {[
+                { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
+                { icon: Info, label: t.navbar.About, to: "/about" },
+                { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
+                { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+                  >
+                    <Icon className="w-5 h-5 text-gray-400" />
+                    {item.label}
+                  </Link>
+                );
+              })}
 
-            {rightButton && (
-              <Link
-                to={rightButton.to}
-                className="w-full flex justify-center px-6 py-3 mt-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700"
-              >
-                {rightButton.label}
-              </Link>
-            )}
+              {rightButton && (
+                <Link
+                  to={rightButton.to}
+                  className="w-full flex justify-center px-6 py-3 mt-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700"
+                >
+                  {rightButton.label}
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </header>
   );
 };

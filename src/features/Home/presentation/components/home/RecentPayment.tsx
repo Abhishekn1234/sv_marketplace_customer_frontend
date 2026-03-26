@@ -1,6 +1,8 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 export default function SecurePayment() {
+  const {t}=useLanguage();
   return (
     <div className="flex items-center gap-3.5 p-4 rounded-xl cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 bg-green-50 hover:bg-green-100 hover:shadow-lg">
       {/* Icon */}
@@ -20,10 +22,10 @@ export default function SecurePayment() {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="text-xs font-bold uppercase tracking-wide mb-0.5 text-green-600">
-          Secure Payment
+           {t.home["Secure Payment"]}
         </div>
         <div className="text-sm text-gray-500">
-          256-bit SSL Encrypted
+        {t.home["SSL Encrypted"]}
         </div>
       </div>
     </div>

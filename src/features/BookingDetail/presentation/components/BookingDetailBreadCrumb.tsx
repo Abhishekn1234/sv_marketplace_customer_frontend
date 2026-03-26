@@ -1,10 +1,11 @@
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function BookingDetailBreadCrumb() {
   const navigate = useNavigate();
   const { serviceId } = useParams<{ serviceId: string }>();
-
+  const {t}=useLanguage();
   const { data: categories } = useServiceCategory();
 
   if (!categories) return null;
@@ -42,7 +43,7 @@ export default function BookingDetailBreadCrumb() {
         <polyline points="15 18 9 12 15 6" />
       </svg>
 
-      Back to Services
+      {t.bookingdetailpage.backToServices}
     </button>
   );
 }

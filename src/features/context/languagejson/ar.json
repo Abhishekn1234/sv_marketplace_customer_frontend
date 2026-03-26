@@ -73,6 +73,60 @@
     "Search for cleaning, repair":"ابحث عن التنظيف والإصلاح",
     "What service do you need?":"ما الخدمة التي تحتاجها؟",
      "Popular Services": "الخدمات الشائعة",
-     "No categories found.":"لم يتم العثور على فئات."
+     "No categories found.":"لم يتم العثور على فئات.",
+     "No active bookings found":"لا توجد حجوزات نشطة",
+      "Track": "تتبع",
+    "Chat": "دردشة",
+    "View Booking": "عرض الحجز",
+    "Rate Service": "قيّم خدمتك",
+      "Recent": "الأحدث",
+    "Secure Payment": "دفع آمن",
+    "SSL Encrypted": "مشفر بتقنية SSL 256-بت",
+    "Satisfaction Guarantee": "ضمان الرضا",
+    "Money Back": "استرداد المال إذا لم تكن راضيًا"
+  },
+  "navbar":{
+      "Bookings": "الحجوزات",
+      "About": "معلومات عنا",
+      "Privacy": "الخصوصية",
+      "Help": "مساعدة",
+      "SearchPlaceholder":"ابحث عن الخدمات..."
+  },
+  "servicedetailpage": {
+    "breadcrumb": {
+      "Home": "الرئيسية"
+    },
+    "filters": {
+      "All Services": "جميع الخدمات",
+      "Popular": "الأكثر شيوعًا",
+      "Same Day": "نفس اليوم",
+      "Eco Friendly": "صديق للبيئة",
+      "Recommended": "موصى به",
+      "Price Low To High": "السعر: من الأقل إلى الأعلى",
+      "Price High To Low": "السعر: من الأعلى إلى الأقل",
+      "Sort By": "ترتيب حسب"
+    }
+  },
+ "servicetierselectionpage": {
+    "steps": {
+      "service": "الخدمة",
+      "selectTier": "اختر الباقة",
+      "schedule": "الجدولة"
+    },
+    "title": "اختر مستوى الخدمة المناسب",
+    "description": "اختر الباقة التي تناسب احتياجات منزلك. جميع الخطط تشمل ضمان رضا بنسبة 100٪. قد تختلف الأسعار حسب مساحة منزلك.",
+    "buttons": {
+      "back": "العودة إلى اختيار الخدمة",
+      "continue": "المتابعة إلى الجدولة"
+    }
+  },
+  "bookingdetailpage":{
+     "backToServices": "العودة إلى الخدمات",
+     "title": "تفاصيل الحجز",
+    "serviceSummary": "ملخص الخدمة",
+    "serviceType": "نوع الخدمة",
+    "serviceProfessional": "مزود الخدمة",
+    "equipment": "المعدات",
+    "included": "مشمول"
   }
 }

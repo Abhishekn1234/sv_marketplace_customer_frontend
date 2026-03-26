@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-
-const filters = ["All Services", "Popular", "Same Day", "Eco-friendly"];
-const sortOptions = ["Recommended", "Price Low to High", "Price High to Low"];
+import { useLanguage } from "@/features/context/LanguageContext";
+import type { FilterKey, SortKey } from "../../domain/entities/filterkeys";
 
 interface Props {
-  activeFilter: string;
-  setActiveFilter: (value: string) => void;
-  sortBy: string;
-  setSortBy: (value: string) => void;
+  activeFilter: FilterKey;
+  setActiveFilter: (value: FilterKey) => void;
+  sortBy: SortKey;
+  setSortBy: (value: SortKey) => void;
 }
 
 export default function ServiceDetailFilter({
@@ -19,23 +18,42 @@ export default function ServiceDetailFilter({
 }: Props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
+  // ✅ stable keys
+ const filters: FilterKey[] = [
+  "All Services",
+  "Popular",
+  "Same Day",
+  "Eco Friendly"
+];
+
+const sortOptions: SortKey[] = [
+  "Recommended",
+  "Price High To Low",
+  "Price Low To High"
+];
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-      {/* Filter Pills */}
+      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         {filters.map((filter) => {
           const isActive = filter === activeFilter;
+
           return (
             <button
               key={filter}
@@ -47,19 +65,21 @@ export default function ServiceDetailFilter({
                     : "bg-white text-gray-900 border-2 border-gray-200 hover:border-blue-600"
                 }`}
             >
-              {filter}
+              {t.servicedetailpage.filters[filter]}
             </button>
           );
         })}
       </div>
 
-      {/* Sort Dropdown */}
+      {/* Sort */}
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center gap-1.5 text-gray-500 font-semibold text-sm hover:text-blue-600"
         >
-          Sort by: {sortBy}
+         {t.servicedetailpage.filters["Sort By"]}:{" "}
+         {t.servicedetailpage.filters[sortBy as SortKey]}
+
           <ChevronDown
             className={`w-4 h-4 transition-transform ${
               dropdownOpen ? "rotate-180" : ""
@@ -82,7 +102,7 @@ export default function ServiceDetailFilter({
                     : "text-gray-700"
                 }`}
               >
-                {option}
+                {t.servicedetailpage.filters[option]}
               </button>
             ))}
           </div>
