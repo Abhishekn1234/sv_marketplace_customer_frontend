@@ -9,7 +9,7 @@ import {
   Menu,
   X,
   BookOpen,
-  Briefcase,
+  // Briefcase,
   Info,
   Shield,
   HelpCircle,
@@ -231,7 +231,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           <div className="flex flex-col p-4 gap-3">
             {[
               { icon: BookOpen, label: "Bookings", to: "/bookings" },
-              { icon: Briefcase, label: "Job Progress", to: "/jobprogress" },
+              // { icon: Briefcase, label: "Job Progress", to: "/jobprogress" },
               { icon: Info, label: "About", to: "/about" },
               { icon: Shield, label: "Privacy", to: "/privacy" },
               { icon: HelpCircle, label: "Help", to: "/help" },
