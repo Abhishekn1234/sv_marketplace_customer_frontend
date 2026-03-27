@@ -4,11 +4,12 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingServiceDetails() {
   const { bookingId } = useParams();
   const { data } = useBookingHistory();
-
+ const {t}=useLanguage();
   const [coordinates, setCoordinates] = useState("Loading...");
 
   const bookings = data?.pages.flatMap((page) => page.data) ?? [];
@@ -27,21 +28,21 @@ export default function JobTrackingServiceDetails() {
   }, [booking]);
 
   const serviceDetails = [
-    { label: "Service Type", value: booking?.service?.name || "—" },
-    { label: "Service Tier", value: booking?.serviceTier?.displayName || "—" },
+    { label: t.jobtrackingpage.serviceDetails.serviceType, value: booking?.service?.name || "—" },
+    { label: t.jobtrackingpage.serviceDetails.serviceTier, value: booking?.serviceTier?.displayName || "—" },
     {
-      label: "Date & Time",
+      label: t.jobtrackingpage.serviceDetails.dateTime,
       value: booking?.schedule?.startDateTime
         ? formatDates(booking.schedule.startDateTime)
         : "—",
     },
     {
-      label: "Location",
+      label: t.jobtrackingpage.serviceDetails.location,
       value: coordinates,
       isSmall: true,
     },
     {
-      label: "Total Price",
+      label:t.jobtrackingpage.serviceDetails.totalPrice,
       value: booking ? `${booking.currency} ${booking.amount}` : "—",
       isPrice: true,
     },
@@ -51,7 +52,7 @@ export default function JobTrackingServiceDetails() {
     <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
       
       <h3 className="text-base font-bold text-gray-900 mb-5">
-        Service Details
+       {t.jobtrackingpage.serviceDetails.title}
       </h3>
 
       <div className="flex flex-col divide-y divide-gray-100">

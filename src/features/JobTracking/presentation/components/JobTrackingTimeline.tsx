@@ -7,6 +7,7 @@ import { formatDates } from "@/features/Home/presentation/helpers/formatdatestri
 import PaymentModal from "@/features/Payment/presentation/Paymentpage";
 
 import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingTimeline() {
   const { data } = useBookingHistory();
@@ -20,7 +21,7 @@ export default function JobTrackingTimeline() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [hasRated, setHasRated] = useState(false);
   const verifyPaymentMutation = useVerifyPayment();
-
+ const {t}=useLanguage();
 
   useEffect(() => {
     if (!data?.pages || !bookingId) return;
@@ -127,7 +128,7 @@ export default function JobTrackingTimeline() {
     <div className="bg-white rounded-2xl p-7 border border-gray-200 shadow-sm">
    
       <div className="flex justify-between items-center mb-7">
-        <h2 className="text-lg font-bold text-gray-900">Service Progress</h2>
+        <h2 className="text-lg font-bold text-gray-900">{t.jobtrackingpage.sections.serviceProgress}</h2>
         <div className="px-4 py-1 bg-emerald-100 text-emerald-600 text-xs font-semibold rounded-full">
           {localBooking.status}
         </div>

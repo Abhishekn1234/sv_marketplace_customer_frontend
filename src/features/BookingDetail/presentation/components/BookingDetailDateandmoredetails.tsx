@@ -5,12 +5,13 @@ import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings"
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocation} from "@/features/utils/reverse";
 import { resolveLocation } from "../helpers/resolvelocation";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
   const { serviceId, serviceTierId } = useParams();
   const { current_location } = useAuthStore();
-
+  const {t}=useLanguage();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [duration, setDuration] = useState(1);
@@ -137,7 +138,7 @@ export default function BookingDetailDateandmoredetails() {
     
      <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-sm font-bold text-gray-900">Select Date</h2>
+          <h2 className="text-sm font-bold text-gray-900">{t.bookingdetailpage.selectDate}</h2>
           <div className="flex gap-2">
             <button
               onClick={handlePrev}
@@ -177,7 +178,7 @@ export default function BookingDetailDateandmoredetails() {
       </div>
 
     
-      <h2 className="text-sm font-bold text-gray-900 mb-4">Select Time</h2>
+      <h2 className="text-sm font-bold text-gray-900 mb-4">{t.bookingdetailpage.selectTime}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         {times.map((time, index) => (
           <div
@@ -194,7 +195,9 @@ export default function BookingDetailDateandmoredetails() {
         ))}
       </div>
 
-      <h2 className="text-sm font-bold text-gray-900 mb-4">Estimated Duration</h2>
+      <h2 className="text-sm font-bold text-gray-900 mb-4">
+        {t.bookingdetailpage.estimatedDuration}
+      </h2>
       <div className="flex items-center gap-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
         <button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">−</button>
         <div className="flex-1 text-center">
@@ -205,7 +208,7 @@ export default function BookingDetailDateandmoredetails() {
       </div>
 
       <div className="mb-4">
-        <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">Special Requirements</h2>
+        <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">{t.bookingdetailpage.specialRequirement}</h2>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -216,19 +219,19 @@ export default function BookingDetailDateandmoredetails() {
 
       <div className="border-t-2 border-dashed border-gray-200 pt-6 mb-6">
         <div className="flex justify-between mb-2 text-sm">
-          <span>Base Price ({duration} hrs)</span>
+          <span>{t.bookingdetailpage.basePrice}({duration} hrs)</span>
           <span>SAR {basePrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-2 text-sm">
-          <span>Member Discount ({discountPercent}%)</span>
+          <span>{t.bookingdetailpage.memberDiscount}({discountPercent}%)</span>
           <span className="text-blue-600">-SAR {discount.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-2 text-sm">
-          <span>Service Fee ({commissionType === "PERCENTAGE" ? `${commissionValue}%` : "Fixed"})</span>
+          <span>{t.bookingdetailpage.serviceFee} ({commissionType === "PERCENTAGE" ? `${commissionValue}%` : "Fixed"})</span>
           <span>SAR {commissionAmount.toFixed(2)}</span>
         </div>
         <div className="flex justify-between border-t-2 border-gray-200 pt-3 mt-3">
-          <span className="text-lg font-bold">Total</span>
+          <span className="text-lg font-bold">{t.bookingdetailpage.total}</span>
           <span className="text-2xl font-black">SAR {totalCostToSend.toFixed(2)}</span>
         </div>
       </div>
@@ -237,7 +240,7 @@ export default function BookingDetailDateandmoredetails() {
         onClick={handleBooking}
         className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full"
       >
-        Confirm Booking →
+        {t.bookingdetailpage.confirmBooking} →
       </button>
     </div>
   );

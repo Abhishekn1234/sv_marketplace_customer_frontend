@@ -7,8 +7,10 @@ import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGen
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
 import { toast } from "react-toastify";
 import OtpModal from "@/components/common/CommonOtpModal";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingHeader() {
+  const {t}=useLanguage();
   const { bookingId } = useParams<{ bookingId: string }>();
 const { data: bookings } = useBookingHistory();
 
@@ -78,10 +80,10 @@ const booking = allBookings.find(
       {/* Header Section */}
       <div className="flex-1">
         <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-2">
-          Job Tracking
+          {t.jobtrackingpage.title}
         </h1>
         <p className="text-sm sm:text-lg font-medium text-gray-500">
-          Track your service request in real-time
+         {t.jobtrackingpage.subtitle}
         </p>
       </div>
 
@@ -91,7 +93,7 @@ const booking = allBookings.find(
       className="w-full sm:w-auto px-5 py-2 rounded-full border-2 font-semibold transition-all duration-300 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
       onClick={handleGenerateOtp}
     >
-      Generate Work Start OTP
+      {t.jobtrackingpage.generateWorkStartOtp}
     </button>
   )}
 
@@ -100,7 +102,7 @@ const booking = allBookings.find(
       className="w-full sm:w-auto px-5 py-2 rounded-full border-2 border-green-600 text-green-600 font-semibold transition-all duration-300 hover:bg-green-600 hover:text-white"
       onClick={handleGenerateCompletedOtp}
     >
-      Generate Work Completed OTP
+     {t.jobtrackingpage.generateWorkCompletedOtp}
     </button>
   )}
 </div>

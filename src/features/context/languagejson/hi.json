@@ -127,6 +127,105 @@
     "serviceType": "सेवा प्रकार",
     "serviceProfessional": "सेवा विशेषज्ञ",
     "equipment": "उपकरण",
-    "included": "शामिल"
-  }
+    "included": "शामिल",
+    "serviceAddress": "सेवा का पता",
+  "change": "बदलें",
+  "home": "घर",
+  "entryInstructions": "प्रवेश निर्देश",
+    "selectDate": "तारीख चुनें",
+  "estimatedDuration": "अनुमानित अवधि",
+  "selectTime": "समय चुनें",
+  "basePrice": "मूल मूल्य",
+  "memberDiscount": "सदस्य छूट",
+  "serviceFee": "सेवा शुल्क",
+  "total": "कुल",
+  "confirmBooking": "बुकिंग की पुष्टि करें",
+  "specialRequirement": "विशेष आवश्यकताएँ"
+  },
+   "confirmationpage": {
+  "booking": "बुकिंग",
+  "bookingStatus": "बुकिंग {{status}}",
+  "defaultStatusMessage": "बुकिंग स्थिति अपडेट हो गई है।",
+  "loading": "बुकिंग विवरण लोड हो रहा है...",
+  "error": "बुकिंग विवरण लोड करने में त्रुटि",
+
+  "referenceId": "रेफरेंस आईडी",
+
+  "trackJob": "जॉब स्थिति ट्रैक करें",
+  "returnHome": "होम पर लौटें",
+  "viewBookings": "सभी बुकिंग देखें",
+  "whatsNext": "आगे क्या होगा?",
+
+  "steps": {
+    "step1": {
+      "title": "प्रदाता असाइनमेंट",
+      "description": "हम आपको एक टॉप-रेटेड प्रोफेशनल से जोड़ेंगे"
+    },
+    "step2": {
+      "title": "पुष्टि कॉल",
+      "description": "आपका सेवा प्रदाता आपसे संपर्क करेगा"
+    },
+    "step3": {
+      "title": "सेवा प्रदान",
+      "description": "निर्धारित समय पर पेशेवर सेवा का आनंद लें"
+    }
+  },
+  "bookingSummary": {
+  "title": "बुकिंग सारांश",
+
+  "service": "सेवा",
+  "tier": "स्तर",
+  "timeAndDate": "समय और तिथि",
+  "location": "स्थान",
+  "duration": "अवधि",
+  "totalPaid": "कुल भुगतान",
+
+  "hours": "घंटे",
+  "days": "दिन",
+  "na": "लागू नहीं",
+
+  "providerAssignmentTitle": "प्रदाता असाइनमेंट प्रगति में है",
+  "providerAssignmentDesc": "हम आपके स्थान के लिए सर्वश्रेष्ठ प्रदाता असाइन कर रहे हैं। पुष्टि होने पर आपको सूचना मिलेगी।"
+}
+},
+"jobtrackingpage": {
+  "title": "जॉब ट्रैकिंग",
+  "subtitle": "अपनी सेवा अनुरोध को वास्तविक समय में ट्रैक करें",
+
+  "sections": {
+    "serviceProgress": "सेवा प्रगति",
+    "needHelp": "सहायता चाहिए?",
+    "contactSupport": "सपोर्ट से संपर्क करें",
+    "chatWithUs": "हमसे चैट करें",
+    "cancelBooking": "बुकिंग रद्द करें",
+    "generateInvoice": "चालान बनाएं",
+    "yourProfessional": "आपका पेशेवर",
+    "workerNotAssigned": "कर्मचारी अभी असाइन नहीं किया गया"
+  },
+
+  "serviceDetails": {
+    "title": "सेवा विवरण",
+    "serviceType": "सेवा का प्रकार",
+    "serviceTier": "सेवा स्तर",
+    "dateTime": "तारीख और समय",
+    "location": "स्थान",
+    "totalPrice": "कुल कीमत",
+    "bookingConfirmed": "बुकिंग की पुष्टि हुई",
+    "todayTime": "आज • 11:50 AM"
+  },
+
+  "status": {
+    "professionalAssigned": "पेशेवर असाइन किया गया",
+    "pending": "लंबित",
+    "serviceStarted": "सेवा शुरू हुई",
+    "serviceCompleted": "सेवा पूरी हुई",
+    "invoiceGenerated": "चालान बनाया गया",
+    "payment": "भुगतान",
+    "paymentDone": "भुगतान हुआ"
+  },
+   "generateWorkStartOtp": "वर्क शुरू करने के लिए OTP जनरेट करें",
+    "generateWorkCompletedOtp": "वर्क पूरा होने पर OTP जनरेट करें",
+    "call":"पुकारना",
+    "message":"संदेश"
+}
 }

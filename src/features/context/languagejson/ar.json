@@ -127,6 +127,105 @@
     "serviceType": "نوع الخدمة",
     "serviceProfessional": "مزود الخدمة",
     "equipment": "المعدات",
-    "included": "مشمول"
-  }
+    "included": "مشمول",
+    "serviceAddress": "عنوان الخدمة",
+  "change": "تغيير",
+  "home": "المنزل",
+  "entryInstructions": "تعليمات الدخول",
+   "selectDate": "اختر التاريخ",
+  "estimatedDuration": "المدة المقدرة",
+  "selectTime": "اختر الوقت",
+  "basePrice": "السعر الأساسي",
+  "memberDiscount": "خصم الأعضاء",
+  "serviceFee": "رسوم الخدمة",
+  "total": "الإجمالي",
+  "confirmBooking": "تأكيد الحجز",
+   "specialRequirement": "متطلبات خاصة"
+  },
+   "confirmationpage": {
+  "booking": "الحجز",
+  "bookingStatus": "الحجز {{status}}",
+  "defaultStatusMessage": "تم تحديث حالة الحجز.",
+  "loading": "جارٍ تحميل تفاصيل الحجز...",
+  "error": "خطأ في تحميل تفاصيل الحجز",
+
+  "referenceId": "رقم المرجع",
+
+  "trackJob": "تتبع حالة الطلب",
+  "returnHome": "العودة إلى الرئيسية",
+  "viewBookings": "عرض جميع الحجوزات",
+  "whatsNext": "ما التالي؟",
+
+  "steps": {
+    "step1": {
+      "title": "تعيين المزود",
+      "description": "سنقوم بمطابقتك مع محترف عالي التقييم"
+    },
+    "step2": {
+      "title": "مكالمة التأكيد",
+      "description": "سيتواصل معك مقدم الخدمة"
+    },
+    "step3": {
+      "title": "تنفيذ الخدمة",
+      "description": "استمتع بخدمة احترافية في الوقت المحدد"
+    }
+  },
+  "bookingSummary": {
+  "title": "ملخص الحجز",
+
+  "service": "الخدمة",
+  "tier": "الفئة",
+  "timeAndDate": "الوقت والتاريخ",
+  "location": "الموقع",
+  "duration": "المدة",
+  "totalPaid": "إجمالي المدفوع",
+
+  "hours": "ساعات",
+  "days": "أيام",
+  "na": "غير متوفر",
+
+  "providerAssignmentTitle": "جارٍ تعيين مقدم الخدمة",
+  "providerAssignmentDesc": "نقوم بتعيين أفضل مقدم خدمة لموقعك. ستتلقى إشعارًا بمجرد التأكيد."
+}
+},
+"jobtrackingpage": {
+  "title": "تتبع العمل",
+  "subtitle": "تتبع طلب خدمتك في الوقت الفعلي",
+
+  "sections": {
+    "serviceProgress": "تقدم الخدمة",
+    "needHelp": "هل تحتاج مساعدة؟",
+    "contactSupport": "اتصل بالدعم",
+    "chatWithUs": "الدردشة معنا",
+    "cancelBooking": "إلغاء الحجز",
+    "generateInvoice": "إنشاء فاتورة",
+    "yourProfessional": "المتخصص الخاص بك",
+    "workerNotAssigned": "الموظف لم يتم تعيينه بعد"
+  },
+
+  "serviceDetails": {
+    "title": "تفاصيل الخدمة",
+    "serviceType": "نوع الخدمة",
+    "serviceTier": "فئة الخدمة",
+    "dateTime": "التاريخ والوقت",
+    "location": "الموقع",
+    "totalPrice": "السعر الإجمالي",
+    "bookingConfirmed": "تم تأكيد الحجز",
+    "todayTime": "اليوم • 11:50 ص"
+  },
+
+  "status": {
+    "professionalAssigned": "تم تعيين المتخصص",
+    "pending": "قيد الانتظار",
+    "serviceStarted": "بدأت الخدمة",
+    "serviceCompleted": "تمت الخدمة",
+    "invoiceGenerated": "تم إنشاء الفاتورة",
+    "payment": "الدفع",
+    "paymentDone": "تم الدفع"
+  },
+  "generateWorkStartOtp": "إنشاء OTP لبدء العمل",
+    "generateWorkCompletedOtp": "إنشاء OTP لإتمام العمل",
+    "call":"يتصل",
+    "message":"رسالة"
+}
 }

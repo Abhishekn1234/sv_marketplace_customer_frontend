@@ -6,19 +6,20 @@ import { toast } from "react-toastify";
 import { useState, useMemo } from "react";
 import InvoiceModal from "./InvoiceModal";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingNeedHelp() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
   const {cancelBooking}=useBookings();
   const { data: allBookings,  } = useBookingHistory(); // fetch all bookings
-const generateInvoice = useGenerateInvoice();
-const [invoice, setInvoice] = useState<any>(null);
+    const generateInvoice = useGenerateInvoice();
+    const [invoice, setInvoice] = useState<any>(null);
   const { data: categories } = useServiceCategory();
   const categoriesList = categories ?? [];
   const [showInvoice, setShowInvoice] = useState(false);
 
-  
+   const {t}=useLanguage();
   const booking = useMemo(() => {
 
   const bookings = allBookings?.pages?.flatMap((page: any) => page.data) ?? [];
@@ -74,7 +75,7 @@ const [invoice, setInvoice] = useState<any>(null);
 
   const options = [
     {
-      text: "Contact Support",
+      text: t.jobtrackingpage.sections.contactSupport,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
           <circle cx="12" cy="12" r="10" />
@@ -85,7 +86,7 @@ const [invoice, setInvoice] = useState<any>(null);
       action: helpNavigate,
     },
     {
-      text: "Chat with Us",
+      text: t.jobtrackingpage.sections.chatWithUs,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -94,7 +95,7 @@ const [invoice, setInvoice] = useState<any>(null);
       action: () => toast.info("Chat feature coming soon! 💬"),
     },
     {
-      text: "Cancel Booking",
+      text: t.jobtrackingpage.sections.cancelBooking,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
           <path d="M3 6h18" />
@@ -105,7 +106,7 @@ const [invoice, setInvoice] = useState<any>(null);
       action: handleCancel,
     },
     {
-      text: "Generate Invoice",
+      text: t.jobtrackingpage.sections.generateInvoice,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
           <path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2" />

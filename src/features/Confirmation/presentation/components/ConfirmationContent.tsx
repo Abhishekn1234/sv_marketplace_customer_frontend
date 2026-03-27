@@ -7,11 +7,12 @@ import { ArrowRight, Calendar, Home } from "lucide-react";
 import { statusMessageMap } from "../helpers/statusmessagemapping";
 import { useEffect, useState } from "react";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ConfirmationContent() {
   const { data: bookings, error, isPending } = useBookingHistory();
   const navigate = useNavigate();
-
+  const {t}=useLanguage();
   // Flatten all pages into a single array of bookings
   const allBookings = bookings?.pages.flatMap(page => page.data) ?? [];
 
@@ -40,7 +41,7 @@ export default function ConfirmationContent() {
 
   // Error handling
   if (error)
-    return <p className="text-red-500 text-center mt-10">Error loading booking details</p>;
+    return <p className="text-red-500 text-center mt-10">{t.confirmationpage.error}</p>;
 
   // Loader
   if (showLoader || !data)
@@ -48,7 +49,7 @@ export default function ConfirmationContent() {
       <div className="flex items-center justify-center min-h-[calc(100vh-81px)] bg-gray-50">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-medium">Loading booking details...</p>
+          <p className="text-gray-500 font-medium">{t.confirmationpage.loading}</p>
         </div>
       </div>
     );
@@ -74,16 +75,16 @@ export default function ConfirmationContent() {
           </svg>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-          Booking {formattedStatus}
-        </h1>
+       <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+              {t.confirmationpage.booking} {formattedStatus}
+            </h1>
         <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
           {statusMessageMap[data.status] || "Booking status updated."}
         </p>
 
         {/* Reference ID */}
         <div className="inline-flex items-center justify-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">
-          <span className="text-xs font-bold uppercase text-gray-400">Reference ID</span>
+          <span className="text-xs font-bold uppercase text-gray-400">{t.confirmationpage.referenceId}</span>
           <span className="text-sm font-bold text-gray-900">{data._id}</span>
         </div>
 
@@ -96,7 +97,7 @@ export default function ConfirmationContent() {
           onClick={() => navigate(`/jobtracking/${data._id}`)}
         >
           <span className="flex gap-3 justify-center">
-            Track Job Status <ArrowRight className="w-5" />
+           {t.confirmationpage.trackJob} <ArrowRight className="w-5" />
           </span>
         </button>
 
@@ -104,12 +105,12 @@ export default function ConfirmationContent() {
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
           <Link to="/" className="text-gray-900 hover:text-blue-600">
             <span className="flex gap-2">
-              <Home className="w-5" /> Return Home
+              <Home className="w-5" /> {t.confirmationpage.returnHome}
             </span>
           </Link>
           <Link to="/bookings" className="text-gray-900 hover:text-blue-600">
             <span className="flex gap-2">
-              <Calendar className="w-5" /> View All Bookings
+              <Calendar className="w-5" /> {t.confirmationpage.viewBookings}
             </span>
           </Link>
         </div>

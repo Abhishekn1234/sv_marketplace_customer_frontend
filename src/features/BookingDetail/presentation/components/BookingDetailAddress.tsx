@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { toast } from "react-toastify";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function BookingDetailAddress() {
   const { current_location, updateAddress } = useAuthStore();
   const addresses = current_location?.addresses ?? [];
-
+  const {t}=useLanguage();
   const homeAddressSaved = addresses.find((a) => a.type === "home")?.value || "";
   const entryInstructionsSaved = addresses.find((a) => a.type === "other")?.value || "";
 
@@ -36,22 +37,22 @@ export default function BookingDetailAddress() {
       {/* Inline Display */}
       <div className="mt-6 bg-white rounded-2xl p-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base font-bold text-gray-900">Service Address</h3>
+          <h3 className="text-base font-bold text-gray-900">{t.bookingdetailpage.serviceAddress}</h3>
           <button
             onClick={() => setIsOpen(true)}
             className="text-xs font-bold uppercase tracking-wide text-blue-600 hover:underline"
           >
-            Change
+            {t.bookingdetailpage.change}
           </button>
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
-          <strong className="block text-sm font-bold text-gray-900 mb-1">Home</strong>
+          <strong className="block text-sm font-bold text-gray-900 mb-1">{t.bookingdetailpage.home}</strong>
           <p className="text-sm text-gray-500 leading-6">{homeAddress || "No address added"}</p>
         </div>
 
         <label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
-          Entry Instructions
+         {t.bookingdetailpage.entryInstructions}
         </label>
         <input
           type="text"

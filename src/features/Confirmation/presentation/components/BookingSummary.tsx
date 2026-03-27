@@ -1,6 +1,7 @@
 "use client";
 import SummaryItem from "./SummaryItem";
 import { formatSmartDate } from "../helpers/formatdatetime";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface BookingSummaryProps {
   data: any;
@@ -9,28 +10,31 @@ interface BookingSummaryProps {
 }
 
 export default function BookingSummary({ data, placeName, tierName }: BookingSummaryProps) {
+  const {t}=useLanguage();
   const duration =
-    data?.pricingMode === "HOURLY"
-      ? `${data?.schedule?.estimatedHours ?? 0} Hours`
-      : data?.pricingMode === "PER_DAY"
-      ? `${data?.schedule?.estimatedDays ?? 0} Days`
-      : "N/A";
+  data?.pricingMode === "HOURLY"
+    ? `${data?.schedule?.estimatedHours ?? 0} ${t.confirmationpage.bookingSummary.hours}`
+    : data?.pricingMode === "PER_DAY"
+    ? `${data?.schedule?.estimatedDays ?? 0} ${t.confirmationpage.bookingSummary.days}`
+    : t.confirmationpage.bookingSummary.na;
 
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">
-        <h3 className="text-xs font-bold uppercase text-gray-400">Booking Summary</h3>
+                  <h3 className="text-xs font-bold uppercase text-gray-400">
+            {t.confirmationpage.bookingSummary.title}
+          </h3>
       </div>
 
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-          <SummaryItem label="Service" value={data?.service?.name} />
-          <SummaryItem label="Tier" value={tierName} />
-          <SummaryItem label="Time & Date" value={formatSmartDate(data?.schedule?.startDateTime)} />
-          <SummaryItem label="Location" value={placeName} />
-          <SummaryItem label="Duration" value={duration} />
-          <SummaryItem label="Total Paid" value={<span className="text-blue-600">{data?.currency} {data?.amount}</span>} />
-        </div>
+         <SummaryItem label={t.confirmationpage.bookingSummary.service} value={data?.service?.name} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.tier} value={tierName} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.timeAndDate} value={formatSmartDate(data?.schedule?.startDateTime)} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.location} value={placeName} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.duration} value={duration} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.totalPaid} value={<span className="text-blue-600">{data?.currency} {data?.amount}</span>} />
+                </div>
 
         {/* Info Box */}
         <div className="flex items-start gap-4 p-5 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
@@ -42,9 +46,9 @@ export default function BookingSummary({ data, placeName, tierName }: BookingSum
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-bold text-gray-900 mb-1">Provider Assignment in Progress</h4>
+            <h4 className="text-sm font-bold text-gray-900 mb-1">{t.confirmationpage.bookingSummary.providerAssignmentTitle}</h4>
             <p className="text-sm text-gray-500">
-              We're assigning the best provider for your location. You'll receive a notification once confirmed.
+              {t.confirmationpage.bookingSummary.providerAssignmentDesc}
             </p>
           </div>
         </div>

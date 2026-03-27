@@ -3,11 +3,12 @@
 import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingWorkerDetails() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { data, isLoading } = useBookingHistory();
-
+ const {t}=useLanguage();
   const booking = useMemo(() => {
     if (!data?.pages || !bookingId) return null;
 
@@ -24,10 +25,10 @@ export default function JobTrackingWorkerDetails() {
     return (
       <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
         <h2 className="text-base font-bold text-gray-900">
-          Your Professional
+          {t.jobtrackingpage.sections.yourProfessional}
         </h2>
         <p className="text-sm text-gray-500 mt-3">
-          Worker not assigned yet
+          {t.jobtrackingpage.sections.workerNotAssigned}
         </p>
       </div>
     );
@@ -37,7 +38,7 @@ export default function JobTrackingWorkerDetails() {
     <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
       
       <h2 className="text-base font-bold text-gray-900 mb-5">
-        Your Professional
+       {t.jobtrackingpage.sections.yourProfessional}
       </h2>
 
       {/* Profile Section */}
@@ -88,11 +89,11 @@ export default function JobTrackingWorkerDetails() {
           href={`tel:${worker.phone}`}
           className="flex-1 h-12 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 flex items-center justify-center gap-2 min-w-0"
         >
-          Call
+          {t.jobtrackingpage.call}
         </a>
 
         <button className="flex-1 h-12 rounded-lg bg-white border border-gray-200 font-semibold text-gray-900 hover:bg-gray-50 flex items-center justify-center gap-2 min-w-0">
-          Message
+          {t.jobtrackingpage.message}
         </button>
       </div>
     </div>

@@ -129,7 +129,105 @@
     "serviceType": "Service Type",
     "serviceProfessional": "Service Professional",
     "equipment": "Equipment",
-    "included": "Included"
-  }
-  
+    "included": "Included",
+ "serviceAddress": "Service Address",
+  "change": "Change",
+  "home": "Home",
+  "entryInstructions": "Entry Instructions",
+   "selectDate": "Select Date",
+  "estimatedDuration": "Estimated Duration",
+  "selectTime": "Select Time",
+  "basePrice": "Base Price",
+  "memberDiscount": "Member Discount",
+  "serviceFee": "Service Fee",
+  "total": "Total",
+  "confirmBooking": "Confirm Booking",
+  "specialRequirement": "Special Requirement"
+  },
+ "confirmationpage": {
+  "booking": "Booking",
+  "bookingStatus": "Booking {{status}}",
+  "defaultStatusMessage": "Booking status updated.",
+  "loading": "Loading booking details...",
+  "error": "Error loading booking details",
+
+  "referenceId": "Reference ID",
+
+  "trackJob": "Track Job Status",
+  "returnHome": "Return Home",
+  "viewBookings": "View All Bookings",
+  "whatsNext": "What's Next?",
+
+  "steps": {
+    "step1": {
+      "title": "Provider Assignment",
+      "description": "We'll match you with a top-rated professional"
+    },
+    "step2": {
+      "title": "Confirmation Call",
+      "description": "Your provider will contact you"
+    },
+    "step3": {
+      "title": "Service Delivery",
+      "description": "Enjoy professional service at your scheduled time"
+    }
+  },
+  "bookingSummary": {
+  "title": "Booking Summary",
+
+  "service": "Service",
+  "tier": "Tier",
+  "timeAndDate": "Time & Date",
+  "location": "Location",
+  "duration": "Duration",
+  "totalPaid": "Total Paid",
+
+  "hours": "Hours",
+  "days": "Days",
+  "na": "N/A",
+
+  "providerAssignmentTitle": "Provider Assignment in Progress",
+  "providerAssignmentDesc": "We're assigning the best provider for your location. You'll receive a notification once confirmed."
+}
+},
+"jobtrackingpage": {
+  "title": "Job Tracking",
+  "subtitle": "Track your service request in real-time",
+
+  "sections": {
+    "serviceProgress": "Service Progress",
+    "needHelp": "Need Help?",
+    "contactSupport": "Contact Support",
+    "chatWithUs": "Chat with Us",
+    "cancelBooking": "Cancel Booking",
+    "generateInvoice": "Generate Invoice",
+    "yourProfessional": "Your Professional",
+    "workerNotAssigned": "Worker not assigned yet"
+  },
+
+  "serviceDetails": {
+    "title": "Service Details",
+    "serviceType": "Service Type",
+    "serviceTier": "Service Tier",
+    "dateTime": "Date & Time",
+    "location": "Location",
+    "totalPrice": "Total Price",
+    "bookingConfirmed": "Booking Confirmed",
+    "todayTime": "Today • 11:50 AM"
+  },
+
+  "status": {
+    "professionalAssigned": "Professional Assigned",
+    "pending": "Pending",
+    "serviceStarted": "Service Started",
+    "serviceCompleted": "Service Completed",
+    "invoiceGenerated": "Invoice Generated",
+    "payment": "Payment",
+    "paymentDone": "Payment Done"
+  },
+  "generateWorkStartOtp": "Generate Work Start OTP",
+    "generateWorkCompletedOtp": "Generate Work Completed OTP",
+    "call":"Call",
+    "message":"Message"
+}
 }
