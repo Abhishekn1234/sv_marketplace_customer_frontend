@@ -229,5 +229,34 @@
     "generateWorkCompletedOtp": "Generate Work Completed OTP",
     "call":"Call",
     "message":"Message"
+    
+},
+"Bookingspage":{
+  "title":"Booking History",
+  "subtitle":"View and manage all your service bookings",
+   "status": {
+      "All": "All",
+      "inProgress": "In Progress",
+      "Completed": "Completed",
+      "Requested": "Requested",
+      "Cancelled": "Cancelled",
+      "InvoiceGenerated": "Invoice Generated",
+      "WorkerAccepted": "Worker Accepted",
+      "Paid": "Paid"
+    },
+    "Actions":{
+       "action": "Action",
+    "checkProgress": "Check Progress",
+    "viewDetails": "View Details",
+    "payNow": "Pay Now",
+    "generateStartOtp": "Generate Work Start OTP",
+    "generateCompleteOtp": "Generate Work Completed OTP",
+    "verifyPayment": "Verify Payment",
+    "downloadInvoice": "Download Invoice",
+    "track": "Track",
+    "Rate Your Service":"Rate Your Service",
+    "cancelled": "Cancelled",
+    "rebook": "Rebook"
+    }
 }
 }

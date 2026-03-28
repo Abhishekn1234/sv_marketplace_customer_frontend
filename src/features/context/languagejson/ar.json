@@ -227,5 +227,34 @@
     "generateWorkCompletedOtp": "إنشاء OTP لإتمام العمل",
     "call":"يتصل",
     "message":"رسالة"
+},
+"Bookingspage":{
+  "title": "سجل الحجوزات",
+    "subtitle": "عرض وإدارة جميع حجوزات الخدمة الخاصة بك",
+    "status": {
+      "All": "الكل",
+      "inProgress": "قيد التنفيذ",
+      "Completed": "مكتمل",
+      "Requested": "تم الطلب",
+      "Cancelled": "تم الإلغاء",
+      "InvoiceGenerated": "تم إنشاء الفاتورة",
+      "WorkerAccepted": "تم قبول العامل",
+      "Paid": "تم الدفع"
+    },
+    "Actions":{
+        "action": "إجراء",
+    "checkProgress": "تحقق من التقدم",
+    "viewDetails": "عرض التفاصيل",
+    "payNow": "ادفع الآن",
+    "generateStartOtp": "إنشاء رمز بدء العمل",
+    "generateCompleteOtp": "إنشاء رمز إكمال العمل",
+    "verifyPayment": "التحقق من الدفع",
+    "downloadInvoice": "تحميل الفاتورة",
+    "track": "تتبع",
+    "Rate Your Service": "قيّم خدمتك",
+    "cancelled": "تم الإلغاء",
+     "rebook": "إعادة الحجز"
+    }
+  
 }
 }

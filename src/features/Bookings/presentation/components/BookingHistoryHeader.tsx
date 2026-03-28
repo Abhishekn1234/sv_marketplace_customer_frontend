@@ -1,4 +1,7 @@
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function BookingHistoryHeader() {
+  const{t}=useLanguage();
   return (
     <div className="mb-8 sm:mb-10 lg:mb-12">
       <h1
@@ -12,7 +15,7 @@ export default function BookingHistoryHeader() {
         tracking-tight
       "
       >
-        Booking History
+       {t.Bookingspage.title}
       </h1>
 
       <p
@@ -25,7 +28,7 @@ export default function BookingHistoryHeader() {
         max-w-xl
       "
       >
-        View and manage all your service bookings
+        {t.Bookingspage.subtitle}
       </p>
     </div>
   );

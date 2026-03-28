@@ -227,5 +227,35 @@
     "generateWorkCompletedOtp": "वर्क पूरा होने पर OTP जनरेट करें",
     "call":"पुकारना",
     "message":"संदेश"
+},
+"Bookingspage":{
+  "title": "बुकिंग इतिहास",
+    "subtitle": "अपनी सभी सेवा बुकिंग देखें और प्रबंधित करें",
+    "status": {
+      "All": "सभी",
+      "inProgress": "प्रगति में",
+      "Completed": "पूर्ण",
+      "Requested": "अनुरोधित",
+      "Cancelled": "रद्द",
+      "InvoiceGenerated": "इनवॉइस जनरेट हुआ",
+      "WorkerAccepted": "कर्मी ने स्वीकार किया",
+      "Paid": "भुगतान किया गया"
+    },
+    "Actions":{
+     "action": "कार्रवाई",
+    "checkProgress": "प्रगति जांचें",
+    "viewDetails": "विवरण देखें",
+    "payNow": "अभी भुगतान करें",
+    "generateStartOtp": "कार्य प्रारंभ ओटीपी उत्पन्न करें",
+    "generateCompleteOtp": "कार्य पूर्ण ओटीपी उत्पन्न करें",
+    "verifyPayment": "भुगतान सत्यापित करें",
+    "downloadInvoice": "इनवॉइस डाउनलोड करें",
+     
+      "track": "ट्रैक करें",
+      "Rate Your Service":"अपनी सेवा को रेट करें",
+      "cancelled": "रद्द किया गया",
+       "rebook": "दोबारा बुक करें"
+    }
+      
 }
 }

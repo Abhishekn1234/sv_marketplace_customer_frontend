@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 
 interface BookingActionsProps {
@@ -21,6 +22,7 @@ export function BookingActions({
   onCheckProgress,
 //   onInvoiceClick,
 }: BookingActionsProps) {
+  const {t}=useLanguage();
   const shouldShowButtons = !(
     booking.status === "PAID" &&
     booking.updatedAt &&
@@ -49,7 +51,8 @@ export function BookingActions({
           onClick={onCheckProgress}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
         >
-          Check Progress
+         
+         {t.Bookingspage.Actions.checkProgress}
         </button>
       )}
     
@@ -63,7 +66,7 @@ export function BookingActions({
         }}
         className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
       >
-        {booking.status === "COMPLETED" && !booking.invoiceId ? "Pay Now" : "View Details"}
+        {booking.status === "COMPLETED" && !booking.invoiceId ? t.Bookingspage.Actions.payNow : t.Bookingspage.Actions.viewDetails}
       </button>
     </div>
   );

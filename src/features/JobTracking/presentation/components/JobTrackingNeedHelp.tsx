@@ -137,7 +137,7 @@ export default function JobTrackingNeedHelp() {
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-      <h3 className="text-base font-bold text-gray-900 mb-4">Need Help?</h3>
+      <h3 className="text-base font-bold text-gray-900 mb-4">{t.jobtrackingpage.sections.needHelp}</h3>
       <div className="flex flex-col gap-3">
         {options.map((opt, idx) => (
           <div
