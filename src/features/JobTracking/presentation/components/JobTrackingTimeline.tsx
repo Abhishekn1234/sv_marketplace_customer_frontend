@@ -25,73 +25,123 @@ export default function JobTrackingTimeline() {
 
   useEffect(() => {
     if (!data?.pages || !bookingId) return;
-    const found = data.pages.flatMap((page) => page.data).find((b) => b._id === bookingId);
-    setLocalBooking(found);
-  }, [data, bookingId]);
+          const found = data.pages.flatMap((page) => page.data).find((b) => b._id === bookingId);
+          setLocalBooking(found);
+        }, [data, bookingId]);
 
  
         const steps = useMemo(() => {
-          if (!localBooking) return [];
+  if (!localBooking) return [];
 
-          const worker = localBooking.assignedWorkers?.[0];
+  const worker = localBooking.assignedWorkers?.[0];
 
-          return [
-            {
-              title: "Booking Confirmed",
-              time: formatDates(localBooking.createdAt),
-              status: "completed",
-            },
-            {
-              title: "Professional Assigned",
-              time: formatDates(worker?.assignedAt),
-              status: worker?.assignedAt ? "completed" : "pending",
-            },
-            {
-              title: "Service Started",
-              time:
-                worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
-                  ? formatDates(worker?.startedAt || new Date())
-                  : "Pending",
-              status:
-                worker?.startedAt || localBooking.status === "IN_PROGRESS" || localBooking.status === "WORK_COMPLETED_PENDING"
-                  ? "active"
-                  : "pending",
-            },
-            {
-              title: "Service Completed",
-              time: worker?.completedAt ? formatDates(worker.completedAt) : "Pending",
-              status: worker?.completedAt || localBooking.status === "COMPLETED" ? "active" : "pending",
-            },
-            {
-              title: "Invoice Generated",
-              time: localBooking.invoiceId ? formatDates(localBooking.updatedAt) : "Pending",
-              status: localBooking.invoiceId ? "completed" : "pending",
-              // showPaymentButton: localBooking.invoiceId && localBooking.status === "INVOICE_GENERATED",
-            },
-            {
-              title: "Payment",
-              time:
-                localBooking.status === "PAID"
-                  ? formatDates(localBooking.paymentDate ?? new Date())
-                  : "Pending",
-              status:
-                localBooking.status === "PAID"
-                  ? "completed"
-                  : localBooking.status === "PAYMENT_PENDING"
-                  ? "active"
-                  : "pending",
-              showPaymentButton: localBooking.status === "INVOICE_GENERATED",
-              showVerifyButton: localBooking.status === "PAYMENT_PENDING" && !!localBooking.invoiceId,
-            },
-            
-            {
-              title: "Payment Done",
-              time: localBooking.status === "PAID" ? formatDates(localBooking.paymentDate ?? new Date()) : "Pending",
-              status: localBooking.status === "PAID" ? "active" : "pending",
-              showServiceRatingButton: localBooking.status === "PAID",
-            },
-          ];
-        }, [localBooking]);
+ 
+  if (localBooking.status === "WORKER_CANCELLED") {
+    return [
+      {
+        title: "Booking Confirmed",
+        time: formatDates(localBooking.createdAt),
+        status: "completed",
+      },
+      {
+        title: "Worker has cancelled",
+        time: formatDates(localBooking.updatedAt),
+        status: "active",
+      },
+    ];
+  }
+
+  if (localBooking.status === "CUSTOMER_CANCELLED") {
+    return [
+      {
+        title: "Booking Confirmed",
+        time: formatDates(localBooking.createdAt),
+        status: "completed",
+      },
+      {
+        title: "You have cancelled the booking",
+        time: formatDates(localBooking.updatedAt),
+        status: "active",
+      },
+    ];
+  }
+
+
+        return [
+          {
+            title: "Booking Confirmed",
+            time: formatDates(localBooking.createdAt),
+            status: "completed",
+          },
+          {
+            title: "Professional Assigned",
+            time: formatDates(worker?.assignedAt),
+            status: worker?.assignedAt ? "completed" : "pending",
+          },
+          {
+            title: "Service Started",
+            time:
+              worker?.startedAt ||
+              localBooking.status === "IN_PROGRESS" ||
+              localBooking.status === "WORK_COMPLETED_PENDING"
+                ? formatDates(worker?.startedAt || new Date())
+                : "Pending",
+            status:
+              worker?.startedAt ||
+              localBooking.status === "IN_PROGRESS" ||
+              localBooking.status === "WORK_COMPLETED_PENDING"
+                ? "active"
+                : "pending",
+          },
+          {
+            title: "Service Completed",
+            time: worker?.completedAt
+              ? formatDates(worker.completedAt)
+              : "Pending",
+            status:
+              worker?.completedAt ||
+              localBooking.status === "COMPLETED"
+                ? "active"
+                : "pending",
+          },
+          {
+            title: "Invoice Generated",
+            time: localBooking.invoiceId
+              ? formatDates(localBooking.updatedAt)
+              : "Pending",
+            status: localBooking.invoiceId ? "completed" : "pending",
+          },
+          {
+            title: "Payment",
+            time:
+              localBooking.status === "PAID"
+                ? formatDates(localBooking.paymentDate ?? new Date())
+                : "Pending",
+            status:
+              localBooking.status === "PAID"
+                ? "completed"
+                : localBooking.status === "PAYMENT_PENDING"
+                ? "active"
+                : "pending",
+            showPaymentButton:
+              localBooking.status === "INVOICE_GENERATED",
+            showVerifyButton:
+              localBooking.status === "PAYMENT_PENDING" &&
+              !!localBooking.invoiceId,
+          },
+          {
+            title: "Payment Done",
+            time:
+              localBooking.status === "PAID"
+                ? formatDates(localBooking.paymentDate ?? new Date())
+                : "Pending",
+            status:
+              localBooking.status === "PAID" ? "active" : "pending",
+            showServiceRatingButton:
+              localBooking.status === "PAID",
+          },
+        ];
+      }, [localBooking]);
 
         const pricingTier = localBooking?.service?.pricingTiers?.find(
           (tier: any) => tier.tierId === localBooking.serviceTierId
