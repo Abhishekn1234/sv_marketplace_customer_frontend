@@ -16,7 +16,7 @@ import BookingModals from "./BookingHistoryModals";
 import { tabStatusMap } from "../helpers/tabstatusmap";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 interface Props {
   activeTab: string;
@@ -25,7 +25,7 @@ interface Props {
 export default function BookingHistoryContents({ activeTab }: Props) {
  
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const navigate=useNavigate();
+  // const navigate=useNavigate();
   // Booking data
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = 
     useBookingHistory({ limit: 10 });
