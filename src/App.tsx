@@ -9,7 +9,7 @@ import DashboardLayout from "./features/Layout/DashboardLayout";
 import { ProtectedRoute } from "./ProtectedLayout";
 
 import WebsiteHome from "./features/Home/presentation/DashboardHome";
-import BookService from "./features/Bookings/presentation/components/bookings/BookService";
+
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 import Profile from "./features/Profile/presentation/ProfilePage";
 import LoginLayout from "./features/Auth/presentation/components/auth/Login/LoginLayout";
@@ -93,7 +93,7 @@ function App() {
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
                 <Route path="profile" element={<Profile />} />
-                <Route path="book-service/:serviceId" element={<BookService />} />
+                
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
                 <Route path="confirmation" element={<ConfirmationPage />} />

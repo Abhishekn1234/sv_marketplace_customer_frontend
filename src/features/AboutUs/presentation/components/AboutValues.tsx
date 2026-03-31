@@ -1,9 +1,12 @@
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function AboutValues() {
+  const {t}=useLanguage();
   const values = [
     {
-      title: "Trust & Reliability",
+      title: t.aboutpage.values.items.trust.title,
       description:
-        "Every professional is vetted, background-checked, and committed to excellence. Your safety and satisfaction are our top priorities.",
+       t.aboutpage.values.items.trust.desc,
       icon: (
         <>
           <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
@@ -12,17 +15,17 @@ export default function AboutValues() {
       ),
     },
     {
-      title: "Quality Service",
+      title: t.aboutpage.values.items.quality.title,
       description:
-        "We hold ourselves and our partners to the highest standards. If you're not satisfied, we'll make it right.",
+       t.aboutpage.values.items.quality.desc,
       icon: (
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       ),
     },
     {
-      title: "Customer First",
+      title: t.aboutpage.values.items.customer.title,
       description:
-        "Your home is your sanctuary. We treat every job with the care and respect it deserves, putting you first always.",
+        t.aboutpage.values.items.customer.desc,
       icon: (
         <>
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -31,15 +34,15 @@ export default function AboutValues() {
       ),
     },
     {
-      title: "Safety & Security",
+      title: t.aboutpage.values.items.safety.title,
       description:
-        "Advanced security measures, insurance coverage, and 24/7 support ensure your peace of mind with every booking.",
+        t.aboutpage.values.items.safety.desc,
       icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
     },
     {
-      title: "Transparency",
+      title: t.aboutpage.values.items.transparency.title,
       description:
-        "Clear pricing, honest communication, and no hidden fees. You always know what to expect with HomeEase.",
+        t.aboutpage.values.items.transparency.desc,
       icon: (
         <>
           <circle cx="12" cy="12" r="10" />
@@ -50,9 +53,9 @@ export default function AboutValues() {
       ),
     },
     {
-      title: "Sustainability",
+      title: t.aboutpage.values.items.sustainability.title,
       description:
-        "We prioritize eco-friendly practices and partner with professionals who share our commitment to the environment.",
+        t.aboutpage.values.items.sustainability.desc,
       icon: <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />,
     },
   ];
@@ -62,7 +65,7 @@ export default function AboutValues() {
 
       {/* Section Title */}
       <h2 className="text-[28px] font-bold text-gray-900 text-center mb-8">
-        Our Values
+        {t.aboutpage.values.title}
       </h2>
 
       {/* Grid */}

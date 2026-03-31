@@ -5,6 +5,7 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useAuthStore } from "@/features/core/store/auth";
 
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 export default function ProfileList() {
@@ -17,7 +18,7 @@ export default function ProfileList() {
   .length || 0;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-
+  const {t}=useLanguage();
 
   if (isLoading) {
     return <div className="text-center py-10">Loading profile...</div>;
@@ -101,7 +102,7 @@ export default function ProfileList() {
         {/* Premium Badge */}
         <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full text-xs font-bold text-white uppercase tracking-wide">
           <Star className="w-3.5 h-3.5" />
-          Premium Member
+         {t.profilepage.premiumMember}
         </span>
 
         {/* Stats Section */}
@@ -111,7 +112,8 @@ export default function ProfileList() {
              {bookingcount}
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-wide">
-              Bookings
+              
+              {t.profilepage.bookings}
             </span>
           </div>
 
@@ -120,7 +122,7 @@ export default function ProfileList() {
               12
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-wide">
-              Reviews
+              {t.profilepage.reviews}
             </span>
           </div>
 
@@ -129,7 +131,7 @@ export default function ProfileList() {
               3
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-wide">
-              Favorites
+              {t.profilepage.favorites}
             </span>
           </div>
         </div>

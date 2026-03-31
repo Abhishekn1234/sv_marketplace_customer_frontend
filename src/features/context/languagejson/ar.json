@@ -90,7 +90,10 @@
       "About": "معلومات عنا",
       "Privacy": "الخصوصية",
       "Help": "مساعدة",
-      "SearchPlaceholder":"ابحث عن الخدمات..."
+      "Use current location":"استخدام الموقع الحالي",
+      "Back": "العودة إلى اختيار الخدمة",
+      "SearchPlaceholder":"ابحث عن الخدمات...",
+      "Show All": "عرض الجميع"
   },
   "servicedetailpage": {
     "breadcrumb": {
@@ -256,5 +259,379 @@
      "rebook": "إعادة الحجز"
     }
   
+},
+"profilepage": {
+  "backToDashboard": "العودة إلى لوحة التحكم",
+  "myProfile": "ملفي الشخصي",
+  "logout": "تسجيل الخروج",
+  "loggedOutSuccess": "تم تسجيل الخروج بنجاح",
+
+  "premiumMember": "عضو مميز",
+
+  "bookings": "الحجوزات",
+  "reviews": "المراجعات",
+  "favorites": "المفضلة",
+
+  "quickActions": "إجراءات سريعة",
+  "security": "الأمان",
+  "billing": "الفواتير",
+  "privacy": "الخصوصية",
+  "help": "المساعدة",
+
+  "selectLanguage": "اختر اللغة",
+
+  "personalInfo": "المعلومات الشخصية",
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "email": "البريد الإلكتروني",
+  "phone": "رقم الهاتف",
+  "saveChanges": "حفظ التغييرات",
+  "saving": "جارٍ الحفظ...",
+
+  "savedAddresses": "العناوين المحفوظة",
+  "home": "المنزل",
+  "office": "المكتب",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "addAddress": "إضافة عنوان",
+  "addNewAddress": "+ إضافة عنوان جديد",
+  "enterAddress": "أدخل العنوان",
+
+  "preferences": "التفضيلات والإشعارات",
+  "emailNotifications": "إشعارات البريد الإلكتروني",
+  "emailDesc": "تلقي تحديثات الحجز عبر البريد الإلكتروني",
+  "smsNotifications": "إشعارات الرسائل النصية",
+  "smsDesc": "تلقي رسائل نصية للتحديثات العاجلة",
+  "twoFactor": "المصادقة الثنائية",
+  "twoFactorDesc": "أمان إضافي لحسابك",
+
+  "dangerZone": "منطقة الخطر",
+  "changePassword": "تغيير كلمة المرور",
+  "deleteAccount": "حذف الحساب"
+},
+"changepasswordpage": {
+  "title": "تغيير كلمة المرور",
+  "description": "قم بتحديث كلمة المرور للحفاظ على أمان حسابك. تأكد من أن كلمة المرور الجديدة قوية ومختلفة عن السابقة.",
+
+  "backToSettings": "العودة إلى الإعدادات",
+
+  "cardTitle": "تغيير كلمة المرور",
+  "cardSubtitle": "قم بتأمين حسابك بكلمة مرور قوية",
+
+  "currentPassword": "كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmPassword": "تأكيد كلمة المرور الجديدة",
+
+  "enterCurrentPassword": "أدخل كلمة المرور الحالية",
+  "enterNewPassword": "أدخل كلمة المرور الجديدة",
+  "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+
+  "updatePassword": "تحديث كلمة المرور",
+  "updating": "جارٍ التحديث...",
+
+  "success": "تم تحديث كلمة المرور بنجاح 🎉",
+  "error": "حدث خطأ ما"
+},
+"jobprogresspage": {
+  "title": "تقدم العمل",
+  "subtitle": "الخدمة قيد التنفيذ حاليًا",
+
+  "overallProgress": "التقدم العام",
+  "cancelled": "تم الإلغاء",
+  "workerCancelled": "قام العامل بإلغاء الحجز",
+  "customerCancelled": "لقد قمت بإلغاء الحجز",
+  "jobStopped": "لن يستمر هذا العمل",
+
+  "taskCompletion": "إكمال المهمة",
+  "startedAt": "بدأ في",
+  "estimatedCompletion": "الوقت المتوقع للانتهاء",
+
+  "taskChecklist": "قائمة المهام",
+  "bookingRequested": "تم طلب الحجز",
+  "workerAssigned": "تم تعيين العامل",
+  "workInProgress": "العمل قيد التنفيذ",
+  "workCompleted": "تم إكمال العمل",
+  "invoiceGenerated": "تم إنشاء الفاتورة",
+  "paymentCompleted": "تم الدفع",
+
+  "completed": "مكتمل",
+  "inProgress": "قيد التنفيذ",
+  "pending": "قيد الانتظار",
+
+  "professionalOnSite": "المحترف في الموقع",
+  "notAssigned": "لم يتم التعيين",
+  "call": "اتصال",
+  "message": "رسالة",
+
+  "serviceSummary": "ملخص الخدمة",
+  "serviceType": "نوع الخدمة",
+  "serviceTier": "فئة الخدمة",
+  "basePrice": "السعر الأساسي",
+  "total": "الإجمالي",
+
+  "serviceInfo": "معلومات الخدمة",
+  "date": "التاريخ",
+  "duration": "المدة",
+  "location": "الموقع",
+  "ongoing": "جارٍ التنفيذ",
+  "noCoordinates": "لا توجد إحداثيات",
+  "jobstatus": {
+  "REQUESTED": "تم الطلب",
+  "ASSIGNED": "تم التعيين",
+  "IN_PROGRESS": "قيد التنفيذ",
+  "COMPLETED": "مكتمل",
+  "WORKER_CANCELLED": "ألغى العامل",
+  "CUSTOMER_CANCELLED": "تم الإلغاء من قبلك"
 }
+},
+"jobcompletedpage": {
+    "title": "تم إكمال الخدمة!",
+    "message": "تم إكمال خدمتك بنجاح. شكرًا لاختيارك لنا!",
+
+    "serviceSummary": "ملخص الخدمة",
+    "completed": "مكتمل",
+
+    "serviceType": "نوع الخدمة",
+    "serviceTier": "فئة الخدمة",
+    "date": "التاريخ",
+    "duration": "المدة",
+    "address": "العنوان",
+    "totalPaid": "إجمالي الدفع",
+
+    "yourProfessional": "المحترف الخاص بك",
+    "howWasService": "كيف كانت خدمتك؟",
+    "rateExperience": "قيّم تجربتك",
+
+    "whatsNext": "ماذا بعد؟",
+    "viewInvoice": "عرض الفاتورة",
+    "bookAgain": "احجز مرة أخرى",
+    "getSupport": "الحصول على الدعم",
+    "share": "مشاركة"
+  },
+  "notificationpage": {
+    "title": "الإشعارات",
+    "chooseAction": "اختر إجراءً من الأعلى.",
+    "new": "جديد",
+    "noNotifications": "لا توجد إشعارات بعد",
+      "noNotificationsDesc": "عندما تصلك إشعارات، ستظهر هنا. ترقب التحديثات!",
+    "allCaughtUp": "تمت المتابعة!",
+    "unread": "غير مقروء",
+    "notification": "إشعار",
+    "notifications": "إشعارات",
+    "total": "الإجمالي",
+    "unselect": "إلغاء التحديد",
+    "selected": "محدد",
+    "select": "تحديد",
+     "read": "مقروء",
+     "deleteSelected": "حذف المحدد",
+    "bookingConfirmed": "تم تأكيد الحجز",
+    "bookingConfirmedMsg": "تم تأكيد حجزك. ستبدأ الخدمة قريبًا.",
+
+    "driverArriving": "المزود في الطريق",
+    "driverArrivingMsg": "مزود الخدمة في الطريق. يرجى الاستعداد.",
+
+    "paymentSuccessful": "تم الدفع بنجاح",
+    "paymentSuccessfulMsg": "تم إتمام الدفع بنجاح لخدمتك الأخيرة.",
+
+    "offer": "عرض خاص",
+    "offerMsg": "احصل على خصومات مميزة على حجزك القادم!",
+
+    "markAllRead": "تحديد الكل كمقروء",
+    "delete": "حذف",
+    "selectAll": "تحديد الكل"
+  },
+  "serviceratingpage": {
+    "rateService": "قيّم الخدمة",
+    "rateWorker": "قيّم العامل",
+
+    "labels": ["سيئ", "مقبول", "جيد", "جيد جدًا", "ممتاز"],
+
+    "whatWentWell": "ما الذي كان جيدًا؟",
+    "optional": "اختياري",
+
+    "tags": {
+      "professional": "احترافي",
+      "onTime": "في الوقت المحدد",
+      "qualityWork": "عمل عالي الجودة",
+      "friendly": "ودود",
+      "goodCommunication": "تواصل جيد",
+      "clean": "نظيف"
+    },
+
+    "tellUsMore": "أخبرنا المزيد",
+    "shareExperience": "شارك تجربتك...",
+    "feedbackHelp": "ملاحظاتك تساعدنا على تحسين خدمتنا",
+
+    "submitReview": "إرسال التقييم",
+
+    "loading": "جاري التحميل...",
+    "bookingNotFound": "لم يتم العثور على الحجز",
+    "providerNameFallback": "اسم العامل",
+    "serviceNameFallback": "اسم الخدمة"
+  },
+  "aboutpage": {
+    "hero": {
+      "title": "حول HomeEase",
+      "subtitle": "نحوّل المنازل ونبني الثقة، خدمة بعد خدمة."
+    },
+    "story": {
+      "title": "قصتنا",
+      "p1": "تأسست HomeEase في عام 2018 بهدف بسيط: جعل خدمات المنازل الاحترافية متاحة وموثوقة وخالية من التوتر للجميع.",
+      "p2": "ما بدأ كفريق صغير أصبح الآن شبكة واسعة من المحترفين الذين يخدمون آلاف المنازل يوميًا.",
+      "p3": "اليوم، تربط HomeEase أصحاب المنازل بخبراء في التنظيف والسباكة والكهرباء وغيرها."
+    },
+    "values": {
+      "title": "قيمنا",
+      "items": {
+        "trust": {
+          "title": "الثقة والموثوقية",
+          "desc": "يتم التحقق من كل محترف بعناية. سلامتك ورضاك هما أولويتنا."
+        },
+        "quality": {
+          "title": "خدمة عالية الجودة",
+          "desc": "نلتزم بأعلى المعايير. إذا لم تكن راضيًا، سنعمل على إصلاح ذلك."
+        },
+        "customer": {
+          "title": "العميل أولاً",
+          "desc": "منزلك هو مكانك الآمن. نتعامل مع كل خدمة بعناية واحترام."
+        },
+        "safety": {
+          "title": "الأمان والحماية",
+          "desc": "إجراءات أمان متقدمة ودعم على مدار الساعة."
+        },
+        "transparency": {
+          "title": "الشفافية",
+          "desc": "أسعار واضحة بدون رسوم مخفية."
+        },
+        "sustainability": {
+          "title": "الاستدامة",
+          "desc": "نركز على الممارسات الصديقة للبيئة."
+        }
+      }
+    },
+    "stats": {
+      "customers": "عملاء سعداء",
+      "professionals": "محترفون موثقون",
+      "rating": "متوسط التقييم",
+      "services": "خدمات مكتملة"
+    },
+    "team": {
+      "title": "فريق القيادة",
+      "members": {
+        "ceo": "المؤسس المشارك والرئيس التنفيذي",
+        "cto": "المؤسس المشارك والمدير التقني",
+        "ops": "رئيس العمليات",
+        "cs": "رئيس نجاح العملاء"
+      }
+    }
+  },
+  
+  "privacy": {
+    "title": "سياسة الخصوصية",
+    "lastUpdated": "آخر تحديث",
+
+    "introTitle": "1. المقدمة",
+    "introDesc": "مرحبًا بك في HomeEase. نحن نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية.",
+
+    "dataTitle": "2. البيانات التي نجمعها",
+    "personalInfo": "2.1 المعلومات الشخصية",
+    "personalDesc": "قد نقوم بجمع أنواع مختلفة من البيانات:",
+    "identity": "بيانات الهوية",
+    "contact": "بيانات الاتصال",
+    "financial": "البيانات المالية",
+    "transaction": "بيانات المعاملات",
+    "technical": "البيانات التقنية",
+    "profile": "بيانات الملف الشخصي",
+    "usage": "بيانات الاستخدام",
+    "marketing": "بيانات التسويق والاتصالات",
+
+    "providerInfo": "2.2 معلومات مقدم الخدمة",
+    "credentials": "الشهادات المهنية",
+    "backgroundCheck": "معلومات التحقق من الخلفية",
+    "insurance": "وثائق التأمين",
+    "history": "سجل الخدمة والتقييمات",
+    "tax": "معلومات الضرائب",
+
+    "usageTitle": "3. كيفية استخدام البيانات",
+    "use1": "تسجيلك كمستخدم أو مقدم خدمة",
+    "use2": "معالجة الطلبات",
+    "use3": "إدارة العلاقة معك",
+    "use4": "حماية أعمالنا",
+    "use5": "تحسين الخدمات",
+
+    "securityTitle": "4. أمان البيانات",
+    "securityDesc": "نطبق إجراءات لحماية بياناتك من الوصول غير المصرح به.",
+
+    "retentionTitle": "5. الاحتفاظ بالبيانات",
+    "retentionDesc": "نحتفظ بالبيانات فقط للمدة اللازمة.",
+
+    "rightsTitle": "6. حقوقك القانونية",
+    "access": "الوصول",
+    "correction": "التصحيح",
+    "erasure": "الحذف",
+    "restriction": "التقييد",
+    "portability": "نقل البيانات",
+
+    "thirdPartyTitle": "7. روابط الطرف الثالث",
+    "thirdPartyDesc": "لسنا مسؤولين عن مواقع الطرف الثالث.",
+
+    "cookiesTitle": "8. ملفات تعريف الارتباط",
+    "cookiesDesc": "نستخدم الكوكيز لتحسين تجربتك.",
+
+    "changesTitle": "9. التغييرات",
+    "changesDesc": "قد نقوم بتحديث هذه السياسة.",
+
+    "contactTitle": "10. تواصل معنا",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "address": "العنوان"
+  },
+  
+  "helppage": {
+    "title": "المساعدة والدعم",
+    "lastUpdated": "آخر تحديث",
+
+    "faqTitle": "1. الأسئلة الشائعة",
+    "faqDesc": "قم بزيارة قسم الأسئلة الشائعة لمعرفة الإجابات حول الحجوزات والدفع والإلغاء.",
+
+    "contactTitle": "2. تواصل مع الدعم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "chat": "الدردشة متاحة 24/7",
+
+    "issueTitle": "3. مشاكل الخدمة",
+    "issueDesc": "إذا واجهت مشكلة مع مزود الخدمة، يرجى الإبلاغ عنها من لوحة التحكم.",
+
+    "feedbackTitle": "4. الملاحظات والاقتراحات",
+    "feedbackDesc": "نحن نقدر ملاحظاتك. شاركنا لتحسين تجربتك."
+  },
+  "securitypage": {
+  "title": "سياسة الأمان",
+  "lastUpdated": "آخر تحديث",
+  "locale": "ar-SA",
+
+  "section1Title": "1. التزامنا بالأمان",
+  "section1Desc": "في HomeEase، حماية بياناتك وضمان أمان المنصة هي أولويتنا القصوى. نقوم بتطبيق إجراءات تقنية وتنظيمية صارمة لحماية معلوماتك.",
+
+  "section2Title": "2. تدابير حماية البيانات",
+  "measure1": "تشفير شامل للبيانات الحساسة",
+  "measure2": "اتصال HTTPS آمن",
+  "measure3": "عمليات تدقيق ومراقبة أمنية منتظمة",
+  "measure4": "التحكم في الوصول بناءً على الأدوار للأنظمة الداخلية",
+
+  "section3Title": "3. أمان الحساب",
+  "account1": "متطلبات كلمة مرور قوية",
+  "account2": "المصادقة متعددة العوامل (إذا تم تفعيلها)",
+  "account3": "مراقبة نشاط تسجيل الدخول",
+
+  "section4Title": "4. أمان الدفع",
+  "section4Desc": "تتم معالجة جميع المعاملات عبر مزودي دفع آمنين ومتوافقين مع PCI لضمان حماية بياناتك المالية.",
+
+  "section5Title": "5. الإبلاغ عن الثغرات",
+  "section5Desc": "إذا اكتشفت أي ثغرة أمنية محتملة، يرجى التواصل معنا فورًا على security@homeease.com حتى نتمكن من التحقيق وحل المشكلة بسرعة."
+}
+
+
 }

@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +19,7 @@ export default function CommonNotificationFloater({
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { t } = useLanguage();
   // ✅ Mock Data
   const notifications: Notification[] = [
     {
@@ -101,7 +102,7 @@ export default function CommonNotificationFloater({
         {/* Header */}
         <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
-            Notifications
+            {t.notificationpage.notifications}
           </h3>
           <button
             onClick={() => {
@@ -110,7 +111,7 @@ export default function CommonNotificationFloater({
             }}
             className="text-xs sm:text-sm text-blue-600 hover:underline"
           >
-            Show all
+            {t.navbar["Show All"]}
           </button>
         </div>
 

@@ -92,7 +92,10 @@
       "About": "About",
       "Privacy": "Privacy",
       "Help": "Help",
-      "SearchPlaceholder": "Search services..."
+      "Back":"Back",
+      "Use current location":"Use current location",
+      "SearchPlaceholder": "Search services...",
+      "Show All": "Show All"
   },
     "servicedetailpage": {
     "breadcrumb": {
@@ -258,5 +261,383 @@
     "cancelled": "Cancelled",
     "rebook": "Rebook"
     }
+},
+"profilepage": {
+  "backToDashboard": "Back to Dashboard",
+  "myProfile": "My Profile",
+  "logout": "Logout",
+  "loggedOutSuccess": "Logged out successfully",
+
+  "premiumMember": "Premium Member",
+
+  "bookings": "Bookings",
+  "reviews": "Reviews",
+  "favorites": "Favorites",
+
+  "quickActions": "Quick Actions",
+  "security": "Security",
+  "billing": "Billing",
+  "privacy": "Privacy",
+  "help": "Help",
+
+  "selectLanguage": "Select Language",
+
+  "personalInfo": "Personal Information",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "email": "Email Address",
+  "phone": "Phone Number",
+  "saveChanges": "Save Changes",
+  "saving": "Saving...",
+
+  "savedAddresses": "Saved Addresses",
+  "home": "Home",
+  "office": "Office",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "cancel": "Cancel",
+  "addAddress": "Add Address",
+  "addNewAddress": "+ Add New Address",
+  "enterAddress": "Enter address",
+
+  "preferences": "Preferences & Notifications",
+  "emailNotifications": "Email Notifications",
+  "emailDesc": "Receive booking updates via email",
+  "smsNotifications": "SMS Notifications",
+  "smsDesc": "Get text messages for urgent updates",
+  "twoFactor": "Two-Factor Authentication",
+  "twoFactorDesc": "Extra security for your account",
+
+  "dangerZone": "Danger Zone",
+  "changePassword": "Change Password",
+  "deleteAccount": "Delete Account"
+},
+"changepasswordpage": {
+  "title": "Change Password",
+  "description": "Update your password to keep your account secure. Make sure your new password is strong and different from previous passwords.",
+
+  "backToSettings": "Back to Settings",
+
+  "cardTitle": "Change Password",
+  "cardSubtitle": "Secure your account with a strong password",
+
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm New Password",
+
+  "enterCurrentPassword": "Enter current password",
+  "enterNewPassword": "Enter new password",
+  "confirmNewPassword": "Confirm new password",
+
+  "updatePassword": "Update Password",
+  "updating": "Updating...",
+
+  "success": "Password updated successfully 🎉",
+  "error": "Something went wrong"
+},
+"jobprogresspage": {
+  "title": "Job Progress",
+  "subtitle": "Service is currently in progress",
+
+  "overallProgress": "Overall Progress",
+  "cancelled": "Cancelled",
+  "workerCancelled": "Worker cancelled the booking",
+  "customerCancelled": "You cancelled the booking",
+  "jobStopped": "This job will not proceed further",
+
+  "taskCompletion": "Task Completion",
+  "startedAt": "Started at",
+  "estimatedCompletion": "Est. completion",
+
+  "taskChecklist": "Task Checklist",
+  "bookingRequested": "Booking requested",
+  "workerAssigned": "Worker assigned",
+  "workInProgress": "Work in progress",
+  "workCompleted": "Work completed",
+  "invoiceGenerated": "Invoice Generated",
+  "paymentCompleted": "Payment completed",
+
+  "completed": "Completed",
+  "inProgress": "In Progress",
+  "pending": "Pending",
+
+  "professionalOnSite": "Professional on Site",
+  "notAssigned": "Not Assigned",
+  "call": "Call",
+  "message": "Message",
+
+  "serviceSummary": "Service Summary",
+  "serviceType": "Service Type",
+  "serviceTier": "Service Tier",
+  "basePrice": "Base Price",
+  "total": "Total",
+
+  "serviceInfo": "Service Info",
+  "date": "Date",
+  "duration": "Duration",
+  "location": "Location",
+  "ongoing": "Ongoing",
+  "noCoordinates": "No coordinates",
+  "jobstatus": {
+  "REQUESTED": "Requested",
+  "ASSIGNED": "Assigned",
+  "IN_PROGRESS": "In Progress",
+  "COMPLETED": "Completed",
+  "WORKER_CANCELLED": "Worker Cancelled",
+  "CUSTOMER_CANCELLED": "Cancelled by You"
 }
+},
+"jobcompletedpage": {
+    "title": "Service Completed!",
+    "message": "Your service has been completed successfully. Thank you for choosing us!",
+
+    "serviceSummary": "Service Summary",
+    "completed": "Completed",
+
+    "serviceType": "Service Type",
+    "serviceTier": "Service Tier",
+    "date": "Date",
+    "duration": "Duration",
+    "address": "Address",
+    "totalPaid": "Total Paid",
+
+    "yourProfessional": "Your Professional",
+    "howWasService": "How was your service?",
+    "rateExperience": "Rate Your Experience",
+
+    "whatsNext": "What's Next?",
+    "viewInvoice": "View Invoice",
+    "bookAgain": "Book Again",
+    "getSupport": "Get Support",
+    "share": "Share"
+  },
+  
+  "notificationpage": {
+    "title": "Notifications",
+    "allCaughtUp": "All caught up!",
+    "unread": "unread",
+    "notification": "notification",
+    "notifications": "notifications",
+    "total": "total",
+
+    "bookingConfirmed": "Booking Confirmed",
+    "bookingConfirmedMsg": "Your booking has been confirmed. Service will start shortly.",
+
+    "driverArriving": "Provider Arriving",
+    "driverArrivingMsg": "Your provider is arriving soon. Please be ready.",
+
+    "paymentSuccessful": "Payment Successful",
+    "paymentSuccessfulMsg": "Payment completed successfully for your recent service.",
+
+    "offer": "Special Offer",
+    "offerMsg": "Get exciting discounts on your next booking!",
+
+    "markAllRead": "Mark all as read",
+    "delete": "Delete",
+    "selectAll": "Select All",
+    "unselect": "Unselect",
+    "selected": "selected",
+    "select": "Select",
+    "read": "Read",
+    "deleteSelected": "Delete Selected",
+      "chooseAction": "Choose an action above.",
+      "new": "New",
+      "noNotifications": "No notifications yet",
+      "noNotificationsDesc": "When you get notifications, they'll appear here. Stay tuned for updates!"
+  },
+  "serviceratingpage": {
+    "rateService": "Rate the Service",
+    "rateWorker": "Rate the Worker",
+
+    "labels": ["Poor", "Fair", "Good", "Very Good", "Excellent"],
+
+    "whatWentWell": "What went well?",
+    "optional": "Optional",
+
+    "tags": {
+      "professional": "Professional",
+      "onTime": "On Time",
+      "qualityWork": "Quality Work",
+      "friendly": "Friendly",
+      "goodCommunication": "Good Communication",
+      "clean": "Clean"
+    },
+
+    "tellUsMore": "Tell us more",
+    "shareExperience": "Share your experience...",
+    "feedbackHelp": "Your feedback helps us improve our service",
+
+    "submitReview": "Submit Review",
+
+    "loading": "Loading...",
+    "bookingNotFound": "Booking not found",
+    "providerNameFallback": "Provider Name",
+    "serviceNameFallback": "Service Name"
+  },
+  "aboutpage": {
+    "hero": {
+      "title": "About HomeEase",
+      "subtitle": "Transforming homes, building trust, one service at a time."
+    },
+
+    "story": {
+      "title": "Our Story",
+      "p1": "HomeEase was founded in 2018 with a simple mission: to make professional home services accessible, reliable, and stress-free for everyone. We saw how difficult it was for homeowners to find trustworthy service providers, and we knew there had to be a better way.",
+      "p2": "What started as a small team in San Francisco has grown into a nationwide network of vetted professionals serving thousands of homes every day. We've built our reputation on trust, quality, and exceptional customer service.",
+      "p3": "Today, HomeEase connects homeowners with top-rated experts in cleaning, plumbing, electrical work, and more. Every professional on our platform is thoroughly vetted, background-checked, and committed to delivering outstanding service."
+    },
+
+    "values": {
+      "title": "Our Values",
+      "items": {
+        "trust": {
+          "title": "Trust & Reliability",
+          "desc": "Every professional is vetted, background-checked, and committed to excellence. Your safety and satisfaction are our top priorities."
+        },
+        "quality": {
+          "title": "Quality Service",
+          "desc": "We hold ourselves and our partners to the highest standards. If you're not satisfied, we'll make it right."
+        },
+        "customer": {
+          "title": "Customer First",
+          "desc": "Your home is your sanctuary. We treat every job with the care and respect it deserves."
+        },
+        "safety": {
+          "title": "Safety & Security",
+          "desc": "Advanced security measures and 24/7 support ensure your peace of mind."
+        },
+        "transparency": {
+          "title": "Transparency",
+          "desc": "Clear pricing and no hidden fees. You always know what to expect."
+        },
+        "sustainability": {
+          "title": "Sustainability",
+          "desc": "We prioritize eco-friendly practices and responsible service."
+        }
+      }
+    },
+
+    "stats": {
+      "customers": "Happy Customers",
+      "professionals": "Verified Professionals",
+      "rating": "Average Rating",
+      "services": "Services Completed"
+    },
+
+    "team": {
+      "title": "Our Leadership Team",
+      "members": {
+        "ceo": "Co-Founder & CEO",
+        "cto": "Co-Founder & CTO",
+        "ops": "Head of Operations",
+        "cs": "Head of Customer Success"
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated",
+
+    "introTitle": "1. Introduction",
+    "introDesc": "Welcome to HomeEase. We respect your privacy and are committed to protecting your personal data. This privacy policy explains how we handle your data and your rights.",
+
+    "dataTitle": "2. Data We Collect",
+    "personalInfo": "2.1 Personal Information",
+    "personalDesc": "We may collect different kinds of personal data about you:",
+    "identity": "Identity Data",
+    "contact": "Contact Data",
+    "financial": "Financial Data",
+    "transaction": "Transaction Data",
+    "technical": "Technical Data",
+    "profile": "Profile Data",
+    "usage": "Usage Data",
+    "marketing": "Marketing and Communications Data",
+
+    "providerInfo": "2.2 Service Provider Information",
+    "credentials": "Professional credentials and certifications",
+    "backgroundCheck": "Background check information",
+    "insurance": "Insurance and bonding documentation",
+    "history": "Service history and ratings",
+    "tax": "Tax information for payment processing",
+
+    "usageTitle": "3. How We Use Your Data",
+    "use1": "Register you as a customer or service provider",
+    "use2": "Process and deliver your service orders",
+    "use3": "Manage our relationship with you",
+    "use4": "Administer and protect our business",
+    "use5": "Improve website and services",
+
+    "securityTitle": "4. Data Security",
+    "securityDesc": "We implement security measures to protect your personal data from unauthorized access or misuse.",
+
+    "retentionTitle": "5. Data Retention",
+    "retentionDesc": "We keep your data only as long as necessary for legal and business purposes.",
+
+    "rightsTitle": "6. Your Legal Rights",
+    "access": "Access",
+    "correction": "Correction",
+    "erasure": "Erasure",
+    "restriction": "Restriction",
+    "portability": "Data portability",
+
+    "thirdPartyTitle": "7. Third-Party Links",
+    "thirdPartyDesc": "We are not responsible for third-party websites linked on our platform.",
+
+    "cookiesTitle": "8. Cookies",
+    "cookiesDesc": "We use cookies to improve your experience and analyze traffic.",
+
+    "changesTitle": "9. Changes to This Policy",
+    "changesDesc": "We may update this policy and revise the last updated date.",
+
+    "contactTitle": "10. Contact Us",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "helppage": {
+    "title": "Help & Support",
+    "lastUpdated": "Last updated",
+
+    "faqTitle": "1. Frequently Asked Questions",
+    "faqDesc": "Visit our FAQ section to find answers to common questions about bookings, payments, cancellations, and account management.",
+
+    "contactTitle": "2. Contact Support",
+    "email": "Email",
+    "phone": "Phone",
+    "chat": "Live Chat available 24/7",
+
+    "issueTitle": "3. Service Issues",
+    "issueDesc": "If you experience any issue with a service provider, please report it through your dashboard so we can review and resolve it quickly.",
+
+    "feedbackTitle": "4. Feedback & Suggestions",
+    "feedbackDesc": "We value your feedback. Share suggestions to help us improve the HomeEase experience for everyone."
+  },
+  "securitypage": {
+  "title": "Security Policy",
+  "lastUpdated": "Last updated",
+  "locale": "en-US",
+
+  "section1Title": "1. Our Commitment to Security",
+  "section1Desc": "At HomeEase, protecting your data and ensuring platform security is our top priority. We implement strict technical and organizational measures to safeguard your information.",
+
+  "section2Title": "2. Data Protection Measures",
+  "measure1": "End-to-end encryption for sensitive data",
+  "measure2": "Secure HTTPS communication",
+  "measure3": "Regular security audits and monitoring",
+  "measure4": "Role-based access control for internal systems",
+
+  "section3Title": "3. Account Security",
+  "account1": "Strong password requirements",
+  "account2": "Multi-factor authentication (if enabled)",
+  "account3": "Login activity monitoring",
+
+  "section4Title": "4. Payment Security",
+  "section4Desc": "All transactions are processed through secure, PCI-compliant payment providers to ensure your financial data remains protected.",
+
+  "section5Title": "5. Reporting Vulnerabilities",
+  "section5Desc": "If you discover a potential security vulnerability, please contact us immediately at security@homeease.com so we can investigate and resolve the issue promptly."
+}
+
+
 }

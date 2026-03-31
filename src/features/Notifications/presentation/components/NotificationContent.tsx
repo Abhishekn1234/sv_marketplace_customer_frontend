@@ -1,5 +1,6 @@
 import { CheckCircle2, Circle, Bell, Clock, MessageSquare } from "lucide-react";
 import type { Notification } from "./NotificationCards";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   notifications: Notification[];
@@ -12,15 +13,16 @@ export default function NotificationContent({
   selected,
   toggleSelect,
 }: Props) {
+  const {t}=useLanguage();
   if (notifications.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
           <Bell className="w-10 h-10 text-gray-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-700 mb-1">No notifications yet</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">{t.notificationpage.noNotifications}</h3>
         <p className="text-sm text-gray-500 max-w-sm">
-          When you get notifications, they'll appear here. Stay tuned for updates!
+          {t.notificationpage.noNotificationsDesc}
         </p>
       </div>
     );
@@ -83,7 +85,7 @@ export default function NotificationContent({
                     </h3>
                     {isUnread && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                        New
+                         {t.notificationpage.new}
                       </span>
                     )}
                   </div>

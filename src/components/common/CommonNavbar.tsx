@@ -134,7 +134,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                     onClick={handleUseCurrentLocation}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium"
                   >
-                    Use Current Location
+                    {t.navbar["Use current location"]}
                   </button>
                   {/* You can add more location options here */}
                 </div>
@@ -148,7 +148,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               onClick={() => navigate(-1)}
               className="px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
             >
-              Back
+              {t.navbar.Back}
             </button>
           )}
         </div>

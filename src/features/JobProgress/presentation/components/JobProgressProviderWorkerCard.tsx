@@ -2,10 +2,11 @@ import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBoo
 import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { getStatusText } from "../helpers/getstatustexts";
+import { useLanguage } from "@/features/context/LanguageContext";
 export default function ProviderWorkingCard() {
   const { data } = useBookingHistory();
   const { bookingId } = useParams();
-
+ const {t}=useLanguage();
   const booking = useMemo(() => {
     if (!data?.pages) return null;
 
@@ -25,7 +26,7 @@ export default function ProviderWorkingCard() {
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
-        Professional on Site
+       {t.jobprogresspage.professionalOnSite}
       </h2>
 
       <div className="flex items-center gap-4 mb-5">
@@ -65,7 +66,7 @@ export default function ProviderWorkingCard() {
           href={worker?.phone ? `tel:${worker.phone}` : "#"}
           className="flex-1 h-11 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center justify-center"
         >
-          Call
+          {t.jobprogresspage.call}
         </a>
 
         <a
@@ -78,7 +79,7 @@ export default function ProviderWorkingCard() {
           rel="noopener noreferrer"
           className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95 flex items-center justify-center"
         >
-          Message
+         {t.jobprogresspage.message}
         </a>
       </div>
     </div>

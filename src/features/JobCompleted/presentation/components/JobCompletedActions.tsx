@@ -1,12 +1,14 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 export default function JobCompletedActions() {
+  const {t}=useLanguage();
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm w-full max-w-3xl mx-auto mt-5">
       
       {/* Title */}
       <h2 className="text-base font-bold text-gray-900 mb-4">
-        What's Next?
+           {t.jobcompletedpage.whatsNext}
       </h2>
 
       {/* Grid */}
@@ -30,7 +32,7 @@ export default function JobCompletedActions() {
             </svg>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            View Invoice
+            {t.jobcompletedpage.viewInvoice}
           </span>
         </div>
 
@@ -49,7 +51,7 @@ export default function JobCompletedActions() {
             </svg>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            Book Again
+            {t.jobcompletedpage.bookAgain}
           </span>
         </div>
 
@@ -67,7 +69,7 @@ export default function JobCompletedActions() {
             </svg>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            Get Support
+            {t.jobcompletedpage.getSupport}
           </span>
         </div>
 
@@ -87,7 +89,7 @@ export default function JobCompletedActions() {
             </svg>
           </div>
           <span className="text-sm font-semibold text-gray-900">
-            Share
+            {t.jobcompletedpage.share}
           </span>
         </div>
 

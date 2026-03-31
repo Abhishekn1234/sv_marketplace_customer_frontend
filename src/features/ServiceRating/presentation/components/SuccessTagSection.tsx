@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import type { FC } from "react";
 
 interface Tag {
@@ -16,11 +17,12 @@ const SuccessTagSection: FC<SuccessTagSectionProps> = ({ tags, setTags }) => {
     updated[index].selected = !updated[index].selected;
     setTags(updated);
   };
+  const {t}=useLanguage();
 
   return (
     <div className="mb-8">
       <label className="block text-sm font-semibold text-gray-900 mb-3">
-        What went well? <span className="text-gray-500 font-normal">(Optional)</span>
+       {t.serviceratingpage.whatWentWell} <span className="text-gray-500 font-normal">({t.serviceratingpage.optional})</span>
       </label>
 
       <div className="flex flex-wrap gap-2.5">

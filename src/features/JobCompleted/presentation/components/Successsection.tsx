@@ -1,5 +1,7 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function SuccessSection() {
+  const {t}=useLanguage();
   return (
     <div className="text-center mb-10">
       {/* Icon */}
@@ -14,13 +16,12 @@ export default function SuccessSection() {
 
       {/* Title */}
       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-        Service Completed!
+        {t.jobcompletedpage.title}!
       </h1>
 
       {/* Message */}
       <p className="text-gray-500 text-base max-w-md mx-auto leading-relaxed">
-        Your plumbing repair service has been completed successfully. Thank you
-        for choosing HomeEase!
+       {t.jobcompletedpage.message}!
       </p>
 
       {/* Tailwind animation */}

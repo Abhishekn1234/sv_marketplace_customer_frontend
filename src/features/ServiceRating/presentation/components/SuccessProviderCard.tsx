@@ -7,22 +7,23 @@ import ServiceReviewSection from "./ServiceReviewSection";
 import { useParams } from "react-router-dom";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function SuccessProviderCard() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { data, isLoading } = useBookingHistory();
-
+   const {t}=useLanguage();
   // ✅ Hooks must always be called
   const [serviceRating, setServiceRating] = useState(4);
   const [workerRating, setWorkerRating] = useState(4);
   const [tags, setTags] = useState(
     [
-      "Professional",
-      "On Time",
-      "Quality Work",
-      "Friendly",
-      "Good Communication",
-      "Clean",
+      t.serviceratingpage.tags.professional,
+      t.serviceratingpage.tags.onTime,
+      t.serviceratingpage.tags.qualityWork,
+      t.serviceratingpage.tags.friendly,
+      t.serviceratingpage.tags.goodCommunication,
+      t.serviceratingpage.tags.clean,
     ].map((label) => ({ label, selected: false }))
   );
   const [feedback, setFeedback] = useState("");
@@ -34,7 +35,7 @@ export default function SuccessProviderCard() {
   const booking = bookings.find((b) => b._id === bookingId);
 
   if (isLoading) return <div>Loading...</div>;
-  if (!booking) return <div>Booking not found</div>;
+  if (!booking) return <div>{t.serviceratingpage.bookingNotFound}</div>;
 
   const handleSubmit = () => {
     submitReview({

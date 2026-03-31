@@ -4,11 +4,12 @@ import { toast } from "react-toastify";
 import { useUpdatePassword } from "../hooks/usePassword";
 import { validatePassword } from "../utils/passwordvalidation";
 import { Eye, EyeOff } from "lucide-react";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
   const { updatePassword, loading } = useUpdatePassword();
-
+  const {t}=useLanguage();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -97,7 +98,7 @@ export default function ChangePasswordCard() {
             onClick={() => navigate(-1)}
             className="text-sm text-gray-600 hover:text-blue-600 transition"
           >
-            ← Back to Settings
+            ← {t.changepasswordpage.backToSettings}
           </button>
         </div>
 
@@ -105,37 +106,38 @@ export default function ChangePasswordCard() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
             <h2 className="text-2xl font-bold text-white">
-              Change Password
+              {t.changepasswordpage.cardTitle}
             </h2>
             <p className="text-blue-100 mt-2 text-sm">
-              Secure your account with a strong password
+              {t.changepasswordpage.cardSubtitle}
             </p>
           </div>
 
           <div className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {renderPasswordInput(
-                "Current Password",
+                t.changepasswordpage.currentPassword,
                 oldPassword,
                 setOldPassword,
                 "old",
-                "Enter current password"
+                t.changepasswordpage.enterCurrentPassword
               )}
 
               {renderPasswordInput(
-                "New Password",
+                t.changepasswordpage.newPassword,
                 newPassword,
                 setNewPassword,
                 "new",
-                "Enter new password"
+               
+                t.changepasswordpage.enterNewPassword
               )}
 
               {renderPasswordInput(
-                "Confirm New Password",
+                t.changepasswordpage.confirmNewPassword,
                 confirmPassword,
                 setConfirmPassword,
                 "confirm",
-                "Confirm new password"
+                t.changepasswordpage.confirmNewPassword
               )}
 
               {/* Submit */}
@@ -144,7 +146,7 @@ export default function ChangePasswordCard() {
                 disabled={loading}
                 className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
               >
-                {loading ? "Updating..." : "Update Password"}
+                {loading ? t.changepasswordpage.updating: t.changepasswordpage.updatePassword}
               </button>
             </form>
           </div>

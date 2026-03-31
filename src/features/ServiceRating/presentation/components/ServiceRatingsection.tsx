@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import type { FC } from "react";
 
 interface ServiceRatingSectionProps {
@@ -7,8 +8,6 @@ interface ServiceRatingSectionProps {
   setWorkerRating: (value: number) => void;
 }
 
-const stars = [1, 2, 3, 4, 5];
-const labels = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
 
 const ServiceRatingSection: FC<ServiceRatingSectionProps> = ({
   serviceRating,
@@ -16,10 +15,13 @@ const ServiceRatingSection: FC<ServiceRatingSectionProps> = ({
   workerRating,
   setWorkerRating,
 }) => {
+  const {t}=useLanguage();
+  const stars = [1, 2, 3, 4, 5];
+const labels = t.serviceratingpage.labels;
   return (
     <div className="mb-8 text-center">
       <h2 className="text-lg sm:text-base font-bold text-gray-900 mb-2">
-        Rate the Service
+        {t.serviceratingpage.rateService}
       </h2>
 
       {/* Service Rating */}
@@ -47,7 +49,7 @@ const ServiceRatingSection: FC<ServiceRatingSectionProps> = ({
 
       {/* Worker Rating */}
       <h2 className="text-lg sm:text-base font-bold text-gray-900 mb-2">
-        Rate the Worker
+        {t.serviceratingpage.rateWorker}
       </h2>
       <div className="flex justify-center gap-3 mb-1">
         {stars.map((star) => (

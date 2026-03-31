@@ -2,6 +2,7 @@ import { useState } from "react";
 import NotificationHeader from "./NotificationHeader";
 import NotificationContent from "./NotificationContent";
 import { Bell} from "lucide-react";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export interface Notification {
   id: number;
@@ -45,7 +46,7 @@ const initialNotifications: Notification[] = [
 export default function NotificationCards() {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [selected, setSelected] = useState<number[]>([]);
-
+ const {t}=useLanguage();
   const toggleSelectAll = () => {
     if (selected.length === notifications.length) {
       setSelected([]);
@@ -81,15 +82,15 @@ export default function NotificationCards() {
               <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Notifications</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">{t.notificationpage.notifications}</h1>
               <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                 {unreadCount > 0 ? (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-                    {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
+                    {unreadCount} {t.notificationpage.unread} {unreadCount === 1 ? t.notificationpage.notification : t.notificationpage.notifications}
                   </span>
                 ) : (
-                  'All caught up!'
+                  t.notificationpage.allCaughtUp
                 )}
               </p>
             </div>
@@ -98,7 +99,7 @@ export default function NotificationCards() {
           {/* Quick stats */}
           <div className="text-right">
             <p className="text-xs sm:text-sm text-gray-500">
-              {notifications.length} total
+              {notifications.length} {t.notificationpage.total}
             </p>
           </div>
         </div>

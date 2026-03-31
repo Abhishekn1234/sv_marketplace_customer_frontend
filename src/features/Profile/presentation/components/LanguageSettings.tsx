@@ -1,11 +1,12 @@
 "use client";
 
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 
 export default function LanguageSettings() {
   const language = useAuthStore((state) => state.language);
   const setLanguage = useAuthStore((state) => state.setLanguage);
-
+ const {t}=useLanguage();
   const languages = [
     { code: "EN", label: "English" },
     { code: "HI", label: "Hindi" },
@@ -25,7 +26,8 @@ export default function LanguageSettings() {
 
                 {/* Title */}
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    Select Language
+                    {t.profilepage.selectLanguage}
+                   
                 </h2>
                 </div>
 

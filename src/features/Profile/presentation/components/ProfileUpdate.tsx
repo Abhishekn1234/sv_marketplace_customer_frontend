@@ -2,12 +2,13 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useState, useEffect } from "react";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ProfileUpdate() {
   const { data: profile } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { user, setUser } = useAuthStore();
-
+  const {t}=useLanguage();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -64,14 +65,14 @@ updateProfile(form, {
     <div className="w-full px-4 py-8">
       <div className="bg-white rounded-[20px] p-8 shadow-sm border border-gray-200">
         <h3 className="text-[18px] font-bold text-gray-900 mb-6">
-          Personal Information
+          {t.profilepage.personalInfo}
         </h3>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="mb-6">
               <label className="block text-sm font-semibold mb-2">
-                First Name
+               {t.profilepage.firstName}
               </label>
               <input
                 name="firstName"
@@ -84,7 +85,7 @@ updateProfile(form, {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold mb-2">
-                Last Name
+                {t.profilepage.lastName}
               </label>
               <input
                 name="lastName"
@@ -98,7 +99,7 @@ updateProfile(form, {
 
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2">
-              Email Address
+              {t.profilepage.email}
             </label>
             <input
               name="email"
@@ -111,7 +112,7 @@ updateProfile(form, {
 
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2">
-              Phone Number
+              {t.profilepage.phone}
             </label>
             <input
               name="phone"
@@ -139,7 +140,7 @@ updateProfile(form, {
     <polyline points="7 3 7 8 15 8" />
   </svg>
 
-  {isPending ? "Saving..." : "Save Changes"}
+  {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
 </button>
 
         </form>

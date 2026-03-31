@@ -1,10 +1,11 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useState } from "react";
 
 export default function PrefeneceandNotifications() {
   const [email, setEmail] = useState(true);
   const [sms, setSms] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
-
+  const {t}=useLanguage();
   const Toggle = ({
     enabled,
     setEnabled,
@@ -41,15 +42,15 @@ export default function PrefeneceandNotifications() {
           <circle cx="12" cy="12" r="3" />
           <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m16.8-5.2l-4.2 4.2m0 6l4.2 4.2" />
         </svg>
-        Preferences & Notifications
+       {t.profilepage.preferences}
       </h3>
 
       {/* Preference List */}
       <div className="flex flex-col gap-4">
         
         {[{
-          label: "Email Notifications",
-          desc: "Receive booking updates via email",
+          label: t.profilepage.emailNotifications,
+          desc: t.profilepage.emailDesc,
           state: email,
           setState: setEmail,
           icon: (
@@ -60,8 +61,8 @@ export default function PrefeneceandNotifications() {
           )
         },
         {
-          label: "SMS Notifications",
-          desc: "Get text messages for urgent updates",
+          label: t.profilepage.smsNotifications,
+          desc: t.profilepage.smsDesc,
           state: sms,
           setState: setSms,
           icon: (
@@ -69,8 +70,8 @@ export default function PrefeneceandNotifications() {
           )
         },
         {
-          label: "Two-Factor Authentication",
-          desc: "Extra security for your account",
+          label: t.profilepage.twoFactor,
+          desc: t.profilepage.twoFactorDesc,
           state: twoFactor,
           setState: setTwoFactor,
           icon: (

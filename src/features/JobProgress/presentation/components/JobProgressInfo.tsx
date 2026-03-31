@@ -1,11 +1,12 @@
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useParams } from "react-router-dom";
 import { useMemo } from "react";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export function JobProgressInfo() {
   const { data } = useBookingHistory();
   const { bookingId } = useParams();
-
+ const {t}=useLanguage();
   const booking = useMemo(() => {
     if (!data?.pages) return null;
     const all = data.pages.flatMap((p: any) => p.data || []);
@@ -67,13 +68,13 @@ export function JobProgressInfo() {
       {/* Service Summary */}
       <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
         <h3 className="text-[16px] font-bold text-gray-900 mb-5">
-          Service Summary
+         {t.jobprogresspage.serviceSummary}
         </h3>
 
         {[
-          ["Service Type", serviceName],
-          ["Service Tier", serviceTier],
-          ["Base Price", `${currency} ${basePrice.toFixed(2)}`],
+          [t.jobprogresspage.serviceType, serviceName],
+          [t.jobprogresspage.serviceTier, serviceTier],
+          [t.jobprogresspage.basePrice, `${currency} ${basePrice.toFixed(2)}`],
         ].map(([label, value], i) => (
           <div
             key={i}
@@ -85,7 +86,7 @@ export function JobProgressInfo() {
         ))}
 
         <div className="flex justify-between pt-4 mt-2 border-t-2 border-gray-200">
-          <span className="text-sm text-gray-500 font-medium">Total</span>
+          <span className="text-sm text-gray-500 font-medium">{t.jobprogresspage.total}</span>
           <span className="text-[18px] font-bold text-blue-600">
             {currency} {total}
           </span>
@@ -94,21 +95,21 @@ export function JobProgressInfo() {
 
       {/* Service Info */}
       <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
-        <h3 className="text-[16px] font-bold text-gray-900 mb-4">Service Info</h3>
+        <h3 className="text-[16px] font-bold text-gray-900 mb-4">{t.jobprogresspage.serviceInfo}</h3>
 
         <div className="space-y-4 text-sm">
           <div>
-            <div className="text-gray-500 text-[13px]">Date</div>
+            <div className="text-gray-500 text-[13px]">{t.jobprogresspage.date}</div>
             <div className="font-semibold text-gray-900">{startDate}</div>
           </div>
 
           <div>
-            <div className="text-gray-500 text-[13px]">Duration</div>
+            <div className="text-gray-500 text-[13px]">{t.jobprogresspage.duration}</div>
             <div className="font-semibold text-gray-900">{duration}</div>
           </div>
 
           <div>
-            <div className="text-gray-500 text-[13px]">Location</div>
+            <div className="text-gray-500 text-[13px]">{t.jobprogresspage.location}</div>
             <div className="font-semibold text-gray-900">{formattedCoordinates}</div>
           </div>
         </div>

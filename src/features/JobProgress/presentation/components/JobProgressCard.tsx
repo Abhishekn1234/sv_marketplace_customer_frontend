@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { getStepStatus } from "../helpers/getstatusprogress";
 import { useParams } from "react-router-dom";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export function JobProgressCard() {
   const { data } = useBookingHistory();
@@ -15,7 +16,7 @@ export function JobProgressCard() {
     const allBookings = data.pages.flatMap((p: any) => p.data || []);
     return allBookings.find((b: any) => b._id === bookingId);
   }, [data, bookingId]);
-
+ const {t}=useLanguage();
   const status = booking?.status;
 
   // ✅ HANDLE TASKS (including cancelled cases)
@@ -26,11 +27,11 @@ export function JobProgressCard() {
     if (status === "WORKER_CANCELLED") {
       return [
         {
-          title: "Booking requested",
+          title: t.jobprogresspage.bookingRequested,
           status: "completed",
         },
         {
-          title: "Worker has cancelled",
+          title: t.jobprogresspage.workerCancelled,
           status: "cancelled",
         },
       ];
@@ -40,11 +41,11 @@ export function JobProgressCard() {
     if (status === "CUSTOMER_CANCELLED") {
       return [
         {
-          title: "Booking requested",
+          title: t.jobprogresspage.bookingRequested,
           status: "completed",
         },
         {
-          title: "You cancelled the booking",
+          title: t.jobprogresspage.customerCancelled,
           status: "cancelled",
         },
       ];
@@ -52,12 +53,12 @@ export function JobProgressCard() {
 
     // ✅ NORMAL FLOW
     return [
-      "Booking requested",
-      "Worker assigned",
-      "Work in progress",
-      "Work completed",
-      "Invoice Generated",
-      "Payment completed",
+     t.jobprogresspage.bookingRequested,
+      t.jobprogresspage.workerAssigned,
+      t.jobprogresspage.workInProgress,
+      t.jobprogresspage.workCompleted,
+      t.jobprogresspage.invoiceGenerated,
+      t.jobprogresspage.paymentCompleted,
     ].map((title, index) => ({
       title,
       status: getStepStatus(index + 1, status),
@@ -67,7 +68,7 @@ export function JobProgressCard() {
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
-        Task Checklist
+       {t.jobprogresspage.taskChecklist}
       </h2>
 
       <div className="flex flex-col gap-3">

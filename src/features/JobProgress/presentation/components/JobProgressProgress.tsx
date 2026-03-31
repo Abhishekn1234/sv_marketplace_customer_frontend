@@ -5,11 +5,12 @@ import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { progressMap } from "@/features/Home/presentation/helpers/progressmap";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export function JobProgressProgress() {
   const { data } = useBookingHistory();
   const { bookingId } = useParams();
-
+ const {t}=useLanguage();
   const booking = useMemo(() => {
     if (!data?.pages) return null;
 
@@ -41,11 +42,11 @@ export function JobProgressProgress() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[18px] font-bold text-gray-900">
-            Overall Progress
+            {t.jobprogresspage.overallProgress}
           </h2>
 
           <div className="px-4 py-2 bg-red-50 text-red-600 text-[13px] font-semibold rounded-full">
-            Cancelled
+           {t.jobprogresspage.cancelled}
           </div>
         </div>
 
@@ -62,7 +63,7 @@ export function JobProgressProgress() {
           </p>
 
           <p className="text-gray-500 text-sm mt-2">
-            This job will not proceed further.
+            {t.jobprogresspage.jobStopped}
           </p>
         </div>
 
@@ -81,7 +82,7 @@ export function JobProgressProgress() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-[18px] font-bold text-gray-900">
-          Overall Progress
+          {t.jobprogresspage.overallProgress}
         </h2>
 
         <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 text-[13px] font-semibold rounded-full">
@@ -101,7 +102,7 @@ export function JobProgressProgress() {
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex justify-between text-sm font-medium mb-2">
-          <span className="text-gray-500">Task Completion</span>
+          <span className="text-gray-500">{t.jobprogresspage.taskCompletion}</span>
           <span className="text-blue-600 font-semibold">
             {progress}%
           </span>
@@ -129,7 +130,7 @@ export function JobProgressProgress() {
           <circle cx="12" cy="12" r="10" />
           <polyline points="12 6 12 12 16 14" />
         </svg>
-        Started at {startTime} • Est. completion: {endTime}
+        {t.jobprogresspage.startedAt} {startTime} • {t.jobprogresspage.estimatedCompletion}: {endTime}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import { Trash2, CheckSquare, Square, BellRing } from "lucide-react";
 
 interface Props {
@@ -18,7 +19,7 @@ export default function NotificationHeader({
   unreadCount,
 }: Props) {
   const allSelected = selected.length === total && total > 0;
-
+ const {t}=useLanguage();
   return (
     <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 gap-4">
@@ -43,16 +44,16 @@ export default function NotificationHeader({
               )}
             </div>
             <span className="hidden sm:inline">
-              {allSelected ? "Deselect All" : "Select All"}
+              {allSelected ? t.notificationpage.unselect : t.notificationpage.selectAll}
             </span>
             <span className="sm:hidden">
-              {selected.length > 0 ? `${selected.length} selected` : "Select"}
+              {selected.length > 0 ? `${selected.length} ${t.notificationpage.selected}` : t.notificationpage.select}
             </span>
           </button>
 
           {selected.length > 0 && (
             <span className="text-sm bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium animate-fade-in">
-              {selected.length} selected
+              {selected.length} {t.notificationpage.selected}
             </span>
           )}
         </div>
@@ -69,8 +70,8 @@ export default function NotificationHeader({
             }`}
           >
             <BellRing className="w-4 h-4" />
-            <span className="hidden xs:inline">Mark All Read</span>
-            <span className="xs:hidden">Read</span>
+            <span className="hidden xs:inline">{t.notificationpage.markAllRead}</span>
+            <span className="xs:hidden">{t.notificationpage.read}</span>
           </button>
 
           <button
@@ -83,8 +84,8 @@ export default function NotificationHeader({
             }`}
           >
             <Trash2 className="w-4 h-4" />
-            <span className="hidden xs:inline">Delete Selected</span>
-            <span className="xs:hidden">Delete</span>
+            <span className="hidden xs:inline">{t.notificationpage.deleteSelected}</span>
+            <span className="xs:hidden">{t.notificationpage.delete}</span>
           </button>
         </div>
       </div>
@@ -94,8 +95,8 @@ export default function NotificationHeader({
         <div className="bg-blue-50/80 backdrop-blur-sm px-4 py-2 border-t border-blue-100">
           <p className="text-xs text-blue-700 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></span>
-            {selected.length} notification{selected.length !== 1 ? 's' : ''} selected. 
-            <span className="text-blue-500">Choose an action above.</span>
+            {selected.length} {t.notificationpage.notification}{selected.length !== 1 ? 's' : ''} {t.notificationpage.selected}. 
+            <span className="text-blue-500">{t.notificationpage.chooseAction}</span>
           </p>
         </div>
       )}

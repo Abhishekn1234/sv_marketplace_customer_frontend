@@ -1,14 +1,16 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 
 
 export default function JobCompletedProvider() {
+  const {t}=useLanguage();
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200">
       
       {/* Header */}
       <h2 className="text-base font-bold text-gray-900 mb-5">
-        Your Professional
+        {t.jobcompletedpage.yourProfessional}
       </h2>
 
       {/* Profile Section */}
@@ -60,7 +62,7 @@ export default function JobCompletedProvider() {
         </p>
 
         <button className="w-full h-12 rounded-xl bg-blue-600 text-white text-[15px] font-semibold flex items-center justify-center transition-all duration-200 active:scale-95 hover:bg-blue-700 hover:-translate-y-[1px] shadow-md">
-          Rate Your Experience
+         {t.jobcompletedpage.rateExperience}
         </button>
       </div>
     </div>

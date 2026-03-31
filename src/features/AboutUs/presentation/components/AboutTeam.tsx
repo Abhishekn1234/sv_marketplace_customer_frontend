@@ -1,9 +1,12 @@
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function AboutTeam() {
+  const {t}=useLanguage();
   const team = [
-    { name: "Sarah Chen", role: "Co-Founder & CEO" },
-    { name: "Michael Rodriguez", role: "Co-Founder & CTO" },
-    { name: "Emily Thompson", role: "Head of Operations" },
-    { name: "David Park", role: "Head of Customer Success" },
+    { name: "Sarah Chen", role: t.aboutpage.team.members.ceo },
+    { name: "Michael Rodriguez", role: t.aboutpage.team.members.cto },
+    { name: "Emily Thompson", role: t.aboutpage.team.members.cs },
+    { name: "David Park", role: t.aboutpage.team.members.ops },
   ];
 
   return (
@@ -11,7 +14,7 @@ export default function AboutTeam() {
 
       {/* Section Title */}
       <h2 className="text-[32px] font-bold text-gray-900 text-center mb-8">
-        Our Leadership Team
+        {t.aboutpage.team.title}
       </h2>
 
       {/* Grid */}

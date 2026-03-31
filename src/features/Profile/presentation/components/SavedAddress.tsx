@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function SavedAddress() {
   const { current_location, addAddress, updateAddress, deleteAddress } = useAuthStore();
   const addresses = current_location?.addresses ?? [];
-
+ const {t}=useLanguage();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAddress, setNewAddress] = useState("");
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
@@ -82,13 +83,13 @@ export default function SavedAddress() {
                 onClick={saveEdit}
                 className="px-3 py-1 bg-green-500 text-white rounded-lg text-xs"
               >
-                Save
+                {t.profilepage.save}
               </button>
               <button
                 onClick={cancelEdit}
                 className="px-3 py-1 bg-gray-300 rounded-lg text-xs"
               >
-                Cancel
+                {t.profilepage.cancel}
               </button>
             </>
           ) : (
@@ -97,13 +98,13 @@ export default function SavedAddress() {
                 onClick={() => startEdit(addr.id, addr.value)}
                 className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition text-xs"
               >
-                Edit
+                {t.profilepage.edit}
               </button>
               <button
                 onClick={() => handleDelete(addr.id)}
                 className="px-3 py-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition text-xs"
               >
-                Delete
+                {t.profilepage.delete}
               </button>
             </>
           )}
@@ -124,7 +125,7 @@ export default function SavedAddress() {
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm border mt-6">
-      <h3 className="text-xl font-bold mb-6">Saved Addresses</h3>
+      <h3 className="text-xl font-bold mb-6">{t.profilepage.savedAddresses}</h3>
 
       <div className="flex flex-col gap-4">
         {homeAddresses.map((addr, i) => renderCard(addr, i))}
@@ -139,7 +140,7 @@ export default function SavedAddress() {
                   checked={selectedType === "home"}
                   onChange={() => setSelectedType("home")}
                 />
-                Home
+               {t.profilepage.home}
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -147,7 +148,7 @@ export default function SavedAddress() {
                   checked={selectedType === "office"}
                   onChange={() => setSelectedType("office")}
                 />
-                Office
+                {t.profilepage.office}
               </label>
             </div>
 
@@ -162,7 +163,7 @@ export default function SavedAddress() {
                 onClick={handleAdd}
                 className="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
               >
-                Add Address
+                {t.profilepage.addAddress}
               </button>
               <button
                 onClick={() => {
@@ -171,7 +172,7 @@ export default function SavedAddress() {
                 }}
                 className="px-5 py-2 bg-gray-200 rounded-xl text-sm"
               >
-                Cancel
+                {t.profilepage.cancel}
               </button>
             </div>
           </div>
@@ -180,7 +181,7 @@ export default function SavedAddress() {
             onClick={() => setShowAddForm(true)}
             className="w-full py-4 bg-blue-50 border-2 border-dashed border-blue-600 rounded-2xl text-blue-600 font-semibold hover:bg-blue-600 hover:text-white transition"
           >
-            + Add New Address
+            + {t.profilepage.addAddress}
           </button>
         )}
       </div>

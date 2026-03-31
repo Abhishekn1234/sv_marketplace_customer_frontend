@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import { LogOutIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ import { toast } from "react-toastify";
 export default function ProfileTop() {
   const navigate = useNavigate();
   const clearAuth = useAuthStore((state) => state.clearAuth);
-
+   const {t}=useLanguage();
   const handleLogout = () => {
     clearAuth();
     toast.success("Logged out successfully");
@@ -31,14 +32,14 @@ export default function ProfileTop() {
         >
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
-        Back to Dashboard
+       {t.profilepage.backToDashboard}
       </button>
 
       {/* Title + Logout Row */}
       <div className="flex items-center justify-between gap-4">
         
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold text-gray-900 tracking-[-0.02em]">
-          My Profile
+          {t.profilepage.myProfile}
         </h1>
 
         <button
@@ -50,7 +51,7 @@ export default function ProfileTop() {
           transition-all duration-200 whitespace-nowrap"
         >
           <LogOutIcon size={18} />
-          Logout
+          {t.profilepage.logout}
         </button>
 
       </div>
