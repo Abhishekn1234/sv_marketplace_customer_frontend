@@ -184,7 +184,8 @@
   "location": "Location",
   "duration": "Duration",
   "totalPaid": "Total Paid",
-
+  "hour": "Hour",
+  "minutes":"Minutes",
   "hours": "Hours",
   "days": "Days",
   "na": "N/A",

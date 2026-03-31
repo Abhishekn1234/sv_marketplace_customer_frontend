@@ -126,6 +126,7 @@
   "bookingdetailpage":{
      "backToServices": "العودة إلى الخدمات",
      "title": "تفاصيل الحجز",
+     
     "serviceSummary": "ملخص الخدمة",
     "serviceType": "نوع الخدمة",
     "serviceProfessional": "مزود الخدمة",
@@ -182,7 +183,8 @@
   "location": "الموقع",
   "duration": "المدة",
   "totalPaid": "إجمالي المدفوع",
-
+   "hour":"ساعة",
+   "minutes":"دقائق",
   "hours": "ساعات",
   "days": "أيام",
   "na": "غير متوفر",

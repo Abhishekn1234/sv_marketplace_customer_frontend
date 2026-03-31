@@ -182,8 +182,9 @@
   "location": "स्थान",
   "duration": "अवधि",
   "totalPaid": "कुल भुगतान",
-
+   "hour": "घंटा",
   "hours": "घंटे",
+  "minutes":"मिनट",
   "days": "दिन",
   "na": "लागू नहीं",
 
