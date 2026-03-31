@@ -102,7 +102,7 @@ export default function CommonNotificationFloater({
         {/* Header */}
         <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
-            {t.notificationpage.notifications}
+            {t.notificationpage.title}
           </h3>
           <button
             onClick={() => {

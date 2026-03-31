@@ -37,6 +37,7 @@ import ScrollToTop from "./ScrollToTop";
 import { useNotification } from "./features/utils/useNotification";
 import { useEffect } from "react";
 import './App.css';
+import Disputepage from "./features/Disputes/presentation/Disputepage";
 
 function App() {
   useNotification();
@@ -90,6 +91,7 @@ function App() {
                 <Route path="jobcompleted" element={<JobCompletedPage />} />
                 <Route path="services/:id" element={<ServiceDetailPage />} />
                 <Route path="privacy" element={<PrivacyPolicyPage />} />
+                <Route path="dispute/:bookingId" element={<Disputepage/>}/>
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
                 <Route path="profile" element={<Profile />} />

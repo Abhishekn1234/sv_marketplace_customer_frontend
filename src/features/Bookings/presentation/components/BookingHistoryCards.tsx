@@ -10,6 +10,7 @@ import { getBookingButtonConfig } from "../helpers/bookingstatusbuttonmap";
 import { formatStatus } from "../helpers/formatstatusmap";
 import { statusStyles } from "../helpers/statusmap";
 import { BookingActions } from "./BookingHistoryActions";
+import { formatBookingDuration } from "../helpers/formatduration";
 
 interface BookingCardProps {
   booking: BookingHistory;
@@ -19,6 +20,7 @@ interface BookingCardProps {
   onGenerateCompletedOtp: (bookingId: string) => void;
   onInvoiceClick: (booking: BookingHistory) => void;
   onVerifyPayment: (paymentId: string) => void;
+
 }
 
 export default function BookingCard({
@@ -29,6 +31,7 @@ export default function BookingCard({
   onGenerateCompletedOtp,
   onInvoiceClick,
   onVerifyPayment,
+
 }: BookingCardProps) {
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
@@ -100,13 +103,9 @@ export default function BookingCard({
         </div>
         <div>
           <span className="text-xs text-gray-500">Duration</span>
-          <p className="text-sm sm:text-base font-semibold">
-            {booking.schedule
-              ? booking.pricingMode === "HOURLY"
-                ? `${booking.schedule.estimatedHours ?? "-"} hrs`
-                : `${booking.schedule.estimatedDays ?? "-"} days`
-              : "-"}
-          </p>
+           <p className="text-sm sm:text-base font-semibold">
+            {formatBookingDuration(booking)}
+           </p>
         </div>
         <div>
           <span className="text-xs text-gray-500">Booking ID</span>
@@ -124,6 +123,7 @@ export default function BookingCard({
         onPayNow={() => onPayNow(booking._id)}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
+         navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}
       />
     </CommandCard>
   );

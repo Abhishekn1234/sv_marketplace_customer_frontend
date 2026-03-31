@@ -260,8 +260,18 @@
     "track": "Track",
     "Rate Your Service":"Rate Your Service",
     "cancelled": "Cancelled",
-    "rebook": "Rebook"
+    "rebook": "Rebook",
+    "Create Dispute": "Create Dispute"
     }
+},
+"disputespage":{
+ "title": "Booking Disputes",
+    "reason": "Reason",
+    "reasonPlaceholder": "Enter reason for dispute",
+    "description": "Description",
+    "descriptionPlaceholder": "Provide detailed description",
+    "submit": "Submit",
+    "back": "Back"
 },
 "profilepage": {
   "backToDashboard": "Back to Dashboard",

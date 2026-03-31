@@ -2,6 +2,7 @@
 import SummaryItem from "./SummaryItem";
 import { formatSmartDate } from "../helpers/formatdatetime";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/helpers/formatduration";
 
 interface BookingSummaryProps {
   data: any;
@@ -11,23 +12,7 @@ interface BookingSummaryProps {
 
 export default function BookingSummary({ data, placeName, tierName }: BookingSummaryProps) {
   const {t}=useLanguage();
-  const duration =
-  data?.pricingMode === "HOURLY"
-    ? (() => {
-        const hours = data?.schedule?.estimatedHours ?? 0;
-
-        if (hours < 1) {
-          const mins = Math.round(hours * 60);
-          return `${mins} ${t.confirmationpage.bookingSummary.minutes}`;
-        } else if (hours === 1) {
-          return `${t.confirmationpage.bookingSummary.hour}`;
-        } else {
-          return `${hours} ${t.confirmationpage.bookingSummary.hours}`;
-        }
-      })()
-    : data?.pricingMode === "PER_DAY"
-    ? `${data?.schedule?.estimatedDays ?? 0} ${t.confirmationpage.bookingSummary.days}`
-    : t.confirmationpage.bookingSummary.na;
+  const duration = formatBookingDurationWithTranslation(data, t);
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">

@@ -16,6 +16,7 @@ import BookingModals from "./BookingHistoryModals";
 import { tabStatusMap } from "../helpers/tabstatusmap";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   activeTab: string;
@@ -24,7 +25,7 @@ interface Props {
 export default function BookingHistoryContents({ activeTab }: Props) {
  
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
+  const navigate=useNavigate();
   // Booking data
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = 
     useBookingHistory({ limit: 10 });
@@ -114,7 +115,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
       onSuccess: () => toast.success("Payment verified!"),
     });
   };
-
+  
   const generateInvoice = useGenerateInvoice();
   const handleInvoiceClick = (booking: BookingHistory) => {
   if (!booking._id) return toast.error("Booking ID missing");
@@ -166,6 +167,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           onGenerateCompletedOtp={handleGenerateCompletedOtp}
           onInvoiceClick={handleInvoiceClick}
           onVerifyPayment={handleVerifyPayment}
+         
         />
       ))}
 

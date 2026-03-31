@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
+import { formatBookingDuration } from "../helpers/formatduration";
 
 interface Props {
   booking: BookingHistory | null;
@@ -25,12 +26,7 @@ export default function BookingHistoryViewDetailsModal({
     ? formatSmartDate(booking.schedule.startDateTime)
     : "-";
 
-  const duration = booking.schedule
-    ? booking.pricingMode === "HOURLY"
-      ? `${booking.schedule.estimatedHours ?? "-"} hrs`
-      : `${booking.schedule.estimatedDays ?? "-"} days`
-    : "-";
-
+ const duration =formatBookingDuration(booking);
   const price =
     booking.amount !== undefined
       ? `${booking.currency} ${booking.amount.toFixed(2)}`

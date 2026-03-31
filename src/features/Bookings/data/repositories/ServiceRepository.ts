@@ -10,18 +10,29 @@ import type { Category } from "../../domain/entities/category.types";
 import apiClient from "../../../api/interceptor";
 import type { GetBookingsResponse } from "../../domain/entities/getbookingresponse.types";
 import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
+import type { GetServicesParams } from "../../domain/entities/bookingservices.params.types";
 export class ServiceRepository implements IServiceRepository {
  private readonly baseUrl = "booking"; 
 
 
-async getServices(): Promise<APIResponse<Category[]>> {
-  const response = await apiClient.get<APIResponse<Category[]>>("/services");
+  async getServices(params: GetServicesParams = {}): Promise<APIResponse<Category[]>> {
+    const queryParams = new URLSearchParams();
 
-  console.log("Full Axios Response:", response); 
-  console.log("Actual API Data:", response.data);
+    if (params.page !== undefined) queryParams.append("page", params.page.toString());
+    if (params.limit !== undefined) queryParams.append("limit", params.limit.toString());
+    if (params.sort) queryParams.append("sort", params.sort);
+    if (params.search) queryParams.append("search", params.search);
+    if (params.categoryId) queryParams.append("categoryId", params.categoryId);
 
-  return response.data;
-}
+    const url = `${this.baseUrl}/services?${queryParams.toString()}`;
+
+    const response = await apiClient.get<APIResponse<Category[]>>(url);
+
+    console.log("Full Axios Response:", response);
+    console.log("Actual API Data:", response.data);
+
+    return response.data;
+  }
   async getBookings(): Promise<GetBookingsResponse> {
   const response = await apiClient.get<GetBookingsResponse>(`/booking`);
   console.log("Single booking object:", response.data);

@@ -258,8 +258,20 @@
     "track": "تتبع",
     "Rate Your Service": "قيّم خدمتك",
     "cancelled": "تم الإلغاء",
-     "rebook": "إعادة الحجز"
+     "rebook": "إعادة الحجز",
+     "Create Dispute": "إنشاء نزاع"
     }
+  
+},
+"disputespage":{
+  
+    "title": "نزاعات الحجز",
+    "reason": "السبب",
+    "reasonPlaceholder": "أدخل سبب النزاع",
+    "description": "الوصف",
+    "descriptionPlaceholder": "قدم وصفاً مفصلاً",
+    "submit": "إرسال",
+    "back": "رجوع"
   
 },
 "profilepage": {

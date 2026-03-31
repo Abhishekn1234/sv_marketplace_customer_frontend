@@ -10,6 +10,7 @@ interface BookingActionsProps {
   onPayNow: () => void;
   onCheckProgress: () => void;
   onInvoiceClick: () => void;
+   navigatetodispute: (booking: BookingHistory) => void;
 }
 
 export function BookingActions({
@@ -20,6 +21,7 @@ export function BookingActions({
   onViewDetails,
   onPayNow,
   onCheckProgress,
+  navigatetodispute
 //   onInvoiceClick,
 }: BookingActionsProps) {
   const {t}=useLanguage();
@@ -55,6 +57,7 @@ export function BookingActions({
          {t.Bookingspage.Actions.checkProgress}
         </button>
       )}
+
     
       <button
         onClick={() => {
@@ -68,6 +71,22 @@ export function BookingActions({
       >
         {booking.status === "COMPLETED" && !booking.invoiceId ? t.Bookingspage.Actions.payNow : t.Bookingspage.Actions.viewDetails}
       </button>
+      <button
+          onClick={() => navigatetodispute(booking)}
+          className="
+            px-4 py-2 
+            rounded-lg 
+            text-sm font-medium 
+            bg-red-600 text-white 
+            hover:bg-red-700 
+            focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 
+            transition 
+            shadow-sm 
+            whitespace-nowrap
+          "
+        >
+          {t.Bookingspage.Actions["Create Dispute"]}
+        </button>
     </div>
   );
 }

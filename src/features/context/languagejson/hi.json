@@ -258,9 +258,19 @@
       "track": "ट्रैक करें",
       "Rate Your Service":"अपनी सेवा को रेट करें",
       "cancelled": "रद्द किया गया",
-       "rebook": "दोबारा बुक करें"
+       "rebook": "दोबारा बुक करें",
+       "Create Dispute": "विवाद बनाएं"
     }
       
+},
+"disputespage":{
+  "title": "बुकिंग विवाद",
+    "reason": "कारण",
+    "reasonPlaceholder": "विवाद का कारण दर्ज करें",
+    "description": "विवरण",
+    "descriptionPlaceholder": "विस्तृत विवरण दें",
+    "submit": "सबमिट करें",
+    "back": "वापस"
 },
 "profilepage": {
   "backToDashboard": "डैशबोर्ड पर वापस जाएं",
