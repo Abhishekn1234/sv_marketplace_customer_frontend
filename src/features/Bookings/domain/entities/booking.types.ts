@@ -8,7 +8,7 @@ import type { AssignedWorker } from './assignedworkers.type';
 export interface Booking {
   _id: string;
   userId: string;
-
+ bookingCode?:string;
   // Service reference and populated service object
   serviceId: Service;
   service?: Service;

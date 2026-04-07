@@ -21,6 +21,7 @@ export interface BookingHistoryQueryParams {
 export interface BookingHistory {
   _id: string;
   userId: string;
+  bookingCode?:string;
   serviceId: string;
   serviceTierId: string;
   assignedWorkers?:AssignedWorker[];

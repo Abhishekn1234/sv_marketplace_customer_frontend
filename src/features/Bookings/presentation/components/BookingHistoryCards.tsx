@@ -109,7 +109,8 @@ export default function BookingCard({
         </div>
         <div>
           <span className="text-xs text-gray-500">Booking ID</span>
-          <p className="text-sm sm:text-base font-semibold truncate">{booking._id}</p>
+          {/* <p className="text-sm sm:text-base font-semibold truncate">{booking._id}</p> */}
+          <p className="text-sm sm:text-base font-semibold truncate">{booking.bookingCode}</p>
         </div>
       </div>
 
