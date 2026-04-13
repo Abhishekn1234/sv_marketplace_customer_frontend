@@ -1,10 +1,12 @@
 "use client";
 
 import BookingHistoryViewDetailsModal from "./BookingHistoryViewDetailsModal";
-import PaymentModal from "@/features/Payment/presentation/Paymentpage";
+
 import InvoiceModal from "@/features/JobTracking/presentation/components/InvoiceModal";
 import OtpModal from "@/components/common/CommonOtpModal";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface BookingModalsProps {
   selectedBooking: BookingHistory | null;
@@ -56,7 +58,7 @@ export default function BookingModals({
   serviceTiers,
 }: BookingModalsProps) {
   const paymentBooking = allBookings.find(b => b._id === paymentBookingId);
-
+const navigate = useNavigate();
   return (
     <>
       <BookingHistoryViewDetailsModal
@@ -65,15 +67,19 @@ export default function BookingModals({
         onClose={onCloseModal}
       />
 
-      {paymentBooking && (
-        <PaymentModal
-          bookingId={paymentBooking._id}
-          serviceName={paymentBooking.service?.name ?? "Service Name"}
-          price={paymentBooking.amount}
-          currency={paymentBooking.currency}
-          isOpen={paymentModalOpen}
-          onClose={onClosePaymentModal}
-        />
+      {paymentModalOpen && paymentBooking && (
+        useEffect(() => {
+          navigate("/payment", {
+            state: {
+              bookingId: paymentBooking._id,
+              serviceName: paymentBooking.service?.name ?? "Service Name",
+              price: paymentBooking.amount,
+              currency: paymentBooking.currency,
+            },
+          });
+
+          onClosePaymentModal();
+        }, [paymentModalOpen, paymentBooking])
       )}
 
       {invoiceModalOpen && selectedInvoice && selectedBookingForInvoice && (
