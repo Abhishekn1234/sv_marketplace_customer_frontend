@@ -13,9 +13,7 @@ export default function ProfileList() {
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { setUser, user } = useAuthStore();
   const {data:bookings}=useBookingHistory();
-  const bookingcount = bookings?.pages
-  ?.flatMap(page => page.pagination.totalItems || []) // adjust 'data' key if different
-  .length || 0;
+  const bookingcount = bookings?.pages.map((page)=>page.pagination.totalItems)
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const {t}=useLanguage();

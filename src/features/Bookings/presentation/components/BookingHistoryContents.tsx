@@ -16,6 +16,7 @@ import BookingModals from "./BookingHistoryModals";
 import { tabStatusMap } from "../helpers/tabstatusmap";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
+import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 // import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -110,8 +111,8 @@ export default function BookingHistoryContents({ activeTab }: Props) {
     );
   };
 
-  const handleVerifyPayment = (paymentId: string) => {
-    verifyPaymentMutation.mutate(paymentId, {
+  const handleVerifyPayment = (data:PaymentCallback) => {
+    verifyPaymentMutation.mutate(data, {
       onSuccess: () => toast.success("Payment verified!"),
     });
   };

@@ -5,6 +5,7 @@ import CommonNavbar from "@/components/common/CommonNavbar";
 import Footer from "@/components/common/CommonFooter";
 import ProgressStepper from "../../components/common/ProgressStepper";
 import VerificationStepper from "../Auth/presentation/components/Verification/presentation/components/VerificationStepper";
+// import SocketModal from "../core/Websocket/SocketModal";
 // import { useVerificationStore } from "../core/store/usestep";
 
 interface Props {
@@ -98,6 +99,7 @@ export default function DashboardLayout({ children }: Props) {
         showHomeLinks={!isAuthPage && navbarProps.showHomeLinks}
         rightButton={rightButton}
       />
+      
 
       {/* Only show stepper in specific pages */}
       {(isRegisterPage || isLanguagePage || isLocationPage) && <ProgressStepper />}
@@ -108,6 +110,7 @@ export default function DashboardLayout({ children }: Props) {
 
       <main className="flex-1 mx-auto max-w-7xl px-4 py-6 pb-24 w-full">
         {children || <Outlet />}
+        {/* <SocketModal/> */}
       </main>
 
       {!isAuthPage && !isConfirmationPage && <BottomNav />}

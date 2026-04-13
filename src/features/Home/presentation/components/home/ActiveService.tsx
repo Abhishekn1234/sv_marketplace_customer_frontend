@@ -23,6 +23,15 @@ export default function ActiveService() {
   "COMPLETED", 
 ];
 
+const allowedStatuses = [
+  "IN_PROGRESS",
+  "ACCEPTED",
+  "WORKER_ACCEPTED",
+  "REQUESTED",
+  "WORK_COMPLETED_PENDING",
+  "ASSIGNED",
+];
+
   const activeBookings = useMemo(() => {
     return datas.filter((b) => ACTIVE_STATUSES.includes(b.status));
   }, [datas]);
@@ -155,30 +164,32 @@ export default function ActiveService() {
           )}
 
           <div className="flex gap-3">
-            <button
-              onClick={() =>
-                (window.location.href = `/jobtracking/${booking._id}`)
-              }
-              className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
-            >
-              {t.home.Track}
-            </button>
+              {allowedStatuses.includes(status) && (
+                <>
+                  <button
+                    onClick={() =>
+                      (window.location.href = `/jobtracking/${booking._id}`)
+                    }
+                    className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
+                  >
+                    {t.home.Track}
+                  </button>
 
-            <button className="flex-1 h-12 rounded-xl bg-white border border-blue-100 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition">
-              {t.home.Chat}
-            </button>
-          </div>
+                  <button className="flex-1 h-12 rounded-xl bg-white border border-blue-100 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition">
+                    {t.home.Chat}
+                  </button>
+                </>
+              )}
+            </div>
 
           {status === "COMPLETED" && (
-            <button
-              onClick={() =>
-                (window.location.href = `/bookings`)
-              }
-              className="mt-3 w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
-            >
-             {t.home["View Booking"]}
-            </button>
-          )}
+      <button
+        onClick={() => (window.location.href = `/bookings`)}
+        className="mt-3 w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
+      >
+        {t.home["View Booking"]}
+      </button>
+    )}
         </>
       ) : isPaid ? (
         <button

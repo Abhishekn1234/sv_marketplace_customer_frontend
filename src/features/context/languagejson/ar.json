@@ -274,6 +274,24 @@
     "back": "رجوع"
   
 },
+"paymentpage": {
+  "title": "إتمام الدفع",
+  "selectMethod": "اختر طريقة الدفع",
+  "loading": "جارٍ تحميل طرق الدفع...",
+  "noMethods": "لا توجد طرق دفع متاحة",
+  "bookingId": "رقم الحجز",
+  "confirmCash": "تأكيد الحجز",
+  "pay": "ادفع",
+  "processing": "جارٍ المعالجة...",
+  "cashConfirmed": "تم تأكيد الحجز (نقدًا)",
+  "paymentInitiated": "تم بدء الدفع",
+  "paymentFailed": "فشل الدفع",
+  "goToBookings": "الذهاب إلى الحجوزات",
+  "verifying": "جارٍ التحقق من الدفع...",
+    "wait": "يرجى الانتظار حتى نؤكد عملية الدفع.",
+    "verified": "تم التحقق من الدفع",
+    "failed": "فشل التحقق"
+},
 "profilepage": {
   "backToDashboard": "العودة إلى لوحة التحكم",
   "myProfile": "ملفي الشخصي",

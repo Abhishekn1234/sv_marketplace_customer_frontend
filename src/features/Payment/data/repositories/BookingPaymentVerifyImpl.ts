@@ -1,11 +1,12 @@
 import type { IBookingPaymentVerifyRepository } from "../../domain/repositories/VerifyPaymentRepo";
-import type { VerifyPaymentRequest, VerifyPaymentResponse } from "../../domain/entities/verifypayment";
+import type {  VerifyPaymentResponse } from "../../domain/entities/verifypayment";
 import apiClient from "@/features/api/interceptor";
+import type { PaymentCallback } from "../../domain/entities/paymentcallback";
 
 export class BookingPaymentVerifyRepositoryImpl implements IBookingPaymentVerifyRepository {
-  async verifyPayment(request: VerifyPaymentRequest): Promise<VerifyPaymentResponse> {
+  async verifyPayment(request: PaymentCallback): Promise<VerifyPaymentResponse> {
     try {
-      const response = await apiClient.post("/booking/payment/verify-mock", request);
+      const response = await apiClient.post("/booking/payment/callback", request);
 
       // Use actual API response
       const data = response.data;

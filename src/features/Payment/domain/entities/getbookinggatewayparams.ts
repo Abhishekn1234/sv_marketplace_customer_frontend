@@ -1,0 +1,1 @@
+export type PaymentGatewayTypes="CARD"|"UPI"|"WALLET"|"NET_BANKING"|"CASH"

@@ -11,6 +11,7 @@ import { formatStatus } from "../helpers/formatstatusmap";
 import { statusStyles } from "../helpers/statusmap";
 import { BookingActions } from "./BookingHistoryActions";
 import { formatBookingDuration } from "../helpers/formatduration";
+import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 
 interface BookingCardProps {
   booking: BookingHistory;
@@ -19,14 +20,14 @@ interface BookingCardProps {
   onGenerateStartOtp: (bookingId: string) => void;
   onGenerateCompletedOtp: (bookingId: string) => void;
   onInvoiceClick: (booking: BookingHistory) => void;
-  onVerifyPayment: (paymentId: string) => void;
+  onVerifyPayment: (data:PaymentCallback) => void;
 
 }
 
 export default function BookingCard({
   booking,
   onViewDetails,
-  onPayNow,
+  // onPayNow,
   onGenerateStartOtp,
   onGenerateCompletedOtp,
   onInvoiceClick,
@@ -53,9 +54,13 @@ export default function BookingCard({
       case "WORK_COMPLETED_PENDING":
         onGenerateCompletedOtp(booking._id);
         break;
-      case "PAYMENT_PENDING":
-        if (booking.paymentId) {
-          onVerifyPayment(booking.paymentId);
+          case "PAYMENT_PENDING":
+        if (booking?.paymentId) {
+          onVerifyPayment({
+            paymentId: booking.paymentId,
+            status: "SUCCESS", 
+            transactionId: booking.paymentId, 
+          });
         }
         break;
       case "PAID":
@@ -121,7 +126,16 @@ export default function BookingCard({
         clickable={clickable}
         onActionClick={handleActionButtonClick}
         onViewDetails={() => onViewDetails(booking)}
-        onPayNow={() => onPayNow(booking._id)}
+      onPayNow={() => {
+  navigate("/payment", {
+    state: {
+      bookingId: booking._id,
+      serviceName: booking.service?.name ?? "Service",
+      price: booking.price ?? 0, // 👈 adjust if different
+      currency: booking.currency ?? "₹",
+    },
+  });
+}}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
          navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}

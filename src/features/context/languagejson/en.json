@@ -648,6 +648,24 @@
 
   "section5Title": "5. Reporting Vulnerabilities",
   "section5Desc": "If you discover a potential security vulnerability, please contact us immediately at security@homeease.com so we can investigate and resolve the issue promptly."
+},
+"paymentpage":{
+   "title": "Complete Payment",
+    "selectMethod": "Select Payment Method",
+      "verifying": "Verifying Payment...",
+    "wait": "Please wait while we confirm your payment.",
+    "verified": "Payment Verified",
+    "failed": "Verification failed",
+    "loading": "Loading payment methods...",
+    "noMethods": "No payment methods available",
+    "bookingId": "Booking ID",
+    "confirmCash": "Confirm Booking",
+    "pay": "Pay",
+    "processing": "Processing...",
+    "cashConfirmed": "Booking Confirmed (Cash)",
+    "paymentInitiated": "Payment Initiated",
+    "paymentFailed": "Payment Failed",
+    "goToBookings": "Go to Bookings"
 }
 
 

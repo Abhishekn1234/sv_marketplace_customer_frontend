@@ -1,5 +1,6 @@
 import type { IBookingPaymentVerifyRepository } from "../repositories/VerifyPaymentRepo";
-import type { VerifyPaymentRequest,VerifyPaymentResponse } from "../entities/verifypayment";
+import type { VerifyPaymentResponse } from "../entities/verifypayment";
+import type { PaymentCallback } from "../entities/paymentcallback";
 
 export class VerifyPaymentUseCase {
 
@@ -10,7 +11,7 @@ export class VerifyPaymentUseCase {
   }
 
   
-  async execute(request: VerifyPaymentRequest): Promise<VerifyPaymentResponse> {
+  async execute(request: PaymentCallback): Promise<VerifyPaymentResponse> {
     return this.repo.verifyPayment(request);
   }
 }

@@ -1,4 +1,5 @@
-import type { VerifyPaymentRequest,VerifyPaymentResponse } from "../entities/verifypayment";
+import type { PaymentCallback } from "../entities/paymentcallback";
+import type { VerifyPaymentResponse } from "../entities/verifypayment";
 export interface IBookingPaymentVerifyRepository {
-  verifyPayment(request: VerifyPaymentRequest): Promise<VerifyPaymentResponse>;
+  verifyPayment(request:PaymentCallback ): Promise<VerifyPaymentResponse>;
 }
