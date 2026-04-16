@@ -127,15 +127,15 @@ export default function BookingCard({
         onActionClick={handleActionButtonClick}
         onViewDetails={() => onViewDetails(booking)}
       onPayNow={() => {
-  navigate("/payment", {
-    state: {
-      bookingId: booking._id,
-      serviceName: booking.service?.name ?? "Service",
-      price: booking.price ?? 0, // 👈 adjust if different
-      currency: booking.currency ?? "₹",
-    },
-  });
-}}
+          navigate("/payment", {
+            state: {
+              bookingId: booking._id,
+              serviceName: booking.service?.name ?? "Service",
+              price: booking.price ?? 0, // 👈 adjust if different
+              currency: booking.currency ?? "₹",
+            },
+          });
+        }}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
          navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}

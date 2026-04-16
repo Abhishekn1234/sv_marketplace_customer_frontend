@@ -350,7 +350,12 @@
 "jobprogresspage": {
   "title": "Job Progress",
   "subtitle": "Service is currently in progress",
-
+   "bookingRequested": "Booking Requested",
+  "workerAssigned": "Worker Assigned",
+  "workInProgress": "Work In Progress",
+  "workCompleted": "Work Completed",
+  "invoiceGenerated": "Invoice Generated",
+  "paymentCompleted": "Payment Completed",
   "overallProgress": "Overall Progress",
   "cancelled": "Cancelled",
   "workerCancelled": "Worker cancelled the booking",
@@ -362,13 +367,7 @@
   "estimatedCompletion": "Est. completion",
 
   "taskChecklist": "Task Checklist",
-  "bookingRequested": "Booking requested",
-  "workerAssigned": "Worker assigned",
-  "workInProgress": "Work in progress",
-  "workCompleted": "Work completed",
-  "invoiceGenerated": "Invoice Generated",
-  "paymentCompleted": "Payment completed",
-
+  
   "completed": "Completed",
   "inProgress": "In Progress",
   "pending": "Pending",

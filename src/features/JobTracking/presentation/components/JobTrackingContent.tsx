@@ -1,9 +1,11 @@
 import JobTrackingLayout from "./JobTrackingLayout";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
-export default function JobTrackingContent(){
-    return(
-        <>
-        <JobTrackingLayout/>
-        </>
-    )
+interface Props {
+  bookings: Booking[];
+  loading: boolean;
+}
+
+export default function JobTrackingContent({ bookings, loading }: Props) {
+  return <JobTrackingLayout bookings={bookings} loading={loading} />;
 }

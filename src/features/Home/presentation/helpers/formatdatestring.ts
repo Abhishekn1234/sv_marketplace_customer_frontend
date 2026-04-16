@@ -1,4 +1,4 @@
-export const formatDates = (dateString?: string) => {
+export const formatDates = (dateString?: string | Date) => {
   if (!dateString) return "Pending";
 
   const date = new Date(dateString);
@@ -13,9 +13,12 @@ export const formatDates = (dateString?: string) => {
 
   const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-  const time = date.toLocaleTimeString("en-US", {
+  // ✅ include seconds ONLY when needed
+  const time = date.toLocaleTimeString("en-IN", {
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit", // 👈 ADD THIS
+    hour12: true,
   });
 
   if (target.getTime() === today.getTime()) {

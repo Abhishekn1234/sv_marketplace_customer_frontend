@@ -5,7 +5,7 @@ interface Props {
   invoice: any;
   services: any[];
   categories: any[];
-  serviceTiers: any[];
+  serviceTiers?: any[];
   open: boolean;
   booking?:any;
   onClose: () => void;

@@ -23,7 +23,7 @@ export default function BookingSummary({ data, placeName, tierName }: BookingSum
 
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-         <SummaryItem label={t.confirmationpage.bookingSummary.service} value={data?.service?.name} />
+         <SummaryItem label={t.confirmationpage.bookingSummary.service} value={data?.serviceId?.name} />
         <SummaryItem label={t.confirmationpage.bookingSummary.tier} value={tierName} />
         <SummaryItem label={t.confirmationpage.bookingSummary.timeAndDate} value={formatSmartDate(data?.schedule?.startDateTime)} />
         <SummaryItem label={t.confirmationpage.bookingSummary.location} value={placeName} />

@@ -1,0 +1,1 @@
+export type DisputeStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "REJECTED";

@@ -40,6 +40,7 @@ import './App.css';
 import Disputepage from "./features/Disputes/presentation/Disputepage";
 import PaymentPage from "./features/Payment/presentation/Paymentpage";
 import PaymentCallbackPage from "./features/Payment/presentation/components/PaymentCallbackPage";
+import ListDisputes from "./features/Disputes/presentation/components/ListDisputes";
 
 function App() {
   useNotification();
@@ -94,6 +95,7 @@ function App() {
                 <Route path="services/:id" element={<ServiceDetailPage />} />
                 <Route path="privacy" element={<PrivacyPolicyPage />} />
                 <Route path="payment" element={<PaymentPage/>}/>
+                <Route path="disputes" element={<ListDisputes/>}/>
                 <Route path="payment/callback" element={<PaymentCallbackPage />} />
                 <Route path="dispute/:bookingId" element={<Disputepage/>}/>
                 <Route path="help" element={<HelpPage />} />

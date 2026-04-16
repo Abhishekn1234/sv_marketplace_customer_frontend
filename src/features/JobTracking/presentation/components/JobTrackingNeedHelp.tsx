@@ -1,3 +1,5 @@
+"use client";
+
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
@@ -5,35 +7,39 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useState, useMemo } from "react";
 import InvoiceModal from "./InvoiceModal";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useLanguage } from "@/features/context/LanguageContext";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
-export default function JobTrackingNeedHelp() {
+export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
-  const {cancelBooking}=useBookings();
-  const { data: allBookings,  } = useBookingHistory(); // fetch all bookings
-    const generateInvoice = useGenerateInvoice();
-    const [invoice, setInvoice] = useState<any>(null);
+
+  const {  cancelBooking } = useBookings();
   const { data: categories } = useServiceCategory();
-  const categoriesList = categories ?? [];
+  const generateInvoice = useGenerateInvoice();
+  const { t } = useLanguage();
+
+  const [invoice, setInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
 
-   const {t}=useLanguage();
+  const categoriesList = categories ?? [];
+
+  // ✅ Find booking directly (NO pagination)
   const booking = useMemo(() => {
+    if (!bookings || !bookingId) return null;
+    return bookings.find((b) => b._id === bookingId);
+  }, [bookings, bookingId]);
 
-  const bookings = allBookings?.pages?.flatMap((page: any) => page.data) ?? [];
-
-  return bookings.find((b: any) => b._id === bookingId);
-}, [allBookings, bookingId]);
- 
+  // ✅ Flatten services
   const services = categoriesList.flatMap((cat: any) => cat.services ?? []);
   const serviceTiers = services.flatMap(
-    (service: any) => service.pricingTiers?.map((tier: any) => tier.tier) ?? []
+    (service: any) =>
+      service.pricingTiers?.map((tier: any) => tier.tier) ?? []
   );
 
   const helpNavigate = () => navigate("/help");
 
+  // ✅ Cancel Booking
   const handleCancel = () => {
     if (!bookingId) return;
 
@@ -43,26 +49,28 @@ export default function JobTrackingNeedHelp() {
           <p className="font-semibold mb-3">
             Are you sure you want to cancel this booking?
           </p>
+
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => closeToast?.()}
-              className="px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
+              className="px-3 py-1 text-sm rounded bg-gray-200"
             >
               No
             </button>
+
             <button
               onClick={async () => {
                 try {
                   await cancelBooking({ bookingId });
                   closeToast?.();
                   toast.success("Your booking is cancelled ✅");
+
                   setTimeout(() => navigate("/"), 1500);
-                } catch (error) {
-                  console.error(error);
+                } catch {
                   toast.error("Failed to cancel booking ❌");
                 }
               }}
-              className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+              className="px-3 py-1 text-sm rounded bg-red-600 text-white"
             >
               Yes, Cancel
             </button>
@@ -76,44 +84,23 @@ export default function JobTrackingNeedHelp() {
   const options = [
     {
       text: t.jobtrackingpage.sections.contactSupport,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-      ),
+      icon: <span>❓</span>,
       action: helpNavigate,
     },
     {
       text: t.jobtrackingpage.sections.chatWithUs,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      ),
-      action: () => toast.info("Chat feature coming soon! 💬"),
+      icon: <span>💬</span>,
+      action: () => toast.info("Chat feature coming soon!"),
     },
     {
       text: t.jobtrackingpage.sections.cancelBooking,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-          <path d="M3 6h18" />
-          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-        </svg>
-      ),
+      icon: <span>🗑️</span>,
       action: handleCancel,
     },
     {
       text: t.jobtrackingpage.sections.generateInvoice,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-          <path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2" />
-          <path d="M3 8h18v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" />
-        </svg>
-      ),
-          action: () => {
+      icon: <span>📄</span>,
+      action: () => {
         if (!bookingId) return toast.error("Booking not found ❌");
 
         const loadingToast = toast.loading("Generating invoice...");
@@ -125,37 +112,43 @@ export default function JobTrackingNeedHelp() {
             setShowInvoice(true);
             toast.success("Invoice generated ✅");
           },
-          onError: (err) => {
+          onError: () => {
             toast.dismiss(loadingToast);
-            console.error(err);
             toast.error("Failed to generate invoice ❌");
           },
         });
-      }
+      },
     },
   ];
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-      <h3 className="text-base font-bold text-gray-900 mb-4">{t.jobtrackingpage.sections.needHelp}</h3>
+      <h3 className="text-base font-bold text-gray-900 mb-4">
+        {t.jobtrackingpage.sections.needHelp}
+      </h3>
+
       <div className="flex flex-col gap-3">
         {options.map((opt, idx) => (
           <div
             key={idx}
             onClick={opt.action}
-            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer transition-all border border-transparent hover:bg-white hover:border-gray-200 hover:shadow-sm"
+            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-white hover:shadow-sm"
           >
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 transition-colors group-hover:bg-blue-50 group-hover:border-blue-600">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border">
               {opt.icon}
             </div>
-            <span className="text-sm font-semibold text-gray-900">{opt.text}</span>
+
+            <span className="text-sm font-semibold text-gray-900">
+              {opt.text}
+            </span>
           </div>
         ))}
 
+        {/* Invoice Modal */}
         {showInvoice && invoice && booking && (
           <InvoiceModal
             invoice={invoice}
-            booking={booking} 
+            booking={booking}
             services={services}
             categories={categoriesList}
             serviceTiers={serviceTiers}

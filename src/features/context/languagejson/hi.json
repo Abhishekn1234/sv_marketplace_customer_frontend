@@ -367,7 +367,12 @@
 "jobprogresspage": {
   "title": "कार्य प्रगति",
   "subtitle": "सेवा वर्तमान में चल रही है",
-
+   "bookingRequested": "बुकिंग अनुरोध किया गया",
+  "workerAssigned": "वर्कर असाइन किया गया",
+  "workInProgress": "काम प्रगति पर है",
+  "workCompleted": "काम पूरा हुआ",
+  "invoiceGenerated": "इनवॉइस जनरेट किया गया",
+  "paymentCompleted": "भुगतान पूरा हुआ",
   "overallProgress": "कुल प्रगति",
   "cancelled": "रद्द किया गया",
   "workerCancelled": "वर्कर ने बुकिंग रद्द कर दी",
@@ -379,12 +384,7 @@
   "estimatedCompletion": "अनुमानित समाप्ति",
 
   "taskChecklist": "कार्य सूची",
-  "bookingRequested": "बुकिंग अनुरोध किया गया",
-  "workerAssigned": "वर्कर नियुक्त किया गया",
-  "workInProgress": "कार्य प्रगति पर है",
-  "workCompleted": "कार्य पूरा हुआ",
-  "invoiceGenerated": "इनवॉइस जनरेट किया गया",
-  "paymentCompleted": "भुगतान पूरा हुआ",
+ 
 
   "completed": "पूरा हुआ",
   "inProgress": "प्रगति में",

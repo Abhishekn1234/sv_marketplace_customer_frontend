@@ -25,13 +25,20 @@ export class BookingRepository implements IBookingRepository {
   }
 
 async getBookings(): Promise<GetBookingsResponse> {
-  const response = await apiClient.get(`${this.baseUrl}`);
-  console.log("Data part:", response.data);
+  const response = await apiClient.get("/booking");
 
- 
-  const bookingsArray = response.data ? [response.data] : [];
+  console.log("Fetched Bookings:", response.data);
 
-  return { bookings: bookingsArray };
+  // ✅ Ensure always array
+  const bookingsArray = Array.isArray(response.data)
+    ? response.data
+    : response.data?.bookings
+    ? response.data.bookings
+    : [response.data]; // 🔥 wrap single object
+
+  return {
+    bookings: bookingsArray,
+  };
 }
 async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHistoryResponse> {
 

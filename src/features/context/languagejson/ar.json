@@ -369,7 +369,12 @@
 "jobprogresspage": {
   "title": "تقدم العمل",
   "subtitle": "الخدمة قيد التنفيذ حاليًا",
-
+    "bookingRequested": "تم طلب الحجز",
+  "workerAssigned": "تم تعيين العامل",
+  "workInProgress": "العمل قيد التنفيذ",
+  "workCompleted": "تم إكمال العمل",
+  "invoiceGenerated": "تم إنشاء الفاتورة",
+  "paymentCompleted": "تم الدفع",
   "overallProgress": "التقدم العام",
   "cancelled": "تم الإلغاء",
   "workerCancelled": "قام العامل بإلغاء الحجز",
@@ -381,12 +386,7 @@
   "estimatedCompletion": "الوقت المتوقع للانتهاء",
 
   "taskChecklist": "قائمة المهام",
-  "bookingRequested": "تم طلب الحجز",
-  "workerAssigned": "تم تعيين العامل",
-  "workInProgress": "العمل قيد التنفيذ",
-  "workCompleted": "تم إكمال العمل",
-  "invoiceGenerated": "تم إنشاء الفاتورة",
-  "paymentCompleted": "تم الدفع",
+  
 
   "completed": "مكتمل",
   "inProgress": "قيد التنفيذ",

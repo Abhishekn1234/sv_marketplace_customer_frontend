@@ -1,78 +1,48 @@
 "use client";
 
 import { useMemo } from "react";
-import { getStepStatus } from "../helpers/getstatusprogress";
-import { useParams } from "react-router-dom";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useLanguage } from "@/features/context/LanguageContext";
 
-export function JobProgressCard() {
-  const { data } = useBookingHistory();
-  const { bookingId } = useParams();
+export function JobProgressCard({ booking }: any) {
+  const { t } = useLanguage();
 
-  const booking = useMemo(() => {
-    if (!data?.pages) return null;
-
-    const allBookings = data.pages.flatMap((p: any) => p.data || []);
-    return allBookings.find((b: any) => b._id === bookingId);
-  }, [data, bookingId]);
- const {t}=useLanguage();
-  const status = booking?.status;
-
-  // ✅ HANDLE TASKS (including cancelled cases)
   const tasks = useMemo(() => {
-    if (!status) return [];
+    if (!booking?.activities?.length) return [];
 
-    // 🔴 WORKER CANCELLED
-    if (status === "WORKER_CANCELLED") {
-      return [
-        {
-          title: t.jobprogresspage.bookingRequested,
-          status: "completed",
-        },
-        {
-          title: t.jobprogresspage.workerCancelled,
-          status: "cancelled",
-        },
-      ];
-    }
-
-    // 🔴 CUSTOMER CANCELLED
-    if (status === "CUSTOMER_CANCELLED") {
-      return [
-        {
-          title: t.jobprogresspage.bookingRequested,
-          status: "completed",
-        },
-        {
-          title: t.jobprogresspage.customerCancelled,
-          status: "cancelled",
-        },
-      ];
-    }
-
-    // ✅ NORMAL FLOW
-    return [
-     t.jobprogresspage.bookingRequested,
-      t.jobprogresspage.workerAssigned,
-      t.jobprogresspage.workInProgress,
-      t.jobprogresspage.workCompleted,
-      t.jobprogresspage.invoiceGenerated,
-      t.jobprogresspage.paymentCompleted,
-    ].map((title, index) => ({
-      title,
-      status: getStepStatus(index + 1, status),
+    return booking.activities.map((a: any) => ({
+      title:t.jobprogresspage[a.key as keyof typeof t.jobprogresspage] ?? a.key,
+      status: a.status, // completed | progress | pending | cancelled
     }));
-  }, [status]);
+  }, [booking?.activities, t]);
+
+  const isCancelled =
+    booking?.status === "WORKER_CANCELLED" ||
+    booking?.status === "CUSTOMER_CANCELLED";
+
+  if (isCancelled) {
+    return (
+      <div className="bg-white rounded-[20px] p-6 border border-red-200 shadow-sm">
+        <h2 className="text-[16px] font-bold mb-4">
+          {t.jobprogresspage.taskChecklist}
+        </h2>
+
+        <div className="text-red-600 font-semibold text-center">
+          {booking.status === "WORKER_CANCELLED"
+            ? t.jobprogresspage.workerCancelled
+            : t.jobprogresspage.customerCancelled}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
-       {t.jobprogresspage.taskChecklist}
+        {t.jobprogresspage.taskChecklist}
       </h2>
 
       <div className="flex flex-col gap-3">
-        {tasks.map((task, i) => (
+        {tasks.map((task: any, i: number) => (
           <div
             key={i}
             className={`flex items-center gap-4 p-4 rounded-xl border transition
@@ -86,7 +56,7 @@ export function JobProgressCard() {
                   : "bg-gray-50 border-gray-200"
               }`}
           >
-            {/* 🔹 Status Icon */}
+            {/* Icon */}
             <div
               className={`w-6 h-6 rounded-md flex items-center justify-center
                 ${
@@ -100,7 +70,7 @@ export function JobProgressCard() {
                 }`}
             />
 
-            {/* 🔹 Content */}
+            {/* Text */}
             <div className="flex-1">
               <div
                 className={`text-[15px] font-semibold ${
@@ -114,14 +84,8 @@ export function JobProgressCard() {
                 {task.title}
               </div>
 
-              <div className="text-[13px] text-gray-500">
-                {task.status === "completed"
-                  ? "Completed"
-                  : task.status === "progress"
-                  ? "In Progress"
-                  : task.status === "cancelled"
-                  ? "Cancelled"
-                  : "Pending"}
+              <div className="text-[13px] text-gray-500 capitalize">
+                {task.status}
               </div>
             </div>
           </div>

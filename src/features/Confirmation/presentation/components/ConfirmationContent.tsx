@@ -1,68 +1,91 @@
 "use client";
+
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import BookingSummary from "./BookingSummary";
 import WhatsNext from "./WhatsNext";
 
 import { ArrowRight, Calendar, Home } from "lucide-react";
 import { statusMessageMap } from "../helpers/statusmessagemapping";
-import { useEffect, useState } from "react";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useLanguage } from "@/features/context/LanguageContext";
 
-export default function ConfirmationContent() {
-  const { data: bookings, error, isPending } = useBookingHistory();
-  const navigate = useNavigate();
-  const {t}=useLanguage();
-  // Flatten all pages into a single array of bookings
-  const allBookings = bookings?.pages.flatMap(page => page.data) ?? [];
 
-  // Pick the first booking for confirmation
-  const data = allBookings[0];
+
+export default function ConfirmationContent() {
+  const { bookings, error, loading } = useBookings();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  console.log(bookings);
+  // ✅ latest booking (safer than [0])
+  const data = bookings?.length
+    ? [...bookings].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
+      )[0]
+    : null;
 
   const [placeName, setPlaceName] = useState("Loading...");
   const [showLoader, setShowLoader] = useState(true);
 
-  // Update location name
+  // 📍 location formatting
   useEffect(() => {
     if (!data?.location?.coordinates?.length) return;
+
     const [lng, lat] = data.location.coordinates;
     setPlaceName(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
-  }, [data?.location?.coordinates]);
+  }, [data]);
 
-  // Loader: show only on initial load
+  // ⏳ loader control
   useEffect(() => {
-    if (!isPending && data) {
+    if (!loading && data) {
       const timer = setTimeout(() => setShowLoader(false), 600);
       return () => clearTimeout(timer);
     }
-  }, [isPending, data]);
+  }, [loading, data]);
 
-  const tierName = data?.serviceTier?.displayName ?? "N/A";
+  const tierName =
+  data?.serviceTierId?.displayName ?? "N/A";
 
-  // Error handling
-  if (error)
-    return <p className="text-red-500 text-center mt-10">{t.confirmationpage.error}</p>;
+  const formattedStatus = data?.status
+    ? data.status.charAt(0).toUpperCase() +
+      data.status.slice(1).toLowerCase()
+    : "";
 
-  // Loader
-  if (showLoader || !data)
+  // ❌ error state
+  if (error) {
+    return (
+      <p className="text-red-500 text-center mt-10">
+        {t.confirmationpage.error}
+      </p>
+    );
+  }
+
+  // ⏳ loading state
+  if (showLoader || !data) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-81px)] bg-gray-50">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-medium">{t.confirmationpage.loading}</p>
+          <p className="text-gray-500 font-medium">
+            {t.confirmationpage.loading}
+          </p>
         </div>
       </div>
     );
-
-  const formattedStatus = data.status
-    ? data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase()
-    : "";
+  }
 
   return (
     <main className="animate-fadeIn flex flex-col items-center justify-center min-h-[calc(100vh-81px)] px-4 sm:px-6 py-8 sm:py-12 bg-gray-50">
+
       <div className="max-w-[700px] w-full text-center">
+
         {/* Success Icon */}
-        <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-6 sm:mb-8 rounded-full bg-emerald-100 border-4 border-emerald-200 flex items-center justify-center animate-[bounce_0.6s_ease-in-out]">
+        <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-6 sm:mb-8 rounded-full bg-emerald-100 border-4 border-emerald-200 flex items-center justify-center">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -75,48 +98,60 @@ export default function ConfirmationContent() {
           </svg>
         </div>
 
-       <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-              {t.confirmationpage.booking} {formattedStatus}
-            </h1>
+        {/* Title */}
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          {t.confirmationpage.booking} {formattedStatus}
+        </h1>
+
+        {/* Status message */}
         <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
           {statusMessageMap[data.status] || "Booking status updated."}
         </p>
 
         {/* Reference ID */}
-        <div className="inline-flex items-center justify-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">
-          <span className="text-xs font-bold uppercase text-gray-400">{t.confirmationpage.referenceId}</span>
-          <span className="text-sm font-bold text-gray-900">{data._id}</span>
+        <div className="inline-flex items-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">
+          <span className="text-xs font-bold uppercase text-gray-400">
+            {t.confirmationpage.referenceId}
+          </span>
+          <span className="text-sm font-bold text-gray-900">
+            {data._id}
+          </span>
         </div>
 
         {/* Booking Summary */}
-        <BookingSummary data={data} placeName={placeName} tierName={tierName} />
+        <BookingSummary
+          data={data}
+          placeName={placeName}
+          tierName={tierName}
+        />
 
         {/* Track Job */}
         <button
-          className="w-full cursor-pointer h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
+          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
           onClick={() => navigate(`/jobtracking/${data._id}`)}
         >
-          <span className="flex gap-3 justify-center">
-           {t.confirmationpage.trackJob} <ArrowRight className="w-5" />
+          <span className="flex gap-3 justify-center items-center">
+            {t.confirmationpage.trackJob}
+            <ArrowRight className="w-5" />
           </span>
         </button>
 
         {/* Links */}
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
-          <Link to="/" className="text-gray-900 hover:text-blue-600">
-            <span className="flex gap-2">
-              <Home className="w-5" /> {t.confirmationpage.returnHome}
-            </span>
+          <Link to="/" className="hover:text-blue-600 flex items-center gap-2">
+            <Home className="w-5" />
+            {t.confirmationpage.returnHome}
           </Link>
-          <Link to="/bookings" className="text-gray-900 hover:text-blue-600">
-            <span className="flex gap-2">
-              <Calendar className="w-5" /> {t.confirmationpage.viewBookings}
-            </span>
+
+          <Link to="/bookings" className="hover:text-blue-600 flex items-center gap-2">
+            <Calendar className="w-5" />
+            {t.confirmationpage.viewBookings}
           </Link>
         </div>
 
         {/* Whats Next */}
         <WhatsNext />
+
       </div>
     </main>
   );

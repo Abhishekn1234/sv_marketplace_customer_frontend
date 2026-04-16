@@ -1,43 +1,53 @@
+"use client";
+
 import { useMemo } from "react";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useLiveBooking } from "@/features/JobTracking/presentation/hooks/useLiveBookings";
 import { progressMap } from "../../helpers/progressmap";
 import { getBookingFlags } from "../../helpers/getbookingflags";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ActiveService() {
-  const { data: bookings } = useBookingHistory();
+  const { bookings, loading } = useBookings();
+  const liveBookings = useLiveBooking(bookings); // 🔥 IMPORTANT FIX
 
-   const {t}=useLanguage();
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  // ✅ always use LIVE data
   const datas = useMemo(() => {
-    return bookings?.pages?.flatMap((page) => page.data) || [];
-  }, [bookings]);
+    return liveBookings || [];
+  }, [liveBookings]);
 
- 
- const ACTIVE_STATUSES = [
-  "REQUESTED",
-  "ASSIGNED",
-  "WORKER_ACCEPTED",  
-  "ACCEPTED",
-  "IN_PROGRESS",
-  "WORK_COMPLETED_PENDING",
-  "COMPLETED", 
-];
+  // ✅ Active statuses
+  const ACTIVE_STATUSES = [
+    "REQUESTED",
+    "ASSIGNED",
+    "WORKER_ACCEPTED",
+    "ACCEPTED",
+    "IN_PROGRESS",
+    "WORK_COMPLETED_PENDING",
+    "COMPLETED",
+  ];
 
-const allowedStatuses = [
-  "IN_PROGRESS",
-  "ACCEPTED",
-  "WORKER_ACCEPTED",
-  "REQUESTED",
-  "WORK_COMPLETED_PENDING",
-  "ASSIGNED",
-];
+  const allowedStatuses = [
+    "IN_PROGRESS",
+    "ACCEPTED",
+    "WORKER_ACCEPTED",
+    "REQUESTED",
+    "WORK_COMPLETED_PENDING",
+    "ASSIGNED",
+  ];
 
+  // ✅ Filter active bookings
   const activeBookings = useMemo(() => {
     return datas.filter((b) => ACTIVE_STATUSES.includes(b.status));
   }, [datas]);
 
   const today = new Date().toDateString();
 
+  // ✅ Today booking
   const todayBooking = useMemo(() => {
     return activeBookings.find((b) => {
       const dateStr = b?.schedule?.startDateTime || b?.createdAt;
@@ -48,62 +58,75 @@ const allowedStatuses = [
     });
   }, [activeBookings, today]);
 
-  
+  // ✅ Next booking
   const nextBooking = useMemo(() => {
     if (todayBooking) return null;
 
     const upcoming = activeBookings
-  .filter((b) => b?.schedule?.startDateTime) 
-  .sort((a, b) => {
-    const aTime = a?.schedule?.startDateTime
-      ? new Date(a.schedule.startDateTime).getTime()
-      : Infinity;
+      .filter((b) => b?.schedule?.startDateTime)
+      .sort((a, b) => {
+        const aTime = a?.schedule?.startDateTime
+          ? new Date(a.schedule.startDateTime).getTime()
+          : Infinity;
 
-    const bTime = b?.schedule?.startDateTime
-      ? new Date(b.schedule.startDateTime).getTime()
-      : Infinity;
+        const bTime = b?.schedule?.startDateTime
+          ? new Date(b.schedule.startDateTime).getTime()
+          : Infinity;
 
-    return aTime - bTime;
-  });
-     return upcoming[0] || null;
+        return aTime - bTime;
+      });
+
+    return upcoming[0] || null;
   }, [activeBookings, todayBooking]);
 
   const booking = todayBooking || nextBooking;
 
-  
-  if (!booking) {
+  // ✅ Loading state
+  if (loading) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
-       {t.home["No active bookings found"]}
+        Loading...
       </div>
     );
   }
 
+  // ❌ No booking
+  if (!booking) {
+    return (
+      <div className="rounded-2xl p-6 text-center text-gray-500">
+        {t.home["No active bookings found"]}
+      </div>
+    );
+  }
 
-  const serviceName = booking?.service?.name || "Service";
-
-  const firstWorker = booking?.assignedWorkers?.[0]?.worker;
+  // ✅ Safe worker extraction
+  const firstWorker =
+    booking?.assignedWorkers?.[0]?.worker ||
+    booking?.assignedWorkers?.[0]?.workerId;
 
   const workerName = firstWorker?.fullName || "No worker assigned";
 
   const workerImage =
     firstWorker?.profilePictureUrl ||
-    "https://via.placeholder.com/100?text=No+Worker";
+    "https://ui-avatars.com/api/?name=" + workerName;
+
+  const serviceName = booking?.service?.name || "Service";
 
   const status = booking?.status || "REQUESTED";
 
   const { isAssigned, isStarted, showTracking, isPaid } =
     getBookingFlags(status, !!firstWorker);
 
+  // 🔥 SAFE progress calculation
   const progress =
-    progressMap[status?.toLowerCase()] ||
-    progressMap[status] ||
+    progressMap?.[status?.toLowerCase?.()] ??
+    progressMap?.[status] ??
     20;
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:border-blue-500 hover:-translate-y-0.5">
-      
-     
+
+      {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <span className="relative w-2.5 h-2.5 bg-green-500 rounded-full">
@@ -130,7 +153,7 @@ const allowedStatuses = [
         )}
       </div>
 
-      
+      {/* Worker */}
       <div className="flex items-center gap-3.5 mb-4">
         <img
           src={workerImage}
@@ -151,7 +174,7 @@ const allowedStatuses = [
         </div>
       </div>
 
-      
+      {/* Tracking Section */}
       {showTracking ? (
         <>
           {isStarted && (
@@ -164,37 +187,37 @@ const allowedStatuses = [
           )}
 
           <div className="flex gap-3">
-              {allowedStatuses.includes(status) && (
-                <>
-                  <button
-                    onClick={() =>
-                      (window.location.href = `/jobtracking/${booking._id}`)
-                    }
-                    className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
-                  >
-                    {t.home.Track}
-                  </button>
+            {allowedStatuses.includes(status) && (
+              <>
+                <button
+                  onClick={() =>
+                    navigate(`/jobtracking/${booking._id}`)
+                  }
+                  className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
+                >
+                  {t.home.Track}
+                </button>
 
-                  <button className="flex-1 h-12 rounded-xl bg-white border border-blue-100 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition">
-                    {t.home.Chat}
-                  </button>
-                </>
-              )}
-            </div>
+                <button className="flex-1 h-12 rounded-xl bg-white border border-blue-100 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition">
+                  {t.home.Chat}
+                </button>
+              </>
+            )}
+          </div>
 
           {status === "COMPLETED" && (
-      <button
-        onClick={() => (window.location.href = `/bookings`)}
-        className="mt-3 w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
-      >
-        {t.home["View Booking"]}
-      </button>
-    )}
+            <button
+              onClick={() => navigate(`/bookings`)}
+              className="mt-3 w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
+            >
+              {t.home["View Booking"]}
+            </button>
+          )}
         </>
       ) : isPaid ? (
         <button
           onClick={() =>
-            (window.location.href = `/servicerating/${booking._id}`)
+            navigate(`/servicerating/${booking._id}`)
           }
           className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition"
         >
@@ -202,9 +225,7 @@ const allowedStatuses = [
         </button>
       ) : (
         <button
-          onClick={() =>
-            (window.location.href = `/bookings`)
-          }
+          onClick={() => navigate(`/bookings`)}
           className="w-full text-center p-5 rounded-2xl bg-blue-600 text-white shadow-md hover:bg-blue-700 transition"
         >
           View Booking

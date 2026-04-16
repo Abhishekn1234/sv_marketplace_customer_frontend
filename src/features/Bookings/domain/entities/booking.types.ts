@@ -1,31 +1,35 @@
-import type { ServiceTierRef } from './servicetier.types';
-import type { Service } from './service.types';
-import type { GeoLocation } from './location.types';
-import type { BookingSchedule } from './bookingschedule.types';
-import type { BookingStatus } from './bookingstatus.types';
-import type { AssignedWorker } from './assignedworkers.type';
+import type { ServiceTierRef } from "./servicetier.types";
+import type { Service } from "./service.types";
+
+import type { BookingSchedule } from "./bookingschedule.types";
+import type { BookingStatus } from "./bookingstatus.types";
+import type { AssignedWorker } from "./assignedworkers.type";
+import type { Geopoint } from "./geopoint.types";
 
 export interface Booking {
   _id: string;
+  bookingCode?: string;
   userId: string;
- bookingCode?:string;
-  // Service reference and populated service object
+
+  // ✅ Backend sends FULL object here
   serviceId: Service;
+
+  // ✅ Optional normalized field (frontend convenience)
   service?: Service;
 
-  // Service tier reference and populated tier object
+  // ✅ Backend sends FULL object here
   serviceTierId?: ServiceTierRef;
+
+  // ✅ Optional normalized field
   serviceTier?: ServiceTierRef;
 
   bookingType: "INSTANT" | "SCHEDULED";
   pricingMode: "HOURLY" | "PER_DAY";
   status: BookingStatus;
 
-  // Optional schedule object for SCHEDULED bookings
   schedule?: BookingSchedule;
 
-  // Geolocation info
-  location: GeoLocation;
+  location: Geopoint;
 
   numberOfWorkers: number;
   workDescription: string;
@@ -34,24 +38,37 @@ export interface Booking {
   amount: number;
   totalCost?: number;
 
-  // Commission info
+  // ✅ TAX (missing earlier)
+  vatRate?: number;
+  vatAmount?: number;
+
+  // ✅ Commission
   commissionValue: number;
   commissionType: "PERCENTAGE" | "FIXED";
   commissionAmount: number;
 
-  // Worker pool amount
   workerPoolAmount: number;
 
-  // Optional fees and discounts
   serviceFee?: number;
   memberDiscount?: number;
 
   isFinalized: boolean;
 
+  // ✅ Timeline fields (IMPORTANT for your UI)
+  startedAt?: string;
+  completedAt?: string;
+
+  // ✅ Payment (IMPORTANT for verify flow)
+  paymentId: string;
+  transactionId?: string;
+
+  assignedWorkers?: AssignedWorker[];
+
   createdAt: string;
   updatedAt: string;
-  assignedWorkers?:AssignedWorker[];
+  activities?:{
+    type:string;
+    createdAt:string;
+    [key:string]:any;
+  }
 }
-
-
-

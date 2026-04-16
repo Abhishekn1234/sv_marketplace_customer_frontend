@@ -1,17 +1,13 @@
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
-import { useParams } from "react-router-dom";
-import { useMemo } from "react";
+
+
+
 import { useLanguage } from "@/features/context/LanguageContext";
 
-export function JobProgressInfo() {
-  const { data } = useBookingHistory();
-  const { bookingId } = useParams();
+export function JobProgressInfo({booking}:any) {
+  
+ 
  const {t}=useLanguage();
-  const booking = useMemo(() => {
-    if (!data?.pages) return null;
-    const all = data.pages.flatMap((p: any) => p.data || []);
-    return all.find((b: any) => b._id === bookingId);
-  }, [data, bookingId]);
+  
 
   const serviceName = booking?.service?.name || "N/A";
   const serviceTier = booking?.serviceTier?.displayName || "N/A";

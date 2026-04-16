@@ -1,20 +1,27 @@
 "use client";
 
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
-import { useLanguage } from "@/features/context/LanguageContext";
 
-export default function JobTrackingServiceDetails() {
+import { useLanguage } from "@/features/context/LanguageContext";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+
+export default function JobTrackingServiceDetails({bookings,loading}:{bookings:Booking[],loading:boolean}) {
   const { bookingId } = useParams();
-  const { data } = useBookingHistory();
- const {t}=useLanguage();
+// ✅ cached data
+  console.log(bookings);
+  const { t } = useLanguage();
+
   const [coordinates, setCoordinates] = useState("Loading...");
 
-  const bookings = data?.pages.flatMap((page) => page.data) ?? [];
-  const booking = bookings.find((b) => b._id === bookingId);
+  // ✅ Get booking from cache (NO API)
+  const booking = useMemo(() => {
+    if (!bookings || !bookingId) return null;
+    return bookings.find((b) => b._id === bookingId);
+  }, [bookings, bookingId]);
 
+  // ✅ Coordinates logic
   useEffect(() => {
     if (!booking?.location?.coordinates) {
       setCoordinates("No coordinates");
@@ -28,8 +35,14 @@ export default function JobTrackingServiceDetails() {
   }, [booking]);
 
   const serviceDetails = [
-    { label: t.jobtrackingpage.serviceDetails.serviceType, value: booking?.service?.name || "—" },
-    { label: t.jobtrackingpage.serviceDetails.serviceTier, value: booking?.serviceTier?.displayName || "—" },
+    {
+      label: t.jobtrackingpage.serviceDetails.serviceType,
+      value: booking?.service?.name || "—",
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.serviceTier,
+      value: booking?.serviceTier?.displayName || "—",
+    },
     {
       label: t.jobtrackingpage.serviceDetails.dateTime,
       value: booking?.schedule?.startDateTime
@@ -42,17 +55,25 @@ export default function JobTrackingServiceDetails() {
       isSmall: true,
     },
     {
-      label:t.jobtrackingpage.serviceDetails.totalPrice,
+      label: t.jobtrackingpage.serviceDetails.totalPrice,
       value: booking ? `${booking.currency} ${booking.amount}` : "—",
       isPrice: true,
     },
   ];
 
+  if (!booking || loading) {
+    return (
+      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+        <p className="text-sm text-gray-500">Loading service details...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
       
       <h3 className="text-base font-bold text-gray-900 mb-5">
-       {t.jobtrackingpage.serviceDetails.title}
+        {t.jobtrackingpage.serviceDetails.title}
       </h3>
 
       <div className="flex flex-col divide-y divide-gray-100">
@@ -61,12 +82,10 @@ export default function JobTrackingServiceDetails() {
             key={idx}
             className="flex justify-between items-start gap-3 py-3 min-w-0"
           >
-            {/* Left Label */}
             <span className="text-sm font-medium text-gray-500 shrink-0">
               {item.label}
             </span>
 
-            {/* Right Value */}
             <span
               className={`font-semibold text-right break-words min-w-0 ${
                 item.isSmall

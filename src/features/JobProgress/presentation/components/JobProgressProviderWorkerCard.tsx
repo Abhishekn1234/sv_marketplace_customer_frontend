@@ -1,18 +1,12 @@
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
-import { useParams } from "react-router-dom";
-import { useMemo } from "react";
+
+
 import { getStatusText } from "../helpers/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
-export default function ProviderWorkingCard() {
-  const { data } = useBookingHistory();
-  const { bookingId } = useParams();
+export default function ProviderWorkingCard({booking}:any) {
+  
+ 
  const {t}=useLanguage();
-  const booking = useMemo(() => {
-    if (!data?.pages) return null;
 
-    const allBookings = data.pages.flatMap((p: any) => p.data || []);
-    return allBookings.find((b: any) => b._id === bookingId);
-  }, [data, bookingId]);
 
   const worker = booking?.assignedWorkers?.[0]?.worker;
 
