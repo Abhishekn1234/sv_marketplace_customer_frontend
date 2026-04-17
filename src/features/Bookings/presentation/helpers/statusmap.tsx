@@ -1,6 +1,8 @@
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 
 export const statusStyles: Record<BookingStatus, string> = {
+  WORK_COMPLETED_BY_WORKER: "bg-yellow-50 text-yellow-600 border border-yellow-200",
+  WORK_STARTED:"bg-gray-100 text-gray-700 border border-gray-300",
   COMPLETED: "bg-emerald-50 text-emerald-600 border border-emerald-200",
   IN_PROGRESS: "bg-blue-50 text-blue-600 border border-blue-200",
   WORKER_ACCEPTED: "bg-amber-50 text-amber-600 border border-amber-200",
