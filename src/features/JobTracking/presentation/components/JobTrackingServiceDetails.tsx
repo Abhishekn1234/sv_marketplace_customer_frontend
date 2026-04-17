@@ -37,11 +37,11 @@ export default function JobTrackingServiceDetails({bookings,loading}:{bookings:B
   const serviceDetails = [
     {
       label: t.jobtrackingpage.serviceDetails.serviceType,
-      value: booking?.service?.name || "—",
+      value: booking?.serviceId?.name || "—",
     },
     {
       label: t.jobtrackingpage.serviceDetails.serviceTier,
-      value: booking?.serviceTier?.displayName || "—",
+      value: booking?.serviceTierId?.displayName || "—",
     },
     {
       label: t.jobtrackingpage.serviceDetails.dateTime,

@@ -4,15 +4,15 @@ import { ArrowRight, Calendar, Home } from "lucide-react";
 import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
 import { formatSmartDate } from "../helpers/formatdatetime";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function ConfirmationCard({ data, placeName }: any) {
   const navigate = useNavigate();
+   const {serviceTiers}=useServices();
 
-  const tierName =
-    data?.serviceTier?.displayName ||
-    data?.serviceTierId?.displayName ||
-    "N/A";
-
+   const pricingtier=serviceTiers.find((tier:any)=>tier._id===data?.serviceTierId);
+  const tierName =pricingtier?.displayName
+  
   const duration =
     data?.pricingMode === "HOURLY"
       ? `${data?.schedule?.estimatedHours ?? 0} Hours`

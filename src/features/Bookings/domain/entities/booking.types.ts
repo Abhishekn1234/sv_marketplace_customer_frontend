@@ -66,9 +66,9 @@ export interface Booking {
 
   createdAt: string;
   updatedAt: string;
-  activities?:{
-    type:string;
-    createdAt:string;
-    [key:string]:any;
-  }
+  activities?: {
+  [key: string]: any;
+  type: string;
+  createdAt: string;
+}[];
 }

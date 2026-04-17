@@ -1,13 +1,18 @@
-import apiClient from "@/features/api/interceptor";
 import { io, Socket } from "socket.io-client";
-
+import apiClient from "@/features/api/interceptor";
 
 let socket: Socket | null = null;
 
-export const initializeSocket = (token: string) => {
-  if (socket) return socket;
+export const initializeSocket = (token: string): Socket => {
+  const baseURL = apiClient.defaults.baseURL;
 
-  let baseURL = apiClient.defaults.baseURL;
+  // ✅ Reconnect safely if needed
+  if (socket) {
+    if (socket.connected) return socket;
+
+    socket.disconnect();
+    socket = null;
+  }
 
   socket = io(`${baseURL}/customers`, {
     transports: ["websocket"],
@@ -18,18 +23,29 @@ export const initializeSocket = (token: string) => {
   });
 
   socket.on("connect", () => {
-    console.log("✅ Connected:", socket?.id);
+    console.log("✅ Socket connected:", socket?.id);
   });
 
   socket.on("disconnect", (reason) => {
-    console.log("❌ Disconnected:", reason);
+    console.log("❌ Socket disconnected:", reason);
   });
 
   socket.on("connect_error", (err) => {
-    console.log("🔥 Connect error:", err.message);
+    console.log("🔥 Socket error:", err.message);
+  });
+
+  // 🔍 Debug all events
+  socket.onAny((event, data) => {
+    console.log("📡 Event:", event, data);
   });
 
   return socket;
 };
 
-export const getSocket = () => socket;
+export const getSocket = (): Socket | null => socket;
+export const disconnectSocket = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+};

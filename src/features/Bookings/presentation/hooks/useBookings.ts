@@ -148,6 +148,16 @@ export const useBookings = () => {
       toast.error(err?.message || "Cancel failed ❌");
     },
   });
+  
+const updateBookingInCache = (updatedBooking: Booking) => {
+  queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
+    if (!old) return [];
+
+    return old.map((b) =>
+      b._id === updatedBooking._id ? { ...b, ...updatedBooking } : b
+    );
+  });
+};
 
   return {
     bookings: data ?? [],
@@ -157,5 +167,6 @@ export const useBookings = () => {
 
     createBooking: createBooking.mutateAsync,
     cancelBooking: cancelBooking.mutateAsync,
+    updateBookingInCache,
   };
 };

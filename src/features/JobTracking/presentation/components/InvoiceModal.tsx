@@ -1,3 +1,4 @@
+import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
 
 
 
@@ -13,7 +14,7 @@ interface Props {
 
 export default function InvoiceModal({ invoice, booking, services, categories,  open, onClose }: Props) {
   if (!open) return null;
-
+ console.log(invoice,booking,services);
   // Get the service object
   const service = services?.find((s) => s._id === booking.serviceId);
 
@@ -26,17 +27,17 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
 
   const tier = pricingTier?.tier;
 
-  const workHours = invoice.actualWorkHours || 0;
-  const hours = Math.floor(workHours);
-  const minutes = Math.round((workHours - hours) * 60);
+  // const workHours = invoice?.actualWorkHours || 0;
+  // const hours = Math.floor(workHours);
+  // const minutes = Math.round((workHours - hours) * 60);
 
-  const workedDuration =
-    booking.pricingMode === "HOURLY"
-      ? `${hours} hr ${minutes} min`
-      : `${invoice.actualWorkDays} days`;
+ const workedDuration =
+  booking?.pricingMode === "HOURLY"
+    ? formatWorkHours(booking?.actualWorkHours ?? 0)
+    : `${invoice?.actualWorkDays ?? 0} days`;
    console.log(workedDuration);
   const rate =
-    booking.pricingMode === "HOURLY"
+    booking?.pricingMode === "HOURLY"
       ? pricingTier?.HOURLY?.ratePerHour
       : pricingTier?.PER_DAY?.ratePerDay;
 
@@ -52,8 +53,8 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
 
         {/* BOOKING INFO */}
         <div className="space-y-2 text-sm">
-          <p><b>Invoice No:</b> {invoice.invoiceNumber}</p>
-          <p><b>Status:</b> {booking.status}</p>
+          <p><b>Invoice No:</b> {booking?.invoice?.invoiceNumber}</p>
+          <p><b>Status:</b> {booking?.status}</p>
           <p><b>Category:</b> {category?.name}</p>
           <p><b>Service:</b> {service?.name}</p>
           <p><b>Service Tier:</b> {tier?.displayName}</p>
@@ -61,9 +62,9 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
 
         {/* WORK DETAILS */}
        <div className="border rounded-lg p-3 space-y-1 text-sm">
-  <p><b>Workers:</b> {booking.numberOfWorkers}</p>
-  <p><b>Pricing Mode:</b> {booking.pricingMode}</p>
-  <p><b>Rate:</b> {rate} {invoice.currency} {booking.pricingMode === "HOURLY" ? "/hour" : "/day"}</p>
+  <p><b>Workers:</b> {booking?.numberOfWorkers}</p>
+  <p><b>Pricing Mode:</b> {booking?.pricingMode}</p>
+  <p><b>Rate:</b> {rate} {booking?.currency} {booking?.pricingMode === "HOURLY" ? "/hour" : "/day"}</p>
   <p><b>Worked Duration:</b> {workedDuration}</p>
 </div>
 
@@ -73,7 +74,7 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
           <p><b>Worker Pool Amount:</b> {invoice.workerPoolAmount} {invoice.currency}</p>
           <p><b>Commission:</b> {invoice.commissionAmount} {invoice.currency}</p> */}
           <p className="font-semibold text-base">
-            Final Amount: {invoice.finalAmount?.toFixed(2)} {invoice.currency}
+            Final Amount: {invoice?.finalAmount?.toFixed(2)} {invoice?.currency}
           </p>
         </div>
 

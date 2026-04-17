@@ -11,6 +11,7 @@ import { statusMessageMap } from "../helpers/statusmessagemapping";
 
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 
 
@@ -48,8 +49,11 @@ export default function ConfirmationContent() {
     }
   }, [loading, data]);
 
-  const tierName =
-  data?.serviceTierId?.displayName ?? "N/A";
+  const { serviceTiers } = useServices();
+
+const tierName =
+  serviceTiers?.find((tier: any) => tier._id === data?.serviceTierId)
+    ?.displayName ?? "N/A";
 
   const formattedStatus = data?.status
     ? data.status.charAt(0).toUpperCase() +

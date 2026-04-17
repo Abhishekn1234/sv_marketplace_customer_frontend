@@ -9,12 +9,13 @@ import JobCompletedProvider from "./components/JobCompletedProvider";
 import JobCompletedActions from "./components/JobCompletedActions";
 
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function JobCompletedPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { bookings } = useBookings();
-
+  const {services}=useServices();
   const bookingId = state?.bookingId;
   const [booking, setBooking] = useState<any>(null);
 
@@ -42,7 +43,12 @@ export default function JobCompletedPage() {
         <SuccessSection />
         <JobCompletedSummary booking={booking} />
         <JobCompletedProvider booking={booking} />
-        <JobCompletedActions />
+              <JobCompletedActions
+          booking={booking}
+          invoice={booking.invoice}
+          services={services}
+          categories={services}
+        />
       </div>
     </div>
   );

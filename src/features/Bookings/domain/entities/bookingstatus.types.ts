@@ -11,6 +11,8 @@ export const BookingStatus = {
   PAID: "PAID",
   WORKER_REJECTED: "WORKER_REJECTED",
   CUSTOMER_REJECTED: "CUSTOMER_REJECTED",
+  WORK_STARTED: "WORK_STARTED",
+ WORK_COMPLETED_BY_WORKER:"WORK_COMPLETED_BY_WORKER"
 } as const;
 
 export type BookingStatus = typeof BookingStatus[keyof typeof BookingStatus];

@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
-import { useLiveBooking } from "@/features/JobTracking/presentation/hooks/useLiveBookings";
 import { progressMap } from "../../helpers/progressmap";
 import { getBookingFlags } from "../../helpers/getbookingflags";
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -10,17 +9,13 @@ import { useNavigate } from "react-router-dom";
 
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
-  const liveBookings = useLiveBooking(bookings); // 🔥 IMPORTANT FIX
 
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  // ✅ always use LIVE data
-  const datas = useMemo(() => {
-    return liveBookings || [];
-  }, [liveBookings]);
+  // ✅ Directly use bookings
+  const datas = bookings || [];
 
-  // ✅ Active statuses
   const ACTIVE_STATUSES = [
     "REQUESTED",
     "ASSIGNED",
@@ -81,7 +76,6 @@ export default function ActiveService() {
 
   const booking = todayBooking || nextBooking;
 
-  // ✅ Loading state
   if (loading) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
@@ -90,7 +84,6 @@ export default function ActiveService() {
     );
   }
 
-  // ❌ No booking
   if (!booking) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
@@ -99,7 +92,6 @@ export default function ActiveService() {
     );
   }
 
-  // ✅ Safe worker extraction
   const firstWorker =
     booking?.assignedWorkers?.[0]?.worker ||
     booking?.assignedWorkers?.[0]?.workerId;
@@ -117,12 +109,10 @@ export default function ActiveService() {
   const { isAssigned, isStarted, showTracking, isPaid } =
     getBookingFlags(status, !!firstWorker);
 
-  // 🔥 SAFE progress calculation
   const progress =
     progressMap?.[status?.toLowerCase?.()] ??
     progressMap?.[status] ??
     20;
-
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:border-blue-500 hover:-translate-y-0.5">
 
