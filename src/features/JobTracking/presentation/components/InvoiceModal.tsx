@@ -22,7 +22,7 @@ export default function InvoiceModal({
   if (!open) return null;
 
   // 🔥 Fetch invoice (assuming hook supports invoiceId)
-  const { data: invoice } = useGenerateInvoice(booking?.invoiceId);
+  const { data: invoice } = useGenerateInvoice(booking?._id);
  const {serviceTiers}=useServices();
   // ---------------------------
   // SERVICE / CATEGORY LOOKUP
@@ -34,17 +34,24 @@ export default function InvoiceModal({
 
 const serviceTierName = serviceTier?.displayName ?? "-";
  
-  
+  const invoiceData = invoice ?? null;
 
 
   // ---------------------------
   // WORKED DURATION
   // ---------------------------
-  const workedDuration =
-    booking?.pricingMode === "HOURLY"
-      ? formatWorkHours(booking?.actualWorkHours ?? 0)
-      : `${booking?.actualWorkDays ?? invoice?.actualWorkDays ?? 0} days`;
-
+ const workedDuration =
+  booking?.pricingMode === "HOURLY"
+    ? formatWorkHours(
+        invoiceData?.actualWorkHours ??
+        booking?.actualWorkHours ??
+        0
+      )
+    : `${
+        invoiceData?.actualWorkDays ??
+        booking?.actualWorkDays ??
+        0
+      } days`;
   // ---------------------------
   // RATE
   // ---------------------------
@@ -53,8 +60,7 @@ const serviceTierName = serviceTier?.displayName ?? "-";
   // ---------------------------
   // INVOICE DATA (FIXED)
   // ---------------------------
-  const invoiceData =
-    invoice && booking?.invoiceId === invoice?._id ? invoice : invoice;
+
 
   console.log("Booking:", booking);
   console.log("Fetched Invoice:", invoice);
@@ -62,7 +68,7 @@ const serviceTierName = serviceTier?.displayName ?? "-";
   const finalAmount =booking?.totalCost;
 
   const currency =
-    invoiceData?.currency ?? booking?.currency ?? "₹";
+    invoiceData?.currency ?? booking?.currency ?? "SAR";
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -79,10 +85,10 @@ const serviceTierName = serviceTier?.displayName ?? "-";
         {/* BOOKING INFO */}
         <div className="space-y-2 text-sm">
           <p>
-            <b>Invoice No:</b> {booking?.invoiceId}
+            <b>Invoice No:</b> {invoice?.invoiceNumber}
           </p>
           <p>
-            <b>Status:</b> {booking?.status}
+            <b>Status:</b> {invoice?.status}
           </p>
          
           <p>

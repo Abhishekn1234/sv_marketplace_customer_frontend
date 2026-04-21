@@ -3,8 +3,8 @@ import SummaryItem from "./SummaryItem";
 import { formatSmartDate } from "../helpers/formatdatetime";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/helpers/formatduration";
-import { useMemo } from "react";
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+
+
 
 interface BookingSummaryProps {
   data: any;
@@ -15,14 +15,9 @@ interface BookingSummaryProps {
 export default function BookingSummary({ data, placeName, tierName }: BookingSummaryProps) {
   const {t}=useLanguage();
   const duration = formatBookingDurationWithTranslation(data, t);
-  const { services } = useServices();
-  const serviceName = useMemo(() => {
-  if (!services || !data?.serviceId) return "N/A";
 
-  return (
-    services.find((s) => s._id === data.serviceId)?.name || "N/A"
-  );
-}, [services, data?.serviceId]);
+  console.log(data);
+const serviceName = data.serviceId?.name
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">

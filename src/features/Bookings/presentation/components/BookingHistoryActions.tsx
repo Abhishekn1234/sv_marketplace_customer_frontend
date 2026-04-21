@@ -60,10 +60,11 @@ export function BookingActions({
   ========================= */
 
   // ✅ Pay Now logic
-  const shouldPayNow =
-    status === "COMPLETED" ||
-    status === "INVOICE_GENERATED";
-
+  
+    const isExpired = status === "EXPIRED";
+   const shouldPayNow =
+  !isExpired &&
+  (status === "COMPLETED" || status === "INVOICE_GENERATED");
   // ✅ Track progress visibility
   const TRACKABLE_STATUSES: BookingStatus[] = [
     "IN_PROGRESS",
@@ -72,25 +73,27 @@ export function BookingActions({
     "REQUESTED",
   ];
 
-  const canTrack = TRACKABLE_STATUSES.includes(status);
-
-
+ const canTrack =
+  !isExpired &&
+  TRACKABLE_STATUSES.includes(status);
   const canDispute = true;
 
-
+ const showPrimaryAction = !isExpired;
   return (
     <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
       
       {/* Primary Action */}
-      <button
-        onClick={onActionClick}
-        className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
-          !clickable ? "cursor-not-allowed opacity-60" : ""
-        }`}
-        disabled={!clickable}
-      >
-        {label}
-      </button>
+    {showPrimaryAction && (
+  <button
+    onClick={onActionClick}
+    className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
+      !clickable ? "cursor-not-allowed opacity-60" : ""
+    }`}
+    disabled={!clickable}
+  >
+    {label}
+  </button>
+)}
 
       {/* Track Progress */}
       {canTrack && (
@@ -109,8 +112,8 @@ export function BookingActions({
       onPayNow({
         bookingId: booking._id,
         serviceName: booking.service?.name ?? "Service",
-        price: booking.amount ?? 0,
-        currency: booking.currency ?? "₹",
+        price: booking?.totalCost ?? 0,
+        currency: booking.currency ?? "SAR",
       });
     } else {
       onViewDetails();

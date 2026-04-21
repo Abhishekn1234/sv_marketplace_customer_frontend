@@ -49,29 +49,30 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
 
 
   const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
-const selectedPricing = selectedService?.pricingTiers?.[0]; 
-// ✅ replace this with .find(...) if multiple tiers exist
+      const selectedPricing = selectedService?.pricingTiers?.[0]; 
+      // ✅ replace this with .find(...) if multiple tiers exist
 
-console.log("Selected Pricing Tier:", selectedPricing);
+      console.log("Selected Pricing Tier:", selectedPricing);
 
 
-const unitPrice =selectedPricing?.HOURLY?.ratePerHour ?? selectedPricing?.PER_DAY?.ratePerDay ?? 0;
+      const unitPrice =selectedPricing?.HOURLY?.ratePerHour ?? selectedPricing?.PER_DAY?.ratePerDay ?? 0;
 
-const safeUnitPrice = unitPrice ?? 0;
- console.log(selectedService);
-const vatPercent = selectedService?.category?.vatRate ?? 0;
- console.log(selectedService);
-const basePrice = (duration ?? 0) * safeUnitPrice;
+      const safeUnitPrice = unitPrice ?? 0;
+      console.log(selectedService);
+      const vatPercent = selectedService?.category?.vatRate ?? 0;
+      console.log("VAT Percent:", vatPercent);
+      console.log(selectedService);
+      const basePrice = (duration ?? 0) * safeUnitPrice;
+       console.log(basePrice);
+      const vatRate = useMemo(
+        () => (basePrice * vatPercent) / 100,
+        [basePrice, vatPercent]
+      );
 
-const vatRate = useMemo(
-  () => (basePrice * vatPercent) / 100,
-  [basePrice, vatPercent]
-);
-
-const totalCostToSend = useMemo(
-  () => basePrice + vatRate,
-  [basePrice, vatRate]
-);
+      const totalCostToSend = useMemo(
+        () => basePrice + vatRate,
+        [basePrice, vatRate]
+      );
   const handleBooking = async () => {
     try {
       if (selectedDate === null) return toast.error("Please select a date");

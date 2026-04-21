@@ -35,7 +35,7 @@ export const useBookings = () => {
   // =========================
   // FETCH BOOKINGS
   // =========================
- const { data, isLoading, isError, refetch } = useQuery<Booking[], Error>({
+  const { data, isLoading, isError, refetch } = useQuery<Booking[], Error>({
   queryKey: BOOKINGS_QUERY_KEY,
 
   queryFn: async () => {
@@ -49,9 +49,10 @@ export const useBookings = () => {
     }));
   },
 
-  // ✅ FIXES
-  staleTime: 1000 * 60 * 5,        // cache for 5 mins
-   gcTime: 1000 * 60 * 10,     // keep in memory
+  // ✅ correct for v5
+  staleTime: 1000 * 60 * 5,   // 5 minutes
+  gcTime: 1000 * 60 * 10,     // replaces cacheTime
+
   refetchOnMount: false,
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
