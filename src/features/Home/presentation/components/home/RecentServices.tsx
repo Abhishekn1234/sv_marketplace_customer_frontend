@@ -1,5 +1,5 @@
 import React from "react";
-import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+
 import { RecentItem } from "./RecentItem";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { getBookingPrice } from "../../helpers/getbookprice";
@@ -15,31 +15,29 @@ const RecentServices: React.FC = () => {
   // -----------------------------
   // normalize bookings safely
   // -----------------------------
-  const normalizedBookings: Booking[] = React.useMemo(() => {
-    return Array.isArray(bookings) ? bookings : [];
-  }, [bookings]);
+  const normalizedBookings = bookings ?? [];
 
   // -----------------------------
   // category map
   // -----------------------------
   const serviceToCategoryMap = React.useMemo(() => {
-    const map = new Map<string, string>();
+  const map = new Map<string, string>();
 
-    categories.forEach((category: any) => {
-      category.services?.forEach((service: any) => {
-        map.set(service._id, category._id);
-      });
+  categories?.forEach((category: any) => {
+    category.services?.forEach((service: any) => {
+      map.set(String(service._id), String(category._id));
     });
+  });
 
-    return map;
-  }, [categories]);
+  return map;
+}, [categories]);
 
-  const serviceMap = React.useMemo(() => {
+ const serviceMap = React.useMemo(() => {
   const map = new Map<string, any>();
 
-  categories.forEach((category: any) => {
+  categories?.forEach((category: any) => {
     category.services?.forEach((service: any) => {
-      map.set(service._id, service);
+      map.set(String(service._id), service);
     });
   });
 
@@ -79,14 +77,13 @@ const RecentServices: React.FC = () => {
           )}
 
          {recentBookings.map((booking) => {
-  const serviceId =
-    typeof booking.serviceId === "string"
-      ? booking.serviceId
-      : booking.serviceId?._id;
+ const serviceId = String(
+  booking.serviceId?._id ?? booking.serviceId ?? ""
+);
 
   const service = serviceMap.get(serviceId || "");
 
-  const serviceName = service?.name ?? "Service";
+  const serviceName = service?.name ?? "";
   const iconUrl = service?.iconUrl;
 
   const priceValue = getBookingPrice(booking);

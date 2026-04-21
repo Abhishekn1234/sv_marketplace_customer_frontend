@@ -101,11 +101,7 @@ export default function JobTrackingTimeline({
   // -----------------------------
   // SERVICE NAME
   // -----------------------------
-  const serviceName =
-    services.find((s) => String(s._id) === String(localBooking?.serviceId))
-      ?.name ||
-    localBooking?.service?.name ||
-    "Service";
+ 
 
   // -----------------------------
   // OTP START
@@ -222,7 +218,7 @@ export default function JobTrackingTimeline({
                     navigate("/payment", {
                       state: {
                         bookingId: localBooking._id,
-                        serviceName,
+                        serviceName:localBooking?.serviceId?.name,
                         price: computedPrice,
                         currency: localBooking.currency,
                       },

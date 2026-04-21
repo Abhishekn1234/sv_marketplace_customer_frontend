@@ -4,9 +4,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 
 export default function JobCompletedSummary({ booking }: any) {
-  const {services,serviceTiers}=useServices();
+  const {serviceTiers}=useServices();
   const {t}=useLanguage();
-  const service = services?.find((s) => s._id === booking?.serviceId) || booking?.service;
+  const service =booking?.serviceId?.name
   const pricingTier = serviceTiers?.find((tier) =>
     String(tier._id) === String(booking?.serviceTierId) ||
     String(tier.tierId) === String(booking?.serviceTierId)
@@ -36,7 +36,7 @@ export default function JobCompletedSummary({ booking }: any) {
         <div className="bg-gray-50 p-4 rounded-xl">
           <div className="text-xs text-gray-500">{t.jobcompletedpage.serviceType}</div>
           <div className="font-semibold">
-           {service?.name}
+           {service}
           </div>
         </div>
 

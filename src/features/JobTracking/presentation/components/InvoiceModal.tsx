@@ -14,20 +14,18 @@ interface Props {
 
 export default function InvoiceModal({
   booking,
-  services,
+  // services,
   // categories,
   open,
   onClose,
 }: Props) {
   if (!open) return null;
 
-  // 🔥 Fetch invoice (assuming hook supports invoiceId)
+
   const { data: invoice } = useGenerateInvoice(booking?._id);
  const {serviceTiers}=useServices();
-  // ---------------------------
-  // SERVICE / CATEGORY LOOKUP
-  // ---------------------------
-  const service = services?.find((s) => s._id === booking?.serviceId);
+ 
+ const serviceName =booking.serviceId?.name;
   const serviceTier = serviceTiers?.find(
   (tier: any) => tier._id === booking?.serviceTierId
 );
@@ -92,7 +90,7 @@ const serviceTierName = serviceTier?.displayName ?? "-";
           </p>
          
           <p>
-            <b>Service:</b> {service?.name}
+            <b>Service:</b> {serviceName}
           </p>
           <p>
             <b>Service Tier:</b> {serviceTierName}

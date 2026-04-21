@@ -25,7 +25,7 @@ export default function PaymentPage() {
   const bookingId = state?.bookingId ?? "";
   const serviceName = state?.serviceName ?? "Service";
   const price = Number(state?.price ?? 0);
-  const currency = state?.currency ?? "₹";
+  const currency = state?.currency ?? "SAR";
 
   // ✅ Prevent crash if accessed directly
   if (!bookingId) {

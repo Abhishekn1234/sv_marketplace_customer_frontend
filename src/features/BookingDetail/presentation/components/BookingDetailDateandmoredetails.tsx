@@ -59,7 +59,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
 
       const safeUnitPrice = unitPrice ?? 0;
       console.log(selectedService);
-      const vatPercent = selectedService?.category?.vatRate ?? 0;
+      const vatPercent = selectedService?.vatRate ?? 0;
       console.log("VAT Percent:", vatPercent);
       console.log(selectedService);
       const basePrice = (duration ?? 0) * safeUnitPrice;

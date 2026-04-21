@@ -10,7 +10,7 @@ export interface Service {
   // category: string | ServiceCategoryObject;
 
   category: ServiceCategoryObject;  // ✅ always object now
-
+  vatRate?: number;
   description: string;
   currency: string;
   pricingTiers: PricingTier[];
