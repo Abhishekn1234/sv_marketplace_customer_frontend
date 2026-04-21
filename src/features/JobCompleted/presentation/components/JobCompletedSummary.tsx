@@ -1,64 +1,67 @@
+
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useLanguage } from "@/features/context/LanguageContext";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 
 export default function JobCompletedSummary({ booking }: any) {
+  const {services,serviceTiers}=useServices();
+  const {t}=useLanguage();
+  const service = services?.find((s) => s._id === booking?.serviceId) || booking?.service;
+  const pricingTier = serviceTiers?.find((tier) =>
+    String(tier._id) === String(booking?.serviceTierId) ||
+    String(tier.tierId) === String(booking?.serviceTierId)
+  );
+  const tierName = pricingTier?.displayName || "—";
+
  
-  const duration = booking?.schedule?.estimatedHours
-    ? `${booking.schedule.estimatedHours}h`
-    : "N/A";
-
-
-  const price = booking?.totalCost || 0;
+ const price = booking?.totalCost;
   const currency = booking?.currency || "₹";
-
+ console.log("Booking in summary:", booking);
+ 
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
 
       <div className="flex justify-between mb-6">
         <h2 className="text-lg font-bold text-gray-900">
-          Service Summary
+           {t.jobcompletedpage.serviceSummary}
         </h2>
 
         <span className="text-emerald-600 font-semibold">
-          Completed
+        {booking?.status}
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
         <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">Service</div>
+          <div className="text-xs text-gray-500">{t.jobcompletedpage.serviceType}</div>
           <div className="font-semibold">
-            {booking?.serviceId?.name}
+           {service?.name}
           </div>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">Tier</div>
+          <div className="text-xs text-gray-500">{t.jobcompletedpage.serviceTier}</div>
           <div className="font-semibold">
-            {booking?.serviceTierId?.displayName}
+            {tierName}
           </div>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">Start Date</div>
+          <div className="text-xs text-gray-500">{t.jobcompletedpage.date}</div>
           <div className="font-semibold">
           {formatDates(booking?.schedule?.startDateTime) || "N/A"}
           </div>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">Duration</div>
+          <div className="text-xs text-gray-500">{t.jobcompletedpage.duration}</div>
           <div className="font-semibold">
-            {duration}
+            {booking.schedule?.estimatedHours}
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-xl sm:col-span-2">
-          <div className="text-xs text-gray-500">Work Description</div>
-          <div className="font-semibold">
-            {booking?.workDescription}
-          </div>
-        </div>
+      
 
       </div>
 

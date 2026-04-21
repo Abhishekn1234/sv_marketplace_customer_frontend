@@ -8,13 +8,15 @@ export default function ProviderWorkingCard({booking}:any) {
  const {t}=useLanguage();
 
 
-  const worker = booking?.assignedWorkers?.[0]?.worker;
+  const assignment = booking?.assignedWorkers?.[0];
 
-  const name = worker?.fullName || "Not Assigned";
-  const image =
-    worker?.profilePictureUrl ||
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
+const worker = assignment?.worker;
 
+const name = worker?.fullName ?? "Not Assigned";
+
+const image =
+  worker?.profilePictureUrl ||
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
   const status = booking?.status;
 
   return (

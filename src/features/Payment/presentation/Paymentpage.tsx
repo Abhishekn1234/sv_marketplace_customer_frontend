@@ -55,11 +55,7 @@ export default function PaymentPage() {
       {
         onSuccess: (data) => {
          
-          if (method === "CASH") {
-            toast.success("Booking Confirmed (Cash)");
-            navigate(`/jobtracking/${bookingId}`);
-            return;
-          }
+         
 
           
           toast.success("Payment Initiated");

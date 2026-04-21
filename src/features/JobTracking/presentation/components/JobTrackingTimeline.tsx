@@ -2,30 +2,26 @@
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect, useRef } from "react";
-import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
-
-import { getSocket, initializeSocket } from "@/features/core/Websocket/socket";
+import { initializeSocket } from "@/features/core/Websocket/socket";
 import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
-
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
-
 import { toast } from "react-toastify";
 import OtpModal from "@/components/common/CommonOtpModal";
-import type { Activity } from "../../domain/entities/jobtimelineactivities";
-type LocalBooking = Booking & {
-  activities: Activity[];
-};
+import type { LocalBooking } from "../../domain/entities/loadbooking";
+import { getActivityMap } from "../utils/activitymap";
+import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
+import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function JobTrackingTimeline({
-  bookings,
+  booking,
   loading,
 }: {
-  bookings: Booking[];
+  booking: Booking | null;
   loading: boolean;
 }) {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -42,204 +38,78 @@ export default function JobTrackingTimeline({
   const [otpData, setOtpData] = useState<string | number>("");
   const [otpPurpose, setOtpPurpose] = useState("");
 
+  const { services } = useServices();
   const verifyPaymentMutation = useVerifyPayment();
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
 
-  // ---------------- LOAD BOOKING ----------------
+  // -----------------------------
+  // INIT BOOKING
+  // -----------------------------
   useEffect(() => {
-    if (!bookings || !bookingId) return;
+    if (!booking) return;
 
-    const found = bookings.find((b) => b._id === bookingId);
+    setLocalBooking((prev: any) => ({
+      ...booking,
+      activities: prev?.activities?.length
+        ? prev.activities
+        : booking.activities,
+    }));
+  }, [booking]);
 
-    if (found) {
-      setLocalBooking({
-        ...(found as any),
-        activities: [],
-      });
-    }
-  }, [bookings, bookingId]);
-
-  // ---------------- SOCKET INIT ----------------
+  // -----------------------------
+  // SOCKET INIT
+  // -----------------------------
   useEffect(() => {
     if (accessToken) initializeSocket(accessToken);
   }, [accessToken]);
 
-  // ---------------- SOCKET EVENTS ----------------
-  useEffect(() => {
-    const socket = getSocket();
-    if (!socket || !bookingId) return;
+  useSocketTimelineJobTracking({
+    bookingId,
+    setLocalBooking,
+  });
 
-    const handler = (data: any) => {
-      const booking = data.booking ?? data;
-      if (!booking?._id || booking._id !== bookingId) return;
-
-      const eventName = data.eventName;
-      const rawStatus = data.status || booking.status;
-
-      let mappedStatus = rawStatus;
-
-      switch (eventName) {
-        case "booking.worker.accepted":
-          mappedStatus = "WORKER_ACCEPTED";
-          break;
-        case "booking.work-start-otp.generated":
-          mappedStatus = "WORK_STARTED";
-          break;
-        case "booking.work.started":
-          mappedStatus = "IN_PROGRESS";
-          break;
-        case "booking.work.completed-by-worker":
-          mappedStatus = "WORK_COMPLETED_BY_WORKER";
-          break;
-        case "booking.completion-otp.generated":
-          mappedStatus = "WORK_COMPLETED_PENDING";
-          break;
-        case "booking.completion.confirmed":
-        case "booking.invoice.generated":
-          mappedStatus = "INVOICE_GENERATED";
-          break;
-      }
-
-      const activity: Activity = {
-        type: mappedStatus,
-        createdAt:
-          data.occurredAt ||
-          booking?.createdAt ||
-          new Date().toISOString(),
-      };
-
-      setLocalBooking((prev) => {
-        if (!prev) return prev;
-
-        const exists = prev.activities?.some(
-          (a) =>
-            a.type === activity.type &&
-            Math.abs(
-              new Date(a.createdAt).getTime() -
-                new Date(activity.createdAt).getTime()
-            ) < 1000
-        );
-
-        return {
-          ...prev,
-          status: mappedStatus,
-          activities: exists
-            ? prev.activities
-            : [...(prev.activities || []), activity],
-        };
-      });
-    };
-
-    socket.on("booking.created", handler);
-    socket.on("booking:update", handler);
-    socket.on("booking.worker.accepted", handler);
-    socket.on("booking.work.started", handler);
-    socket.on("booking.work.completed-by-worker", handler);
-    socket.on("booking.completion-otp.generated", handler);
-    socket.on("booking.completion.confirmed", handler);
-    socket.on("booking.invoice.generated", handler);
-
-    return () => {
-      socket.off("booking.created", handler);
-      socket.off("booking:update", handler);
-      socket.off("booking.worker.accepted", handler);
-      socket.off("booking.work.started", handler);
-      socket.off("booking.work.completed-by-worker", handler);
-      socket.off("booking.completion-otp.generated", handler);
-      socket.off("booking.completion.confirmed", handler);
-      socket.off("booking.invoice.generated", handler);
-    };
-  }, [bookingId]);
-
-  // ---------------- STEP CONFIG ----------------
-  const STEP_CONFIG = [
-    { key: "CREATED", title: "Booking Confirmed" },
-    { key: "WORKER_ACCEPTED", title: "Professional Assigned" },
-    { key: "WORK_STARTED", title: "Work Started" },
-    { key: "IN_PROGRESS", title: "In Progress" },
-    { key: "WORK_COMPLETED_PENDING", title: "Waiting Completion OTP" },
-    { key: "WORK_COMPLETED_BY_WORKER", title: "Completed by Worker" },
-    { key: "INVOICE_GENERATED", title: "Invoice Generated" },
-    { key: "PAYMENT_PENDING", title: "Payment Pending" },
-    { key: "PAID", title: "Payment Done" },
-  ];
-
-  // ---------------- ACTIVITY MAP ----------------
+  // -----------------------------
+  // ACTIVITY MAP
+  // -----------------------------
   const activityMap = useMemo(() => {
-    if (!localBooking?.activities) return {};
+    return getActivityMap(localBooking?.activities);
+  }, [localBooking?.activities]);
 
-    return localBooking.activities.reduce((acc, a) => {
-      acc[a.type] = acc[a.type]
-        ? new Date(a.createdAt) > new Date(acc[a.type].createdAt)
-          ? a
-          : acc[a.type]
-        : a;
-
-      return acc;
-    }, {} as Record<string, Activity>);
-  }, [localBooking]);
-
-  // ---------------- STEPS ----------------
+  // -----------------------------
+  // STEPS
+  // -----------------------------
   const steps = useMemo(() => {
     if (!localBooking) return [];
-
-    const currentStatus = localBooking.status;
-
-    const currentStepIndex = Math.max(
-      STEP_CONFIG.findIndex((s) => s.key === currentStatus),
-      0
-    );
-
-    return STEP_CONFIG.map((step, idx) => {
-      const activity = activityMap[step.key];
-
-      const time = (() => {
-        if (activity?.createdAt) {
-          return formatDates(activity.createdAt);
-        }
-
-        if (step.key === "CREATED" && localBooking.createdAt) {
-          return formatDates(localBooking.createdAt);
-        }
-
-        return "Pending";
-      })();
-
-      return {
-        key: step.key,
-        title: step.title,
-        time,
-
-        status:
-          idx < currentStepIndex
-            ? "completed"
-            : idx === currentStepIndex
-            ? "active"
-            : "pending",
-
-        showStartOtpButton:
-          step.key === "WORKER_ACCEPTED" &&
-          localBooking.status === "WORKER_ACCEPTED",
-
-        showCompleteOtpButton:
-          step.key === "WORK_COMPLETED_PENDING" &&
-          localBooking.status === "WORK_COMPLETED_PENDING",
-
-        showPaymentButton:
-          step.key === "INVOICE_GENERATED" &&
-          localBooking.status === "INVOICE_GENERATED",
-
-        showVerifyButton:
-          localBooking.status === "PAYMENT_PENDING",
-
-        showServiceRatingButton:
-          localBooking.status === "PAID",
-      };
+    return buildJobTrackingSteps({
+      localBooking,
+      activityMap,
     });
   }, [localBooking, activityMap]);
 
-  // ---------------- OTP HANDLERS ----------------
+  // -----------------------------
+  // PRICE
+  // -----------------------------
+  const computedPrice = useMemo(() => {
+    return (
+      localBooking?.invoice?.finalAmount ??
+      localBooking?.totalCost ??
+      0
+    );
+  }, [localBooking]);
+
+  // -----------------------------
+  // SERVICE NAME
+  // -----------------------------
+  const serviceName =
+    services.find((s) => String(s._id) === String(localBooking?.serviceId))
+      ?.name ||
+    localBooking?.service?.name ||
+    "Service";
+
+  // -----------------------------
+  // OTP START
+  // -----------------------------
   const handleStartOtp = () => {
     if (!localBooking?._id) return;
 
@@ -256,6 +126,9 @@ export default function JobTrackingTimeline({
     );
   };
 
+  // -----------------------------
+  // OTP COMPLETE
+  // -----------------------------
   const handleCompleteOtp = () => {
     if (!localBooking?._id) return;
 
@@ -272,7 +145,9 @@ export default function JobTrackingTimeline({
     );
   };
 
-  // ---------------- AUTO SCROLL ----------------
+  // -----------------------------
+  // SCROLL ACTIVE STEP
+  // -----------------------------
   useEffect(() => {
     const el = timelineRef.current?.querySelector(".active");
     if (el) {
@@ -283,10 +158,15 @@ export default function JobTrackingTimeline({
     }
   }, [steps]);
 
-  // ---------------- UI ----------------
+  // -----------------------------
+  // LOADING / EMPTY
+  // -----------------------------
   if (loading) return <div>Loading...</div>;
   if (!localBooking) return <div>No booking found</div>;
 
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
     <div className="bg-white rounded-2xl p-7 border shadow-sm">
       <div className="flex justify-between mb-6">
@@ -342,8 +222,8 @@ export default function JobTrackingTimeline({
                     navigate("/payment", {
                       state: {
                         bookingId: localBooking._id,
-                        serviceName: localBooking.service?.name ?? "Service",
-                        price: localBooking.totalCost,
+                        serviceName,
+                        price: computedPrice,
                         currency: localBooking.currency,
                       },
                     })
@@ -357,20 +237,24 @@ export default function JobTrackingTimeline({
               {step.showVerifyButton && (
                 <button
                   onClick={() => {
-                    if (!localBooking?._id) return;
-
                     verifyPaymentMutation.mutate(
                       {
                         paymentId: localBooking.paymentId,
                         status: "SUCCESS",
-                        transactionId:
-                          localBooking.transactionId ?? "",
+                        transactionId: localBooking.transactionId ?? "",
                       },
                       {
-                        onSuccess: () =>
-                          toast.success("Payment verified successfully"),
-                        onError: () =>
-                          toast.error("Payment verification failed"),
+                        onSuccess: () => {
+                          navigate("/payment-callback", {
+                            state: {
+                              bookingId: localBooking._id,
+                              status: "SUCCESS",
+                            },
+                          });
+                        },
+                        onError: () => {
+                          toast.error("Payment verification failed");
+                        },
                       }
                     );
                   }}

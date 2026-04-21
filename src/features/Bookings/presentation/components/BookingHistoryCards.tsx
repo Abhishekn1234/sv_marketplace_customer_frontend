@@ -12,6 +12,8 @@ import { statusStyles } from "../helpers/statusmap";
 import { BookingActions } from "./BookingHistoryActions";
 import { formatBookingDuration } from "../helpers/formatduration";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
+import { useServices } from "../hooks/useServices";
+
 
 interface BookingCardProps {
   booking: BookingHistory;
@@ -36,7 +38,8 @@ export default function BookingCard({
 }: BookingCardProps) {
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
-
+  const {services}=useServices();
+  console.log(booking);
   const handleActionButtonClick = () => {
     if (!clickable) return;
     
@@ -126,16 +129,19 @@ export default function BookingCard({
         clickable={clickable}
         onActionClick={handleActionButtonClick}
         onViewDetails={() => onViewDetails(booking)}
-      onPayNow={() => {
-          navigate("/payment", {
-            state: {
-              bookingId: booking._id,
-              serviceName: booking.service?.name ?? "Service",
-              price: booking.price ?? 0, // 👈 adjust if different
-              currency: booking.currency ?? "₹",
-            },
-          });
-        }}
+     onPayNow={() => {
+  const finalPrice = booking?.totalCost;
+ const serviceName =
+  services.find(s => s._id === booking.serviceId)?.name || "Service";
+  navigate("/payment", {
+    state: {
+      bookingId: booking._id,
+      serviceName: serviceName,
+      price: Number(finalPrice).toFixed(2),
+      currency: booking.currency ?? "₹",
+    },
+  });
+}}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
          navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}

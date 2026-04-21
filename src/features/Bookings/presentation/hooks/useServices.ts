@@ -1,11 +1,11 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import ServiceRepository from "../../data/repositories/ServiceRepository";
 import { GetServicesUseCase } from "../../domain/usecases/services/GetServiceUsecase";
 import { GetServiceTierUsecase } from "../../domain/usecases/services/GetServiceTierUsecase";
 
-import type {  Service } from "../../domain/entities/service.types";
+import type { Service } from "../../domain/entities/service.types";
 import type { Category } from "../../domain/entities/category.types";
 import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 
@@ -13,58 +13,73 @@ export const useServices = () => {
   const getServicesUseCase = new GetServicesUseCase(ServiceRepository);
   const getServiceTierUseCase = new GetServiceTierUsecase(ServiceRepository);
 
-  const serviceTiersQuery = useQuery<ServiceTierRef[], Error>({
-    queryKey: ["serviceTiers"],
-    queryFn: async () => {
-      const tiers = await getServiceTierUseCase.execute();
-      return tiers;
-    },
-    onError: (err: any) => {
-      const message = err?.message || "Failed to fetch service tiers";
-      toast.error(message);
-    },
-  } as UseQueryOptions<ServiceTierRef[], Error>);
+ const serviceTiersQuery = useQuery<ServiceTierRef[], Error>({
+  queryKey: ["serviceTiers"],
+  queryFn: async () => {
+    return await getServiceTierUseCase.execute();
+  },
 
-  const servicesQuery = useQuery<Service[], Error>({
-    queryKey: ["services"],
-    queryFn: async () => {
-      const response = await getServicesUseCase.execute();
-      console.log(response);
-      if (!Array.isArray(response)) return [];
-      return response;
-    },
-    onError: (err: any) => {
-      const message = err?.message || "Failed to fetch services";
-      toast.error(message);
-    },
-  } as UseQueryOptions<Service[], Error>);
+  // ✅ FIX
+  staleTime: Infinity,
+  gcTime: 1000 * 60 * 30,
 
- const categories: Category[] = servicesQuery.data
-  ? Object.values(
-      servicesQuery.data.reduce((acc, service) => {
-        const categoryObj = service.category?.[0]; // ✅ first category object
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+});
 
-        const categoryId = categoryObj?._id;
+const servicesQuery = useQuery<Service[], Error>({
+  queryKey: ["services"],
+  queryFn: async () => {
+    const response = await getServicesUseCase.execute();
+    return Array.isArray(response?.data) ? response.data : [];
+  },
 
-        if (!categoryId) return acc;
+  // ✅ FIX
+  staleTime: Infinity,
+  gcTime: 1000 * 60 * 30,
 
-        if (!acc[categoryId]) {
-          acc[categoryId] = {
-            _id: categoryId,
-            name: categoryObj.name ?? "Category",
-            slug: categoryObj.slug ?? "",
-            iconUrl: categoryObj.iconUrl,
-            iconPublicId: categoryObj.iconPublicId,
-            services: [],
-          };
-        }
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+});
 
-        acc[categoryId].services.push(service);
+  // ❌ move toast handling outside query (React Query v5 style)
+  if (serviceTiersQuery.error) {
+    toast.error(serviceTiersQuery.error.message || "Failed to fetch service tiers");
+  }
 
-        return acc;
-      }, {} as Record<string, Category>)
-    )
-  : [];
+  if (servicesQuery.error) {
+    toast.error(servicesQuery.error.message || "Failed to fetch services");
+  }
+
+  const categories: Category[] = servicesQuery.data
+    ? Object.values(
+        servicesQuery.data.reduce((acc, service) => {
+          const categoryObj = service.category;
+
+          const categoryId = categoryObj?._id;
+          if (!categoryId) return acc;
+
+          if (!acc[categoryId]) {
+            acc[categoryId] = {
+              _id: categoryId,
+              name: categoryObj.name ?? "Category",
+              vatRate: categoryObj.vatRate,
+              slug: categoryObj.slug ?? "",
+              iconUrl: categoryObj.iconUrl,
+              iconPublicId: categoryObj.iconPublicId,
+              services: [],
+            };
+          }
+
+          acc[categoryId].services.push(service);
+
+          return acc;
+        }, {} as Record<string, Category>)
+      )
+    : [];
+
   return {
     categories,
     services: servicesQuery.data ?? [],

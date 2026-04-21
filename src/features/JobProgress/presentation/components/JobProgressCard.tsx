@@ -2,23 +2,41 @@
 
 import { useMemo } from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-
+import {normalizeStatus} from "../helpers/mapstatusactivities";
 export function JobProgressCard({ booking }: any) {
   const { t } = useLanguage();
 
-  const tasks = useMemo(() => {
-    if (!booking?.activities?.length) return [];
+  
 
-    return booking.activities.map((a: any) => ({
-      title:t.jobprogresspage[a.key as keyof typeof t.jobprogresspage] ?? a.key,
-      status: a.status, // completed | progress | pending | cancelled
+  // -----------------------------
+  // tasks (ALWAYS SAFE)
+  // -----------------------------
+ const tasks = useMemo(() => {
+  const activities = booking?.activities ?? [];
+
+  return [...activities]
+    .filter((a: any) => a?.createdAt)
+    .sort(
+      (a: any, b: any) =>
+        new Date(a.createdAt).getTime() -
+        new Date(b.createdAt).getTime()
+    )
+    .map((a: any) => ({
+      title:
+        t.jobprogresspage[a.type as keyof typeof t.jobprogresspage] ??
+        a.type,
+      status: normalizeStatus(a.type),
+      time: a.createdAt,
     }));
-  }, [booking?.activities, t]);
+}, [booking?.activities, t]);
 
   const isCancelled =
     booking?.status === "WORKER_CANCELLED" ||
     booking?.status === "CUSTOMER_CANCELLED";
 
+  // -----------------------------
+  // CANCELLED UI
+  // -----------------------------
   if (isCancelled) {
     return (
       <div className="bg-white rounded-[20px] p-6 border border-red-200 shadow-sm">
@@ -35,6 +53,26 @@ export function JobProgressCard({ booking }: any) {
     );
   }
 
+  // -----------------------------
+  // EMPTY STATE (IMPORTANT FIX)
+  // -----------------------------
+  if (!tasks.length) {
+    return (
+      <div className="bg-white rounded-[20px] p-6 border border-gray-200">
+        <h2 className="text-[16px] font-bold mb-4">
+          {t.jobprogresspage.taskChecklist}
+        </h2>
+
+        <div className="text-gray-400 text-sm text-center">
+          No activities yet...
+        </div>
+      </div>
+    );
+  }
+
+  // -----------------------------
+  // MAIN UI
+  // -----------------------------
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
@@ -56,21 +94,29 @@ export function JobProgressCard({ booking }: any) {
                   : "bg-gray-50 border-gray-200"
               }`}
           >
-            {/* Icon */}
+            {/* CHECKBOX ICON */}
             <div
-              className={`w-6 h-6 rounded-md flex items-center justify-center
+              className={`w-6 h-6 rounded-md flex items-center justify-center border
                 ${
                   task.status === "completed"
-                    ? "bg-emerald-500"
-                    : task.status === "progress"
-                    ? "bg-blue-600 animate-pulse"
-                    : task.status === "cancelled"
-                    ? "bg-red-500"
-                    : "border-2 border-gray-300 bg-white"
+                    ? "bg-emerald-500 border-emerald-500"
+                    : "border-gray-300 bg-white"
                 }`}
-            />
+            >
+              {task.status === "completed" && (
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
 
-            {/* Text */}
+            {/* CONTENT */}
             <div className="flex-1">
               <div
                 className={`text-[15px] font-semibold ${
@@ -86,6 +132,10 @@ export function JobProgressCard({ booking }: any) {
 
               <div className="text-[13px] text-gray-500 capitalize">
                 {task.status}
+              </div>
+
+              <div className="text-[11px] text-gray-400">
+                {new Date(task.time).toLocaleString()}
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { progressMap } from "@/features/Home/presentation/helpers/progressmap";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import { useLanguage } from "@/features/context/LanguageContext";
+import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 
 export function JobProgressProgress({ booking, loading }: any) {
   const { t } = useLanguage();
@@ -25,7 +26,7 @@ export function JobProgressProgress({ booking, loading }: any) {
     ? formatDates(worker.completedAt)
     : "N/A";
 
-  const progress = progressMap[status.toLowerCase()] ?? 20;
+  const progress = progressMap[status as BookingStatus] ?? 20;
 
   const isWorkerCancelled = normalizedStatus === "WORKER_CANCELLED";
   const isCustomerCancelled = normalizedStatus === "CUSTOMER_CANCELLED";

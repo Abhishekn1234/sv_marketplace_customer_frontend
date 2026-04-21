@@ -4,6 +4,7 @@ interface Feature {
 }
 export interface ServiceTierRef {
   _id: string;
+  tierId?:string;
   name?: string;
   code?:string;
   displayName?:string;

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { BookingRepository } from "../../data/repositories/BookingRepository";
@@ -15,6 +16,7 @@ import type { BookingPayload } from "../../domain/entities/bookingpayload.types"
 
 import { useAuthStore } from "../../../core/store/auth";
 import { mapBookingToAuthBooking } from "../../../core/mappers/mapBooking";
+import { getSocket } from "@/features/core/Websocket/socket";
 
 const bookingRepository = new BookingRepository();
 const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
@@ -30,30 +32,75 @@ export const useBookings = () => {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
 
-  // ✅ FETCH BOOKINGS (NO BLOCKING CONDITIONS)
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery<Booking[], Error>({
-    queryKey: BOOKINGS_QUERY_KEY,
-   queryFn: async () => {
-  console.log("🔥 Fetching bookings...");
+  // =========================
+  // FETCH BOOKINGS
+  // =========================
+ const { data, isLoading, isError, refetch } = useQuery<Booking[], Error>({
+  queryKey: BOOKINGS_QUERY_KEY,
 
-  const res = await getBookingsUseCase.execute();
+  queryFn: async () => {
+    const res = await getBookingsUseCase.execute();
+    if (!res?.bookings) return [];
 
-  const bookings = res?.bookings ?? [];
+    return res.bookings.map((b) => ({
+      ...b,
+      service: b.serviceId,
+      serviceTier: b.serviceTierId,
+    }));
+  },
 
-  // ✅ normalize here
-  const normalized = bookings.map((b) => ({
-    ...b,
-    service: b.serviceId,
-    serviceTier: b.serviceTierId,
-  }));
+  // ✅ FIXES
+  staleTime: 1000 * 60 * 5,        // cache for 5 mins
+   gcTime: 1000 * 60 * 10,     // keep in memory
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+});
 
-  if (user) {
-    const mapped = normalized.map((b) =>
+  // =========================
+  // SOCKET SYNC (🔥 FIX)
+  // =========================
+  useEffect(() => {
+    const socket = getSocket?.();
+    if (!socket) return;
+
+    const handler = (booking: Booking) => {
+      if (!booking?._id) return;
+
+      // 🔥 update LIST
+      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
+        if (!old) return [];
+        return old.map((b) =>
+          b._id === booking._id ? { ...b, ...booking } : b
+        );
+      });
+
+      // 🔥 update SINGLE booking cache
+      queryClient.setQueryData(["booking", booking._id], booking);
+    };
+
+    socket.on("booking:update", handler);
+    socket.on("booking.status.changed", handler);
+    socket.on("booking.worker.assigned", handler);
+    socket.on("booking.work.started", handler);
+    socket.on("booking.work.completed-by-worker", handler);
+
+    return () => {
+      socket.off("booking:update", handler);
+      socket.off("booking.status.changed", handler);
+      socket.off("booking.worker.assigned", handler);
+      socket.off("booking.work.started", handler);
+      socket.off("booking.work.completed-by-worker", handler);
+    };
+  }, [queryClient]);
+
+  // =========================
+  // SYNC AUTH STORE
+  // =========================
+  useEffect(() => {
+    if (!data || !user) return;
+
+    const mapped = data.map((b) =>
       mapBookingToAuthBooking(
         b,
         b.service?.name,
@@ -65,102 +112,72 @@ export const useBookings = () => {
       ...user,
       bookings: mapped,
     });
-  }
+  }, [data]);
 
-  return normalized;
-},
-
-    staleTime: 5 * 60 * 1000, // ✅ 5 min cache
-    refetchOnMount: false,   // ✅ no repeated API calls
-    refetchOnWindowFocus: false, // ✅ avoid unwanted calls
-  });
-
-  // ✅ CREATE BOOKING
+  // =========================
+  // CREATE BOOKING
+  // =========================
   const createBooking = useMutation<Booking, Error, BookingPayload>({
     mutationFn: (payload) => createBookingUseCase.execute(payload),
 
     onSuccess: (newBooking) => {
-      // ✅ Update cache instantly
       queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
         old ? [newBooking, ...old] : [newBooking]
       );
 
-      // ✅ Update auth store
-      const currentUser = useAuthStore.getState().user;
-
-      if (currentUser) {
-        const mapped = mapBookingToAuthBooking(
-          newBooking,
-          newBooking.service?.name,
-          newBooking.serviceTier?.displayName
-        );
-
-        setUser({
-          ...currentUser,
-          bookings: [mapped, ...(currentUser.bookings ?? [])],
-        });
-      }
+      queryClient.setQueryData(["booking", newBooking._id], newBooking);
 
       toast.success("Booking created successfully ✅");
-
-      navigate("/confirmation");
+      navigate(`/confirmation/${newBooking._id}`);
     },
 
     onError: (err: any) => {
-      const message =
-        err?.response?.data?.message || err.message || "Something went wrong";
-
-      toast.error(message);
+      toast.error(err?.message || "Something went wrong");
     },
   });
 
-  // ✅ CANCEL BOOKING
+  // =========================
+  // CANCEL BOOKING
+  // =========================
   const cancelBooking = useMutation<Booking, Error, CancelBookingRequest>({
     mutationFn: (req) => cancelBookingUseCase.execute(req),
 
     onSuccess: (updatedBooking) => {
-      // ✅ Update cache
-      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
-        if (!old) return [];
-        return old.map((b) =>
+      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
+        old?.map((b) =>
           b._id === updatedBooking._id ? updatedBooking : b
-        );
-      });
+        ) ?? []
+      );
 
-      // ✅ Update auth store
-      const currentUser = useAuthStore.getState().user;
-
-      if (currentUser?.bookings) {
-        setUser({
-          ...currentUser,
-          bookings: currentUser.bookings.map((b) =>
-            b._id === updatedBooking._id
-              ? { ...b, status: updatedBooking.status }
-              : b
-          ),
-        });
-      }
+      queryClient.setQueryData(
+        ["booking", updatedBooking._id],
+        updatedBooking
+      );
 
       toast.success("Booking cancelled successfully ✅");
     },
 
-    onError: (err: any) => {
-      toast.error(err?.message || "Cancel failed ❌");
-    },
+    onError: () => toast.error("Cancel failed ❌"),
   });
-  
-const updateBookingInCache = (updatedBooking: Booking) => {
-  queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
-    if (!old) return [];
 
-    return old.map((b) =>
-      b._id === updatedBooking._id ? { ...b, ...updatedBooking } : b
+  // =========================
+  // UPDATE HELPER
+  // =========================
+  const updateBookingInCache = (updated: Booking) => {
+    queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
+      old?.map((b) =>
+        b._id === updated._id ? { ...b, ...updated } : b
+      ) ?? []
     );
-  });
-};
 
+    queryClient.setQueryData(["booking", updated._id], updated);
+  };
+
+  // =========================
+  // RETURN
+  // =========================
   return {
-    bookings: data ?? [],
+    bookings: useMemo(() => data ?? [], [data]),
     loading: isLoading,
     error: isError,
     refetch,

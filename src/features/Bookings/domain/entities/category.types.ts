@@ -4,6 +4,7 @@ export interface Category {
   _id: string;
   name: string;
   slug: string;
+  vatRate?: number; 
   iconUrl?: string;
   iconPublicId?: string;
   services: Service[];

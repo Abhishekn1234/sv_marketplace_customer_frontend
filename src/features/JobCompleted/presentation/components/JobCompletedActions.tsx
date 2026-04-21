@@ -4,9 +4,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import InvoiceModal from "@/features/JobTracking/presentation/components/InvoiceModal";
 import ShareModal from "./ShareModal";
 
+
 export default function JobCompletedActions({
   booking,
-  invoice,
   services,
   categories,
 }: any) {
@@ -15,6 +15,8 @@ export default function JobCompletedActions({
 
   const [openInvoice, setOpenInvoice] = useState(false);
   const [openShare, setOpenShare] = useState(false);
+
+  
 
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm w-full max-w-3xl mx-auto mt-5">
@@ -25,40 +27,36 @@ export default function JobCompletedActions({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-        {/* VIEW INVOICE */}
         <div
           onClick={() => setOpenInvoice(true)}
-          className="group flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.viewInvoice}
           </span>
         </div>
 
-        {/* BOOK AGAIN */}
         <div
           onClick={() => navigate("/")}
-          className="group flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.bookAgain}
           </span>
         </div>
 
-        {/* GET SUPPORT */}
         <div
           onClick={() => navigate("/help")}
-          className="group flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.getSupport}
           </span>
         </div>
 
-        {/* SHARE */}
         <div
           onClick={() => setOpenShare(true)}
-          className="group flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.share}
@@ -70,10 +68,9 @@ export default function JobCompletedActions({
       <InvoiceModal
         open={openInvoice}
         onClose={() => setOpenInvoice(false)}
-        invoice={invoice}
         booking={booking}
+       
         services={services}
-      
         categories={categories}
       />
 

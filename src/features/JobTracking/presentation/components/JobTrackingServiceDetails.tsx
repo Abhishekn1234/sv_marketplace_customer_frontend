@@ -1,27 +1,61 @@
 "use client";
 
-import { useParams } from "react-router-dom";
+
 import { useEffect, useState, useMemo } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
-
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
-export default function JobTrackingServiceDetails({bookings,loading}:{bookings:Booking[],loading:boolean}) {
-  const { bookingId } = useParams();
-// ✅ cached data
-  console.log(bookings);
+interface Props {
+  booking: Booking | undefined;
+  loading: boolean;
+}
+
+export default function JobTrackingServiceDetails({
+  booking,
+  loading,
+}: Props) {
   const { t } = useLanguage();
+  const { serviceTiers, services } = useServices();
 
   const [coordinates, setCoordinates] = useState("Loading...");
 
-  // ✅ Get booking from cache (NO API)
-  const booking = useMemo(() => {
-    if (!bookings || !bookingId) return null;
-    return bookings.find((b) => b._id === bookingId);
-  }, [bookings, bookingId]);
+  // -----------------------------
+  // tier name
+  // -----------------------------
+  const tierName = useMemo(() => {
+    if (!serviceTiers || !booking) return "—";
 
-  // ✅ Coordinates logic
+    const tierId =
+      typeof booking.serviceTierId === "string"
+        ? booking.serviceTierId
+        : booking.serviceTierId?._id;
+
+    const tier = serviceTiers.find((t) => t._id === tierId);
+
+    return tier?.displayName || "—";
+  }, [serviceTiers, booking]);
+
+  // -----------------------------
+  // service name
+  // -----------------------------
+  const serviceName = useMemo(() => {
+    if (!services || !booking) return "—";
+
+    const serviceId =
+      typeof booking.serviceId === "string"
+        ? booking.serviceId
+        : booking.serviceId?._id;
+
+    const service = services.find((s) => s._id === serviceId);
+
+    return service?.name || "—";
+  }, [services, booking]);
+
+  // -----------------------------
+  // coordinates
+  // -----------------------------
   useEffect(() => {
     if (!booking?.location?.coordinates) {
       setCoordinates("No coordinates");
@@ -34,18 +68,34 @@ export default function JobTrackingServiceDetails({bookings,loading}:{bookings:B
     setCoordinates(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
   }, [booking]);
 
+  // -----------------------------
+  // loading
+  // -----------------------------
+  if (loading || !booking) {
+    return (
+      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+        <p className="text-sm text-gray-500">
+          Loading service details...
+        </p>
+      </div>
+    );
+  }
+
+  // -----------------------------
+  // UI
+  // -----------------------------
   const serviceDetails = [
     {
       label: t.jobtrackingpage.serviceDetails.serviceType,
-      value: booking?.serviceId?.name || "—",
+      value: serviceName,
     },
     {
       label: t.jobtrackingpage.serviceDetails.serviceTier,
-      value: booking?.serviceTierId?.displayName || "—",
+      value: tierName,
     },
     {
       label: t.jobtrackingpage.serviceDetails.dateTime,
-      value: booking?.schedule?.startDateTime
+      value: booking.schedule?.startDateTime
         ? formatDates(booking.schedule.startDateTime)
         : "—",
     },
@@ -56,22 +106,13 @@ export default function JobTrackingServiceDetails({bookings,loading}:{bookings:B
     },
     {
       label: t.jobtrackingpage.serviceDetails.totalPrice,
-      value: booking ? `${booking.currency} ${booking.amount}` : "—",
+      value: `${booking.currency} ${booking.totalCost}`,
       isPrice: true,
     },
   ];
 
-  if (!booking || loading) {
-    return (
-      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
-        <p className="text-sm text-gray-500">Loading service details...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
-      
       <h3 className="text-base font-bold text-gray-900 mb-5">
         {t.jobtrackingpage.serviceDetails.title}
       </h3>

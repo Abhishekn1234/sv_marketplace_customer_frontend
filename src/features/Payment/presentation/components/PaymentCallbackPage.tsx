@@ -5,19 +5,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useVerifyPayment } from "../hooks/useVerifyPayment";
 import { toast } from "react-toastify";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PaymentCallbackPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const verifyPayment = useVerifyPayment();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
 
   const hasCalled = useRef(false);
 
   const paymentId = state?.paymentId;
   const status = state?.status;
   const transactionId = state?.transactionId;
-  const bookingId = state?.bookingId; // ✅ IMPORTANT
+  const bookingId = state?.bookingId;
 
   useEffect(() => {
     const verify = async () => {
@@ -29,6 +31,7 @@ export default function PaymentCallbackPage() {
       hasCalled.current = true;
 
       try {
+        // 1. VERIFY PAYMENT
         await verifyPayment.mutateAsync({
           paymentId,
           status,
@@ -37,12 +40,33 @@ export default function PaymentCallbackPage() {
 
         toast.success(t.paymentpage.verified);
 
+        // 2. UPDATE CACHE FIRST
+        queryClient.setQueryData(["bookings"], (old: any) => {
+          if (!Array.isArray(old)) return old;
+
+          return old.map((b: any) =>
+            b._id === bookingId
+              ? {
+                  ...b,
+                  paymentStatus: "PAID",
+                  status: "COMPLETED",
+                }
+              : b
+          );
+        });
+
+        // 3. FORCE REFRESH BOOKINGS (VERY IMPORTANT FIX)
+        queryClient.invalidateQueries({ queryKey: ["bookings"] });
+
+        // 4. NAVIGATE
         setTimeout(() => {
-          // 🔥 CHANGE HERE
           navigate("/jobcompleted", {
-            state: { bookingId },
+            state: {
+              bookingId,
+              paymentDone: true,
+            },
           });
-        }, 1200);
+        }, 800);
       } catch (error: any) {
         toast.error(
           error?.response?.data?.message ||
@@ -57,7 +81,7 @@ export default function PaymentCallbackPage() {
     };
 
     verify();
-  }, [paymentId]);
+  }, [paymentId, status, transactionId, bookingId, navigate, verifyPayment, queryClient, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

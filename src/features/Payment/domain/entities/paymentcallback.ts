@@ -2,6 +2,7 @@ import type { PaymentStatus } from "./paymentstatus";
 
 export interface PaymentCallback{
     paymentId:string;
+    bookingId?:string;
     status:PaymentStatus;
     transactionId:string;
     signature?:string;

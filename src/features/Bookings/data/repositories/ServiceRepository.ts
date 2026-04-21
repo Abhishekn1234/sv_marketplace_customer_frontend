@@ -15,7 +15,7 @@ export class ServiceRepository implements IServiceRepository {
  private readonly baseUrl = "booking"; 
 
 
-  async getServices(params: GetServicesParams = {}): Promise<APIResponse<Category[]>> {
+  async getServices(params: GetServicesParams = {}): Promise<APIResponse<Service[]>> {
     const queryParams = new URLSearchParams();
 
     if (params.page !== undefined) queryParams.append("page", params.page.toString());
@@ -26,7 +26,7 @@ export class ServiceRepository implements IServiceRepository {
 
     const url = `${this.baseUrl}/services?${queryParams.toString()}`;
 
-    const response = await apiClient.get<APIResponse<Category[]>>(url);
+    const response = await apiClient.get<APIResponse<Service[]>>(url);
 
     console.log("Full Axios Response:", response);
     console.log("Actual API Data:", response.data);

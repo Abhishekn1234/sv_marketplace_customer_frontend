@@ -6,10 +6,18 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocation} from "@/features/utils/reverse";
 import { resolveLocation } from "../helpers/resolvelocation";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
-  const { serviceId, serviceTierId } = useParams();
+  
+ const { serviceId,serviceTierId } = useParams();
+const { services } = useServices();
+
+const selectedService = services?.find(
+  (s: any) => s._id === serviceId
+);
+console.log("Selected Service in BookingDetailDateandmoredetails:", selectedService);
   const { current_location } = useAuthStore();
   const {t}=useLanguage();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -41,23 +49,29 @@ export default function BookingDetailDateandmoredetails() {
 
 
   const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
+const selectedPricing = selectedService?.pricingTiers?.[0]; 
+// ✅ replace this with .find(...) if multiple tiers exist
 
-  const basePricePerHour = 30;
-  const discountPercent = 15;
-  const commissionValue = 10;
-  const commissionType: "PERCENTAGE" | "FIXED" = "PERCENTAGE";
-
-  const basePrice = duration * basePricePerHour;
-  const discount = (basePrice * discountPercent) / 100;
-
-  let commissionAmount = commissionType === "PERCENTAGE" ? (basePrice * commissionValue) / 100 : commissionValue;
-
-  const totalCostToSend = useMemo(() => {
-    let commission = commissionType === "PERCENTAGE" ? (basePrice * commissionValue) / 100 : commissionValue;
-    return basePrice - discount + commission;
-  }, [duration, basePrice, discount, commissionType, commissionValue]);
+console.log("Selected Pricing Tier:", selectedPricing);
 
 
+const unitPrice =selectedPricing?.HOURLY?.ratePerHour ?? selectedPricing?.PER_DAY?.ratePerDay ?? 0;
+
+const safeUnitPrice = unitPrice ?? 0;
+ console.log(selectedService);
+const vatPercent = selectedService?.category?.vatRate ?? 0;
+ console.log(selectedService);
+const basePrice = (duration ?? 0) * safeUnitPrice;
+
+const vatRate = useMemo(
+  () => (basePrice * vatPercent) / 100,
+  [basePrice, vatPercent]
+);
+
+const totalCostToSend = useMemo(
+  () => basePrice + vatRate,
+  [basePrice, vatRate]
+);
   const handleBooking = async () => {
     try {
       if (selectedDate === null) return toast.error("Please select a date");
@@ -222,13 +236,10 @@ export default function BookingDetailDateandmoredetails() {
           <span>{t.bookingdetailpage.basePrice}({duration} hrs)</span>
           <span>SAR {basePrice.toFixed(2)}</span>
         </div>
+       
         <div className="flex justify-between mb-2 text-sm">
-          <span>{t.bookingdetailpage.memberDiscount}({discountPercent}%)</span>
-          <span className="text-blue-600">-SAR {discount.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-2 text-sm">
-          <span>{t.bookingdetailpage.serviceFee} ({commissionType === "PERCENTAGE" ? `${commissionValue}%` : "Fixed"})</span>
-          <span>SAR {commissionAmount.toFixed(2)}</span>
+          <span>{t.bookingdetailpage.vatRate}</span>
+          <span>SAR {vatRate.toFixed(2)}</span>
         </div>
         <div className="flex justify-between border-t-2 border-gray-200 pt-3 mt-3">
           <span className="text-lg font-bold">{t.bookingdetailpage.total}</span>

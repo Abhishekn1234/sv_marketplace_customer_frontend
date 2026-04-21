@@ -2,8 +2,8 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobCompletedProvider({ booking }: any) {
   const { t } = useLanguage();
-
-  const worker = booking?.assignedWorkers?.[0]?.workerId;
+  console.log(booking);
+  const worker = booking?.assignedWorkers?.[0];
 
   return (
     <div className="bg-white rounded-[20px] p-6 border border-gray-200">

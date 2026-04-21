@@ -5,16 +5,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import SuccessSection from "./components/Successsection";
 import JobCompletedSummary from "./components/JobCompletedSummary";
-import JobCompletedProvider from "./components/JobCompletedProvider";
+// import JobCompletedProvider from "./components/JobCompletedProvider";
 import JobCompletedActions from "./components/JobCompletedActions";
 
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { LoadingScreen } from "./components/Loadingscreen";
 
 export default function JobCompletedPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { bookings } = useBookings();
+  console.log("All bookings in JobCompletedPage:", bookings);
   const {services}=useServices();
   const bookingId = state?.bookingId;
   const [booking, setBooking] = useState<any>(null);
@@ -26,15 +28,13 @@ export default function JobCompletedPage() {
     }
 
     const found = bookings?.find((b: any) => b._id === bookingId);
+    console.log("Found booking for Job Completed:", found);
     if (found) setBooking(found);
+
   }, [bookingId, bookings]);
 
   if (!booking) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-500">
-        Loading completed job...
-      </div>
-    );
+    return <LoadingScreen/>;
   }
 
   return (
@@ -42,7 +42,7 @@ export default function JobCompletedPage() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         <SuccessSection />
         <JobCompletedSummary booking={booking} />
-        <JobCompletedProvider booking={booking} />
+        {/* <JobCompletedProvider booking={booking} /> */}
               <JobCompletedActions
           booking={booking}
           invoice={booking.invoice}

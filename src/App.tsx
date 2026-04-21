@@ -104,7 +104,7 @@ function App() {
                 
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
-                <Route path="confirmation" element={<ConfirmationPage />} />
+                <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
               </Route>
 
             </Route>

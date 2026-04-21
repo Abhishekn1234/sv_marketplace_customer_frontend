@@ -9,7 +9,7 @@ export interface Service {
   // ❌ remove string | union
   // category: string | ServiceCategoryObject;
 
-  category: ServiceCategoryObject[];  // ✅ always object now
+  category: ServiceCategoryObject;  // ✅ always object now
 
   description: string;
   currency: string;

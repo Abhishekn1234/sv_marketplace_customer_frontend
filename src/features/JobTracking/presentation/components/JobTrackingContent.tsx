@@ -2,7 +2,7 @@ import JobTrackingLayout from "./JobTrackingLayout";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 interface Props {
-  bookings: Booking[];
+  bookings: Booking;
   loading: boolean;
 }
 

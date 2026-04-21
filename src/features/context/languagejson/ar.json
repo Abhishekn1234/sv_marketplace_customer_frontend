@@ -126,7 +126,7 @@
   "bookingdetailpage":{
      "backToServices": "العودة إلى الخدمات",
      "title": "تفاصيل الحجز",
-     
+      "vatRate": "ضريبة القيمة المضافة",
     "serviceSummary": "ملخص الخدمة",
     "serviceType": "نوع الخدمة",
     "serviceProfessional": "مزود الخدمة",

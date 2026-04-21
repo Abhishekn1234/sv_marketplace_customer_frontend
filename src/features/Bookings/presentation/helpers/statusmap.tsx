@@ -15,4 +15,5 @@ export const statusStyles: Record<BookingStatus, string> = {
   PAYMENT_PENDING: "bg-orange-50 text-orange-600 border border-orange-200",
   PAID: "bg-green-50 text-green-600 border border-green-200",
   CUSTOMER_REJECTED: "bg-pink-50 text-pink-600 border border-pink-200",
+  EXPIRED: "bg-gray-200 text-gray-500 border border-gray-400",
 };

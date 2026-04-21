@@ -4,7 +4,7 @@ import type { APIResponse } from "../entities/apiresponse.types";
 import type { Category } from "../entities/category.types";
 
 export interface IServiceRepository {
-  getServices(): Promise<APIResponse<Category[]>>;
+  getServices(): Promise<APIResponse<Service[]>>;
   getServiceTiers(): Promise<ServiceTierRef[]>;
   getServiceById(serviceId: string): Promise<Service | null>;
  getCategories(): Promise<Category[]>;

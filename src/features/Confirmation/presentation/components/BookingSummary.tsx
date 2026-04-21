@@ -3,6 +3,8 @@ import SummaryItem from "./SummaryItem";
 import { formatSmartDate } from "../helpers/formatdatetime";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/helpers/formatduration";
+import { useMemo } from "react";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 interface BookingSummaryProps {
   data: any;
@@ -13,6 +15,14 @@ interface BookingSummaryProps {
 export default function BookingSummary({ data, placeName, tierName }: BookingSummaryProps) {
   const {t}=useLanguage();
   const duration = formatBookingDurationWithTranslation(data, t);
+  const { services } = useServices();
+  const serviceName = useMemo(() => {
+  if (!services || !data?.serviceId) return "N/A";
+
+  return (
+    services.find((s) => s._id === data.serviceId)?.name || "N/A"
+  );
+}, [services, data?.serviceId]);
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">
@@ -23,12 +33,12 @@ export default function BookingSummary({ data, placeName, tierName }: BookingSum
 
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-         <SummaryItem label={t.confirmationpage.bookingSummary.service} value={data?.serviceId?.name} />
+         <SummaryItem label={t.confirmationpage.bookingSummary.service} value={serviceName} />
         <SummaryItem label={t.confirmationpage.bookingSummary.tier} value={tierName} />
         <SummaryItem label={t.confirmationpage.bookingSummary.timeAndDate} value={formatSmartDate(data?.schedule?.startDateTime)} />
         <SummaryItem label={t.confirmationpage.bookingSummary.location} value={placeName} />
         <SummaryItem label={t.confirmationpage.bookingSummary.duration} value={duration} />
-        <SummaryItem label={t.confirmationpage.bookingSummary.totalPaid} value={<span className="text-blue-600">{data?.currency} {data?.amount}</span>} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.totalPaid} value={<span className="text-blue-600">{data?.currency} {data?.totalCost}</span>} />
                 </div>
 
         {/* Info Box */}

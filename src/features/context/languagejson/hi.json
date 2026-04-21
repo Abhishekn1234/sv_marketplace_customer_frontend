@@ -126,6 +126,7 @@
    "bookingdetailpage":{
      "backToServices": "सेवाओं पर वापस जाएं",
       "title": "बुकिंग विवरण",
+      "vatRate": "वैट दर",
     "serviceSummary": "सेवा सारांश",
     "serviceType": "सेवा प्रकार",
     "serviceProfessional": "सेवा विशेषज्ञ",

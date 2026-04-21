@@ -9,4 +9,5 @@ export interface ServiceCategoryObject {
   services?: Service[]; 
   createdAt?: string;
   updatedAt?: string;
+  vatRate?: number; // Add VAT rate here
 }

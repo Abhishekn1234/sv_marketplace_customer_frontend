@@ -1,45 +1,68 @@
 import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
-
-
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
 
 interface Props {
-  invoice: any;
+  // invoice: any;
   services: any[];
   categories: any[];
   serviceTiers?: any[];
   open: boolean;
-  booking?:any;
+  booking?: any;
   onClose: () => void;
 }
 
-export default function InvoiceModal({ invoice, booking, services, categories,  open, onClose }: Props) {
+export default function InvoiceModal({
+  booking,
+  services,
+  // categories,
+  open,
+  onClose,
+}: Props) {
   if (!open) return null;
- console.log(invoice,booking,services);
-  // Get the service object
-  const service = services?.find((s) => s._id === booking.serviceId);
 
-  const categoryId = service?.category?.[0]?._id;
-  const category = categories?.find((c) => c._id === categoryId);
+  // 🔥 Fetch invoice (assuming hook supports invoiceId)
+  const { data: invoice } = useGenerateInvoice(booking?.invoiceId);
+ const {serviceTiers}=useServices();
+  // ---------------------------
+  // SERVICE / CATEGORY LOOKUP
+  // ---------------------------
+  const service = services?.find((s) => s._id === booking?.serviceId);
+  const serviceTier = serviceTiers?.find(
+  (tier: any) => tier._id === booking?.serviceTierId
+);
 
-  const pricingTier = service?.pricingTiers?.find(
-    (tier: any) => tier.tierId === booking.serviceTierId
-  );
+const serviceTierName = serviceTier?.displayName ?? "-";
+ 
+  
 
-  const tier = pricingTier?.tier;
 
-  // const workHours = invoice?.actualWorkHours || 0;
-  // const hours = Math.floor(workHours);
-  // const minutes = Math.round((workHours - hours) * 60);
-
- const workedDuration =
-  booking?.pricingMode === "HOURLY"
-    ? formatWorkHours(booking?.actualWorkHours ?? 0)
-    : `${invoice?.actualWorkDays ?? 0} days`;
-   console.log(workedDuration);
-  const rate =
+  // ---------------------------
+  // WORKED DURATION
+  // ---------------------------
+  const workedDuration =
     booking?.pricingMode === "HOURLY"
-      ? pricingTier?.HOURLY?.ratePerHour
-      : pricingTier?.PER_DAY?.ratePerDay;
+      ? formatWorkHours(booking?.actualWorkHours ?? 0)
+      : `${booking?.actualWorkDays ?? invoice?.actualWorkDays ?? 0} days`;
+
+  // ---------------------------
+  // RATE
+  // ---------------------------
+  const rate =booking.amount
+  
+  // ---------------------------
+  // INVOICE DATA (FIXED)
+  // ---------------------------
+  const invoiceData =
+    invoice && booking?.invoiceId === invoice?._id ? invoice : invoice;
+
+  console.log("Booking:", booking);
+  console.log("Fetched Invoice:", invoice);
+
+  const finalAmount =booking?.totalCost;
+
+  const currency =
+    invoiceData?.currency ?? booking?.currency ?? "₹";
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -48,33 +71,53 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
         {/* HEADER */}
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold">Invoice Details</h2>
-          <button onClick={onClose} className="text-gray-500">✕</button>
+          <button onClick={onClose} className="text-gray-500">
+            ✕
+          </button>
         </div>
 
         {/* BOOKING INFO */}
         <div className="space-y-2 text-sm">
-          <p><b>Invoice No:</b> {booking?.invoice?.invoiceNumber}</p>
-          <p><b>Status:</b> {booking?.status}</p>
-          <p><b>Category:</b> {category?.name}</p>
-          <p><b>Service:</b> {service?.name}</p>
-          <p><b>Service Tier:</b> {tier?.displayName}</p>
+          <p>
+            <b>Invoice No:</b> {booking?.invoiceId}
+          </p>
+          <p>
+            <b>Status:</b> {booking?.status}
+          </p>
+         
+          <p>
+            <b>Service:</b> {service?.name}
+          </p>
+          <p>
+            <b>Service Tier:</b> {serviceTierName}
+          </p>
         </div>
 
         {/* WORK DETAILS */}
-       <div className="border rounded-lg p-3 space-y-1 text-sm">
-  <p><b>Workers:</b> {booking?.numberOfWorkers}</p>
-  <p><b>Pricing Mode:</b> {booking?.pricingMode}</p>
-  <p><b>Rate:</b> {rate} {booking?.currency} {booking?.pricingMode === "HOURLY" ? "/hour" : "/day"}</p>
-  <p><b>Worked Duration:</b> {workedDuration}</p>
-</div>
+        <div className="border rounded-lg p-3 space-y-1 text-sm">
+          <p>
+            <b>Workers:</b> {booking?.numberOfWorkers}
+          </p>
+
+          <p>
+            <b>Pricing Mode:</b> {booking?.pricingMode}
+          </p>
+
+          <p>
+            <b>Rate:</b> {rate} {currency}{" "}
+            {booking?.pricingMode === "HOURLY" ? "/hour" : "/day"}
+          </p>
+
+          <p>
+            <b>Worked Duration:</b> {workedDuration}
+          </p>
+        </div>
 
         {/* PAYMENT */}
         <div className="border rounded-lg p-3 space-y-1 text-sm">
-          {/* <p><b>Original Amount:</b> {invoice.originalAmount} {invoice.currency}</p>
-          <p><b>Worker Pool Amount:</b> {invoice.workerPoolAmount} {invoice.currency}</p>
-          <p><b>Commission:</b> {invoice.commissionAmount} {invoice.currency}</p> */}
           <p className="font-semibold text-base">
-            Final Amount: {invoice?.finalAmount?.toFixed(2)} {invoice?.currency}
+            Final Amount:{" "}
+            {Number(finalAmount).toFixed(2)} {currency}
           </p>
         </div>
 
@@ -87,7 +130,6 @@ export default function InvoiceModal({ invoice, booking, services, categories,  
             Close
           </button>
         </div>
-
       </div>
     </div>
   );

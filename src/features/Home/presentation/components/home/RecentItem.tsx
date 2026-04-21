@@ -23,38 +23,51 @@ export const RecentItem: React.FC<RecentItemProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const normalizedStatus = status?.toLowerCase();
+  // -----------------------------
+  // NORMALIZE (backend-safe)
+  // -----------------------------
+  const normalizedStatus = (status || "").toUpperCase();
 
- 
+  // -----------------------------
+  // TRACKABLE STATUSES (JOB FLOW)
+  // -----------------------------
   const trackStatuses = [
-    "requested",
-    "in_progress",
-    "completed",
-    "work_completed_pending",
+    "REQUESTED",
+    "WORKER_ACCEPTED",
+    "WORK_STARTED",
+    "IN_PROGRESS",
+    "WORK_COMPLETED_PENDING",
+    "COMPLETED",
   ];
 
-  const isTrack = trackStatuses.includes(normalizedStatus || "");
-  const isPaid = normalizedStatus === "paid";
-  const isCancelled = normalizedStatus === "customer_cancelled";
+  const isTrack = trackStatuses.includes(normalizedStatus);
+
+  const isPaid = normalizedStatus === "PAID";
+  const isCancelled =
+    normalizedStatus === "CUSTOMER_CANCELLED" ||
+    normalizedStatus === "WORKER_CANCELLED";
 
   const isDisabled = isCancelled;
 
+  // -----------------------------
+  // NAVIGATION
+  // -----------------------------
   const handleNavigate = () => {
     if (isDisabled) return;
 
-  
+    // 🔥 tracking flow
     if (isTrack && bookingId) {
       navigate(`/jobtracking/${bookingId}`);
       return;
     }
 
-    
+    // 💳 paid → booking history
     if (isPaid) {
       navigate(`/bookings`);
       return;
     }
 
-   
+    // 🔁 fallback → service page
     if (categoryId && serviceId) {
       navigate(`/services/${categoryId}`);
     }
@@ -77,30 +90,24 @@ export const RecentItem: React.FC<RecentItemProps> = ({
         }
       `}
     >
-      {/* Icon */}
+      {/* ICON */}
       <div className="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
         {iconUrl ? (
-          <img
-            src={iconUrl}
-            alt={title}
-            className="w-6 h-6 object-contain"
-          />
+          <img src={iconUrl} alt={title} className="w-6 h-6 object-contain" />
         ) : (
           <div className="w-6 h-6 bg-gray-300 rounded" />
         )}
       </div>
 
-      {/* Info */}
+      {/* INFO */}
       <div className="flex-1 min-w-0">
         <div className="text-[15px] font-semibold text-gray-900 truncate">
           {title}
         </div>
-        <div className="text-[13px] text-gray-400">
-          {date}
-        </div>
+        <div className="text-[13px] text-gray-400">{date}</div>
       </div>
 
-      {/* Price / Action */}
+      {/* PRICE / ACTION */}
       <div className="text-right flex-shrink-0">
         <div
           className={`text-[15px] font-semibold ${
@@ -116,7 +123,9 @@ export const RecentItem: React.FC<RecentItemProps> = ({
               ? "Track →"
               : isPaid
               ? "View →"
-              : "Rebook →"}
+              :categoryId && serviceId
+              ? "Rebook →"
+              : ""}
           </div>
         ) : (
           <div className="text-[13px] font-semibold text-gray-500">

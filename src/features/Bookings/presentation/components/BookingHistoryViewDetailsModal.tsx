@@ -29,7 +29,7 @@ export default function BookingHistoryViewDetailsModal({
  const duration =formatBookingDuration(booking);
   const price =
     booking.amount !== undefined
-      ? `${booking.currency} ${booking.amount.toFixed(2)}`
+      ? `${booking.currency} ${booking?.totalCost?.toFixed(2)}`
       : "-";
 
   return (

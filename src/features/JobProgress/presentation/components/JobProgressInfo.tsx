@@ -1,16 +1,26 @@
 
 
 
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useMemo } from "react";
 
 export function JobProgressInfo({booking}:any) {
-  
- 
+  const {services,serviceTiers}=useServices();
  const {t}=useLanguage();
   
+const serviceMap = useMemo(() => {
+  return new Map(services.map((s: any) => [s._id, s]));
+}, [services]);
+const tierMap = useMemo(() => {
+  return new Map(serviceTiers.map((t: any) => [t._id, t]));
+}, [serviceTiers]);
 
-  const serviceName = booking?.service?.name || "N/A";
-  const serviceTier = booking?.serviceTier?.displayName || "N/A";
+ const service = serviceMap.get(booking?.serviceId);
+const serviceTier = tierMap.get(booking?.serviceTierId);
+console.log(service);
+const serviceName = booking?.serviceId?.name || service?.name || "N/A";
+const serviceTierName = serviceTier?.displayName ?? "N/A";
 
   const total = booking?.amount ?? 0;
   const currency = booking?.currency || "SAR";
@@ -22,7 +32,7 @@ export function JobProgressInfo({booking}:any) {
   let basePrice = 0;
   if (pricingMode === "HOURLY") {
     basePrice = estimatedHours ? total / estimatedHours : total;
-  } else if (pricingMode === "DAILY") {
+  } else if (pricingMode === "PER_DAY") {
     basePrice = estimatedDays ? total / estimatedDays : total;
   } else {
     basePrice = total;
@@ -69,7 +79,7 @@ export function JobProgressInfo({booking}:any) {
 
         {[
           [t.jobprogresspage.serviceType, serviceName],
-          [t.jobprogresspage.serviceTier, serviceTier],
+          [t.jobprogresspage.serviceTier, serviceTierName],
           [t.jobprogresspage.basePrice, `${currency} ${basePrice.toFixed(2)}`],
         ].map(([label, value], i) => (
           <div

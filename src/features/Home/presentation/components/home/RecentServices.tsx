@@ -1,22 +1,27 @@
 import React from "react";
-import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { RecentItem } from "./RecentItem";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { getBookingPrice } from "../../helpers/getbookprice";
 import { formatDate } from "../../helpers/formatdate";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 
 const RecentServices: React.FC = () => {
-  const { data: bookingsData } = useBookingHistory();
+  const { bookings } = useBookings();
   const { data: categories = [] } = useServiceCategory();
+  const { t } = useLanguage();
 
-  const {t}=useLanguage();
-  const bookings: Booking[] = React.useMemo(() => {
-    return bookingsData?.pages?.flatMap((page: any) => page.data) || [];
-  }, [bookingsData]);
+  // -----------------------------
+  // normalize bookings safely
+  // -----------------------------
+  const normalizedBookings: Booking[] = React.useMemo(() => {
+    return Array.isArray(bookings) ? bookings : [];
+  }, [bookings]);
 
-  
+  // -----------------------------
+  // category map
+  // -----------------------------
   const serviceToCategoryMap = React.useMemo(() => {
     const map = new Map<string, string>();
 
@@ -29,23 +34,36 @@ const RecentServices: React.FC = () => {
     return map;
   }, [categories]);
 
+  const serviceMap = React.useMemo(() => {
+  const map = new Map<string, any>();
 
-  const sortedBookings = React.useMemo(() => {
-    return bookings
-      .slice()
-      .sort(
-        (a: Booking, b: Booking) =>
-          new Date(b.createdAt).getTime() -
-          new Date(a.createdAt).getTime()
-      );
-  }, [bookings]);
+  categories.forEach((category: any) => {
+    category.services?.forEach((service: any) => {
+      map.set(service._id, service);
+    });
+  });
 
- 
-  const recentBookings = sortedBookings.slice(0, 3);
+  return map;
+}, [categories]);
+  // -----------------------------
+  // sort
+  // -----------------------------
+  const recentBookings = React.useMemo(() => {
+  return [...normalizedBookings].sort((a, b) => {
+    const aTime = a.schedule?.startDateTime
+      ? new Date(a.schedule.startDateTime).getTime()
+      : 0;
 
+    const bTime = b.schedule?.startDateTime
+      ? new Date(b.schedule.startDateTime).getTime()
+      : 0;
+
+    return bTime - aTime;
+  });
+}, [normalizedBookings]);
   return (
     <aside className="flex flex-col gap-5 top-6">
-      <div className="bg-white rounded-[20px] p-6 border border-gray-200 transition-all duration-300 hover:shadow-lg">
+      <div className="bg-white rounded-[20px] p-6 border border-gray-200">
 
         <div className="flex items-center justify-between mb-5">
           <span className="text-[18px] font-bold text-gray-900">
@@ -60,38 +78,44 @@ const RecentServices: React.FC = () => {
             </p>
           )}
 
-          {recentBookings.map((booking) => {
-            const serviceId =
-              typeof booking.serviceId === "object"
-                ? booking.service?._id
-                : booking.service?._id;
+         {recentBookings.map((booking) => {
+  const serviceId =
+    typeof booking.serviceId === "string"
+      ? booking.serviceId
+      : booking.serviceId?._id;
 
-            const categoryId = serviceToCategoryMap.get(serviceId || "");
+  const service = serviceMap.get(serviceId || "");
 
-            return (
-              <RecentItem
-                key={booking._id}
-                bookingId={booking._id}
-                categoryId={categoryId}
-                serviceId={serviceId}
-                title={
-                  typeof booking.service === "object"
-                    ? booking.service?.name
-                    : "Service"
-                }
-                date={
-                  booking.bookingType === "SCHEDULED"?formatDate(booking.schedule?.startDateTime):formatDate(booking.updatedAt)
-                }
-                price={`${booking.currency} ${getBookingPrice(booking)}`}
-                iconUrl={
-                  typeof booking.service === "object"
-                    ? booking.service?.iconUrl
-                    : undefined
-                }
-                status={booking.status}
-              />
-            );
-          })}
+  const serviceName = service?.name ?? "Service";
+  const iconUrl = service?.iconUrl;
+
+  const priceValue = getBookingPrice(booking);
+
+  const price =
+    priceValue != null
+      ? `${booking.currency ?? ""} ${priceValue}`
+      : "";
+
+  const categoryId = serviceToCategoryMap.get(serviceId || "");
+
+  return (
+    <RecentItem
+      key={booking._id}
+      bookingId={booking._id}
+      categoryId={categoryId}
+      serviceId={serviceId}
+      title={serviceName}
+      date={
+        booking.bookingType === "SCHEDULED"
+          ? formatDate(booking.schedule?.startDateTime)
+          : formatDate(booking.updatedAt)
+      }
+      price={price}
+      iconUrl={iconUrl}
+      status={booking.status}
+    />
+  );
+})}
         </div>
       </div>
     </aside>

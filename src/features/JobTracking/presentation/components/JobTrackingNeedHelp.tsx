@@ -1,47 +1,56 @@
 "use client";
 
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
-import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useState, useMemo } from "react";
-import InvoiceModal from "./InvoiceModal";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
+
+import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
-export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
-  const { bookingId } = useParams<{ bookingId: string }>();
+export default function JobTrackingNeedHelp({
+  booking,
+}: {
+  booking: Booking | null;
+}) {
   const navigate = useNavigate();
 
-  const {  cancelBooking } = useBookings();
+  const { cancelBooking } = useBookings();
   const { data: categories } = useServiceCategory();
-  const generateInvoice = useGenerateInvoice();
   const { t } = useLanguage();
 
-  const [invoice, setInvoice] = useState<any>(null);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const categoriesList = categories ?? [];
 
-  // ✅ Find booking directly (NO pagination)
-  const booking = useMemo(() => {
-    if (!bookings || !bookingId) return null;
-    return bookings.find((b) => b._id === bookingId);
-  }, [bookings, bookingId]);
+  // -----------------------
+  // SERVICES FLATTEN
+  // -----------------------
+  const services = useMemo(() => {
+    return categoriesList.flatMap((cat: any) => cat.services ?? []);
+  }, [categoriesList]);
 
-  // ✅ Flatten services
-  const services = categoriesList.flatMap((cat: any) => cat.services ?? []);
-  const serviceTiers = services.flatMap(
-    (service: any) =>
-      service.pricingTiers?.map((tier: any) => tier.tier) ?? []
-  );
+  const serviceTiers = useMemo(() => {
+    return services.flatMap(
+      (service: any) =>
+        service.pricingTiers?.map((tier: any) => tier.tier) ?? []
+    );
+  }, [services]);
 
+  // -----------------------
+  // NAVIGATION
+  // -----------------------
   const helpNavigate = () => navigate("/help");
 
-  // ✅ Cancel Booking
+  // -----------------------
+  // CANCEL BOOKING
+  // -----------------------
   const handleCancel = () => {
-    if (!bookingId) return;
+    if (!booking?._id) return;
 
     toast(
       ({ closeToast }) => (
@@ -61,9 +70,10 @@ export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
             <button
               onClick={async () => {
                 try {
-                  await cancelBooking({ bookingId });
+                  await cancelBooking({ bookingId: booking._id });
+
                   closeToast?.();
-                  toast.success("Your booking is cancelled ✅");
+                  toast.success("Booking cancelled ✅");
 
                   setTimeout(() => navigate("/"), 1500);
                 } catch {
@@ -77,10 +87,17 @@ export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
           </div>
         </div>
       ),
-      { autoClose: false, closeOnClick: false, closeButton: false }
+      {
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+      }
     );
   };
 
+  // -----------------------
+  // OPTIONS
+  // -----------------------
   const options = [
     {
       text: t.jobtrackingpage.sections.contactSupport,
@@ -101,26 +118,22 @@ export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
       text: t.jobtrackingpage.sections.generateInvoice,
       icon: <span>📄</span>,
       action: () => {
-        if (!bookingId) return toast.error("Booking not found ❌");
+        if (!booking) return toast.error("Booking not found ❌");
 
-        const loadingToast = toast.loading("Generating invoice...");
-
-        generateInvoice.mutate(bookingId, {
-          onSuccess: (data) => {
-            toast.dismiss(loadingToast);
-            setInvoice(data);
-            setShowInvoice(true);
-            toast.success("Invoice generated ✅");
-          },
-          onError: () => {
-            toast.dismiss(loadingToast);
-            toast.error("Failed to generate invoice ❌");
-          },
-        });
+        setSelectedBooking(booking);
+        setShowInvoice(true);
       },
     },
   ];
 
+  // -----------------------
+  // EMPTY STATE
+  // -----------------------
+  if (!booking) return null;
+
+  // -----------------------
+  // UI
+  // -----------------------
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
       <h3 className="text-base font-bold text-gray-900 mb-4">
@@ -144,16 +157,18 @@ export default function JobTrackingNeedHelp({bookings}:{bookings:Booking[]}) {
           </div>
         ))}
 
-        {/* Invoice Modal */}
-        {showInvoice && invoice && booking && (
+        {/* INVOICE MODAL */}
+        {showInvoice && selectedBooking && (
           <InvoiceModal
-            invoice={invoice}
-            booking={booking}
+            booking={selectedBooking}
             services={services}
             categories={categoriesList}
             serviceTiers={serviceTiers}
             open={showInvoice}
-            onClose={() => setShowInvoice(false)}
+            onClose={() => {
+              setShowInvoice(false);
+              setSelectedBooking(null);
+            }}
           />
         )}
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
 
 import BookingSummary from "./BookingSummary";
 import WhatsNext from "./WhatsNext";
@@ -9,31 +9,26 @@ import WhatsNext from "./WhatsNext";
 import { ArrowRight, Calendar, Home } from "lucide-react";
 import { statusMessageMap } from "../helpers/statusmessagemapping";
 
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
-
-
+import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
 
 export default function ConfirmationContent() {
-  const { bookings, error, loading } = useBookings();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { bookingId } = useParams<{ bookingId: string }>();
 
-  console.log(bookings);
-  // ✅ latest booking (safer than [0])
-  const data = bookings?.length
-    ? [...bookings].sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() -
-          new Date(a.createdAt).getTime()
-      )[0]
-    : null;
-
+  // ✅ SINGLE BOOKING (NOT LIST)
+  const { booking: data, loading} = useBookingById(bookingId);
+ console.log("Booking Data in ConfirmationContent:", data);
   const [placeName, setPlaceName] = useState("Loading...");
   const [showLoader, setShowLoader] = useState(true);
 
-  // 📍 location formatting
+  const { serviceTiers } = useServices();
+
+  // -----------------------------
+  // LOCATION FORMAT
+  // -----------------------------
   useEffect(() => {
     if (!data?.location?.coordinates?.length) return;
 
@@ -41,40 +36,48 @@ export default function ConfirmationContent() {
     setPlaceName(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
   }, [data]);
 
-  // ⏳ loader control
+  // -----------------------------
+  // LOADER CONTROL
+  // -----------------------------
   useEffect(() => {
     if (!loading && data) {
-      const timer = setTimeout(() => setShowLoader(false), 600);
+      const timer = setTimeout(() => setShowLoader(false), 400);
       return () => clearTimeout(timer);
     }
   }, [loading, data]);
 
-  const { serviceTiers } = useServices();
+  // -----------------------------
+  // TIER NAME
+  // -----------------------------
+  const tierName = useMemo(() => {
+    if (!serviceTiers || !data) return "N/A";
 
-const tierName =
-  serviceTiers?.find((tier: any) => tier._id === data?.serviceTierId)
-    ?.displayName ?? "N/A";
+    return (
+      serviceTiers.find((tier: any) => tier._id === data.serviceTierId)
+        ?.displayName ?? "N/A"
+    );
+  }, [serviceTiers, data]);
 
+  // -----------------------------
+  // STATUS FORMAT
+  // -----------------------------
   const formattedStatus = data?.status
-    ? data.status.charAt(0).toUpperCase() +
-      data.status.slice(1).toLowerCase()
+    ? data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase()
     : "";
 
-  // ❌ error state
-  if (error) {
-    return (
-      <p className="text-red-500 text-center mt-10">
-        {t.confirmationpage.error}
-      </p>
-    );
-  }
+  // -----------------------------
+  // ERROR STATE
+  // -----------------------------
+ 
 
-  // ⏳ loading state
+  // -----------------------------
+  // LOADING STATE
+  // -----------------------------
   if (showLoader || !data) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-81px)] bg-gray-50">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
           <p className="text-gray-500 font-medium">
             {t.confirmationpage.loading}
           </p>
@@ -83,9 +86,11 @@ const tierName =
     );
   }
 
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
     <main className="animate-fadeIn flex flex-col items-center justify-center min-h-[calc(100vh-81px)] px-4 sm:px-6 py-8 sm:py-12 bg-gray-50">
-
       <div className="max-w-[700px] w-full text-center">
 
         {/* Success Icon */}

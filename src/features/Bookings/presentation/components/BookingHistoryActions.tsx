@@ -1,18 +1,32 @@
+"use client";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
+import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 
+/* =========================
+   ✅ PROPS
+========================= */
 interface BookingActionsProps {
   booking: BookingHistory;
   label: string;
   clickable: boolean;
   onActionClick: () => void;
   onViewDetails: () => void;
-  onPayNow: () => void;
+  onPayNow: (data: {
+  bookingId: string;
+  serviceName: string;
+  price: number;
+  currency: string;
+}) => void;
   onCheckProgress: () => void;
   onInvoiceClick: () => void;
-   navigatetodispute: (booking: BookingHistory) => void;
+  navigatetodispute: (booking: BookingHistory) => void;
 }
 
+/* =========================
+   ✅ COMPONENT
+========================= */
 export function BookingActions({
   booking,
   label,
@@ -21,21 +35,53 @@ export function BookingActions({
   onViewDetails,
   onPayNow,
   onCheckProgress,
-  navigatetodispute
-//   onInvoiceClick,
+  navigatetodispute,
 }: BookingActionsProps) {
-  const {t}=useLanguage();
-  const shouldShowButtons = !(
-    booking.status === "PAID" &&
-    booking.updatedAt &&
-    new Date().getTime() - new Date(booking.updatedAt).getTime() >
+  const { t } = useLanguage();
+
+  const status = booking.status as BookingStatus;
+
+  /* =========================
+     ✅ DATE SAFETY
+  ========================= */
+  const isOlderThan10Days = booking.updatedAt
+    ? Date.now() - new Date(booking.updatedAt).getTime() >
       1000 * 60 * 60 * 24 * 10
+    : false;
+
+  const shouldShowButtons = !(
+    status === "PAID" && isOlderThan10Days
   );
 
   if (!shouldShowButtons) return null;
 
+  /* =========================
+     ✅ ACTION CONDITIONS
+  ========================= */
+
+  // ✅ Pay Now logic
+  const shouldPayNow =
+    status === "COMPLETED" ||
+    status === "INVOICE_GENERATED";
+
+  // ✅ Track progress visibility
+  const TRACKABLE_STATUSES: BookingStatus[] = [
+    "IN_PROGRESS",
+    "COMPLETED",
+    "WORK_COMPLETED_PENDING",
+    "REQUESTED",
+  ];
+
+  const canTrack = TRACKABLE_STATUSES.includes(status);
+
+
+  const canDispute = true;
+
+
   return (
     <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
+      
+      {/* Primary Action */}
       <button
         onClick={onActionClick}
         className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
@@ -46,47 +92,46 @@ export function BookingActions({
         {label}
       </button>
 
-      {["IN_PROGRESS", "COMPLETED", "WORK_COMPLETED_PENDING", "REQUESTED"].includes(
-        booking.status
-      ) && (
+      {/* Track Progress */}
+      {canTrack && (
         <button
           onClick={onCheckProgress}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
         >
-         
-         {t.Bookingspage.Actions.checkProgress}
+          {t.Bookingspage.Actions.checkProgress}
         </button>
       )}
 
-    
-      <button
-        onClick={() => {
-          if (booking.status === "COMPLETED" && !booking.invoiceId) {
-            onPayNow();
-          } else {
-            onViewDetails();
-          }
-        }}
-        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
-      >
-        {booking.status === "COMPLETED" && !booking.invoiceId ? t.Bookingspage.Actions.payNow : t.Bookingspage.Actions.viewDetails}
-      </button>
-      <button
+      {/* Pay Now / View Details */}
+  <button
+  onClick={() => {
+    if (shouldPayNow) {
+      onPayNow({
+        bookingId: booking._id,
+        serviceName: booking.service?.name ?? "Service",
+        price: booking.amount ?? 0,
+        currency: booking.currency ?? "₹",
+      });
+    } else {
+      onViewDetails();
+    }
+  }}
+  className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+>
+  {shouldPayNow
+    ? t.Bookingspage.Actions.payNow
+    : t.Bookingspage.Actions.viewDetails}
+</button>
+
+      {/* Dispute */}
+      {canDispute && (
+        <button
           onClick={() => navigatetodispute(booking)}
-          className="
-            px-4 py-2 
-            rounded-lg 
-            text-sm font-medium 
-            bg-red-600 text-white 
-            hover:bg-red-700 
-            focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 
-            transition 
-            shadow-sm 
-            whitespace-nowrap
-          "
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition shadow-sm whitespace-nowrap"
         >
           {t.Bookingspage.Actions["Create Dispute"]}
         </button>
+      )}
     </div>
   );
 }

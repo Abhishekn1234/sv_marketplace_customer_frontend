@@ -5,14 +5,16 @@ import type { BookingSchedule } from "./bookingschedule.types";
 import type { BookingStatus } from "./bookingstatus.types";
 import type { AssignedWorker } from "./assignedworkers.type";
 import type { Geopoint } from "./geopoint.types";
+import type { GenerateInvoice } from "@/features/Generateotp/domain/entities/generateinvoice";
 
 export interface Booking {
   _id: string;
   bookingCode?: string;
   userId: string;
-
+  invoiceId?: string;
+  invoice?:GenerateInvoice;
   // ✅ Backend sends FULL object here
-  serviceId: Service;
+  serviceId?: Service;
 
   // ✅ Optional normalized field (frontend convenience)
   service?: Service;
@@ -28,7 +30,9 @@ export interface Booking {
   status: BookingStatus;
 
   schedule?: BookingSchedule;
-
+    actualWorkDays?: number;
+  actualWorkHours?: number;
+  actualWorkMinutes?: number;
   location: Geopoint;
 
   numberOfWorkers: number;

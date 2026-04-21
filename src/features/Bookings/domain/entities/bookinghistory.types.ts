@@ -5,6 +5,7 @@ import type { BookingStatus } from "./bookingstatus.types";
 import type { Service } from "./service.types";
 import type { ServiceTierRef } from "./servicetier.types";
 import type { Geopoint } from "./geopoint.types";
+import type { GenerateInvoice } from "@/features/Generateotp/domain/entities/generateinvoice";
 
 export interface BookingHistoryResponse{
   data:BookingHistory[];
@@ -49,9 +50,11 @@ export interface BookingHistory {
   location: Geopoint;
 
   schedule?: BookingSchedule;
-
+  finalAmount?: number;
+  totalCost?:number;
   startedAt?: string;
   completedAt?: string;
+  invoice?:GenerateInvoice;
 
   actualWorkDays?: number;
   actualWorkHours?: number;

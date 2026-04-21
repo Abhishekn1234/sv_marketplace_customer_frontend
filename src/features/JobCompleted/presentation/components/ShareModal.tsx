@@ -1,68 +1,89 @@
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { X } from "lucide-react";
+import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 export default function ShareModal({ booking, onClose }: any) {
   if (!booking) return null;
+  const { services, serviceTiers } = useServices();
+ const selectedService = services?.find(
+  (s: any) => s._id === booking?.serviceId
+);
 
-  // ---------- EXPORT EXCEL ----------
-  const exportExcel = () => {
-    const data = [
-      {
-        Service: booking?.serviceId?.name,
-        Tier: booking?.serviceTierId?.displayName,
-        Status: booking?.status,
-        Amount: booking?.totalCost,
-        Currency: booking?.currency,
-        Duration: booking?.schedule?.estimatedHours,
-      },
-    ];
+// 🔍 Find matching tier
+const selectedTier = serviceTiers?.find(
+  (t: any) => t._id === booking?.serviceTierId
+);
 
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Booking");
+// 📦 Message
+const message = `
+Booking Details
 
-    XLSX.writeFile(wb, "booking-details.xlsx");
+Service: ${selectedService?.name || "-"}
+Tier: ${selectedTier?.displayName || "-"}
+Status: ${booking?.status || "-"}
+Amount: ${booking?.totalCost || 0} ${booking?.currency || ""}
+Duration: ${booking?.schedule?.estimatedHours || 0} hrs
+`.trim();
+
+  const handleWhatsApp = () => {
+    const phone = "919207631486";
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
   };
 
-  // ---------- EXPORT PDF ----------
-  const exportPDF = () => {
-    const doc = new jsPDF();
+  const handleEmail = () => {
+    const email = "abhishekpes123@gmail.com";
+    const subject = "Booking Details";
 
-    doc.text("Booking Details", 10, 10);
-    doc.text(`Service: ${booking?.serviceId?.name}`, 10, 20);
-    doc.text(`Tier: ${booking?.serviceTierId?.displayName}`, 10, 30);
-    doc.text(`Status: ${booking?.status}`, 10, 40);
-    doc.text(`Amount: ${booking?.totalCost} ${booking?.currency}`, 10, 50);
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(message)}`;
 
-    doc.save("booking-details.pdf");
+    window.location.href = mailto;
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl w-[320px] space-y-4">
+      <div className="bg-white p-6 rounded-2xl w-[320px] relative shadow-xl">
 
-        <h2 className="font-bold text-lg">Export Booking</h2>
-
-        <button
-          onClick={exportPDF}
-          className="w-full bg-red-500 text-white py-2 rounded-lg"
-        >
-          Download PDF
-        </button>
-
-        <button
-          onClick={exportExcel}
-          className="w-full bg-green-500 text-white py-2 rounded-lg"
-        >
-          Download Excel
-        </button>
-
+        {/* Close */}
         <button
           onClick={onClose}
-          className="w-full bg-gray-200 py-2 rounded-lg"
+          className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200"
         >
-          Cancel
+          <X size={18} />
         </button>
+
+        <h2 className="font-bold text-lg mb-6 text-center">
+          Share Booking
+        </h2>
+
+        {/* 🔥 Icon Row */}
+        <div className="flex justify-center gap-6">
+
+          {/* WhatsApp */}
+          <button
+            onClick={handleWhatsApp}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:scale-105 transition">
+              <FaWhatsapp size={24} />
+            </div>
+            <span className="text-sm font-medium">WhatsApp</span>
+          </button>
+
+          {/* Gmail */}
+          <button
+            onClick={handleEmail}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-red-500 text-white shadow-md hover:scale-105 transition">
+              <FaEnvelope size={22} />
+            </div>
+            <span className="text-sm font-medium">Gmail</span>
+          </button>
+
+        </div>
       </div>
     </div>
   );

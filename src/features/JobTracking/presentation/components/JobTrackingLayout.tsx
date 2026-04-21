@@ -5,7 +5,7 @@ import JobTrackingNeedHelp from "./JobTrackingNeedHelp";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 interface Props {
-  bookings: Booking[];
+  bookings: Booking;
   loading: boolean;
 }
 
@@ -15,14 +15,14 @@ export default function JobTrackingLayout({ bookings, loading }: Props) {
       
       {/* Left Column */}
       <div className="flex flex-col gap-6 min-w-0">
-        <JobTrackingTimeline bookings={bookings} loading={loading} />
-        <JobTrackingWorkerDetails bookings={bookings} loading={loading} />
-        <JobTrackingServiceDetails bookings={bookings} loading={loading} />
+        <JobTrackingTimeline booking={bookings} loading={loading} />
+        <JobTrackingWorkerDetails booking={bookings} loading={loading} />
+        <JobTrackingServiceDetails booking={bookings} loading={loading} />
       </div>
 
       {/* Right Column */}
       <div className="flex flex-col gap-5 sticky top-6 w-full max-w-full">
-        <JobTrackingNeedHelp bookings={bookings} />
+        <JobTrackingNeedHelp booking={bookings} />
       </div>
     </div>
   );
