@@ -10,6 +10,7 @@ export const progressMap: Record<BookingStatus, number> = {
   CUSTOMER_CANCELLED:0,
   WORKER_CANCELLED:0,
   CUSTOMER_REJECTED:0,
+  EXPIRED:0,
   PAID:100,
   WORKER_REJECTED:0,
   IN_PROGRESS: 70,

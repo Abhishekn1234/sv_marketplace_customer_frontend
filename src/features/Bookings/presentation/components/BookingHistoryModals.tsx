@@ -84,7 +84,7 @@ const navigate = useNavigate();
 
       {invoiceModalOpen && selectedInvoice && selectedBookingForInvoice && (
         <InvoiceModal
-          invoice={selectedInvoice}
+          // invoice={selectedInvoice}
           booking={selectedBookingForInvoice}
           services={services}
           categories={categories}
