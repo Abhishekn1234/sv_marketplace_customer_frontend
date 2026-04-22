@@ -48,6 +48,7 @@ export const useBookings = () => {
       serviceTier: b.serviceTierId,
     }));
   },
+  
 
   // ✅ correct for v5
   staleTime: 1000 * 60 * 5,   // 5 minutes
@@ -66,19 +67,23 @@ export const useBookings = () => {
     if (!socket) return;
 
     const handler = (booking: Booking) => {
-      if (!booking?._id) return;
+  if (!booking?._id) return;
 
-      // 🔥 update LIST
-      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) => {
-        if (!old) return [];
-        return old.map((b) =>
-          b._id === booking._id ? { ...b, ...booking } : b
-        );
-      });
+  queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old = []) => {
+    const exists = old.some((b) => b._id === booking._id);
 
-      // 🔥 update SINGLE booking cache
-      queryClient.setQueryData(["booking", booking._id], booking);
-    };
+    if (exists) {
+      return old.map((b) =>
+        b._id === booking._id ? { ...b, ...booking } : b
+      );
+    }
+
+    // 🔥 insert new booking if not present
+    return [booking, ...old];
+  });
+
+  queryClient.setQueryData(["booking", booking._id], booking);
+};
 
     socket.on("booking:update", handler);
     socket.on("booking.status.changed", handler);

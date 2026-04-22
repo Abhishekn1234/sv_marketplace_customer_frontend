@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -27,6 +27,9 @@ export default function JobTrackingNeedHelp({
 
   const categoriesList = categories ?? [];
 
+  // ✅ FIX: useRef instead of useState (IMPORTANT)
+  const cancelReasonRef = useRef("");
+
   // -----------------------
   // SERVICES FLATTEN
   // -----------------------
@@ -52,13 +55,26 @@ export default function JobTrackingNeedHelp({
   const handleCancel = () => {
     if (!booking?._id) return;
 
+    cancelReasonRef.current = ""; // reset every time
+
     toast(
       ({ closeToast }) => (
-        <div>
+        <div className="w-full">
           <p className="font-semibold mb-3">
             Are you sure you want to cancel this booking?
           </p>
 
+          {/* ✅ TEXTAREA (UNCONTROLLED - FIXED) */}
+          <textarea
+            defaultValue=""
+            onChange={(e) => {
+              cancelReasonRef.current = e.target.value;
+            }}
+            placeholder="Enter cancellation reason..."
+            className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
+          />
+
+          {/* BUTTONS */}
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => closeToast?.()}
@@ -70,7 +86,19 @@ export default function JobTrackingNeedHelp({
             <button
               onClick={async () => {
                 try {
-                  await cancelBooking({ bookingId: booking._id });
+                  const reason = cancelReasonRef.current;
+
+                  if (!reason.trim()) {
+                    toast.error("Please enter a cancel reason");
+                    return;
+                  }
+
+                  await cancelBooking({
+                    bookingId: booking._id,
+                    cancelReason: reason.trim(),
+                  });
+
+                  cancelReasonRef.current = "";
 
                   closeToast?.();
                   toast.success("Booking cancelled ✅");
