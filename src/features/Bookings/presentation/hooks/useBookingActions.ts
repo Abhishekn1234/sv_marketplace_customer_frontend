@@ -18,38 +18,49 @@ export const useBookingActions = (
   const cancelUseCase = new CancelBookingUseCase(cancelRepo);
 
   const cancelBookingMutation = useMutation({
-    mutationFn: async (bookingId: string) => {
-      const request: CancelBookingRequest = { bookingId };
-      return await cancelUseCase.execute(request);
-    },
-    onSuccess: (_data, bookingId) => {
-      toast.success("Booking cancelled successfully");
+  mutationFn: async (data: {
+    bookingId: string;
+    cancelReason: string;
+  }) => {
+    const request: CancelBookingRequest = {
+      bookingId: data.bookingId,
+      cancelReason: data.cancelReason,
+    };
 
-      queryClient.setQueryData(["bookings"], (oldData: any) => {
-        if (!oldData) return oldData;
+    return await cancelUseCase.execute(request);
+  },
 
-        if (Array.isArray(oldData)) {
-          return oldData.filter((b) => b._id !== bookingId);
-        }
+  onSuccess: (_data, variables) => {
+    const bookingId = variables.bookingId;
 
-        if (oldData.data) {
-          return {
-            ...oldData,
-            data: oldData.data.filter((b: any) => b._id !== bookingId),
-          };
-        }
+    toast.success("Booking cancelled successfully");
 
-        return oldData;
-      });
+    queryClient.setQueryData(["bookings"], (oldData: any) => {
+      if (!oldData) return oldData;
 
-      onSuccess?.();
-    },
-    onError: (err: unknown) => {
-      const message =
-        err instanceof Error ? err.message : "Failed to cancel booking";
-      onError?.(message);
-    },
-  });
+      if (Array.isArray(oldData)) {
+        return oldData.filter((b) => b._id !== bookingId);
+      }
+
+      if (oldData.data) {
+        return {
+          ...oldData,
+          data: oldData.data.filter((b: any) => b._id !== bookingId),
+        };
+      }
+
+      return oldData;
+    });
+
+    onSuccess?.();
+  },
+
+  onError: (err: unknown) => {
+    const message =
+      err instanceof Error ? err.message : "Failed to cancel booking";
+    onError?.(message);
+  },
+});
 
   return {
     cancelBooking: cancelBookingMutation.mutateAsync,
