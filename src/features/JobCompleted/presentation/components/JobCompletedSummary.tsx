@@ -6,7 +6,7 @@ import { formatDates } from "@/features/Home/presentation/helpers/formatdatestri
 export default function JobCompletedSummary({ booking }: any) {
   const {serviceTiers,services}=useServices();
   const {t}=useLanguage();
-  const service = services?.find((s) => s._id === booking?.service)?.name || "Unknown Service";
+  const service = services?.find((s) => s._id === booking?.service)?.name || booking?.serviceId?.name;
   const pricingTier = serviceTiers?.find((tier) =>
     String(tier._id) === String(booking?.serviceTierId) ||
     String(tier.tierId) === String(booking?.serviceTierId)

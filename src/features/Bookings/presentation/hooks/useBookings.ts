@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { BookingRepository } from "../../data/repositories/BookingRepository";
@@ -13,18 +13,17 @@ import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookin
 import type { Booking } from "../../domain/entities/booking.types";
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
 import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
+import type { CancelContext } from "../../domain/entities/cancelcontexts.types";
 
 import { useAuthStore } from "../../../core/store/auth";
 import { mapBookingToAuthBooking } from "../../../core/mappers/mapBooking";
 import { getSocket } from "@/features/core/Websocket/socket";
-import type { CancelContext } from "../../domain/entities/cancelcontexts.types";
+import { bookingKeys } from "@/features/Confirmation/presentation/helpers/bookingkeys";
 
 const bookingRepository = new BookingRepository();
 const getBookingsUseCase = new GetBookingsUseCase(bookingRepository);
 const createBookingUseCase = new CreateBookingUseCase(bookingRepository);
 const cancelBookingUseCase = new CancelBookingUseCase(bookingRepository);
-
-export const BOOKINGS_QUERY_KEY = ["bookings"] as const;
 
 export const useBookings = () => {
   const queryClient = useQueryClient();
@@ -36,55 +35,57 @@ export const useBookings = () => {
   // =========================
   // FETCH BOOKINGS
   // =========================
-  const { data, isLoading, isError, refetch } = useQuery<Booking[], Error>({
-  queryKey: BOOKINGS_QUERY_KEY,
+  const { data, isLoading, isError } = useQuery<Booking[], Error>({
+    queryKey: bookingKeys.all,
 
-  queryFn: async () => {
-    const res = await getBookingsUseCase.execute();
-    if (!res?.bookings) return [];
+    queryFn: async () => {
+      const res = await getBookingsUseCase.execute();
+      if (!res?.bookings) return [];
 
-    return res.bookings.map((b) => ({
-      ...b,
-      service: b.serviceId,
-      serviceTier: b.serviceTierId,
-    }));
-  },
-  
+      return res.bookings.map((b) => ({
+        ...b,
+        service: b.serviceId,
+        serviceTier: b.serviceTierId,
+      }));
+    },
 
-  // ✅ correct for v5
-  staleTime: 1000 * 60 * 5,   // 5 minutes
-  gcTime: 1000 * 60 * 10,     // replaces cacheTime
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
 
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: false,
-});
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   // =========================
-  // SOCKET SYNC (🔥 FIX)
+  // SOCKET (CRITICAL FIX)
   // =========================
   useEffect(() => {
     const socket = getSocket?.();
     if (!socket) return;
 
     const handler = (booking: Booking) => {
-  if (!booking?._id) return;
+      if (!booking?._id) return;
 
-  queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old = []) => {
-    const exists = old.some((b) => b._id === booking._id);
+      // update LIST cache
+      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
+        const exists = old.findIndex((b) => b._id === booking._id);
 
-    if (exists) {
-      return old.map((b) =>
-        b._id === booking._id ? { ...b, ...booking } : b
+        if (exists !== -1) {
+          return old.map((b) =>
+            b._id === booking._id ? { ...b, ...booking } : b
+          );
+        }
+
+        return [booking, ...old];
+      });
+
+      // 🔥 CRITICAL: update DETAIL cache (fixes your bug)
+      queryClient.setQueryData(
+        bookingKeys.detail(booking._id),
+        booking
       );
-    }
-
-    // 🔥 insert new booking if not present
-    return [booking, ...old];
-  });
-
-  queryClient.setQueryData(["booking", booking._id], booking);
-};
+    };
 
     socket.on("booking:update", handler);
     socket.on("booking.status.changed", handler);
@@ -101,10 +102,10 @@ export const useBookings = () => {
       socket.off("booking.work.completed-by-worker", handler);
       socket.off("booking.cancelled.worker", handler);
     };
-  }, [queryClient, user]);
+  }, [queryClient]);
 
   // =========================
-  // SYNC AUTH STORE
+  // SYNC AUTH STORE (OPTIMIZED)
   // =========================
   useEffect(() => {
     if (!data || !user) return;
@@ -116,6 +117,8 @@ export const useBookings = () => {
         b.serviceTier?.displayName
       )
     );
+
+    if (JSON.stringify(user.bookings) === JSON.stringify(mapped)) return;
 
     setUser({
       ...user,
@@ -130,118 +133,82 @@ export const useBookings = () => {
     mutationFn: (payload) => createBookingUseCase.execute(payload),
 
     onSuccess: (newBooking) => {
-      queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
-        old ? [newBooking, ...old] : [newBooking]
-      );
+      queryClient.setQueryData(bookingKeys.all, (old: Booking[] = []) => [
+        newBooking,
+        ...old,
+      ]);
 
-      queryClient.setQueryData(["booking", newBooking._id], newBooking);
+      queryClient.setQueryData(
+        bookingKeys.detail(newBooking._id),
+        newBooking
+      );
 
       toast.success("Booking created successfully ✅");
       navigate(`/confirmation/${newBooking._id}`);
-    },
-
-    onError: (err: any) => {
-      toast.error(err?.message || "Something went wrong");
     },
   });
 
   // =========================
   // CANCEL BOOKING
   // =========================
- const cancelBooking = useMutation<
-  Booking,
-  Error,
-  CancelBookingRequest,
-  CancelContext
->({
-  mutationFn: (req) => cancelBookingUseCase.execute(req),
+  const cancelBooking = useMutation<
+    Booking,
+    Error,
+    CancelBookingRequest,
+    CancelContext
+  >({
+    mutationFn: (req) => cancelBookingUseCase.execute(req),
 
-  // ✅ optimistic update
-  onMutate: async (req): Promise<CancelContext> => {
-    await queryClient.cancelQueries({
-      queryKey: BOOKINGS_QUERY_KEY,
-    });
+    onMutate: async (req) => {
+      await queryClient.cancelQueries({
+        queryKey: bookingKeys.all,
+      });
 
-    const previousBookings =
-      queryClient.getQueryData<Booking[]>(BOOKINGS_QUERY_KEY);
+      const previous = queryClient.getQueryData<Booking[]>(bookingKeys.all);
 
-    queryClient.setQueryData<Booking[]>(
-      BOOKINGS_QUERY_KEY,
-      (old) =>
-        old?.map((b) =>
-          b._id === req.bookingId
-            ? {
-                ...b,
-                status: "CUSTOMER_CANCELLED",
-                cancelReason: req.cancelReason,
-              }
-            : b
-        ) ?? []
-    );
-
-    return { previousBookings };
-  },
-
-  // ❌ rollback
-  onError: (_err, _req, context) => {
-    if (context?.previousBookings) {
-      queryClient.setQueryData(
-        BOOKINGS_QUERY_KEY,
-        context.previousBookings
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) =>
+          old.map((b) =>
+            b._id === req.bookingId
+              ? { ...b, status: "CUSTOMER_CANCELLED" }
+              : b
+          )
       );
-    }
 
-    toast.error("Cancel failed ❌");
-  },
+      return { previousBookings: previous };
+    },
 
-  // ✅ sync server
-  onSuccess: (updatedBooking) => {
-    queryClient.setQueryData<Booking[]>(
-      BOOKINGS_QUERY_KEY,
-      (old) =>
-        old?.map((b) =>
-          b._id === updatedBooking._id
-            ? updatedBooking
-            : b
-        ) ?? []
-    );
+    onError: (_err, _req, ctx) => {
+      if (ctx?.previousBookings) {
+        queryClient.setQueryData(bookingKeys.all, ctx.previousBookings);
+      }
+      toast.error("Cancel failed ❌");
+    },
 
-    queryClient.setQueryData(
-      ["booking", updatedBooking._id],
-      updatedBooking
-    );
-  },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(bookingKeys.all, (old: Booking[] = []) =>
+        old.map((b) =>
+          b._id === updated._id ? updated : b
+        )
+      );
 
-  onSettled: () => {
-    queryClient.invalidateQueries({
-      queryKey: BOOKINGS_QUERY_KEY,
-    });
-  },
-});
-  // =========================
-  // UPDATE HELPER
-  // =========================
-  const updateBookingInCache = (updated: Booking) => {
-    queryClient.setQueryData<Booking[]>(BOOKINGS_QUERY_KEY, (old) =>
-      old?.map((b) =>
-        b._id === updated._id ? { ...b, ...updated } : b
-      ) ?? []
-    );
-
-    queryClient.setQueryData(["booking", updated._id], updated);
-  };
+      queryClient.setQueryData(
+        bookingKeys.detail(updated._id),
+        updated
+      );
+    },
+  });
 
   // =========================
   // RETURN
   // =========================
   return {
-  bookings: useMemo(() => data ?? [], [data]),
-  loading: isLoading,
-  error: isError,
-  refetch,
+    bookings: data ?? [],
+    loading: isLoading,
+    error: isError,
 
-  createBooking,
-  cancelBooking,
-  updateBookingInCache,
-};
+    createBooking,
+    cancelBooking,
+  };
 };
