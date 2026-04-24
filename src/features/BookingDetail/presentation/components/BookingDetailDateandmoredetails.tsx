@@ -138,7 +138,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       };
 
       console.log("Booking Payload:", payload);
-      await createBooking(payload);
+      await createBooking.mutateAsync(payload);
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || "Booking failed");

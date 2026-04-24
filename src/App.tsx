@@ -33,7 +33,6 @@ import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedP
 import ForgotPasswordLayout from "./features/Auth/presentation/components/ForgotPassword/presentation/components/ForgotPasswordLayout";
 import NotificationsPage from "./features/Notifications/presentation/NotificationsPage";
 import CookiePolicyPage from "./features/CookiePolicy/presentation/CookiePolicyPage";
-import ScrollToTop from "./ScrollToTop";
 import { useNotification } from "./features/utils/useNotification";
 import { useEffect } from "react";
 import './App.css';
@@ -41,17 +40,25 @@ import Disputepage from "./features/Disputes/presentation/Disputepage";
 import PaymentPage from "./features/Payment/presentation/Paymentpage";
 import PaymentCallbackPage from "./features/Payment/presentation/components/PaymentCallbackPage";
 import ListDisputes from "./features/Disputes/presentation/components/ListDisputes";
+import { useAuthStore } from "./features/core/store/auth";
+import { initializeSocket } from "./features/core/Websocket/socket";
+import ScrollToTop from "./ScrollToTop";
 
 function App() {
+  const { accessToken, isLoggedIn } = useAuthStore();
   useNotification();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (isLoggedIn && accessToken) {
+      initializeSocket(accessToken);
+    }
+  }, [isLoggedIn, accessToken]);
 
   return (
     <ThemeProvider>
       <LanguageProvider>
         <Router>
-          <ScrollToTop />
+          <ScrollToTop/>
 
           <ToastContainer
             position="top-right"

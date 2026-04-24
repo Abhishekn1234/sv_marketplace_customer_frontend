@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -10,6 +10,84 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+
+const cancelTypes = [
+  { value: "BOOKED_WRONG_SERVICE", label: "Booked Wrong Service" },
+  { value: "BOOKED_BY_MISTAKE", label: "Booked by Mistake" },
+  { value: "SCHEDULE_CHANGED", label: "Schedule Changed" },
+  { value: "PRICE_TOO_HIGH", label: "Price Too High" },
+  { value: "SERVICE_NO_LONGER_NEEDED", label: "Service No Longer Needed" },
+  { value: "OTHER", label: "Other" },
+];
+
+interface CancelConfirmationDialogProps {
+  onConfirm: (cancelReasonType: string, reason: string) => void;
+  onCancel: () => void;
+}
+
+function CancelConfirmationDialog({ onConfirm, onCancel }: CancelConfirmationDialogProps) {
+  const [selectedType, setSelectedType] = useState("");
+  const [reason, setReason] = useState("");
+
+  const handleConfirm = () => {
+    if (!selectedType) {
+      toast.error("Please select a cancellation reason");
+      return;
+    }
+    if (!reason.trim()) {
+      toast.error("Please enter a cancel reason");
+      return;
+    }
+    onConfirm(selectedType, reason.trim());
+  };
+
+  return (
+    <div className="w-full">
+      <p className="font-semibold mb-3">
+        Are you sure you want to cancel this booking?
+      </p>
+
+      {/* CANCELLATION REASON SELECT */}
+      <select
+        value={selectedType}
+        onChange={(e) => setSelectedType(e.target.value)}
+        className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
+      >
+        <option value="">Select cancellation reason...</option>
+        {cancelTypes.map((type) => (
+          <option key={type.value} value={type.value}>
+            {type.label}
+          </option>
+        ))}
+      </select>
+
+      {/* TEXTAREA */}
+      <textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Enter cancellation reason..."
+        className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
+      />
+
+      {/* BUTTONS */}
+      <div className="flex gap-2 justify-end">
+        <button
+          onClick={onCancel}
+          className="px-3 py-1 text-sm rounded bg-gray-200"
+        >
+          No
+        </button>
+
+        <button
+          onClick={handleConfirm}
+          className="px-3 py-1 text-sm rounded bg-red-600 text-white"
+        >
+          Yes, Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function JobTrackingNeedHelp({
   booking,
@@ -26,9 +104,6 @@ export default function JobTrackingNeedHelp({
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const categoriesList = categories ?? [];
-
-  // ✅ FIX: useRef instead of useState (IMPORTANT)
-  const cancelReasonRef = useRef("");
 
   // -----------------------
   // SERVICES FLATTEN
@@ -55,66 +130,24 @@ export default function JobTrackingNeedHelp({
   const handleCancel = () => {
     if (!booking?._id) return;
 
-    cancelReasonRef.current = ""; // reset every time
-
     toast(
-      ({ closeToast }) => (
-        <div className="w-full">
-          <p className="font-semibold mb-3">
-            Are you sure you want to cancel this booking?
-          </p>
+      <CancelConfirmationDialog
+        onConfirm={async (cancelReasonType, reason) => {
+          try {
+            await cancelBooking.mutateAsync({
+              bookingId: booking._id,
+              cancelReason: reason,
+              cancelReasonType,
+            });
 
-          {/* ✅ TEXTAREA (UNCONTROLLED - FIXED) */}
-          <textarea
-            defaultValue=""
-            onChange={(e) => {
-              cancelReasonRef.current = e.target.value;
-            }}
-            placeholder="Enter cancellation reason..."
-            className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
-          />
-
-          {/* BUTTONS */}
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => closeToast?.()}
-              className="px-3 py-1 text-sm rounded bg-gray-200"
-            >
-              No
-            </button>
-
-            <button
-              onClick={async () => {
-                try {
-                  const reason = cancelReasonRef.current;
-
-                  if (!reason.trim()) {
-                    toast.error("Please enter a cancel reason");
-                    return;
-                  }
-
-                  await cancelBooking({
-                    bookingId: booking._id,
-                    cancelReason: reason.trim(),
-                  });
-
-                  cancelReasonRef.current = "";
-
-                  closeToast?.();
-                  toast.success("Booking cancelled ✅");
-
-                  setTimeout(() => navigate("/"), 1500);
-                } catch {
-                  toast.error("Failed to cancel booking ❌");
-                }
-              }}
-              className="px-3 py-1 text-sm rounded bg-red-600 text-white"
-            >
-              Yes, Cancel
-            </button>
-          </div>
-        </div>
-      ),
+            toast.success("Booking cancelled ✅");
+            setTimeout(() => navigate("/"), 1500);
+          } catch {
+            toast.error("Failed to cancel booking ❌");
+          }
+        }}
+        onCancel={() => {}}
+      />,
       {
         autoClose: false,
         closeOnClick: false,

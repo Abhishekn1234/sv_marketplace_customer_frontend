@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "../../Auth/domain/entities/auth.types";
 import type { LastLocations, Address } from "@/features/Auth/presentation/components/Location/domain/entities/updatelocation";
+import { initializeSocket, disconnectSocket } from "../Websocket/socket";
 
 export type Theme = "light" | "dark";
 
@@ -55,13 +56,20 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       ...initialState,
 
-      setTokens: (accessToken, refreshToken) =>
-        set({ accessToken, refreshToken, isLoggedIn: true }),
+      setTokens: (accessToken, refreshToken) => {
+        set({ accessToken, refreshToken, isLoggedIn: true });
+        if (accessToken) {
+          initializeSocket(accessToken);
+        }
+      },
 
       setUser: (user) =>
         set({ user, isLoggedIn: true }),
 
-      clearAuth: () => set(initialState),
+      clearAuth: () => {
+        disconnectSocket();
+        set(initialState);
+      },
 
       toggleTheme: () =>
         set({ theme: get().theme === "light" ? "dark" : "light" }),

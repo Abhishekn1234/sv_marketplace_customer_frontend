@@ -1,4 +1,5 @@
 export interface CancelBookingRequest {
   bookingId: string;
-  cancelReason:string;
+  cancelReason: string;
+  cancelReasonType?: string;
 }
