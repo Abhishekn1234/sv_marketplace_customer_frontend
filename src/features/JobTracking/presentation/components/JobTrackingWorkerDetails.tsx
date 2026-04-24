@@ -76,6 +76,7 @@ export default function JobTrackingWorkerDetails({
       "booking.worker.accepted",
       "booking.work.started",
       "booking.work.completed-by-worker",
+      "booking.cancelled.worker",
     ];
 
     events.forEach((e) => socket.on(e, handler));

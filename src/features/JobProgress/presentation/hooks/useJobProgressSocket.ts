@@ -89,6 +89,7 @@ export function useSocketJobProgressActivities({
       "booking.completion-otp.generated",
       "booking.completion.confirmed",
       "booking.invoice.generated",
+      "booking.cancelled.worker",
     ];
 
     events.forEach((event) => socket.on(event, handler));

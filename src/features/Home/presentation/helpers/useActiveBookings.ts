@@ -97,6 +97,7 @@ export function useSocketActiveBookings({ setBookings }: Params) {
       "booking.completion.confirmed",
       "booking.invoice.generated",
       "booking.payment.pending",
+      "booking.cancelled.worker",
     ];
 
     events.forEach((e) => socket.on(e, handler));

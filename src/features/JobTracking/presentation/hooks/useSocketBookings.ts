@@ -64,6 +64,7 @@ export function useSocketBookings(
       "booking.completion-otp.generated",
       "booking.completion.confirmed",
       "booking.invoice.generated",
+      "booking.cancelled.worker",
     ];
 
     events.forEach((e) => socket.on(e, handler));

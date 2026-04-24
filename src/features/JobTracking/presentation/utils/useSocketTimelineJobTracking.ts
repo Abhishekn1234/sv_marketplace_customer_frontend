@@ -46,6 +46,10 @@ export function useSocketTimelineJobTracking({
         case "booking.invoice.generated":
           mappedStatus = "INVOICE_GENERATED";
           break;
+
+        case "booking.cancelled.worker":
+          mappedStatus = "WORKER_CANCELLED";
+          break;
       }
 
       // const activity = {
@@ -101,6 +105,7 @@ export function useSocketTimelineJobTracking({
       "booking.completion-otp.generated",
       "booking.completion.confirmed",
       "booking.invoice.generated",
+      "booking.cancelled.worker",
     ];
 
     events.forEach((e) => socket.on(e, handler));

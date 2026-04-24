@@ -91,6 +91,7 @@ export const useBookings = () => {
     socket.on("booking.worker.assigned", handler);
     socket.on("booking.work.started", handler);
     socket.on("booking.work.completed-by-worker", handler);
+    socket.on("booking.cancelled.worker", handler);
 
     return () => {
       socket.off("booking:update", handler);
@@ -98,8 +99,9 @@ export const useBookings = () => {
       socket.off("booking.worker.assigned", handler);
       socket.off("booking.work.started", handler);
       socket.off("booking.work.completed-by-worker", handler);
+      socket.off("booking.cancelled.worker", handler);
     };
-  }, [queryClient]);
+  }, [queryClient, user]);
 
   // =========================
   // SYNC AUTH STORE
