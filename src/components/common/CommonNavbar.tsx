@@ -13,12 +13,14 @@ import {
   Info,
   Shield,
   HelpCircle,
+
 } from "lucide-react";
 
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { UserIcon } from "../icons/Usericon";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -45,7 +47,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 }) => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
-  const {t}=useLanguage();
+ 
   const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
@@ -67,6 +69,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
    const jobpresspage=routerLocation.pathname.startsWith('/jobprogress/')
    const jobtrackingpage=routerLocation.pathname.startsWith('/jobtracking/');
    const jobcompletepage=routerLocation.pathname==="/jobcompleted";
+    const {t}=useLanguage();
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -203,14 +206,20 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           {showUserControls && user && (
             <>
               <CommonNotificationFloater />
-              <img
-                onClick={() => navigate("/profile")}
-                src={
-                  profilePic ||
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
-                }
-                className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
-              />
+              {profilePic ? (
+  <img
+    onClick={() => navigate("/profile")}
+    src={profilePic}
+    className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
+  />
+) : (
+  <div
+    onClick={() => navigate("/profile")}
+    className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:scale-105 transition"
+  >
+    <UserIcon />
+  </div>
+)}
             </>
           )}
 

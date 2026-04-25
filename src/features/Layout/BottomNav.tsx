@@ -25,90 +25,108 @@ const BottomNav: React.FC = () => {
         z-[100]
       "
     >
-     <NavItem active ariaLabel="Home" onClick={() => navigate("/")}>
-  <HomeIcon />
-</NavItem>
+      <NavItem ariaLabel="Home" tooltip="Home" onClick={() => navigate("/")}>
+        <HomeIcon />
+      </NavItem>
 
-<NavItem ariaLabel="About" onClick={() => navigate("/about")}>
-  <AboutIcon />
-</NavItem>
+      <NavItem ariaLabel="About" tooltip="About" onClick={() => navigate("/about")}>
+        <AboutIcon />
+      </NavItem>
 
-<NavItem ariaLabel="Notifications">
-  <CommonNotificationFloater direction="up" />
-</NavItem>
+      <NavItem ariaLabel="Notifications" tooltip="Notifications">
+        <CommonNotificationFloater direction="up" />
+      </NavItem>
 
-<NavItem ariaLabel="Bookings" onClick={() => navigate("/bookings")}>
-  <BookingIcon />
-</NavItem>
+      <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
+        <BookingIcon />
+      </NavItem>
 
-<NavItem ariaLabel="Profile">
-  <img
-    src={userphoto}
-    alt="Profile"
-    onClick={() => navigate("/profile")}
-    className="
-      w-9 h-9 sm:w-10 sm:h-10
-      rounded-xl object-cover
-      border-2 border-transparent
-      transition-all duration-200
-      group-hover:border-blue-600
-      group-hover:scale-110
-    "
-  />
-</NavItem>
+      <NavItem ariaLabel="Profile" tooltip="Profile">
+        <div onClick={() => navigate("/profile")} className="w-full h-full flex items-center justify-center">
+          {userphoto ? (
+            <img
+              src={userphoto}
+              alt="Profile"
+              className="
+                w-9 h-9 sm:w-10 sm:h-10
+                rounded-xl object-cover
+                border-2 border-transparent
+                transition-all duration-200
+                group-hover:border-blue-600
+                group-hover:scale-110
+              "
+            />
+          ) : (
+            <UserIcon />
+          )}
+        </div>
+      </NavItem>
     </nav>
   );
 };
 
+/* ================= NAV ITEM ================= */
+
 interface NavItemProps {
   children: React.ReactNode;
-  active?: boolean;
   ariaLabel: string;
+  tooltip?: string;
   onClick?: () => void;
 }
 
-/**
- * ✅ Smart NavItem
- * - Renders <button> only if onClick exists
- * - Otherwise renders <div> (prevents nested button issue)
- */
 const NavItem: React.FC<NavItemProps> = ({
   children,
-  active,
   ariaLabel,
+  tooltip,
   onClick,
 }) => {
-  const baseClass = clsx(
-    `
-      group relative
-      w-11 h-11 sm:w-10 sm:h-10
-      flex items-center justify-center
-      rounded-xl
-      transition-all duration-200
-      hover:bg-gray-100
-      hover:-translate-y-0.5
-      focus:outline-none
-      cursor-pointer
-    `,
-    active && "bg-blue-100"
-  );
-
-  if (onClick) {
-    return (
-      <button aria-label={ariaLabel} onClick={onClick} className={baseClass}>
-        {children}
-      </button>
-    );
-  }
+  const baseClass = clsx(`
+    group relative
+    w-11 h-11 sm:w-10 sm:h-10
+    flex items-center justify-center
+    rounded-xl
+    transition-all duration-200
+    hover:bg-gray-100
+    hover:-translate-y-0.5
+    focus:outline-none
+    cursor-pointer
+  `);
 
   return (
-    <div aria-label={ariaLabel} className={baseClass}>
-      {children}
+    <div className="relative group">
+      {/* Tooltip */}
+      {tooltip && (
+        <span
+          className="
+            absolute -top-9 left-1/2 -translate-x-1/2
+            px-2 py-1 text-xs
+            bg-black text-white rounded-md
+            opacity-0 group-hover:opacity-100
+            transition
+            pointer-events-none
+            whitespace-nowrap
+            z-50
+          "
+        >
+          {tooltip}
+        </span>
+      )}
+
+      {/* Button / div */}
+      {onClick ? (
+        <button aria-label={ariaLabel} onClick={onClick} className={baseClass}>
+          {children}
+        </button>
+      ) : (
+        <div aria-label={ariaLabel} className={baseClass}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };
 
-/* ---------------- Icons ---------------- */
+/* ================= ICONS ================= */
 
 const iconBase = "w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-200";
 
@@ -124,32 +142,6 @@ const HomeIcon = () => (
     <polyline points="9 22 9 12 15 12 15 22" />
   </svg>
 );
-
-// const SearchIcon = () => (
-//   <svg
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     stroke="currentColor"
-//     strokeWidth="2"
-//     className={`${iconBase} text-gray-400 group-hover:text-gray-600`}
-//   >
-//     <circle cx="11" cy="11" r="8" />
-//     <path d="M21 21l-4.35-4.35" />
-//   </svg>
-// );
-
-// const MessageIcon = () => (
-//   <svg
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     stroke="currentColor"
-//     strokeWidth="2"
-//     className={`${iconBase} text-gray-400 group-hover:text-gray-600`}
-//   >
-//     <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
-//   </svg>
-// );
-
 
 const AboutIcon = () => (
   <svg
@@ -179,4 +171,20 @@ const BookingIcon = () => (
     <line x1="3" y1="10" x2="21" y2="10" />
   </svg>
 );
+
+/* ================= USER ICON ================= */
+
+const UserIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    className={`${iconBase} text-gray-500`}
+  >
+    <path d="M20 21a8 8 0 10-16 0" />
+    <circle cx="12" cy="8" r="4" />
+  </svg>
+);
+
 export default BottomNav;

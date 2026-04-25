@@ -19,14 +19,15 @@ export default function CommonFaq() {
   return (
     <>
 
-     <div
-            className="fixed bottom-24 right-6 z-50"
-            onMouseEnter={() => setWhatsappOpen(true)}
-            onMouseLeave={() => {
-              setWhatsappOpen(false);
-              setMessage("");
-            }}
-          >
+    <div
+  className="fixed bottom-24 right-6 z-50"
+  onMouseEnter={() => setWhatsappOpen(true)}
+  onMouseLeave={() => {
+    setWhatsappOpen(false);
+    setMessage("");
+  }}
+  onClick={() => setWhatsappOpen((prev) => !prev)}
+>
         {/* Button */}
         <button className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300">
           <img

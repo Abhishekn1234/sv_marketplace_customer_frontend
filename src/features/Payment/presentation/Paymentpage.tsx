@@ -69,8 +69,15 @@ export default function PaymentPage() {
             },
           });
         },
-        onError: () => {
-          toast.error("Payment Failed");
+       onError: (err: any) => {
+          const message =
+            err?.response?.data?.message ||
+            err?.response?.data?.error ||
+            err?.message ||
+            "Payment Failed";
+
+          toast.error(message);
+          console.error("Payment Failed:", err);
         },
       }
     );

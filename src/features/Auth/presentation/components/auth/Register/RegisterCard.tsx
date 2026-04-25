@@ -44,7 +44,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setUser(response.user); // user object
     setMobileForVerification(formData.phone); // for OTP verification
 
-    toast.success(response.message || "Registration successful");
+    // toast.success(response.message || "Registration successful");
     navigate("/verification"); // navigate to OTP verification
   } catch (err: any) {
     toast.error(err?.message?.[0] || err.message || "Registration failed");

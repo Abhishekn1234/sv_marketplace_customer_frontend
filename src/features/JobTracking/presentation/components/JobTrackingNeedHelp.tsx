@@ -11,6 +11,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
+// -----------------------
+// CANCEL TYPES
+// -----------------------
 const cancelTypes = [
   { value: "BOOKED_WRONG_SERVICE", label: "Booked Wrong Service" },
   { value: "BOOKED_BY_MISTAKE", label: "Booked by Mistake" },
@@ -20,12 +23,16 @@ const cancelTypes = [
   { value: "OTHER", label: "Other" },
 ];
 
-interface CancelConfirmationDialogProps {
-  onConfirm: (cancelReasonType: string, reason: string) => void;
+// -----------------------
+// CANCEL FORM
+// -----------------------
+function CancelConfirmationDialog({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: (type: string, reason: string) => void;
   onCancel: () => void;
-}
-
-function CancelConfirmationDialog({ onConfirm, onCancel }: CancelConfirmationDialogProps) {
+}) {
   const [selectedType, setSelectedType] = useState("");
   const [reason, setReason] = useState("");
 
@@ -34,20 +41,23 @@ function CancelConfirmationDialog({ onConfirm, onCancel }: CancelConfirmationDia
       toast.error("Please select a cancellation reason");
       return;
     }
-    if (!reason.trim()) {
+
+    // ✅ reason required only if NOT OTHER
+    if (selectedType !== "OTHER" && !reason.trim()) {
       toast.error("Please enter a cancel reason");
       return;
     }
+
     onConfirm(selectedType, reason.trim());
   };
 
   return (
-    <div className="w-full">
+    <div>
       <p className="font-semibold mb-3">
         Are you sure you want to cancel this booking?
       </p>
 
-      {/* CANCELLATION REASON SELECT */}
+      {/* TYPE */}
       <select
         value={selectedType}
         onChange={(e) => setSelectedType(e.target.value)}
@@ -61,15 +71,19 @@ function CancelConfirmationDialog({ onConfirm, onCancel }: CancelConfirmationDia
         ))}
       </select>
 
-      {/* TEXTAREA */}
+      {/* REASON */}
       <textarea
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        placeholder="Enter cancellation reason..."
+        placeholder={
+          selectedType === "OTHER"
+            ? "Optional reason..."
+            : "Enter cancellation reason..."
+        }
         className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
       />
 
-      {/* BUTTONS */}
+      {/* ACTIONS */}
       <div className="flex gap-2 justify-end">
         <button
           onClick={onCancel}
@@ -89,13 +103,15 @@ function CancelConfirmationDialog({ onConfirm, onCancel }: CancelConfirmationDia
   );
 }
 
+// -----------------------
+// MAIN COMPONENT
+// -----------------------
 export default function JobTrackingNeedHelp({
   booking,
 }: {
   booking: Booking | null;
 }) {
   const navigate = useNavigate();
-
   const { cancelBooking } = useBookings();
   const { data: categories } = useServiceCategory();
   const { t } = useLanguage();
@@ -103,10 +119,13 @@ export default function JobTrackingNeedHelp({
   const [showInvoice, setShowInvoice] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
+  // ✅ MODAL STATE (IMPORTANT FIX)
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const categoriesList = categories ?? [];
 
   // -----------------------
-  // SERVICES FLATTEN
+  // FLATTEN SERVICES
   // -----------------------
   const services = useMemo(() => {
     return categoriesList.flatMap((cat: any) => cat.services ?? []);
@@ -120,40 +139,43 @@ export default function JobTrackingNeedHelp({
   }, [services]);
 
   // -----------------------
-  // NAVIGATION
+  // NAV
   // -----------------------
   const helpNavigate = () => navigate("/help");
 
   // -----------------------
-  // CANCEL BOOKING
+  // CANCEL OPEN
   // -----------------------
   const handleCancel = () => {
     if (!booking?._id) return;
+    setShowCancelModal(true);
+  };
 
-    toast(
-      <CancelConfirmationDialog
-        onConfirm={async (cancelReasonType, reason) => {
-          try {
-            await cancelBooking.mutateAsync({
-              bookingId: booking._id,
-              cancelReason: reason,
-              cancelReasonType,
-            });
+  // -----------------------
+  // CANCEL CONFIRM API
+  // -----------------------
+  const handleConfirmCancel = async (
+    cancelReasonType: string,
+    reason: string
+  ) => {
+    if (!booking?._id) return;
 
-            toast.success("Booking cancelled ✅");
-            setTimeout(() => navigate("/"), 1500);
-          } catch {
-            toast.error("Failed to cancel booking ❌");
-          }
-        }}
-        onCancel={() => {}}
-      />,
-      {
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
-      }
-    );
+    try {
+      await cancelBooking.mutateAsync({
+        bookingId: booking._id,
+        cancelReason: reason,
+        cancelReasonType,
+      });
+
+      toast.success("Booking cancelled ✅");
+
+      setShowCancelModal(false);
+
+      setTimeout(() => navigate("/"), 1200);
+    } catch (err) {
+      toast.error("Failed to cancel booking ❌");
+      setShowCancelModal(false);
+    }
   };
 
   // -----------------------
@@ -180,21 +202,14 @@ export default function JobTrackingNeedHelp({
       icon: <span>📄</span>,
       action: () => {
         if (!booking) return toast.error("Booking not found ❌");
-
         setSelectedBooking(booking);
         setShowInvoice(true);
       },
     },
   ];
 
-  // -----------------------
-  // EMPTY STATE
-  // -----------------------
   if (!booking) return null;
 
-  // -----------------------
-  // UI
-  // -----------------------
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
       <h3 className="text-base font-bold text-gray-900 mb-4">
@@ -218,8 +233,8 @@ export default function JobTrackingNeedHelp({
           </div>
         ))}
 
-        {/* INVOICE MODAL */}
-        {showInvoice && selectedBooking && (
+        {/* INVOICE */}
+        {showInvoice  && selectedBooking && (
           <InvoiceModal
             booking={selectedBooking}
             services={services}
@@ -233,6 +248,20 @@ export default function JobTrackingNeedHelp({
           />
         )}
       </div>
+
+      {/* -----------------------
+          CANCEL MODAL
+      ----------------------- */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-5 rounded-xl w-[90%] max-w-md">
+            <CancelConfirmationDialog
+              onConfirm={handleConfirmCancel}
+              onCancel={() => setShowCancelModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

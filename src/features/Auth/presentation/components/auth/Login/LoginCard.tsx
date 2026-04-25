@@ -16,7 +16,7 @@ const LoginCard = () => {
     e.preventDefault();
     try {
       const response = await login({ email, password });
-      toast.success(response.message || 'Login successful');
+      toast.success(response.message);
       navigate('/');
     } catch (err: any) {
       toast.error(err.message || 'Login failed');

@@ -31,10 +31,15 @@ export default function Disputepage() {
          toast.success("Dispute created successfully");
           navigate("/bookings");
         },
-        onError: (err) => {
-            toast.error("Failed to create dispute");
-          console.error("Failed to create dispute:", err);
-        },
+       onError: (err: any) => {
+  const message =
+    err?.response?.data?.message ||   // axios style
+    err?.message ||                   // generic error
+    "Failed to create dispute";       // fallback
+
+  toast.error(message);
+  console.error("Failed to create dispute:", err);
+},
       }
     );
   };

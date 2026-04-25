@@ -24,8 +24,8 @@ export const useAuth = () => {
 
       return res;
     },
-    onSuccess: (res) => {
-      toast.success(res.message || 'Login successful ✅');
+    onSuccess: (_res) => {
+      // toast.success(res.message);
     },
     onError: (err: any) => {
       toast.error(err?.message || 'Login failed ❌');
