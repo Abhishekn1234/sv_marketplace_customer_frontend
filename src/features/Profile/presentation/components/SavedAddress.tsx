@@ -21,14 +21,40 @@ export default function SavedAddress() {
     setEditingId(id);
     setTempAddress(currentValue);
   };
+  const getCurrentLatLng = (): Promise<{ lat: number; lng: number }> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => reject(err)
+    );
+  });
+};
 
   // Save edited address
-  const saveEdit = () => {
-    if (!editingId || !tempAddress.trim()) return;
-    updateAddress(editingId, tempAddress.trim());
+ const saveEdit = async () => {
+  if (!editingId || !tempAddress.trim()) return;
+
+  try {
+    const { lat, lng } = await getCurrentLatLng();
+
+    updateAddress(editingId, tempAddress.trim(), lat, lng);
+
     setEditingId(null);
     setTempAddress("");
-  };
+  } catch (error) {
+    console.error("Failed to get location", error);
+  }
+};
 
   // Cancel editing
   const cancelEdit = () => {

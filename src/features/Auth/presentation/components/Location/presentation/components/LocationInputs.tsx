@@ -8,6 +8,7 @@ import LocationSearchInput from "./LocationSearchInput";
 import LocationTypeSelector from "./LocationTypeSelector";
 import ConfirmLocationFooter from "./ConfirmLocationFooter";
 import { useAddLocation } from "../hooks/useAddLocation";
+import type { Address } from "../../domain/entities/updatelocation";
 
 export default function LocationInputs() {
   const { user, updateUserLocation } = useAuthStore();
@@ -56,7 +57,7 @@ export default function LocationInputs() {
   const updatedOffice =
     selected === "office" ? inputValue : officeLocation;
 
-  const updatedAddresses = [
+  const updatedAddresses : Address[] = [
     {
       id: "home",
       type: "home",
