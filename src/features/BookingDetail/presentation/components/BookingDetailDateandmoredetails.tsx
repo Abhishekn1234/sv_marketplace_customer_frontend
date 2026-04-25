@@ -73,78 +73,82 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         () => basePrice + vatRate,
         [basePrice, vatRate]
       );
-  const handleBooking = async () => {
-    try {
-       setLoading(true);
-      if (selectedDate === null) return toast.error("Please select a date");
-      if (selectedTime === null) return toast.error("Please select a time");
+ const handleBooking = async () => {
+  try {
+    setLoading(true);
 
-      const today = new Date();
-      const selectedDateObj = new Date(today);
-      selectedDateObj.setDate(today.getDate() + selectedDate);
-
-      
-      const [time, modifier] = times[selectedTime].split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (modifier === "PM" && hours !== 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours = 0;
-      selectedDateObj.setHours(hours, minutes, 0, 0);
-
-      if (selectedDateObj.getTime() <= new Date().getTime())
-        return toast.error("Please select a future time");
-
-     
-      
-        const addresses = current_location?.addresses ?? [];
-
-        const homeAddress =
-          addresses.find((addr) => addr.type === "home")?.value ||
-          addresses.find((addr) => addr.type === "office")?.value ||
-          addresses.find((addr) => addr.type === "inputValue")?.value;
-
-        if (!homeAddress) return toast.error("Please select a address");
-
-      
-        // const coords = await resolveLocation(
-        //   homeAddress,
-        //   current_location,
-        //  getCurrentLocation
-        // );
-
-        // if (!coords) {
-        //   return toast.error("Unable to determine location");
-        // }
-
-         const { lat, lng } = await getCurrentLocation();
-      const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
-      let pricingMode: "HOURLY" | "PER_DAY" = duration > 24 ? "PER_DAY" : "HOURLY";
-      const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;
-      const estimatedHours = duration > 24 ? duration % 24 : duration;
-
-    
-      const payload = {
-        workDescription: notes || "Service booking",
-        serviceId: serviceId!,
-        serviceTierId: serviceTierId!,
-        pricingMode,
-        numberOfWorkers: 1,
-        bookingType,
-        startDateTime: selectedDateObj.toISOString(),
-        estimatedHours,
-        estimatedDays,
-        location: {
-          type: "Point" as const,
-          coordinates: [lng, lat] as [number, number],
-        },
-      };
-
-      console.log("Booking Payload:", payload);
-      await createBooking.mutateAsync(payload);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.message || "Booking failed");
+    if (selectedDate === null) {
+      setLoading(false);
+      return toast.error("Please select a date");
     }
-  };
+
+    if (selectedTime === null) {
+      setLoading(false);
+      return toast.error("Please select a time");
+    }
+
+    const today = new Date();
+    const selectedDateObj = new Date(today);
+    selectedDateObj.setDate(today.getDate() + selectedDate);
+
+    const [time, modifier] = times[selectedTime].split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    selectedDateObj.setHours(hours, minutes, 0, 0);
+
+    if (selectedDateObj.getTime() <= new Date().getTime()) {
+      setLoading(false);
+      return toast.error("Please select a future time");
+    }
+
+    const addresses = current_location?.addresses ?? [];
+
+    const homeAddress =
+      addresses.find((addr) => addr.type === "home")?.value ||
+      addresses.find((addr) => addr.type === "office")?.value ||
+      addresses.find((addr) => addr.type === "inputValue")?.value;
+
+    if (!homeAddress) {
+      setLoading(false);
+      return toast.error("Please select a address");
+    }
+
+    const { lat, lng } = await getCurrentLocation();
+
+    const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
+    let pricingMode: "HOURLY" | "PER_DAY" =
+      duration > 24 ? "PER_DAY" : "HOURLY";
+
+    const estimatedDays = duration > 24 ? Math.floor(duration / 24) : 0;
+    const estimatedHours = duration > 24 ? duration % 24 : duration;
+
+    const payload = {
+      workDescription: notes || "Service booking",
+      serviceId: serviceId!,
+      serviceTierId: serviceTierId!,
+      pricingMode,
+      numberOfWorkers: 1,
+      bookingType,
+      startDateTime: selectedDateObj.toISOString(),
+      estimatedHours,
+      estimatedDays,
+      location: {
+        type: "Point" as const,
+        coordinates: [lng, lat] as [number, number],
+      },
+    };
+
+    await createBooking.mutateAsync(payload);
+  } catch (error: any) {
+    toast.error(error?.message || "Booking failed");
+  } finally {
+    // ✅ ALWAYS stop loader
+    setLoading(false);
+  }
+};
 
   const increaseDuration = () => setDuration((prev) => prev + 1);
   const decreaseDuration = () => setDuration((prev) => (prev > 1 ? prev - 1 : 1));
