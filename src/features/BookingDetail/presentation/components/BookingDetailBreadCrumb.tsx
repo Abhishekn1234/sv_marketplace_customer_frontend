@@ -15,16 +15,20 @@ export default function BookingDetailBreadCrumb() {
 
   // Find current service
   const service = services.find((s) => s._id === serviceId);
-
+  console.log(service);
   // Get category id from service
-  const categoryId = service?.category?._id;
-
+  const categoryId = service?.category?.[0]?._id;
+  console.log(categoryId);
+ 
   const handleBack = () => {
-    if (categoryId) {
-      navigate(`/services/${categoryId}`);
-    }
-  };
+  const id = service?.category?.[0]?._id;
 
+  if (id) {
+    navigate(`/services/${id}`);
+  } else {
+    navigate(-1);
+  }
+};
   return (
     <button
       onClick={handleBack}

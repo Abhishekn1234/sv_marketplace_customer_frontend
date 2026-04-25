@@ -8,7 +8,6 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
@@ -16,20 +15,16 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* 🔥 REQUIRED FOR ALIASES */
-    "baseUrl": ".",
+    "baseUrl": ".",              // ✅ ADD THIS
     "paths": {
       "@/*": ["src/*"]
     },
 
-    /* Linting */
+    "ignoreDeprecations": "6.0",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "ignoreDeprecations": "6.0"
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }

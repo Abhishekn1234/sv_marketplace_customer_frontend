@@ -32,7 +32,7 @@ export interface AuthState {
   updateUserLocation: (location: LastLocations) => void;
 
   addAddress: (type: "home" | "office" | "inputValue" | "other", value: string) => void;
-  updateAddress: (id: string, value: string) => void;
+  updateAddress: (id: string, value: string,lat:number,lng:number) => void;
   updateHome: (type: "home" | "office"|"inputValue", value: string) => void;
   deleteAddress: (id: string) => void;
     mobileForVerification?: string; 

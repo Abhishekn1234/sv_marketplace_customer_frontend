@@ -24,7 +24,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [duration, setDuration] = useState(1);
   const [notes, setNotes] = useState("");
-
+ const [loading, setLoading] = useState(false);
  const allDates = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 15 }).map((_, i) => {
@@ -75,6 +75,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       );
   const handleBooking = async () => {
     try {
+       setLoading(true);
       if (selectedDate === null) return toast.error("Please select a date");
       if (selectedTime === null) return toast.error("Please select a time");
 
@@ -101,7 +102,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
           addresses.find((addr) => addr.type === "office")?.value ||
           addresses.find((addr) => addr.type === "inputValue")?.value;
 
-        if (!homeAddress) return toast.error("No address found");
+        if (!homeAddress) return toast.error("Please select a address");
 
       
         const coords = await resolveLocation(
@@ -249,11 +250,39 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       </div>
 
       <button
-        onClick={handleBooking}
-        className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full"
+  onClick={handleBooking}
+  disabled={loading}
+  className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
+>
+  {loading ? (
+    <>
+      <svg
+        className="w-5 h-5 animate-spin"
+        viewBox="0 0 24 24"
+        fill="none"
       >
-        {t.bookingdetailpage.confirmBooking} →
-      </button>
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        />
+      </svg>
+      Processing...
+    </>
+  ) : (
+    <>
+      {t.bookingdetailpage.confirmBooking} →
+    </>
+  )}
+</button>
     </div>
   );
 }
