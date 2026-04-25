@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocation} from "@/features/utils/reverse";
-import { resolveLocation } from "../helpers/resolvelocation";
+// import { resolveLocation } from "../helpers/resolvelocation";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
@@ -105,15 +105,15 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         if (!homeAddress) return toast.error("Please select a address");
 
       
-        const coords = await resolveLocation(
-          homeAddress,
-          current_location,
-         getCurrentLocation
-        );
+        // const coords = await resolveLocation(
+        //   homeAddress,
+        //   current_location,
+        //  getCurrentLocation
+        // );
 
-        if (!coords) {
-          return toast.error("Unable to determine location");
-        }
+        // if (!coords) {
+        //   return toast.error("Unable to determine location");
+        // }
 
          const { lat, lng } = await getCurrentLocation();
       const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
