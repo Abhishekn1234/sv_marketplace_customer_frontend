@@ -125,22 +125,28 @@ const LoginCard = () => {
 
         {/* Submit Button */}
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-13 flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 hover:-translate-y-0.5 transition-transform duration-200"
-        >
-          Continue
-          <svg
-            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M5 12h14"/>
-            <path d="M12 5l7 7-7 7"/>
-          </svg>
-        </button>
+  type="submit"
+  disabled={loading}
+  className="w-full h-13 flex items-center justify-center bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {loading ? (
+    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+  ) : (
+    <>
+      Continue
+      <svg
+        className="w-4 h-4 ml-2"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path d="M5 12h14" />
+        <path d="M12 5l7 7-7 7" />
+      </svg>
+    </>
+  )}
+</button>
       </form>
 
       {/* Divider */}
@@ -152,7 +158,7 @@ const LoginCard = () => {
         <div className="flex-1 h-px bg-gray-200"></div>
       </div>
 
-      {/* Social login */}
+      {/* Social login
       <div className="grid grid-cols-2 gap-3 mb-6">
         <button className="flex items-center justify-center gap-2 h-12 bg-white border-2 border-gray-200 rounded-lg text-gray-700 font-semibold hover:border-blue-600 hover:bg-gray-50 transition">
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -169,7 +175,7 @@ const LoginCard = () => {
           </svg>
           Facebook
         </button>
-      </div>
+      </div> */}
 
       {/* Footer link */}
       <p className="text-center text-gray-500 text-sm font-medium">
