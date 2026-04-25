@@ -1,10 +1,14 @@
 import type { Geopoint } from "@/features/Bookings/domain/entities/geopoint.types";
 
-export interface Address {
+type AddressType = "home" | "inputValue" |"other" |"office";
+
+export type Address = {
   id: string;
-  type: "home" | "office" |"inputValue" | "other"| string;
+  type: AddressType;
   value: string;
-}
+  lat?: number;
+  lng?: number;
+};
 
 export interface LastLocations {
   id?: string;

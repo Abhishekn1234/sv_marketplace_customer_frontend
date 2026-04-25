@@ -128,15 +128,17 @@ export const useAuthStore = create<AuthState>()(
           };
         }),
 
-      updateAddress: (id, value) =>
-        set((state) => ({
-          current_location: {
-            ...state.current_location,
-            addresses: state.current_location.addresses.map((addr) =>
-              addr.id === id ? { ...addr, value } : addr
-            ),
-          },
-        })),
+     updateAddress: (type, value, lat, lng) =>
+  set((state) => ({
+    current_location: {
+      ...state.current_location,
+      addresses: state.current_location.addresses.map((addr) =>
+        addr.type === type
+          ? { ...addr, value, lat, lng }
+          : addr
+      ),
+    },
+  })),
          setMobileForVerification: (phone: string) =>
         set({ mobileForVerification: phone }),
 

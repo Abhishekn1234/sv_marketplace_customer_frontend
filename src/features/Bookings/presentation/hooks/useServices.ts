@@ -58,17 +58,17 @@ const servicesQuery = useQuery<Service[], Error>({
         servicesQuery.data.reduce((acc, service) => {
           const categoryObj = service.category;
 
-          const categoryId = categoryObj?._id;
+          const categoryId = categoryObj?.[0]?._id;
           if (!categoryId) return acc;
 
           if (!acc[categoryId]) {
             acc[categoryId] = {
               _id: categoryId,
-              name: categoryObj.name ?? "Category",
-              vatRate: categoryObj.vatRate,
-              slug: categoryObj.slug ?? "",
-              iconUrl: categoryObj.iconUrl,
-              iconPublicId: categoryObj.iconPublicId,
+              name: categoryObj?.[0]?.name ?? "Category",
+              vatRate: categoryObj?.[0]?.vatRate,
+              slug: categoryObj?.[0]?.slug ?? "",
+              iconUrl: categoryObj?.[0]?.iconUrl,
+              iconPublicId: categoryObj?.[0]?.iconPublicId,
               services: [],
             };
           }

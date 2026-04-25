@@ -161,7 +161,7 @@ export default function BookingServiceModal({
     };
     console.log(payload);
     try {
-      await createBooking(payload);
+      await createBooking.mutate(payload);
       // toast.success("Booking created successfully");
       onClose();
     } catch (err: any) {
