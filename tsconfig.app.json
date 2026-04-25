@@ -14,13 +14,11 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+   
+        "paths": {
+        "@/*": ["./src/*"]
+      },
 
-    "baseUrl": ".",              // ✅ ADD THIS
-    "paths": {
-      "@/*": ["src/*"]
-    },
-
-    "ignoreDeprecations": "6.0",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
