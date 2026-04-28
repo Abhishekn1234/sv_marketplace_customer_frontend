@@ -6,6 +6,7 @@ import { useAuthStore } from "@/features/core/store/auth";
 
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { UserIcon } from "@/components/icons/Usericon";
 
 
 export default function ProfileList() {
@@ -62,11 +63,17 @@ export default function ProfileList() {
         
         {/* Avatar Section */}
         <div className="relative inline-block mb-5">
-          <img
-            src={preview || profile.profilePictureUrl}
-            alt="Profile"
-            className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-gray-100"
-          />
+        {preview || profile?.profilePictureUrl ? (
+            <img
+              src={preview || profile?.profilePictureUrl}
+              alt="Profile"
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-gray-100"
+            />
+          ) : (
+            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-gray-100 bg-gray-100 flex items-center justify-center">
+              <UserIcon />
+            </div>
+          )}
 
           {/* Hidden File Input */}
           <input

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -15,6 +17,8 @@ const RegistrationCard = () => {
     agreeToTerms: false,
   });
   const {t}=useLanguage();
+  const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
  const { setMobileForVerification,setTokens,setUser } = useAuthStore();
   const { register } = useAuth();
   const navigate=useNavigate();
@@ -28,6 +32,7 @@ const RegistrationCard = () => {
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+   setLoading(true);
 
   try {
     const payload = {
@@ -45,9 +50,11 @@ const handleSubmit = async (e: React.FormEvent) => {
     setMobileForVerification(formData.phone); // for OTP verification
 
     // toast.success(response.message || "Registration successful");
-    navigate("/verification"); // navigate to OTP verification
+    navigate("/verification");
+    setLoading(false); // navigate to OTP verification
   } catch (err: any) {
     toast.error(err?.message?.[0] || err.message || "Registration failed");
+    setLoading(false);
   }
 };
 
@@ -114,37 +121,54 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
           {/* Phone */}
-          <div className="mb-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-             {t.register.phone}
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
-              placeholder={t.register.phonePlaceholder}
-            />
-          </div>
+         <div className="mb-4">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
+            {t.register.phone}
+          </label>
+
+          <PhoneInput
+            country={"in"} // default country (India)
+            value={formData.phone}
+            onChange={(phone) =>
+              setFormData({ ...formData, phone })
+            }
+            inputClass="!w-full !h-12 !rounded-xl !border-2 !border-gray-200 !bg-gray-50 focus:!bg-white focus:!border-blue-600"
+            containerClass="w-full"
+            buttonClass="!border-none"
+          />
+        </div>
 
           {/* Password */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-             {t.register.password}
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={8}
-              className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
-              placeholder={t.register.passwordPlaceholder}
-            />
-          </div>
+           <div className="mb-6">
+      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
+        {t.register.password}
+      </label>
+
+      <div className="relative">
+        <input
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          minLength={8}
+          className="w-full h-12 px-4 pr-12 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+          placeholder={t.register.passwordPlaceholder}
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        >
+          {showPassword ? (
+            <EyeOff className="w-5 h-5" />
+          ) : (
+            <Eye className="w-5 h-5" />
+          )}
+        </button>
+      </div>
+    </div>
 
           {/* Terms */}
           <div className="flex gap-3 mb-6">
@@ -170,15 +194,53 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* Submit */}
           <button
-            type="submit"
-            className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
-          >
-           {t.register.submit}
-            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        type="submit"
+        disabled={loading}
+        className={`w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 transition 
+        ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-800 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"}`}
+      >
+        {loading ? (
+          <>
+            {/* Spinner */}
+            <svg
+              className="w-5 h-5 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="opacity-25"
+              />
+              <path
+                d="M22 12a10 10 0 00-10-10"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="opacity-75"
+              />
+            </svg>
+
+            Loading...
+          </>
+        ) : (
+          <>
+            {t.register.submit}
+            <svg
+              className="w-5 h-5 transition-transform group-hover:translate-x-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M5 12h14" />
               <path d="M12 5l7 7-7 7" />
             </svg>
-          </button>
+          </>
+        )}
+      </button>
         </form>
 
         {/* Footer */}
