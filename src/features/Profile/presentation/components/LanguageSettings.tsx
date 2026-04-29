@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/features/context/LanguageContext";
+import { Radio } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
 
 export default function LanguageSettings() {
@@ -46,13 +47,11 @@ export default function LanguageSettings() {
                     }`}
                     >
                 <div className="flex items-center gap-4">
-                  <input
-                    type="radio"
+                  <Radio
                     name="language"
                     value={lang.code}
                     checked={isActive}
                     onChange={() => setLanguage(lang.code)}
-                    className="accent-pink-500 w-5 h-5"
                   />
                   <span className="text-base sm:text-lg font-semibold">
                     {lang.label}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
+import { Input, Radio } from "@/components/input";
 
 interface AddressModalProps {
   open: boolean;
@@ -38,30 +39,24 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
 
         <div className="flex gap-4 mb-6">
           {["home", "office"].map((type) => (
-            <label
+            <Radio
               key={type}
-              className={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
+              label={type}
+              containerClassName={`flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
                 selectedType === type ? "border-blue-600 bg-blue-50" : "border-gray-200"
               }`}
-            >
-              <input
-                type="radio"
-                checked={selectedType === type}
-                onChange={() => setSelectedType(type as "home" | "office")}
-                className="hidden"
-              />
-              <span className="font-medium capitalize">{type}</span>
-            </label>
+              checked={selectedType === type}
+              onChange={() => setSelectedType(type as "home" | "office")}
+            />
           ))}
         </div>
 
         <div className="relative">
-          <input
+          <Input
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter address..."
-            className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 

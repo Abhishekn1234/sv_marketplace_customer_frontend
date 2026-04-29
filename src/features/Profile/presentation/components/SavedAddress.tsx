@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { AddressInput,Radio } from "@/components/input";
 
 export default function SavedAddress() {
   const { current_location, addAddress, updateAddress, deleteAddress } = useAuthStore();
@@ -75,25 +76,6 @@ export default function SavedAddress() {
     setShowAddForm(false);
   };
 
-  // Input component
-  const AddressInput = ({
-    value,
-    onChange,
-    placeholder,
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-    placeholder: string;
-  }) => (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full pl-3 pr-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm"
-    />
-  );
-
   // Render single address card
   const renderCard = (addr: any, index: number) => (
     <div key={addr.id} className="p-5 bg-gray-50 rounded-xl border">
@@ -160,22 +142,16 @@ export default function SavedAddress() {
         {showAddForm ? (
           <div className="p-5 bg-gray-50 border rounded-2xl space-y-4">
             <div className="flex gap-6">
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  checked={selectedType === "home"}
-                  onChange={() => setSelectedType("home")}
-                />
-               {t.profilepage.home}
-              </label>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  checked={selectedType === "office"}
-                  onChange={() => setSelectedType("office")}
-                />
-                {t.profilepage.office}
-              </label>
+              <Radio
+                label={t.profilepage.home}
+                checked={selectedType === "home"}
+                onChange={() => setSelectedType("home")}
+              />
+              <Radio
+                label={t.profilepage.office}
+                checked={selectedType === "office"}
+                onChange={() => setSelectedType("office")}
+              />
             </div>
 
             <AddressInput

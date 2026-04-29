@@ -1,13 +1,13 @@
-import { Pencil, Star } from "lucide-react";
-import { useRef, useState } from "react";
+import { Pencil, Star } from 'lucide-react';
+import { useState } from 'react';
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useAuthStore } from "@/features/core/store/auth";
 
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { UserIcon } from "@/components/icons/Usericon";
-
+import { UserIcon } from "@/components/icons";
+import { FileInput } from '@/components/input';
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
@@ -15,7 +15,6 @@ export default function ProfileList() {
   const { setUser, user } = useAuthStore();
   const {data:bookings}=useBookingHistory();
   const bookingcount = bookings?.pages.map((page)=>page.pagination.totalItems)
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const {t}=useLanguage();
 
@@ -31,31 +30,24 @@ export default function ProfileList() {
     );
   }
 
-  const handleEditClick = () => {
-    fileInputRef.current?.click();
-  };
+ const handleFileChange = (file: File) => {
+  const imageUrl = URL.createObjectURL(file);
+  setPreview(imageUrl);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const formData = new FormData();
+  formData.append("profileImage", file);
 
-    const imageUrl = URL.createObjectURL(file);
-    setPreview(imageUrl);
+  updateProfile(formData, {
+    onSuccess: (updatedProfile) => {
+      if (!user) return;
 
-    const formData = new FormData();
-    formData.append("profileImage", file);
-
-    updateProfile(formData, {
-      onSuccess: (updatedProfile) => {
-        if (!user) return;
-
-        setUser({
-          ...user,
-          profilePictureUrl: updatedProfile.profilePictureUrl,
-        });
-      },
-    });
-  };
+      setUser({
+        ...user,
+        profilePictureUrl: updatedProfile.profilePictureUrl,
+      });
+    },
+  });
+};
 
   return (
     <div className="w-full flex justify-center px-4 py-8">
@@ -75,23 +67,20 @@ export default function ProfileList() {
             </div>
           )}
 
-          {/* Hidden File Input */}
-          <input
-            type="file"
+          <FileInput
             accept="image/*"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-          />
+            onFileChange={handleFileChange} // Pass the new handleFileChange
+          >
+          {/* The button below will trigger the FileInput */}
 
           {/* Edit Button */}
           <button
-            onClick={handleEditClick}
             disabled={isPending}
             className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-full flex items-center justify-center border-4 border-white shadow-md hover:scale-105 disabled:opacity-60"
           >
             <Pencil className="w-4 h-4 text-white" />
           </button>
+          </FileInput>
         </div>
 
         {/* Name */}

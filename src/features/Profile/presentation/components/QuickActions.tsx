@@ -1,5 +1,12 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import React from "react";
+import {
+  QuickActionsIcon,
+  SecurityIcon,
+  BillingIcon,
+  PrivacyIcon,
+  HelpIcon,
+} from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 
 export default function QuickActions() {
@@ -9,15 +16,8 @@ export default function QuickActions() {
     <div className="mt-2 bg-white rounded-[20px] p-8 shadow-sm border border-gray-200">
       {/* Title */}
       <h3 className="flex items-center gap-2.5 text-[18px] font-bold text-gray-900 mb-6">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="w-5 h-5 text-blue-600"
-        >
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-        </svg>
+        
+          <QuickActionsIcon className="w-5 h-5 text-blue-600" />
         {t.profilepage.quickActions}
       </h3>
 
@@ -25,61 +25,25 @@ export default function QuickActions() {
       <div className="grid grid-cols-2 gap-3">
         {/* Security */}
         <ActionButton onClick={()=>navigate('/security')}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-[18px] h-[18px]"
-          >
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0110 0v4" />
-          </svg>
+          <SecurityIcon className="w-[18px] h-[18px]" />
           {t.profilepage.security}
         </ActionButton>
 
         {/* Billing */}
         <ActionButton>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-[18px] h-[18px]"
-          >
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
+          <BillingIcon className="w-[18px] h-[18px]" />
           {t.profilepage.billing}
         </ActionButton>
 
         {/* Privacy */}
         <ActionButton onClick={()=>navigate('/privacy')} >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-[18px] h-[18px]"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
+          <PrivacyIcon className="w-[18px] h-[18px]" />
           {t.profilepage.privacy}
         </ActionButton>
 
         {/* Help */}
         <ActionButton onClick={()=>navigate('/help')}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-[18px] h-[18px]"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
+          <HelpIcon className="w-[18px] h-[18px]" />
           {t.profilepage.help}
         </ActionButton>
       </div>
@@ -103,4 +67,3 @@ function ActionButton({
     </button>
   );
 }
-

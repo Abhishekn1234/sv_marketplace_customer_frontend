@@ -33,21 +33,63 @@ import JobCompletedPage from "./features/JobCompleted/presentation/JobCompletedP
 import ForgotPasswordLayout from "./features/Auth/presentation/components/ForgotPassword/presentation/components/ForgotPasswordLayout";
 import NotificationsPage from "./features/Notifications/presentation/NotificationsPage";
 import CookiePolicyPage from "./features/CookiePolicy/presentation/CookiePolicyPage";
-import { useNotification } from "./features/utils/useNotification";
-import { useEffect } from "react";
-import './App.css';
 import Disputepage from "./features/Disputes/presentation/Disputepage";
 import PaymentPage from "./features/Payment/presentation/Paymentpage";
 import PaymentCallbackPage from "./features/Payment/presentation/components/PaymentCallbackPage";
 import ListDisputes from "./features/Disputes/presentation/components/ListDisputes";
+
+import { useNotification } from "./features/utils/useNotification";
+import { useEffect } from "react";
+import "./App.css";
+
 import { useAuthStore } from "./features/core/store/auth";
 import { initializeSocket } from "./features/core/Websocket/socket";
 import ScrollToTop from "./ScrollToTop";
 
+/* 🔥 ADD THESE */
+import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
+
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
-  useNotification();
 
+  useNotification(); // your existing hook
+
+  /* ✅ SERVICE WORKER + NOTIFICATION INIT */
+  useEffect(() => {
+    const setupNotifications = async () => {
+      try {
+        if (!("serviceWorker" in navigator)) return;
+
+        // Register service worker
+        const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        console.log("✅ SW registered:", reg);
+
+        // Request permission
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+          console.warn("❌ Notification permission denied");
+          return;
+        }
+
+        console.log("✅ Notification permission granted");
+
+        // Get FCM token
+        const token = await requestAndGetToken();
+        console.log("🔥 FCM Token:", token);
+
+        // Listen for foreground messages
+        initOnMessage();
+
+      } catch (err) {
+        console.error("❌ Notification setup error:", err);
+      }
+    };
+
+    setupNotifications();
+  }, []);
+
+  /* ✅ SOCKET INIT */
   useEffect(() => {
     if (isLoggedIn && accessToken) {
       initializeSocket(accessToken);
@@ -58,7 +100,7 @@ function App() {
     <ThemeProvider>
       <LanguageProvider>
         <Router>
-          <ScrollToTop/>
+          <ScrollToTop />
 
           <ToastContainer
             position="top-right"
@@ -75,11 +117,8 @@ function App() {
           />
 
           <Routes>
-
-           
             <Route element={<DashboardLayout />}>
-
-             
+              {/* Public */}
               <Route path="/login" element={<LoginLayout />} />
               <Route path="/register" element={<RegisterLayout />} />
               <Route path="/language" element={<LanguagePage />} />
@@ -88,7 +127,7 @@ function App() {
               <Route path="/verification" element={<VerificationPage />} />
               <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
 
-            
+              {/* Protected */}
               <Route element={<ProtectedRoute />}>
                 <Route index element={<WebsiteHome />} />
                 <Route path="bookingdetail/:serviceId/:serviceTierId" element={<BookingDetailPage />} />
@@ -101,23 +140,20 @@ function App() {
                 <Route path="jobcompleted" element={<JobCompletedPage />} />
                 <Route path="services/:id" element={<ServiceDetailPage />} />
                 <Route path="privacy" element={<PrivacyPolicyPage />} />
-                <Route path="payment" element={<PaymentPage/>}/>
-                <Route path="disputes" element={<ListDisputes/>}/>
+                <Route path="payment" element={<PaymentPage />} />
+                <Route path="disputes" element={<ListDisputes />} />
                 <Route path="payment/callback" element={<PaymentCallbackPage />} />
-                <Route path="dispute/:bookingId" element={<Disputepage/>}/>
+                <Route path="dispute/:bookingId" element={<Disputepage />} />
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
                 <Route path="profile" element={<Profile />} />
-                
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
                 <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
               </Route>
-
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
-
           </Routes>
         </Router>
       </LanguageProvider>

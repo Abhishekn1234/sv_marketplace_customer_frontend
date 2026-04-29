@@ -5,8 +5,8 @@ import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import { Input, Checkbox, PhoneInput as CustomPhoneInput } from "@/components/input";
+
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -89,15 +89,13 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className="grid grid-cols-2 gap-4 mb-4">
             {["firstName", "lastName"].map((field, i) => (
               <div key={field}>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-                  {i === 0 ? t.register.firstName : t.register.lastName}
-                </label>
-                <input
+                <Input
+                  label={i === 0 ? t.register.firstName : t.register.lastName}
+                  labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
                   name={field}
                   value={(formData as any)[field]}
                   onChange={handleChange}
                   required
-                  className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
                   placeholder={i === 0 ? t.register.firstNamePlaceholder: t.register.lastNamePlaceholder}
                 />
               </div>
@@ -106,35 +104,26 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-             {t.register.email}
-            </label>
-            <input
+            <Input
+              label={t.register.email}
+              labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
               placeholder={t.register.emailPlaceholder}
             />
           </div>
 
           {/* Phone */}
          <div className="mb-4">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-            {t.register.phone}
-          </label>
-
-          <PhoneInput
-            country={"in"} // default country (India)
+          <CustomPhoneInput
+            label={t.register.phone}
+            labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
             value={formData.phone}
-            onChange={(phone) =>
-              setFormData({ ...formData, phone })
-            }
-            inputClass="!w-full !h-12 !rounded-xl !border-2 !border-gray-200 !bg-gray-50 focus:!bg-white focus:!border-blue-600"
-            containerClass="w-full"
-            buttonClass="!border-none"
+            onChange={(phone) => setFormData({ ...formData, phone })}
+            country="in"
           />
         </div>
 
@@ -145,15 +134,15 @@ const handleSubmit = async (e: React.FormEvent) => {
       </label>
 
       <div className="relative">
-        <input
+        <Input
           type={showPassword ? "text" : "password"}
           name="password"
           value={formData.password}
           onChange={handleChange}
           required
           minLength={8}
-          className="w-full h-12 px-4 pr-12 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
           placeholder={t.register.passwordPlaceholder}
+          className="pr-12" // Add padding for the eye icon
         />
 
         <button
@@ -172,13 +161,12 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* Terms */}
           <div className="flex gap-3 mb-6">
-            <input
-              type="checkbox"
+            <Checkbox
               name="agreeToTerms"
               checked={formData.agreeToTerms}
               onChange={handleChange}
               required
-              className="mt-1 w-4 h-4 accent-blue-600"
+              className="mt-1 w-4 h-4 accent-blue-600" // Pass original className to the input
             />
             <p className="text-sm text-gray-500">
               {t.register.termsText}{" "}

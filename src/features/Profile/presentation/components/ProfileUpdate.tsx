@@ -2,6 +2,8 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { useState, useEffect } from "react";
+import { Input } from "@/components/input";
+import { SaveIcon } from "@/components/icons";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ProfileUpdate() {
@@ -71,74 +73,49 @@ updateProfile(form, {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="mb-6">
-              <label className="block text-sm font-semibold mb-2">
-               {t.profilepage.firstName}
-              </label>
-              <input
+              <Input
+                label={t.profilepage.firstName}
+                labelClassName="block text-sm font-semibold mb-2"
                 name="firstName"
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
               />
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-semibold mb-2">
-                {t.profilepage.lastName}
-              </label>
-              <input
+              <Input
+                label={t.profilepage.lastName}
+                labelClassName="block text-sm font-semibold mb-2"
                 name="lastName"
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2">
-              {t.profilepage.email}
-            </label>
-            <input
+            <Input
+              label={t.profilepage.email}
+              labelClassName="block text-sm font-semibold mb-2"
               name="email"
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2">
-              {t.profilepage.phone}
-            </label>
-            <input
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-            />
+            <Input label={t.profilepage.phone} name="phone" type="tel" value={formData.phone} onChange={handleChange} labelClassName="block text-sm font-semibold mb-2" />
           </div>
 
          <button
   type="submit"
   disabled={isPending}
   className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
->
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className="w-5 h-5"
-  >
-    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-    <polyline points="17 21 17 13 7 13 7 21" />
-    <polyline points="7 3 7 8 15 8" />
-  </svg>
+> 
+  <SaveIcon className="w-5 h-5" />
 
   {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
 </button>
