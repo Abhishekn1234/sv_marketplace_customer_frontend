@@ -4,7 +4,7 @@ import { getToken, onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "./messaging";
 import { showBrowserNotification } from "./showBrowserNotification";
 
-const VAPID_KEY = "BI2b4vrUDzHchIB1c-679DSWk1wD2weRFgDGihHy5VA0XkVP_lYcALYnK54v6aO8hQ4W8h28eql26_ZySjN2yRI";
+const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 export async function requestAndGetToken() {
   try {
