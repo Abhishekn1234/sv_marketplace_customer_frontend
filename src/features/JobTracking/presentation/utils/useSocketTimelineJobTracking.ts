@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 import { getSocket } from "@/features/core/Websocket/socket";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useSocketTimelineJobTracking({
   bookingId,
   setLocalBooking,
 }: any) {
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const socket = getSocket();
     if (!socket || !bookingId) return;
@@ -22,90 +25,54 @@ export function useSocketTimelineJobTracking({
         case "booking.worker.accepted":
           mappedStatus = "WORKER_ACCEPTED";
           break;
-
-        case "booking.work-start-otp.generated":
-          mappedStatus = "WORK_STARTED";
-          break;
-
         case "booking.work.started":
           mappedStatus = "IN_PROGRESS";
           break;
-
         case "booking.work.completed-by-worker":
           mappedStatus = "WORK_COMPLETED_BY_WORKER";
           break;
-
-        case "booking.completion-otp.generated":
-          mappedStatus = "WORK_COMPLETED_PENDING";
-          break;
-
         case "booking.completion.confirmed":
           mappedStatus = "COMPLETED";
           break;
-
-        case "booking.invoice.generated":
-          mappedStatus = "INVOICE_GENERATED";
-          break;
-
-        case "booking.cancelled.worker":
-          mappedStatus = "WORKER_CANCELLED";
-          break;
       }
 
-      // const activity = {
-      //   _id: `${eventName}-${Date.now()}`,
-      //   type: mappedStatus,
-      //   createdAt:
-      //     data.occurredAt || new Date().toISOString(),
-      // };
+      const updatedBooking = {
+        ...booking,
+        status: mappedStatus,
+        activities: [
+          ...(booking.activities || []),
+          {
+            _id: `${eventName}-${Date.now()}`,
+            type: mappedStatus,
+            createdAt: data.occurredAt || new Date().toISOString(),
+          },
+        ],
+      };
 
-      setLocalBooking((prev: any) => {
-  if (!prev) return prev;
+      // ✅ 1. React Query update
+      queryClient.setQueryData(
+        ["bookings"],
+        (old: any = []) =>
+          old.map((b: any) =>
+            b._id === bookingId ? updatedBooking : b
+          )
+      );
 
-  const activity = {
-    _id: `${eventName}-${Date.now()}`,
-    type: mappedStatus,
-    createdAt: data.occurredAt || new Date().toISOString(),
-  };
+      // ✅ 2. IMPORTANT: detail cache
+      queryClient.setQueryData(
+        ["bookingDetail", bookingId],
+        updatedBooking
+      );
 
-  const exists = prev.activities?.some(
-    (a: any) =>
-      a.type === activity.type &&
-      Math.abs(
-        new Date(a.createdAt).getTime() -
-          new Date(activity.createdAt).getTime()
-      ) < 1000
-  );
-
-  return {
-    ...prev,
-
-    // ❌ DO NOT spread booking here
-    // ...booking,
-
-    status: mappedStatus,
-
-    assignedWorkers:
-      booking.assignedWorkers ?? prev.assignedWorkers,
-
-    activities: exists
-      ? prev.activities
-      : [...(prev.activities || []), activity],
-  };
-});
+      // ✅ 3. Instant UI update
+      setLocalBooking(updatedBooking);
     };
 
     const events = [
-      "booking.created",
-      "booking:update",
       "booking.worker.accepted",
-      "booking.work-start-otp.generated",
       "booking.work.started",
       "booking.work.completed-by-worker",
-      "booking.completion-otp.generated",
       "booking.completion.confirmed",
-      "booking.invoice.generated",
-      "booking.cancelled.worker",
     ];
 
     events.forEach((e) => socket.on(e, handler));
@@ -113,5 +80,5 @@ export function useSocketTimelineJobTracking({
     return () => {
       events.forEach((e) => socket.off(e, handler));
     };
-  }, [bookingId, setLocalBooking]);
+  }, [bookingId, queryClient]);
 }

@@ -25,7 +25,7 @@ export default function InvoiceModal({
   const { data: invoice } = useGenerateInvoice(booking?._id);
  const {serviceTiers}=useServices();
  
- const serviceName =booking.serviceId?.name;
+ const serviceName =booking.serviceId?.name ?? booking.service?.name;
   const serviceTier = serviceTiers?.find(
   (tier: any) => tier._id === booking?.serviceTierId
 );

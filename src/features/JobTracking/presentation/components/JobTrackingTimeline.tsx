@@ -11,11 +11,10 @@ import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hook
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
 import { toast } from "react-toastify";
 import OtpModal from "@/components/common/CommonOtpModal";
-import type { LocalBooking } from "../../domain/entities/loadbooking";
 import { getActivityMap } from "../utils/activitymap";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
-// import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import type { LocalBooking } from "../../domain/entities/loadbooking";
 
 export default function JobTrackingTimeline({
   booking,
@@ -26,36 +25,35 @@ export default function JobTrackingTimeline({
 }) {
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
-
+ const toLocalBooking = (booking: Booking): LocalBooking => {
+  return {
+    ...booking,
+    activities: booking.activities ?? [], // IMPORTANT FIX
+  };
+};
   const { t } = useLanguage();
   const { accessToken } = useAuthStore();
 
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  const [localBooking, setLocalBooking] = useState<LocalBooking | null>(null);
-
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpData, setOtpData] = useState<string | number>("");
   const [otpPurpose, setOtpPurpose] = useState("");
 
-  // const { services } = useServices();
+  // ✅ Local state for instant socket updates - prevents reloading
+  const [localBooking, setLocalBooking] = useState<Booking | null>(null);
+
+  // Initialize local state from prop (only once, no reloading)
+  useEffect(() => {
+    if (booking && !localBooking) {
+      setLocalBooking(booking);
+    }
+  }, [booking]);
+  console.log(localBooking,booking);
+
   const verifyPaymentMutation = useVerifyPayment();
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
-
-  // -----------------------------
-  // INIT BOOKING
-  // -----------------------------
-  useEffect(() => {
-    if (!booking) return;
-
-    setLocalBooking((prev: any) => ({
-      ...booking,
-      activities: prev?.activities?.length
-        ? prev.activities
-        : booking.activities,
-    }));
-  }, [booking]);
 
   // -----------------------------
   // SOCKET INIT
@@ -64,53 +62,57 @@ export default function JobTrackingTimeline({
     if (accessToken) initializeSocket(accessToken);
   }, [accessToken]);
 
+// ✅ Socket for real-time activity updates - now passes setLocalBooking for instant UI
   useSocketTimelineJobTracking({
     bookingId,
     setLocalBooking,
   });
 
+  // ✅ Use localBooking (merged with socket updates) for instant UI display
+  // Falls back to booking prop if no socket updates yet
+const currentBooking = localBooking ?? booking;
   // -----------------------------
   // ACTIVITY MAP
   // -----------------------------
   const activityMap = useMemo(() => {
-    return getActivityMap(localBooking?.activities);
-  }, [localBooking?.activities]);
+    return getActivityMap(currentBooking?.activities);
+  }, [currentBooking?.activities]);
 
   // -----------------------------
   // STEPS
   // -----------------------------
+  const safeBooking = useMemo(() => {
+  if (!currentBooking) return null;
+  return toLocalBooking(currentBooking);
+}, [currentBooking]);
   const steps = useMemo(() => {
-    if (!localBooking) return [];
-    return buildJobTrackingSteps({
-      localBooking,
-      activityMap,
-    });
-  }, [localBooking, activityMap]);
+  if (!safeBooking) return [];
+
+  return buildJobTrackingSteps({
+    localBooking: safeBooking,
+    activityMap,
+  });
+}, [safeBooking, activityMap]);
 
   // -----------------------------
   // PRICE
   // -----------------------------
   const computedPrice = useMemo(() => {
     return (
-      localBooking?.invoice?.finalAmount ??
-      localBooking?.totalCost ??
+      currentBooking?.invoice?.finalAmount ??
+      currentBooking?.totalCost ??
       0
     );
-  }, [localBooking]);
-
-  // -----------------------------
-  // SERVICE NAME
-  // -----------------------------
- 
+  }, [currentBooking]);
 
   // -----------------------------
   // OTP START
   // -----------------------------
   const handleStartOtp = () => {
-    if (!localBooking?._id) return;
+    if (!currentBooking?._id) return;
 
     generateOtpMutation.mutate(
-      { bookingId: localBooking._id, purpose: "WORK_START" },
+      { bookingId: currentBooking._id, purpose: "WORK_START" },
       {
         onSuccess: (data) => {
           setOtpData(data?.otp ?? "");
@@ -126,10 +128,10 @@ export default function JobTrackingTimeline({
   // OTP COMPLETE
   // -----------------------------
   const handleCompleteOtp = () => {
-    if (!localBooking?._id) return;
+    if (!currentBooking?._id) return;
 
     generateCompletedOtpMutation.mutate(
-      { bookingId: localBooking._id, purpose: "WORK_COMPLETE" },
+      { bookingId: currentBooking._id, purpose: "WORK_COMPLETE" },
       {
         onSuccess: (data) => {
           setOtpData(data?.otp ?? "");
@@ -154,11 +156,11 @@ export default function JobTrackingTimeline({
     }
   }, [steps]);
 
-  // -----------------------------
+// -----------------------------
   // LOADING / EMPTY
   // -----------------------------
-  if (loading) return <div>Loading...</div>;
-  if (!localBooking) return <div>No booking found</div>;
+  // Pass false to prevent reloading of content after initial load
+  if (loading || !currentBooking) return <div>Loading...</div>;
 
   // -----------------------------
   // UI
@@ -171,7 +173,7 @@ export default function JobTrackingTimeline({
         </h2>
 
         <div className="px-3 py-1 bg-emerald-100 text-emerald-600 text-xs rounded-full">
-          {localBooking.status}
+          {currentBooking.status}
         </div>
       </div>
 
@@ -217,10 +219,10 @@ export default function JobTrackingTimeline({
                   onClick={() =>
                     navigate("/payment", {
                       state: {
-                        bookingId: localBooking._id,
-                        serviceName:localBooking?.serviceId?.name,
+                        bookingId: currentBooking._id,
+                        serviceName: currentBooking?.serviceId?.name ?? currentBooking?.service?.name,
                         price: computedPrice,
-                        currency: localBooking.currency,
+                        currency: currentBooking.currency,
                       },
                     })
                   }
@@ -235,15 +237,15 @@ export default function JobTrackingTimeline({
                   onClick={() => {
                     verifyPaymentMutation.mutate(
                       {
-                        paymentId: localBooking.paymentId,
+                        paymentId: currentBooking.paymentId,
                         status: "SUCCESS",
-                        transactionId: localBooking.transactionId ?? "",
+                        transactionId: currentBooking.transactionId ?? "",
                       },
                       {
                         onSuccess: () => {
                           navigate("/payment-callback", {
                             state: {
-                              bookingId: localBooking._id,
+                              bookingId: currentBooking._id,
                               status: "SUCCESS",
                             },
                           });
@@ -263,7 +265,7 @@ export default function JobTrackingTimeline({
               {step.showServiceRatingButton && (
                 <button
                   onClick={() =>
-                    navigate(`/servicerating/${localBooking._id}`)
+                    navigate(`/servicerating/${currentBooking._id}`)
                   }
                   className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded"
                 >
