@@ -7,16 +7,17 @@ import JobProgressHeader from "./components/JobProgressHeader";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useSocketJobProgressActivities } from "./hooks/useJobProgressSocket";
-import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
+import { useBookingDetail } from "@/features/Bookings/presentation/hooks/useBookingDetail";
 
 export default function JobProgressPage() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
 
+  // ✅ Use optimized hook for instant UI without refetching
   const {
     booking: baseBooking,
     loading: isLoading,
-  } = useBookingById(bookingId);
+  } = useBookingDetail(bookingId);
 
   const [localBooking, setLocalBooking] = useState<any>(null);
 
@@ -29,7 +30,7 @@ export default function JobProgressPage() {
     }
   }, [isLoading, booking, navigate]);
 
-  // sync API → local (socket merge)
+  // sync API → local (socket merge) - only merge activities
   useEffect(() => {
     if (baseBooking) {
       setLocalBooking((prev: any) => {
@@ -46,7 +47,7 @@ export default function JobProgressPage() {
     }
   }, [baseBooking]);
 
-  // socket
+  // socket - for real-time activity updates
   useSocketJobProgressActivities({
     bookingId,
     setLocalBooking,
@@ -66,10 +67,11 @@ export default function JobProgressPage() {
   // ✅ Prevent flicker before redirect
   if (!booking) return null;
 
-  return (
+return (
     <PageContainer>
       <JobProgressHeader />
-      <JobProgressContents booking={booking} loading={isLoading} />
+      {/* Pass false to prevent reloading of content after initial load */}
+      <JobProgressContents booking={booking} loading={false} />
     </PageContainer>
   );
 }

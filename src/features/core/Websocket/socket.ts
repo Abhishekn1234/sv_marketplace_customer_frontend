@@ -25,6 +25,14 @@ export const initializeSocket = (token: string): Socket => {
   socket.on("connect", () => {
     console.log("✅ Socket connected:", socket?.id);
   });
+  socket.onAny((event, data) => {
+  if (!event.startsWith("booking") && !event.startsWith("customer")) return;
+
+  console.log("📡 [CUSTOMER SOCKET]", {
+    event,
+    data,
+  });
+});
 
   socket.on("disconnect", (reason) => {
     console.log("❌ Socket disconnected:", reason);

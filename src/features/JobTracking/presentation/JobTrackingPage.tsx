@@ -2,17 +2,17 @@ import PageContainer from "@/components/common/PageContainer";
 import JobTrackingContent from "./components/JobTrackingContent";
 import JobTrackingHeader from "./components/JobTrackingHeader";
 import { useParams } from "react-router-dom";
-import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
+import { useBookingDetail } from "@/features/Bookings/presentation/hooks/useBookingDetail";
 
 export default function JobTrackingPage() {
   const { bookingId } = useParams();
 
+  // ✅ Use optimized hook for instant UI without refetching
   const {
-    booking: booking,
-    loading:isLoading,
-    
-  } = useBookingById(bookingId);
-
+    booking,
+    loading: isLoading,
+  } = useBookingDetail(bookingId);
+  console.log(booking);
   if (isLoading) {
     return (
       <PageContainer>
@@ -33,10 +33,11 @@ export default function JobTrackingPage() {
     );
   }
 
-  return (
+return (
     <PageContainer>
       <JobTrackingHeader booking={booking} />
-      <JobTrackingContent bookings={booking} loading={isLoading} />
+      {/* Pass false to prevent reloading of timeline after initial load */}
+      <JobTrackingContent bookings={booking} loading={false} />
     </PageContainer>
   );
 }
