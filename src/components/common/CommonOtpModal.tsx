@@ -1,5 +1,7 @@
 "use client";
 
+import Button from "../input/Button";
+
 
 
 interface OtpModalProps {
@@ -19,12 +21,12 @@ export default function OtpModal({ isOpen, otpData, purpose, onClose }: OtpModal
         <p className="text-xl sm:text-2xl font-mono text-center mb-6 tracking-widest">
           {otpData ?? "No OTP returned"}
         </p>
-        <button
+        <Button
           className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           onClick={onClose}
         >
           Close
-        </button>
+        </Button>
       </div>
     </div>
   );

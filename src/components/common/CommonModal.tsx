@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogFooter,
 } from "../ui/dialog";
+import Button from "../input/Button";
 
 interface CommonModalProps {
   open: boolean;
@@ -37,15 +38,15 @@ export default function CommonModal({
         {footer && <DialogFooter>{footer}</DialogFooter>}
         {showDefaultFooter && !footer && (
           <DialogFooter>
-            <button
+            <Button
               onClick={() => onOpenChange?.(false)}
               className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
             >
               Cancel
-            </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            </Button>
+            <Button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
               Confirm
-            </button>
+            </Button>
           </DialogFooter>
         )}
       </DialogContent>

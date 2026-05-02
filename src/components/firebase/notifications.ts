@@ -3,6 +3,7 @@
 import { getToken, onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "./messaging";
 import { showBrowserNotification } from "./showBrowserNotification";
+import { playNotificationSound } from "./sound";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
@@ -18,10 +19,12 @@ export async function requestAndGetToken() {
       return null;
     }
 
-    const token = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-    });
+   const registration = await navigator.serviceWorker.ready;
 
+        const token = await getToken(messaging, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: registration,
+        });
     if (token) {
       console.log("📲 FCM Token:", token);
       return token;
@@ -33,8 +36,7 @@ export async function requestAndGetToken() {
   }
 }
 
-// ✅ Foreground notifications → update UI
-// notifications.ts
+
 
 
 export async function initOnMessage(setNotifications?: any) {
@@ -42,23 +44,23 @@ export async function initOnMessage(setNotifications?: any) {
   if (!messaging) return;
 
   onMessage(messaging, (payload) => {
-    console.log("📩 Foreground message:", payload);
+  console.log("📩 Foreground message:", payload);
 
-    const newNotification = {
-      id: payload.messageId || crypto.randomUUID(),
-      title: payload.notification?.title || "New Notification",
-      message: payload.notification?.body || "",
-      type: "ADMIN_MESSAGE",
-      isRead: false,
-      createdAt: new Date().toISOString(),
-    };
+  playNotificationSound(); 
 
-    /* ✅ FIX: Only call if setter exists */
-    if (setNotifications) {
-      setNotifications((prev: any) => [newNotification, ...prev]);
-    }
+  const newNotification = {
+    id: payload.messageId || crypto.randomUUID(),
+    title: payload.notification?.title || "New Notification",
+    message: payload.notification?.body || "",
+    type: "ADMIN_MESSAGE",
+    isRead: false,
+    createdAt: new Date().toISOString(),
+  };
 
-    /* ✅ ALWAYS show browser notification */
-    showBrowserNotification(payload);
-  });
+  if (setNotifications) {
+    setNotifications((prev: any) => [newNotification, ...prev]);
+  }
+
+  showBrowserNotification(payload);
+});
 }

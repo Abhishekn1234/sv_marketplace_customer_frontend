@@ -128,36 +128,34 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
 
           {/* Password */}
-           <div className="mb-6">
-      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2">
-        {t.register.password}
-      </label>
+             <div className="mb-6">
+    <div className="relative">
+      <Input
+        label={t.register.password}
+         labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
+        type={showPassword ? "text" : "password"}
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        minLength={8}
+        placeholder={t.register.passwordPlaceholder}
+       
+      />
 
-      <div className="relative">
-        <Input
-          type={showPassword ? "text" : "password"}
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          minLength={8}
-          placeholder={t.register.passwordPlaceholder}
-          className="pr-12" // Add padding for the eye icon
-        />
-
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-        >
-          {showPassword ? (
-            <EyeOff className="w-5 h-5" />
-          ) : (
-            <Eye className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setShowPassword((prev) => !prev)}
+        className="absolute right-4 top-[38px] text-gray-500 hover:text-gray-700"
+      >
+        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+      </button>
     </div>
+              </div>
+
+
+    
+    
 
           {/* Terms */}
           <div className="flex gap-3 mb-6">

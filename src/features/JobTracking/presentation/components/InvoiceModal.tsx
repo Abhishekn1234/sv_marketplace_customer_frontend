@@ -20,12 +20,17 @@ export default function InvoiceModal({
   onClose,
 }: Props) {
   if (!open) return null;
-
+ 
 
   const { data: invoice } = useGenerateInvoice(booking?._id);
- const {serviceTiers}=useServices();
+ const {serviceTiers,services}=useServices();
  
- const serviceName =booking.serviceId?.name ?? booking.service?.name;
+const serviceName =
+  booking.serviceId?.name ??
+  booking.service?.name;
+
+const service = serviceName ??
+  services.find((s) => s._id === booking.serviceId)?.name;
   const serviceTier = serviceTiers?.find(
   (tier: any) => tier._id === booking?.serviceTierId
 );
@@ -90,7 +95,7 @@ const serviceTierName = serviceTier?.displayName ?? "-";
           </p>
          
           <p>
-            <b>Service:</b> {serviceName}
+            <b>Service:</b> {service}
           </p>
           <p>
             <b>Service Tier:</b> {serviceTierName}

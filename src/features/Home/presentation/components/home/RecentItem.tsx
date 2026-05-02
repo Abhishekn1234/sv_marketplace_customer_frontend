@@ -1,3 +1,4 @@
+import { Image } from "@/components/input";
 import { useNavigate } from "react-router-dom";
 
 interface RecentItemProps {
@@ -93,7 +94,7 @@ export const RecentItem: React.FC<RecentItemProps> = ({
       {/* ICON */}
       <div className="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
         {iconUrl ? (
-          <img src={iconUrl} alt={title} className="w-6 h-6 object-contain" />
+          <Image src={iconUrl} alt={title} className="w-6 h-6 object-contain" />
         ) : (
           <div className="w-6 h-6 bg-gray-300 rounded" />
         )}

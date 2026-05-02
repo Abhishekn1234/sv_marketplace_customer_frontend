@@ -49,7 +49,7 @@ export default function JobTrackingTimeline({
       setLocalBooking(booking);
     }
   }, [booking]);
-  console.log(localBooking,booking);
+  // console.log(localBooking,booking);
 
   const verifyPaymentMutation = useVerifyPayment();
   const generateOtpMutation = useGenerateOtp();

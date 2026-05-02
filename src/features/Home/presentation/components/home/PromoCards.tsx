@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 
 
 export default function PromoCards() {
@@ -22,9 +23,9 @@ export default function PromoCards() {
       </p>
 
       {/* Button */}
-      <button className="w-full h-12 bg-white text-indigo-600 font-semibold rounded-lg transition-all duration-200 relative z-10 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0">
+      <Button variant="none" className="w-full h-12 bg-white text-indigo-600 font-semibold rounded-lg transition-all duration-200 relative z-10 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0">
         Claim Offer
-      </button>
+      </Button>
     </div>
   );
 }

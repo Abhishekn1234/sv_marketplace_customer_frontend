@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import React from "react";
 
 interface Props {
@@ -17,8 +18,9 @@ const CategoryPills: React.FC<Props> = ({
         const isActive = activeCategory === name;
 
         return (
-          <button
+          <Button
             key={name}
+            variant="none"
             onClick={() => onChange(name)}
             className={`
               px-6 py-2.5 rounded-full
@@ -32,7 +34,7 @@ const CategoryPills: React.FC<Props> = ({
             `}
           >
             {name}
-          </button>
+          </Button>
         );
       })}
     </div>

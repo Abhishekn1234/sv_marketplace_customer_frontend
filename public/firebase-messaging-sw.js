@@ -13,9 +13,76 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const { title, body } = payload.notification || {};
+  console.log("📩 Background message received:", payload);
+
+  const title =
+    payload.notification?.title ||
+    payload.data?.title ||
+    "New Notification";
+
+  const body =
+    payload.notification?.body ||
+    payload.data?.body ||
+    "";
+
+  const url = payload.data?.url || "/notifications";
 
   self.registration.showNotification(title, {
     body,
+    icon: "/logo.png",
+
+    data: {
+      url,
+    },
+
+    tag: payload.data?.id || "general",
+    renotify: true,
+    requireInteraction: true,
+
+    actions: [
+      {
+        action: "open",
+        title: "Open",
+        icon: "/open.png",
+      },
+      // {
+      //   action: "close",
+      //   title: "Close",
+      //   icon: "/close.png",
+      // },
+    ],
   });
+});
+
+
+// firebase-messaging-sw.js
+
+self.addEventListener("notificationclick", (event) => {
+  const url = event.notification.data?.url || "/notifications";
+
+  event.notification.close();
+
+  event.waitUntil((async () => {
+    // 🟢 Handle actions first
+    if (event.action === "close") {
+      return; // just exit
+    }
+
+    if (event.action === "open" || !event.action) {
+      const clientsArr = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      for (const client of clientsArr) {
+        if (client.url.includes(url) && "focus" in client) {
+          return client.focus();
+        }
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    }
+  })());
 });

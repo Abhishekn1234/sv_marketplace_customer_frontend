@@ -1,4 +1,5 @@
 
+import { Input } from "@/components/input";
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
 import { useLanguage } from "@/features/context/LanguageContext";
 
@@ -49,7 +50,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
         </svg>
 
         {/* Input */}
-        <input
+        <Input
           type="text"
           placeholder={t.home["Search for cleaning, repair"]}
           aria-label="Search services"
@@ -72,28 +73,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
         />
 
         {/* Mic Icon */}
-        <svg
-          className="
-            absolute right-[18px] top-1/2 -translate-y-1/2
-            w-[22px] h-[22px]
-            text-gray-500
-            cursor-pointer
-            rounded-full
-            p-1 -m-1
-            transition-all duration-200
-            hover:bg-gray-100 hover:text-blue-600
-          "
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-label="Voice search"
-        >
-          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
-          <path d="M19 10v2a7 7 0 01-14 0v-2" />
-          <line x1="12" y1="19" x2="12" y2="23" />
-          <line x1="8" y1="23" x2="16" y2="23" />
-        </svg>
+      
       </div>
     </div>
   );

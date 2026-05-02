@@ -8,6 +8,8 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import Button from "@/components/input/Button";
+import { Image } from "@/components/input";
 
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
@@ -148,7 +150,7 @@ const serviceName =
       </div>
 
       <div className="flex items-center gap-3 mb-4">
-        <img
+        <Image
           src={workerImage}
           alt={workerName}
           className="w-12 h-12 rounded-lg border object-cover"
@@ -176,34 +178,34 @@ const serviceName =
           <div className="flex gap-3">
             {allowedStatuses.includes(status) && (
               <>
-                <button
+                <Button
                   onClick={() => navigate(`/jobtracking/${booking._id}`)}
                   className="flex-1 h-12 bg-blue-600 text-white rounded-xl"
                 >
                   {t.home.Track}
-                </button>
+                </Button>
 
-                <button className="flex-1 h-12 border text-blue-600 rounded-xl">
+                <Button className="flex-1 h-12 border text-blue-600 rounded-xl">
                   {t.home.Chat}
-                </button>
+                </Button>
               </>
             )}
           </div>
         </>
       ) : isPaid ? (
-        <button
+        <Button
           onClick={() => navigate(`/servicerating/${booking._id}`)}
           className="w-full h-12 bg-blue-600 text-white rounded-xl"
         >
           {t.home["Rate Service"]}
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
           onClick={() => navigate(`/bookings`)}
           className="w-full h-12 bg-blue-600 text-white rounded-xl"
         >
           View Booking
-        </button>
+        </Button>
       )}
     </div>
   );
