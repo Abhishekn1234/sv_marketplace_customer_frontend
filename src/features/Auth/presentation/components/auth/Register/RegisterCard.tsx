@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Checkbox, PhoneInput as CustomPhoneInput } from "@/components/input";
+import Button from "@/components/input/Button";
 
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
@@ -129,29 +130,31 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* Password */}
              <div className="mb-6">
-    <div className="relative">
-      <Input
-        label={t.register.password}
-         labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
-        type={showPassword ? "text" : "password"}
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        minLength={8}
-        placeholder={t.register.passwordPlaceholder}
-       
-      />
-
-      <button
+  <Input
+    label={t.register.password}
+    labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
+    type={showPassword ? "text" : "password"}
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    required
+    minLength={8}
+    placeholder={t.register.passwordPlaceholder}
+    rightElement={
+      <Button
         type="button"
         onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute right-4 top-[38px] text-gray-500 hover:text-gray-700"
+        className="text-gray-500 hover:text-gray-700"
       >
-        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-      </button>
-    </div>
-              </div>
+        {showPassword ? (
+          <EyeOff className="w-5 h-5" />
+        ) : (
+          <Eye className="w-5 h-5" />
+        )}
+      </Button>
+    }
+  />
+</div>
 
 
     
@@ -179,7 +182,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
           {/* Submit */}
-          <button
+          <Button
         type="submit"
         disabled={loading}
         className={`w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 transition 
@@ -226,7 +229,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             </svg>
           </>
         )}
-      </button>
+      </Button>
         </form>
 
         {/* Footer */}
