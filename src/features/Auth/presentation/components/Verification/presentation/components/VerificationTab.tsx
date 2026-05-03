@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useVerificationStore } from "@/features/core/store/usestep";
 import { useSendOtpMobile } from "../hooks/useSendOtpMobile";
+import Button from "@/components/input/Button";
 
 export default function VerificationTab() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -205,13 +206,13 @@ const resend = async () => {
               </div>
 
               {/* Verify Button */}
-              <button
+              <Button
                 disabled={!allFilled || loading || isExpired}
                 onClick={handleSubmitOtp}
                 className="w-full h-12 sm:h-14 cursor-pointer rounded-full bg-blue-600 text-white text-sm sm:text-base font-semibold disabled:bg-gray-300 hover:bg-blue-700 transition"
               >
                 {loading ? "Verifying..." : t.verification.verify_continue}
-              </button>
+              </Button>
 
               {/* Change number */}
               {/* <div className="mt-6 pt-6 border-t text-center">

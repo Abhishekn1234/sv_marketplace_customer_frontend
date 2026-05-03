@@ -15,6 +15,7 @@ import { getActivityMap } from "../utils/activitymap";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
+import Button from "@/components/input/Button";
 
 export default function JobTrackingTimeline({
   booking,
@@ -197,25 +198,25 @@ const currentBooking = localBooking ?? booking;
               <div className="text-sm text-gray-500">{step.time}</div>
 
               {step.showStartOtpButton && (
-                <button
+                <Button
                   onClick={handleStartOtp}
                   className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
                 >
                   Start Work OTP
-                </button>
+                </Button>
               )}
 
               {step.showCompleteOtpButton && (
-                <button
+                <Button
                   onClick={handleCompleteOtp}
                   className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
                 >
                   Complete Work OTP
-                </button>
+                </Button>
               )}
 
               {step.showPaymentButton && (
-                <button
+                <Button
                   onClick={() =>
                     navigate("/payment", {
                       state: {
@@ -229,11 +230,11 @@ const currentBooking = localBooking ?? booking;
                   className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
                 >
                   Pay Now
-                </button>
+                </Button>
               )}
 
               {step.showVerifyButton && (
-                <button
+                <Button
                   onClick={() => {
                     verifyPaymentMutation.mutate(
                       {
@@ -259,18 +260,18 @@ const currentBooking = localBooking ?? booking;
                   className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
                 >
                   Verify Payment
-                </button>
+                </Button>
               )}
 
               {step.showServiceRatingButton && (
-                <button
+                <Button
                   onClick={() =>
                     navigate(`/servicerating/${currentBooking._id}`)
                   }
                   className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded"
                 >
                   Rate Service
-                </button>
+                </Button>
               )}
             </div>
           </div>

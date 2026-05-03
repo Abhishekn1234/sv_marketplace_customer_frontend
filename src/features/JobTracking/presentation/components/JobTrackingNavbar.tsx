@@ -1,4 +1,5 @@
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import Button from "@/components/input/Button";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocation } from "@/features/utils/reverse";
 import { useState } from "react";
@@ -79,7 +80,7 @@ const selectedLocation =
 
       {/* Location Dropdown */}
       <div className="relative">
-        <button
+        <Button
           onClick={() => setDropdownOpen((prev) => !prev)}
           className={`hidden sm:flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-gray-500 text-sm font-medium transition-all duration-200 hover:border-blue-600 hover:text-blue-600 hover:shadow-sm ${
             loadingLocation ? "opacity-60 pointer-events-none" : ""
@@ -103,19 +104,19 @@ const selectedLocation =
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3 h-3 text-gray-400">
             <polyline points="6 9 12 15 18 9" />
           </svg>
-        </button>
+        </Button>
 
         {/* Dropdown */}
         {dropdownOpen && (
           <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
-            <button
+            <Button
               onClick={handleUseCurrentLocation}
               disabled={loadingLocation}
               className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center justify-between"
             >
               <span>Use Current Location</span>
               {loadingLocation && <span className="text-xs text-gray-500 ml-2">Loading...</span>}
-            </button>
+            </Button>
 
             {/* {addresses.map((addr) => (
               <button

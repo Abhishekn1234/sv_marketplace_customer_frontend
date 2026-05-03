@@ -1,3 +1,5 @@
+import { Label, Textarea } from "@/components/input";
+import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { FC } from "react";
 
@@ -15,14 +17,14 @@ const ServiceReviewSection: FC<ServiceReviewSectionProps> = ({
   const {t}=useLanguage();
   return (
     <div className="mb-7">
-      <label className="flex items-baseline text-gray-900 font-semibold mb-2.5 text-sm sm:text-base">
+      <Label className="flex items-baseline text-gray-900 font-semibold mb-2.5 text-sm sm:text-base">
         {t.serviceratingpage.tellUsMore}
         <span className="ml-2 text-gray-600 text-xs sm:text-sm font-normal">
           ({t.serviceratingpage.optional})
         </span>
-      </label>
+      </Label>
 
-      <textarea
+      <Textarea
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
         placeholder={t.serviceratingpage.shareExperience}
@@ -32,12 +34,12 @@ const ServiceReviewSection: FC<ServiceReviewSectionProps> = ({
        {t.serviceratingpage.feedbackHelp}
       </p>
 
-      <button
+      <Button
         onClick={onSubmit}
         className="w-full h-14 sm:h-14 bg-blue-600 text-white font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95 transition-all"
       >
         {t.serviceratingpage.submitReview}
-      </button>
+      </Button>
     </div>
   );
 };

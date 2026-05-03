@@ -3,6 +3,8 @@ import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useSe
 import { useSearchStore } from "@/features/core/store/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomQuote from "./GetCustomQuote";
+import { Image } from "@/components/input";
+import Button from "@/components/input/Button";
 
 interface Props {
   activeFilter: string;
@@ -138,7 +140,7 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
                     : "bg-blue-100 text-blue-600"
                 }`}
               >
-                <img
+                <Image
                   src={service.iconUrl}
                   alt={service.name}
                   className="w-7 h-7"
@@ -175,14 +177,14 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
                 </div>
               </div>
 
-              <button
+              <Button
                 onClick={() =>
                   navigate(`/servicetierselection/${service._id}`)
                 }
                 className="px-6 py-[10px] bg-blue-600 text-white text-[14px] font-bold rounded-full transition-all duration-200 hover:bg-blue-700"
               >
                 Select
-              </button>
+              </Button>
             </div>
           </div>
         );

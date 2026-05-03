@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import { formatBookingDuration } from "../helpers/formatduration";
+import Button from "@/components/input/Button";
 
 interface Props {
   booking: BookingHistory | null;
@@ -38,12 +39,12 @@ export default function BookingHistoryViewDetailsModal({
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 sm:p-8 relative">
 
         {/* Close Button */}
-        <button
+        <Button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
         >
           <X size={24} />
-        </button>
+        </Button>
 
         {/* Header */}
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -100,12 +101,12 @@ export default function BookingHistoryViewDetailsModal({
 
         {/* Footer */}
         <div className="flex justify-end gap-3 mt-4">
-          <button
+          <Button
             onClick={onClose}
             className="px-5 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 transition"
           >
             Close
-          </button>
+          </Button>
         </div>
 
       </div>

@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+
+import Button from "@/components/input/Button";
 import { useAuthStore } from "@/features/core/store/auth";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";

@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { X } from "lucide-react";
 import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
@@ -47,12 +48,12 @@ Duration: ${booking?.schedule?.estimatedHours || 0} hrs
       <div className="bg-white p-6 rounded-2xl w-[320px] relative shadow-xl">
 
         {/* Close */}
-        <button
+        <Button
           onClick={onClose}
           className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200"
         >
           <X size={18} />
-        </button>
+        </Button>
 
         <h2 className="font-bold text-lg mb-6 text-center">
           Share Booking
@@ -62,7 +63,7 @@ Duration: ${booking?.schedule?.estimatedHours || 0} hrs
         <div className="flex justify-center gap-6">
 
           {/* WhatsApp */}
-          <button
+          <Button
             onClick={handleWhatsApp}
             className="flex flex-col items-center gap-2"
           >
@@ -70,10 +71,10 @@ Duration: ${booking?.schedule?.estimatedHours || 0} hrs
               <FaWhatsapp size={24} />
             </div>
             <span className="text-sm font-medium">WhatsApp</span>
-          </button>
+          </Button>
 
           {/* Gmail */}
-          <button
+          <Button
             onClick={handleEmail}
             className="flex flex-col items-center gap-2"
           >
@@ -81,7 +82,7 @@ Duration: ${booking?.schedule?.estimatedHours || 0} hrs
               <FaEnvelope size={22} />
             </div>
             <span className="text-sm font-medium">Gmail</span>
-          </button>
+          </Button>
 
         </div>
       </div>

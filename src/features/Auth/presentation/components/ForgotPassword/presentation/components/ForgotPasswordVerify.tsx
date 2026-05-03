@@ -1,3 +1,5 @@
+import { Input, Label } from "@/components/input";
+import Button from "@/components/input/Button";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -33,11 +35,11 @@ export default function ForgotPasswordVerify({
     <form onSubmit={handleVerify} className="space-y-6">
       
       <div>
-        <label className="block text-sm font-semibold text-black mb-2">
+        <Label className="block text-sm font-semibold text-black mb-2">
           Enter OTP
-        </label>
+        </Label>
 
-        <input
+        <Input
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
@@ -52,12 +54,12 @@ export default function ForgotPasswordVerify({
         />
       </div>
 
-      <button
+      <Button
         type="submit"
         className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-md transition hover:bg-blue-700 hover:-translate-y-0.5"
       >
         Verify OTP
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "./features/core/store/auth";
+import Button from "./components/input/Button";
 
 export default function ConfirmModal() {
   const { accessToken} = useAuthStore();
@@ -29,13 +30,13 @@ export default function ConfirmModal() {
                    animate-in fade-in zoom-in duration-200"
       >
   
-        <button
+        <Button
           onClick={() => setOpen(false)}
           className="absolute right-3 top-3 rounded-full p-1 text-gray-500
                      hover:bg-gray-100 hover:text-black"
         >
           <X size={20} />
-        </button>
+        </Button>
 
         <h2 className="text-lg font-semibold text-gray-900">
           Confirm Action
@@ -46,18 +47,18 @@ export default function ConfirmModal() {
         </p>
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
+          <Button
             onClick={() => setOpen(false)}
             className="rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
             className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
           >
             Confirm
-          </button>
+          </Button>
         </div>
       </div>
     </div>

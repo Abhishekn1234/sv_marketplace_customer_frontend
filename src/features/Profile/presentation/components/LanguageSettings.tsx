@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/features/context/LanguageContext";
-import { Radio } from "@/components/input";
+import { Label, Radio } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
 
 export default function LanguageSettings() {
@@ -37,7 +37,7 @@ export default function LanguageSettings() {
             const isActive = language === lang.code;
 
             return (
-             <label
+             <Label
                     key={lang.code}
                     className={`flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 border
                     ${
@@ -67,7 +67,7 @@ export default function LanguageSettings() {
                 >
                   {lang.code}
                 </span>
-              </label>
+              </Label>
             );
           })}
         </div>

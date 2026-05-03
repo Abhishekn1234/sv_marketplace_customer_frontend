@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/button";
+
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function ConfirmLocationFooter({
   onConfirm,

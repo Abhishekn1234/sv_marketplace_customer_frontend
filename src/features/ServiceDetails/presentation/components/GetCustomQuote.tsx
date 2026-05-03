@@ -1,3 +1,5 @@
+import Button from "@/components/input/Button";
+
 export default function CustomQuote() {
   return (
     <div className="group flex flex-col items-center justify-center text-center bg-white border-2 border-dashed border-gray-200 rounded-[20px] p-8 min-h-[280px] cursor-pointer transition-all duration-300 hover:border-blue-600 hover:bg-gray-50">
@@ -28,9 +30,9 @@ export default function CustomQuote() {
       </p>
 
       {/* Button */}
-      <button className="px-6 py-[10px] border-2 border-blue-600 text-blue-600 text-[14px] font-bold rounded-full transition-all duration-200 hover:bg-blue-600 hover:text-white">
+      <Button className="px-6 py-[10px] border-2 border-blue-600 text-blue-600 text-[14px] font-bold rounded-full transition-all duration-200 hover:bg-blue-600 hover:text-white">
         Get a Quote
-      </button>
+      </Button>
 
     </div>
   );

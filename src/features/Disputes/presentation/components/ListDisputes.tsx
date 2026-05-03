@@ -2,6 +2,8 @@ import { useState } from "react";
 import { CommandCard } from "@/components/common/CommonCards";
 import { useGetDispute } from "../hooks/useGetDispute";
 import type { GetDisputesQueryParams } from "../../domain/entities/getdisputesparams";
+import { Input } from "@/components/input";
+import Button from "@/components/input/Button";
 
 export default function ListDisputes() {
   const [filters, setFilters] = useState<GetDisputesQueryParams>({
@@ -20,7 +22,7 @@ export default function ListDisputes() {
     <div className="space-y-4">
       {/* 🔹 Simple filter UI (you can enhance later) */}
       <div className="flex gap-3">
-        <input
+        <Input
           className="border p-2 rounded"
           placeholder="Search..."
           value={filters.search}
@@ -58,7 +60,7 @@ export default function ListDisputes() {
 
       {/* 🔹 Pagination */}
       <div className="flex gap-2 mt-4">
-        <button
+        <Button
           disabled={filters.page === 1}
           onClick={() =>
             setFilters((p) => ({ ...p, page: (p.page || 1) - 1 }))
@@ -66,9 +68,9 @@ export default function ListDisputes() {
           className="px-3 py-1 border rounded"
         >
           Prev
-        </button>
+        </Button>
 
-        <button
+        <Button
           disabled={!data?.pagination?.hasNextPage}
           onClick={() =>
             setFilters((p) => ({ ...p, page: (p.page || 1) + 1 }))
@@ -76,7 +78,7 @@ export default function ListDisputes() {
           className="px-3 py-1 border rounded"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

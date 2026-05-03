@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import { Input, Label } from "@/components/input";
+import Button from "@/components/input/Button";
 
 interface Props {
   email: string;
@@ -41,11 +43,11 @@ export default function ForgotResetPassword({
       
       {/* New Password */}
       <div className="relative">
-        <label className="block text-sm font-semibold text-black mb-2">
+        <Label className="block text-sm font-semibold text-black mb-2">
           New Password
-        </label>
+        </Label>
 
-        <input
+        <Input
           type={showNewPassword ? "text" : "password"}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -54,22 +56,22 @@ export default function ForgotResetPassword({
           required
         />
 
-        <button
+        <Button
           type="button"
           onClick={() => setShowNewPassword((p) => !p)}
           className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
         >
           {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button>
+        </Button>
       </div>
 
       {/* Confirm Password */}
       <div className="relative">
-        <label className="block text-sm font-semibold text-black mb-2">
+        <Label className="block text-sm font-semibold text-black mb-2">
           Confirm Password
-        </label>
+        </Label>
 
-        <input
+        <Input
           type={showConfirmPassword ? "text" : "password"}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -78,22 +80,22 @@ export default function ForgotResetPassword({
           required
         />
 
-        <button
+        <Button
           type="button"
           onClick={() => setShowConfirmPassword((p) => !p)}
           className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
         >
           {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button>
+        </Button>
       </div>
 
       {/* Submit Button */}
-      <button
+      <Button
         type="submit"
         className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-md transition hover:bg-blue-700 hover:-translate-y-0.5"
       >
         Reset Password
-      </button>
+      </Button>
     </form>
   );
 }

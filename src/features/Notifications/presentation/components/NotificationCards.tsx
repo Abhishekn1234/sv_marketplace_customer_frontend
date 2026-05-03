@@ -11,6 +11,9 @@ import { useUnreadCount } from "@/features/Notifications/presentation/hooks/useU
 import { useMarkAllAsRead } from "@/features/Notifications/presentation/hooks/useMarkAllAsRead";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { CommandCard } from "@/components/common";
+import Button from "@/components/input/Button";
+import type { SelectOption } from "@/components/input/Select";
+import Select from "@/components/input/Select";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -88,7 +91,10 @@ export default function NotificationCards() {
       console.error(err);
     }
   };
-
+ const limitOptions: SelectOption[] = [5, 10, 20, 25].map((l) => ({
+  label: `${l} / page`,
+  value: l.toString(), // Select works with string values
+}));
   const deleteSelected = async () => {
     console.log("Deleting:", selected); // replace with API
     setSelected([]);
@@ -120,7 +126,7 @@ export default function NotificationCards() {
       { label: "Updates", value: "BOOKING_UPDATE" },
       { label: "Admin", value: "ADMIN_MESSAGE" },
     ].map((f, i) => (
-      <button
+      <Button
         key={i}
         onClick={() => setType(f.value)}
         className={`px-4 py-2 text-sm rounded-full transition whitespace-nowrap ${
@@ -130,24 +136,19 @@ export default function NotificationCards() {
         }`}
       >
         {f.label}
-      </button>
+      </Button>
     ))}
   </div>
 )}
 
       {hasData &&(
           <div className="flex justify-end mb-3">
-        <select
-          value={limit}
-          onChange={(e) => setLimit(Number(e.target.value))}
-          className="border rounded-lg px-3 py-1 text-sm bg-white shadow-sm"
-        >
-          {[5, 10, 20, 25].map((l) => (
-            <option key={l} value={l}>
-              {l} / page
-            </option>
-          ))}
-        </select>
+                <Select
+          options={limitOptions}
+          value={limit.toString()}
+          onChange={(val) => setLimit(Number(val))}
+          className="w-auto min-w-[120px]"
+        />
       </div>
       )}
     
@@ -188,7 +189,7 @@ export default function NotificationCards() {
               toggleSelect={toggleSelect}
             />
              <div className="flex justify-end items-center gap-3 p-4   rounded-b-2xl">
-          <button
+          <Button
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
             className={`px-4 py-2 rounded text-sm transition ${
@@ -198,13 +199,13 @@ export default function NotificationCards() {
             }`}
           >
             Previous
-          </button>
+          </Button>
 
           <span className="text-sm text-gray-600">
             Page {page}
           </span>
 
-          <button
+          <Button
             disabled={apiNotifications.length < limit}
             onClick={() => setPage((p) => p + 1)}
             className={`px-4 py-2 rounded text-sm transition ${
@@ -214,7 +215,7 @@ export default function NotificationCards() {
             }`}
           >
             Next
-          </button>
+          </Button>
         </div>
             </>
             

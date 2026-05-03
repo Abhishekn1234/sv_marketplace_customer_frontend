@@ -8,6 +8,7 @@ import {
   HelpIcon,
 } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/input/Button";
 
 export default function QuickActions() {
   const navigate=useNavigate();
@@ -59,11 +60,11 @@ function ActionButton({
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       className="flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-900 transition-all duration-200 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
     >
       {children}
-    </button>
+    </Button>
   );
 }

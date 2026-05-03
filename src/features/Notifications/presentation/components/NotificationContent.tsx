@@ -1,5 +1,6 @@
 import { CheckCircle2, Circle, Bell, Clock } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function NotificationContent({
   notifications,
@@ -37,7 +38,7 @@ export default function NotificationContent({
             `}
           >
             {/* Checkbox */}
-            <button
+            <Button
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSelect(n.id);
@@ -49,7 +50,7 @@ export default function NotificationContent({
               ) : (
                 <Circle className="text-gray-300 w-5 h-5 hover:text-gray-400" />
               )}
-            </button>
+            </Button>
 
             {/* Content */}
             <div className="flex-1 min-w-0">

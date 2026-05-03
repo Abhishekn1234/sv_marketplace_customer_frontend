@@ -1,6 +1,7 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { DangerZoneIcon, SecurityIcon, DeleteAccountIcon } from "@/components/icons";
+import Button from "@/components/input/Button";
 
 export default function DangerZone() {
   const navigate=useNavigate();
@@ -18,16 +19,16 @@ export default function DangerZone() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         
         {/* Change Password */}
-        <button onClick={()=>navigate('/changepassword')} className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
+        <Button onClick={()=>navigate('/changepassword')} className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
           <SecurityIcon className="w-[18px] h-[18px]" />
           {t.profilepage.changePassword}
-        </button>
+        </Button>
 
         {/* Delete Account */}
-        <button className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
+        <Button className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
           <DeleteAccountIcon className="w-[18px] h-[18px]" />
           {t.profilepage.deleteAccount}
-        </button>
+        </Button>
 
       </div>
     </div>

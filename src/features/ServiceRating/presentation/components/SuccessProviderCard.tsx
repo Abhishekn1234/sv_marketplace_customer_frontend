@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { Image } from "@/components/input";
 
 export default function SuccessProviderCard() {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -50,7 +51,7 @@ export default function SuccessProviderCard() {
     <div className="bg-white rounded-4xl p-10 sm:p-8 xs:p-6 border border-gray-200 shadow-lg max-w-xl mx-auto">
       {/* Provider Section */}
       <div className="text-center mb-8 px-4 sm:px-6">
-        <img
+        <Image
           src={booking.assignedWorkers?.[0]?.worker.profilePictureUrl || "https://via.placeholder.com/150"}
           alt={booking.assignedWorkers?.[0]?.worker.fullName || "Provider"}
           className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"

@@ -15,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function Button({
   children,
-  variant = "primary",
+  variant = "none",
   size = "md",
   loading = false,
   leftIcon,

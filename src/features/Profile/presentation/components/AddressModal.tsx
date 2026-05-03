@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Radio } from "@/components/input";
+import Button from "@/components/input/Button";
 
 interface AddressModalProps {
   open: boolean;
@@ -61,19 +62,19 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
         </div>
 
         <div className="flex gap-4 pt-6">
-          <button
+          <Button
             onClick={handleSave}
             className="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition font-medium"
           >
             Save
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={onClose}
             className="flex-1 bg-gray-100 py-3 rounded-xl hover:bg-gray-200 transition font-medium"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>

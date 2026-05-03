@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
@@ -132,12 +133,12 @@ const serviceTierName = serviceTier?.displayName ?? "-";
 
         {/* FOOTER */}
         <div className="flex justify-end">
-          <button
+          <Button
             onClick={onClose}
             className="px-4 py-2 bg-primary text-white rounded-lg"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

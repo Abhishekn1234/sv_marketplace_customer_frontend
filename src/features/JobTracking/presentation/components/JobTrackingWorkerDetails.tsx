@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { getSocket } from "@/features/core/Websocket/socket";
+import { Image } from "@/components/input";
+import { Link } from "react-router-dom";
+import Button from "@/components/input/Button";
 
 interface Props {
   booking: Booking | null;
@@ -110,7 +113,7 @@ export default function JobTrackingWorkerDetails({
       </h2>
 
       <div className="flex items-center gap-4">
-        <img
+        <Image
           src={
             worker.profilePictureUrl ||
             `https://ui-avatars.com/api/?name=${encodeURIComponent(worker.fullName)}`
@@ -133,16 +136,16 @@ export default function JobTrackingWorkerDetails({
       </div>
 
       <div className="flex gap-3 mt-4">
-        <a
-          href={`tel:${worker.phone}`}
+        <Link
+          to={`tel:${worker.phone}`}
           className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-center"
         >
           {t.jobtrackingpage.call}
-        </a>
+        </Link>
 
-        <button className="flex-1 border py-2 rounded-lg">
+        <Button className="flex-1 border py-2 rounded-lg">
           {t.jobtrackingpage.message}
-        </button>
+        </Button>
       </div>
     </div>
   );

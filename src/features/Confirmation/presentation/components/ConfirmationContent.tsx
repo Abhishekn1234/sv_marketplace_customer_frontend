@@ -12,6 +12,7 @@ import { statusMessageMap } from "../helpers/statusmessagemapping";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
+import Button from "@/components/input/Button";
 
 export default function ConfirmationContent() {
   const navigate = useNavigate();
@@ -135,7 +136,7 @@ export default function ConfirmationContent() {
         />
 
         {/* Track Job */}
-        <button
+        <Button
           className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition mb-6"
           onClick={() => navigate(`/jobtracking/${data._id}`)}
         >
@@ -143,7 +144,7 @@ export default function ConfirmationContent() {
             {t.confirmationpage.trackJob}
             <ArrowRight className="w-5" />
           </span>
-        </button>
+        </Button>
 
         {/* Links */}
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">

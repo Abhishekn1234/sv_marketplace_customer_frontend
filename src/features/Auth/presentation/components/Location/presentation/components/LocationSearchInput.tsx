@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import { MapPin } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
 import { getCurrentLocation } from "@/features/utils/reverse";
+import { Input } from "@/components/input";
+import Button from "@/components/input/Button";
 
 type Props = {
   selected: "home" | "office" | null;
