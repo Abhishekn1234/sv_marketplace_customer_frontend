@@ -3,6 +3,7 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
+import Button from "@/components/input/Button";
 
 /* =========================
    ✅ PROPS
@@ -84,7 +85,7 @@ export function BookingActions({
       
       {/* Primary Action */}
     {showPrimaryAction && (
-  <button
+  <Button
     onClick={onActionClick}
     className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
       !clickable ? "cursor-not-allowed opacity-60" : ""
@@ -92,21 +93,22 @@ export function BookingActions({
     disabled={!clickable}
   >
     {label}
-  </button>
+  </Button>
 )}
 
       {/* Track Progress */}
       {canTrack && (
-        <button
+        <Button
+        
           onClick={onCheckProgress}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
         >
           {t.Bookingspage.Actions.checkProgress}
-        </button>
+        </Button>
       )}
 
       {/* Pay Now / View Details */}
-  <button
+  <Button
   onClick={() => {
     if (shouldPayNow) {
       onPayNow({
@@ -124,16 +126,16 @@ export function BookingActions({
   {shouldPayNow
     ? t.Bookingspage.Actions.payNow
     : t.Bookingspage.Actions.viewDetails}
-</button>
+</Button>
 
       {/* Dispute */}
       {canDispute && (
-        <button
+        <Button
           onClick={() => navigatetodispute(booking)}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition shadow-sm whitespace-nowrap"
         >
           {t.Bookingspage.Actions["Create Dispute"]}
-        </button>
+        </Button>
       )}
     </div>
   );

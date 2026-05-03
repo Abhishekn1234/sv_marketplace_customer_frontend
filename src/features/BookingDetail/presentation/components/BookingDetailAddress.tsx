@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { toast } from "react-toastify";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { Input, Label } from "@/components/input";
+import Button from "@/components/input/Button";
 
 export default function BookingDetailAddress() {
   const { current_location, updateAddress } = useAuthStore();
@@ -72,12 +74,12 @@ export default function BookingDetailAddress() {
             {t.bookingdetailpage.serviceAddress}
           </h3>
 
-          <button
+          <Button
             onClick={() => setIsOpen(true)}
             className="text-xs font-bold uppercase tracking-wide text-blue-600 hover:underline"
           >
             {t.bookingdetailpage.change}
-          </button>
+          </Button>
         </div>
 
         {/* Home Address */}
@@ -91,11 +93,11 @@ export default function BookingDetailAddress() {
         </div>
 
         {/* Entry Instructions */}
-        <label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
+        <Label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
           {t.bookingdetailpage.entryInstructions}
-        </label>
+        </Label>
 
-        <input
+        <Input
           type="text"
           value={entryInstructions}
           onChange={(e) => setEntryInstructions(e.target.value)}
@@ -112,7 +114,7 @@ export default function BookingDetailAddress() {
               Update Home Address
             </h2>
 
-            <input
+            <Input
               type="text"
               value={homeAddress}
               onChange={(e) => setHomeAddress(e.target.value)}
@@ -125,20 +127,20 @@ export default function BookingDetailAddress() {
             </p>
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
                 onClick={() => setIsOpen(false)}
                 className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900"
               >
                 Cancel
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleSave}
                 disabled={loadingLocation}
                 className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50"
               >
                 {loadingLocation ? "Getting location..." : "Save"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

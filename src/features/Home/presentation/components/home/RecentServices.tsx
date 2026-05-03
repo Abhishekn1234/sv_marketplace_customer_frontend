@@ -15,7 +15,7 @@ const RecentServices: React.FC = () => {
   // -----------------------------
   // normalize bookings safely
   // -----------------------------
-  const normalizedBookings = bookings ?? [];
+  const normalizedBookings = bookings;
 
   // -----------------------------
   // category map
@@ -70,50 +70,50 @@ const RecentServices: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-4">
-          {recentBookings.length === 0 && (
-            <p className="text-sm text-gray-400">
-              No recent bookings available
-            </p>
-          )}
+        {!recentBookings?.length ? (
+          <p className="text-sm text-gray-400 text-center py-4">
+            No recent bookings available
+          </p>
+        ) : (
+    recentBookings.map((booking) => {
+      const serviceId = String(
+        booking.serviceId?._id ?? booking.serviceId ?? ""
+      );
 
-         {recentBookings.map((booking) => {
- const serviceId = String(
-  booking.serviceId?._id ?? booking.serviceId ?? ""
-);
+      const service = serviceMap.get(serviceId);
 
-  const service = serviceMap.get(serviceId || "");
+      const serviceName = service?.name ?? "";
+      const iconUrl = service?.iconUrl;
 
-  const serviceName = service?.name ?? "";
-  const iconUrl = service?.iconUrl;
+      const priceValue = getBookingPrice(booking);
 
-  const priceValue = getBookingPrice(booking);
+      const price =
+        priceValue != null
+          ? `${booking.currency ?? ""} ${priceValue}`
+          : "";
 
-  const price =
-    priceValue != null
-      ? `${booking.currency ?? ""} ${priceValue}`
-      : "";
+      const categoryId = serviceToCategoryMap.get(serviceId);
 
-  const categoryId = serviceToCategoryMap.get(serviceId || "");
-
-  return (
-    <RecentItem
-      key={booking._id}
-      bookingId={booking._id}
-      categoryId={categoryId}
-      serviceId={serviceId}
-      title={serviceName}
-      date={
-        booking.bookingType === "SCHEDULED"
-          ? formatDate(booking.schedule?.startDateTime)
-          : formatDate(booking.updatedAt)
-      }
-      price={price}
-      iconUrl={iconUrl}
-      status={booking.status}
-    />
-  );
-})}
-        </div>
+      return (
+        <RecentItem
+          key={booking._id}
+          bookingId={booking._id}
+          categoryId={categoryId}
+          serviceId={serviceId}
+          title={serviceName}
+          date={
+            booking.bookingType === "SCHEDULED"
+              ? formatDate(booking.schedule?.startDateTime)
+              : formatDate(booking.updatedAt)
+          }
+          price={price}
+          iconUrl={iconUrl}
+          status={booking.status}
+        />
+      );
+    })
+  )}
+</div>
       </div>
     </aside>
   );

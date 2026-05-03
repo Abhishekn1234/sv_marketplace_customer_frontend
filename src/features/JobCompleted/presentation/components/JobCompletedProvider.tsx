@@ -1,3 +1,4 @@
+import { Image } from "@/components/input";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobCompletedProvider({ booking }: any) {
@@ -14,7 +15,7 @@ export default function JobCompletedProvider({ booking }: any) {
 
       <div className="flex items-center gap-4">
         
-        <img
+        <Image
           src={
             worker?.profilePictureUrl ||
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"

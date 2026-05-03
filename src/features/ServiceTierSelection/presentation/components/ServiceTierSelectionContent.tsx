@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Feature } from "../../domain/entities/feature";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ export default function ServiceTierSelectionContent() {
       </div>
 
       <div className="flex flex-col items-center gap-4">
-        <button
+        <Button
           onClick={handleContinue}
           className={`px-12 py-4 font-bold rounded-full flex items-center gap-2 transition-all duration-200 ${
             selectedTierId
@@ -113,19 +114,19 @@ export default function ServiceTierSelectionContent() {
         >
           {t.servicetierselectionpage.buttons.continue}
           <ArrowRight />
-        </button>
+        </Button>
 
         <p className="text-sm text-gray-400 font-medium">
           Prices may vary based on your home's square footage.
         </p>
 
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline"
         >
           <ArrowLeft />
         {t.servicetierselectionpage.buttons.back}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -205,7 +206,7 @@ function TierCard({
         ))}
       </ul>
 
-      <button
+      <Button
         className={`w-full h-12 rounded-full font-bold text-sm transition-all duration-200 ${
           selected
             ? "bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:-translate-y-1"
@@ -213,7 +214,7 @@ function TierCard({
         }`}
       >
         {selected ? `Selected : ${name}` : `Select ${name}`}
-      </button>
+      </Button>
     </div>
   );
 }

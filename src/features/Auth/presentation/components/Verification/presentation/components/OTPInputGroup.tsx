@@ -1,3 +1,5 @@
+import { Input } from "@/components/input";
+import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 type Props = {
@@ -47,7 +49,7 @@ export default function OTPSection({
       {/* OTP INPUTS */}
       <div className="flex justify-center gap-2 sm:gap-3 flex-wrap mb-6">
         {otp.map((value, i) => (
-          <input
+          <Input
             key={i}
             ref={(el) => {(inputsRef.current[i] = el)}}
             value={value}
@@ -79,13 +81,13 @@ export default function OTPSection({
       {/* RESEND */}
       <div className="mt-2 text-sm text-gray-500">
         {t.verification.resend_question}{" "}
-        <button
+        <Button
           disabled={!isExpired}
           onClick={resend}
           className="font-bold text-blue-600 disabled:text-gray-400 underline"
         >
           {t.verification.resend}
-        </button>
+        </Button>
       </div>
     </div>
   );

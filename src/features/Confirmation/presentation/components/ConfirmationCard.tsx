@@ -5,6 +5,7 @@ import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
 import { formatSmartDate } from "../helpers/formatdatetime";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import Button from "@/components/input/Button";
 
 export default function ConfirmationCard({ data, placeName }: any) {
   const navigate = useNavigate();
@@ -40,12 +41,12 @@ export default function ConfirmationCard({ data, placeName }: any) {
       </div>
 
       {/* CTA */}
-      <button
+      <Button
         onClick={() => navigate(`/jobtracking/${data._id}`)}
         className="w-full h-12 bg-blue-600 text-white rounded-full mb-6 flex justify-center items-center gap-2"
       >
         Track Job <ArrowRight className="w-5" />
-      </button>
+      </Button>
 
       {/* Links */}
        <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">

@@ -123,18 +123,30 @@ export const useBookings = () => {
     mutationFn: (req: CancelBookingRequest) =>
       cancelBooking.execute(req),
 
-    onSuccess: (updated) => {
-      queryClient.setQueryData(bookingKeys.all, (old: Booking[] = []) =>
-        old.map((b) =>
-          b._id === updated._id ? updated : b
-        )
-      );
+   onSuccess: (updated) => {
+  // 1. Update list
+  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
+    if (!Array.isArray(old)) return [];
 
-      queryClient.setQueryData(
-        bookingKeys.detail(updated._id),
-        updated
-      );
-    },
+    return old.map((b) =>
+      b._id === updated._id ? { ...b, ...updated } : b
+    );
+  });
+
+  // 2. Update detail cache (VERY IMPORTANT)
+  queryClient.setQueryData(
+    bookingKeys.detail(updated._id),
+    (old: Booking | undefined) => ({
+      ...old,
+      ...updated,
+    })
+  );
+
+  // 3. Safety net (forces UI consistency)
+  queryClient.invalidateQueries({
+    queryKey: bookingKeys.all,
+  });
+}
   });
 
   return {

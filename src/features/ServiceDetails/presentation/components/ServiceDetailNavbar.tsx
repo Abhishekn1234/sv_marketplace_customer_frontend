@@ -4,6 +4,8 @@ import { MapPin, ChevronDown, Search, User, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import Button from "@/components/input/Button";
+import { Image, Input } from "@/components/input";
 
 export default function ServiceDetailNavbar() {
   const navigate = useNavigate();
@@ -110,7 +112,7 @@ export default function ServiceDetailNavbar() {
             <div className="absolute left-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
               
               {/* Current Location */}
-              <button
+              <Button
                 onClick={handleLocationClick}
                 disabled={loading}
                 className="w-full flex items-center gap-2 text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition disabled:opacity-60"
@@ -121,11 +123,11 @@ export default function ServiceDetailNavbar() {
                   <MapPin className="w-4 h-4" />
                 )}
                 Use Current Location
-              </button>
+              </Button>
 
               {/* Saved Locations */}
               {location.map((addr) => (
-                <button
+                <Button
                   key={addr.id}
                   onClick={() => {
                     updateAddress(
@@ -145,7 +147,7 @@ export default function ServiceDetailNavbar() {
                   className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm font-medium text-gray-700 transition"
                 >
                   {addr.value}
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -158,7 +160,7 @@ export default function ServiceDetailNavbar() {
         {/* Search */}
         <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl">
           <Search className="w-4 h-4 text-gray-400" />
-          <input
+          <Input
             type="text"
             placeholder="Search services..."
             value={searchTerm}
@@ -180,7 +182,7 @@ export default function ServiceDetailNavbar() {
         >
           {profileimageurl ? (
             <div className="w-10 h-10 rounded-full overflow-hidden">
-              <img src={profileimageurl} alt={username} className="w-full h-full object-cover" />
+              <Image src={profileimageurl} alt={username} className="w-full h-full object-cover" />
             </div>
           ) : (
             <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">

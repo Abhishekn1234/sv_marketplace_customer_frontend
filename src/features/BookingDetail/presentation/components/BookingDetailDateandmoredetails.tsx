@@ -7,6 +7,8 @@ import { getCurrentLocation} from "@/features/utils/reverse";
 // import { resolveLocation } from "../helpers/resolvelocation";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import Button from "@/components/input/Button";
+import { Textarea } from "@/components/input";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
@@ -160,20 +162,20 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-sm font-bold text-gray-900">{t.bookingdetailpage.selectDate}</h2>
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={handlePrev}
               disabled={pageStart === 0}
               className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
             >
               ←
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleNext}
               disabled={pageStart + datesPerPage >= allDates.length}
               className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
             >
               →
-            </button>
+            </Button>
           </div>
         </div>
         <div className="flex gap-3 overflow-x-auto">
@@ -219,17 +221,17 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         {t.bookingdetailpage.estimatedDuration}
       </h2>
       <div className="flex items-center gap-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
-        <button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">−</button>
+        <Button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">−</Button>
         <div className="flex-1 text-center">
           <span className="text-3xl font-black">{duration}</span>
           <span className="ml-2 text-sm font-semibold text-gray-500">Hours</span>
         </div>
-        <button onClick={increaseDuration} className="w-10 h-10 bg-white rounded-lg">+</button>
+        <Button onClick={increaseDuration} className="w-10 h-10 bg-white rounded-lg">+</Button>
       </div>
 
       <div className="mb-4">
         <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">{t.bookingdetailpage.specialRequirement}</h2>
-        <textarea
+        <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Focus on kitchen cabinets, be careful with the glass table..."
@@ -253,7 +255,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         </div>
       </div>
 
-      <button
+      <Button
   onClick={handleBooking}
   disabled={loading}
   className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
@@ -286,7 +288,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       {t.bookingdetailpage.confirmBooking} →
     </>
   )}
-</button>
+</Button>
     </div>
   );
 }

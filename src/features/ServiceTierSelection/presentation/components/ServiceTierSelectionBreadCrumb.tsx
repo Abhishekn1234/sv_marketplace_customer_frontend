@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
@@ -25,12 +26,12 @@ export default function ServiceTierSelectionBreadCrumb() {
     <div className="w-full px-0 lg:px-8 py-6 mt-10">
       {/* Breadcrumb */}
       <nav className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 mb-6">
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="hover:text-blue-600 transition-colors cursor-pointer"
         >
           {t.servicetierselectionpage.steps.service}
-        </button>
+        </Button>
 
         <Chevron />
 

@@ -11,6 +11,7 @@ import { normalizeGateways } from "./utils/normalizedGateways";
 import { getIcon } from "./utils/getpaymentgatewayicon";
 import { getDisplayName } from "./utils/getDisplayNamepaymentgateways";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function PaymentPage() {
   const [method, setMethod] = useState<string>("");
@@ -119,7 +120,7 @@ export default function PaymentPage() {
       const isSelected = method === gateway.type;
 
       return (
-        <button
+        <Button
           key={gateway.id}
           onClick={() => setMethod(gateway.type)}
           className={`border rounded-xl p-4 flex flex-col items-center gap-2 transition
@@ -134,7 +135,7 @@ export default function PaymentPage() {
           <span className="text-sm font-semibold">
             {getDisplayName(gateway.type)}
           </span>
-        </button>
+        </Button>
       );
     })
   ) : (
@@ -145,7 +146,7 @@ export default function PaymentPage() {
 </div>
 
         {/* Pay Button */}
-        <button
+        <Button
           onClick={handlePayment}
           disabled={isPending}
           className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition disabled:bg-gray-300"
@@ -155,7 +156,7 @@ export default function PaymentPage() {
             : method === "CASH"
             ? `${t.paymentpage.confirmCash} (${currency} ${price.toFixed(2)})`
             : `${t.paymentpage.pay} ${currency} ${price.toFixed(2)}`}
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { GetNotificationsUseCase } from "../../domain/usecase/GetNotificationsUsecase";
 
-export const useNotifications = (filters: any) => {
+export const useNotifications = (filters?: any) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 

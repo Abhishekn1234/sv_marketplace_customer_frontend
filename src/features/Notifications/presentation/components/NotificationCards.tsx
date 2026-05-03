@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import NotificationHeader from "./NotificationHeader";
 import NotificationContent from "./NotificationContent";
 import { Bell } from "lucide-react";
@@ -8,20 +10,26 @@ import { useRegisterDeviceToken } from "@/features/Notifications/presentation/ho
 import { useUnreadCount } from "@/features/Notifications/presentation/hooks/useUnreadCount";
 import { useMarkAllAsRead } from "@/features/Notifications/presentation/hooks/useMarkAllAsRead";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
+import { CommandCard } from "@/components/common";
+import Button from "@/components/input/Button";
+import type { SelectOption } from "@/components/input/Select";
+import Select from "@/components/input/Select";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
 
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const {
     data: apiNotifications = [],
     loading,
     refetch: refetchNotifications,
   } = useNotifications({
-    page: 1,
-    limit: 10,
+    page,
+    limit,
     type,
     unreadOnly: false,
   });
@@ -31,12 +39,14 @@ export default function NotificationCards() {
 
   const { markAllAsRead } = useMarkAllAsRead();
   const { markAsRead } = useMarkNotificationRead();
-
   const { fcmNotifications = [] } = useRegisterDeviceToken();
 
-  /* ✅ Normalize FCM */
+  useEffect(() => {
+    setPage(1);
+  }, [type, limit]);
+
   const normalizedFCM = fcmNotifications.map((msg: any) => ({
-    id: msg.id,
+    id: msg._id,
     title: msg.title,
     message: msg.message,
     type: "ADMIN_MESSAGE",
@@ -44,14 +54,15 @@ export default function NotificationCards() {
     createdAt: msg.createdAt,
   }));
 
-  /* ✅ Normalize API */
   const normalizedAPI = apiNotifications.map((n: any) => ({
     ...n,
-    id: String(n.id),
+    id: String(n._id),
   }));
 
-  /* ✅ Merge */
-  const notifications = [...normalizedFCM, ...normalizedAPI];
+  const notifications =
+    page === 1
+      ? [...normalizedFCM, ...normalizedAPI]
+      : normalizedAPI;
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
@@ -69,108 +80,153 @@ export default function NotificationCards() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-6">
-        
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-blue-100 rounded-xl">
-            <Bell className="text-blue-600 w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
-            {t.notificationpage.notifications}
-          </h1>
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-          {[
-            { label: "All", value: undefined },
-            { label: "Requests", value: "BOOKING_REQUEST" },
-            { label: "Updates", value: "BOOKING_UPDATE" },
-            { label: "Admin", value: "ADMIN_MESSAGE" },
-          ].map((f, i) => (
-            <button
-              key={i}
-              onClick={() => setType(f.value)}
-              className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition-all ${
-                type === f.value
-                  ? "bg-blue-600 text-white shadow"
-                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Card */}
-     <div className="w-full flex justify-center">
-  <div
-    className="
-      w-full
-      max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl
-      
-      bg-white 
-      rounded-2xl 
-      shadow-sm 
-      border border-gray-100 
-      overflow-hidden 
-      flex flex-col 
-      
-      min-h-[400px] 
-      sm:min-h-[450px] 
-      md:min-h-[550px] 
-      lg:min-h-[600px] 
-      xl:min-h-[650px]
-
-      px-3 sm:px-4 md:px-6 lg:px-6
-    "
-  >
-  {/* Header */}
-  <NotificationHeader
-    toggleSelectAll={toggleSelectAll}
-    selected={selected}
-    total={notifications.length}
-    markAllAsRead={async () => {
-      await markAllAsRead();
-      refetchUnreadCount();
+  // ✅ BULK READ USING YOUR HOOK
+  const markSelectedAsRead = async () => {
+    try {
+      await Promise.all(selected.map(markAsRead));
+      setSelected([]);
       refetchNotifications();
-    }}
-    deleteSelected={() => {}}
-    unreadCount={unreadCount}
-  />
+      refetchUnreadCount();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+ const limitOptions: SelectOption[] = [5, 10, 20, 25].map((l) => ({
+  label: `${l} / page`,
+  value: l.toString(), // Select works with string values
+}));
+  const deleteSelected = async () => {
+    console.log("Deleting:", selected); // replace with API
+    setSelected([]);
+    refetchNotifications();
+  };
+  const hasData = notifications.length > 0;
 
-  {/* Content Area */}
-  <div className="flex-1 flex flex-col">
-    {loading ? (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+  return (
+  <div className="min-h-screen ">
+    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6">
+
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-blue-100 rounded-xl shadow-sm">
+          <Bell className="text-blue-600 w-6 h-6" />
+        </div>
+
+        <h1 className="text-xl font-semibold text-gray-800">
+          {t.notificationpage.notifications}
+        </h1>
       </div>
-    ) : notifications.length === 0 ? (
-      <div className="flex flex-1 items-center justify-center text-gray-500 text-sm">
-        No notifications found
-      </div>
-    ) : (
-      <NotificationContent
-        notifications={notifications}
-        selected={selected}
-        toggleSelect={toggleSelect}
-        markAsRead={markAsRead}
-      />
-    )}
+
+      {/* Filters */}
+    {hasData && (
+  <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+    {[
+      { label: "All", value: undefined },
+      { label: "Requests", value: "BOOKING_REQUEST" },
+      { label: "Updates", value: "BOOKING_UPDATE" },
+      { label: "Admin", value: "ADMIN_MESSAGE" },
+    ].map((f, i) => (
+      <Button
+        key={i}
+        onClick={() => setType(f.value)}
+        className={`px-4 py-2 text-sm rounded-full transition whitespace-nowrap ${
+          type === f.value
+            ? "bg-blue-600 text-white shadow"
+            : "bg-white border hover:bg-gray-50 text-gray-600"
+        }`}
+      >
+        {f.label}
+      </Button>
+    ))}
   </div>
-</div>
+)}
 
-        {/* Optional bottom loader for pagination */}
-        {loading && notifications.length > 0 && (
-          <div className="flex justify-center py-4">
-            <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          </div>
-        )}
+      {hasData &&(
+          <div className="flex justify-end mb-3">
+                <Select
+          options={limitOptions}
+          value={limit.toString()}
+          onChange={(val) => setLimit(Number(val))}
+          className="w-auto min-w-[120px]"
+        />
       </div>
+      )}
+    
+
+      {/* Card */}
+      <CommandCard className="w-full max-w-5xl mx-auto flex flex-col min-h-[520px] rounded-2xl shadow-lg border border-gray-100 bg-white">
+
+        <NotificationHeader
+          toggleSelectAll={toggleSelectAll}
+          selected={selected}
+          total={notifications.length}
+          markAllAsRead={async () => {
+            await markAllAsRead();
+            refetchUnreadCount();
+            refetchNotifications();
+          }}
+          markSelectedAsRead={markSelectedAsRead}
+          deleteSelected={deleteSelected}
+          unreadCount={unreadCount}
+        />
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="flex h-64 items-center justify-center">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+            </div>
+          ) : notifications.length === 0 ? (
+            <div className="flex h-64 items-center justify-center text-gray-500">
+              {t.notificationpage.noNotifications}
+            </div>
+          ) : (
+            
+            <>
+            <NotificationContent
+              notifications={notifications}
+              selected={selected}
+              toggleSelect={toggleSelect}
+            />
+             <div className="flex justify-end items-center gap-3 p-4   rounded-b-2xl">
+          <Button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className={`px-4 py-2 rounded text-sm transition ${
+              page === 1
+                ? "bg-gray-100 text-gray-400"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+          >
+            Previous
+          </Button>
+
+          <span className="text-sm text-gray-600">
+            Page {page}
+          </span>
+
+          <Button
+            disabled={apiNotifications.length < limit}
+            onClick={() => setPage((p) => p + 1)}
+            className={`px-4 py-2 rounded text-sm transition ${
+              apiNotifications.length < limit
+                ? "bg-gray-100 text-gray-400"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+          >
+            Next
+          </Button>
+        </div>
+            </>
+            
+          )}
+        </div>
+
+        {/* Pagination */}
+       
+
+      </CommandCard>
     </div>
-    </div>
-  );
+  </div>
+);
 }

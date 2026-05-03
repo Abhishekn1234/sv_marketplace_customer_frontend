@@ -4,6 +4,7 @@ import { LogOutIcon } from "lucide-react";
 import { BackArrowIcon } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Button from "@/components/input/Button";
 
 export default function ProfileTop() {
   const navigate = useNavigate();
@@ -19,14 +20,14 @@ export default function ProfileTop() {
     <div className="mb-6">
 
       {/* Back Button */}
-      <button
+      <Button
         onClick={() => navigate("/")}
         className="flex items-center gap-2 mb-4 text-sm font-semibold 
         text-gray-400 hover:text-blue-600 transition-colors"
       >
         <BackArrowIcon className="w-5 h-5" />
        {t.profilepage.backToDashboard}
-      </button>
+      </Button>
 
       {/* Title + Logout Row */}
       <div className="flex items-center justify-between gap-4">
@@ -35,7 +36,7 @@ export default function ProfileTop() {
           {t.profilepage.myProfile}
         </h1>
 
-        <button
+        <Button
           onClick={handleLogout}
           className="flex items-center gap-2 px-4 sm:px-6 py-2 
           rounded-xl border-2 border-blue-600 
@@ -45,7 +46,7 @@ export default function ProfileTop() {
         >
           <LogOutIcon size={18} />
           {t.profilepage.logout}
-        </button>
+        </Button>
 
       </div>
     </div>

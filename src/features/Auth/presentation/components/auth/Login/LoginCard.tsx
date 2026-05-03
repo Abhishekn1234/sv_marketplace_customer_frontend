@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/features/Auth/presentation/hooks/useAuth';
+import { Input, Label } from '@/components/input';
+import Button from '@/components/input/Button';
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,10 +44,10 @@ const LoginCard = () => {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
+          <Label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
             Email Address
-          </label>
-          <input
+          </Label>
+          <Input
             type="email"
             placeholder="name@homeease.com"
             value={email}
@@ -58,9 +60,9 @@ const LoginCard = () => {
         {/* Password */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-400">
+            <Label className="text-xs font-bold uppercase tracking-wide text-gray-400">
               Password
-            </label>
+            </Label>
             <Link
               to="/forgot-password"
               className="text-xs font-bold text-blue-600 hover:underline"
@@ -69,7 +71,7 @@ const LoginCard = () => {
             </Link>
           </div>
           <div className="relative">
-            <input
+            <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               value={password}
@@ -77,7 +79,7 @@ const LoginCard = () => {
               required
               className="w-full px-4 h-13 text-gray-900 text-sm border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 pr-12 outline-none"
             />
-            <button
+            <Button
               type="button"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
               onClick={() => setShowPassword(!showPassword)}
@@ -105,26 +107,26 @@ const LoginCard = () => {
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
               )}
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Remember me */}
         <div className="flex items-center gap-2.5">
-          <input
+          <Input
             type="checkbox"
             id="remember"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
             className="w-4 h-4 accent-blue-600 cursor-pointer"
           />
-          <label htmlFor="remember" className="text-gray-600 font-medium cursor-pointer">
+          <Label htmlFor="remember" className="text-gray-600 font-medium cursor-pointer">
             Keep me logged in
-          </label>
+          </Label>
         </div>
 
         {/* Submit Button */}
-        <button
+        <Button
   type="submit"
   disabled={loading}
   className="w-full h-13 flex items-center justify-center bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
@@ -146,7 +148,7 @@ const LoginCard = () => {
       </svg>
     </>
   )}
-</button>
+</Button>
       </form>
 
       {/* Divider */}

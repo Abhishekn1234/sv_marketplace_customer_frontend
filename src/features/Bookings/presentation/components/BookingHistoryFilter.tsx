@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -33,7 +34,7 @@ export default function BookingHistoryFilter({
       "
       >
        {tabs.map((tab) => (
-  <button
+  <Button
     key={tab.key}
     onClick={() => setActiveTab(tab.key)}
     className={`
@@ -54,7 +55,7 @@ export default function BookingHistoryFilter({
     `}
   >
     {tab.label}
-  </button>
+  </Button>
 ))}
       </div>
     </div>

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   MapPin,
-  ChevronDown,
+  // ChevronDown,
   Search,
   Menu,
   X,
@@ -20,7 +20,10 @@ import CommonNotificationFloater from "@/components/common/CommonNotificationFlo
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { UserIcon } from "../icons/Usericon";
+import { UserIcon } from "../icons";
+import { Image, Input } from "../input";
+import Button from "../input/Button";
+
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -108,52 +111,67 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:block font-bold text-lg text-gray-900">{title}</span>
           </div>
 
-         {(showLocation || isHomePage || isBookingPage || serviceratingpage || jobpresspage || jobtrackingpage) && (
-            <div
-              ref={dropdownRef}
-              className={`ml-3 relative hidden sm:flex
-                ${isBookingPage ?"absolute left-1/2 -translate-x-1/2":serviceratingpage? "absolute left-1/2 -translate-x-1/2" : ""}`} 
-            >
-              <button
-                onClick={() => setShowDropdown((prev) => !prev)}
-                className="flex cursor-pointer items-center gap-2 px-3 py-1 bg-gray-100 border border-gray-300 rounded-full text-sm font-medium hover:border-blue-600 transition max-w-[300px] truncate"
-              >
-                <MapPin className="w-5 h-6 text-blue-600" />
-                <span className="truncate">{currentLocation || "Select Location"}</span>
-                <ChevronDown
-                  className={`w-3 h-3 text-gray-400 transition-transform ${
-                    showDropdown ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+        {(showLocation || isHomePage || isBookingPage || serviceratingpage || jobpresspage || jobtrackingpage) && (
+  <div
+    ref={dropdownRef}
+    className={`ml-3 relative flex`}
+  >
+    {/* Input box */}
+    <div className="relative w-full max-w-[300px]">
+      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-600 pointer-events-none" />
 
-              {/* Dropdown content */}
-              {showDropdown && (
-                <div
-                  className={`absolute mt-10 cursor-pointer w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50
-                    ${isBookingPage ? "left-1/2 -translate-x-1/2" : "left-0"}`}
-                >
-                  <button
-                    onClick={handleUseCurrentLocation}
-                    className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium"
-                  >
-                    {t.navbar["Use current location"]}
-                  </button>
-                  {/* You can add more location options here */}
-                </div>
-              )}
-            </div>
-          )}
+      <Input
+        onClick={() => setShowDropdown((prev) => !prev)}   // ✅ IMPORTANT: toggle here
+        value={currentLocation}
+        readOnly
+        className="
+          w-full
+          pl-10 pr-3 py-2
+          rounded-full
+          border border-blue-500
+          bg-white
+          text-sm
+          font-medium
+          text-gray-800
+          focus:outline-none
+          cursor-pointer
+        "
+      />
+    </div>
 
-          {/* BACK BUTTON */}
-          {showBackButton && (
-            <button
-              onClick={() => navigate(-1)}
-              className="px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
-            >
-              {t.navbar.Back}
-            </button>
-          )}
+    {/* Dropdown */}
+    {showDropdown && (
+      <div
+        className={`
+          absolute top-full mt-2 w-56
+          bg-white border border-gray-200
+          rounded-xl shadow-lg z-50
+          ${isBookingPage || serviceratingpage
+            ? "left-1/2 -translate-x-1/2"
+            : "left-0"
+          }
+        `}
+      >
+        <button
+          onClick={handleUseCurrentLocation}
+          className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium"
+        >
+          {t.navbar["Use current location"]}
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
+{/* BACK BUTTON */}
+{showBackButton && (
+  <button
+    onClick={() => navigate(-1)}
+    className="px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
+  >
+    {t.navbar.Back}
+  </button>
+)}
         </div>
 
         {/* RIGHT SECTION */}
@@ -193,7 +211,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           {showSearch && (
             <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl">
               <Search className="w-4 h-4 text-gray-400" />
-              <input
+              <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t.navbar.SearchPlaceholder}
@@ -206,31 +224,28 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           {showUserControls && user && (
             <>
               <CommonNotificationFloater />
-              {profilePic ? (
-  <img
-    onClick={() => navigate("/profile")}
-    src={profilePic}
-    className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
-  />
-) : (
-  <div
-    onClick={() => navigate("/profile")}
-    className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:scale-105 transition"
-  >
-    <UserIcon />
-  </div>
-)}
+               <Image
+                    src={profilePic}
+                    alt="Profile"
+                    onClick={() => navigate("/profile")}
+                    className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
+                    fallback={
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <UserIcon />
+                      </div>
+                    }
+                  />
             </>
           )}
 
           {/* MOBILE MENU */}
           {showHomeLinks && (
-            <button
+            <Button
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            </Button>
           )}
         </div>
       </div>

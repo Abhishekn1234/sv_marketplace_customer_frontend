@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/input";
 import { SaveIcon } from "@/components/icons";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
 
 export default function ProfileUpdate() {
   const { data: profile } = useProfile();
@@ -110,7 +111,7 @@ updateProfile(form, {
             <Input label={t.profilepage.phone} name="phone" type="tel" value={formData.phone} onChange={handleChange} labelClassName="block text-sm font-semibold mb-2" />
           </div>
 
-         <button
+         <Button
   type="submit"
   disabled={isPending}
   className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
@@ -118,7 +119,7 @@ updateProfile(form, {
   <SaveIcon className="w-5 h-5" />
 
   {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
-</button>
+</Button>
 
         </form>
       </div>

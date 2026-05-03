@@ -1,5 +1,6 @@
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { LogoIcon } from "@/components/icons";
+import { Image } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -48,7 +49,7 @@ export default function ProfileNavbar() {
 
         {/* User Profile */}
         <div className="flex items-center gap-3 cursor-pointer">
-          <img
+          <Image
             src={profilepic}
             alt="Profile"
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover"

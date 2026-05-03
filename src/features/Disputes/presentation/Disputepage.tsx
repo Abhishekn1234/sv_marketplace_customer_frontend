@@ -7,6 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useCreateDispute } from "./hooks/useCreateDispute";
 import { toast } from "react-toastify";
+import Button from "@/components/input/Button";
+import { Input, Label, Textarea } from "@/components/input";
 
 
 
@@ -50,14 +52,14 @@ export default function Disputepage() {
       
       {/* Back Button */}
       <div className="self-start mb-6">
-        <button
+        <Button
          
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.disputespage.back}
-        </button>
+        </Button>
       </div>
 
       {/* Title */}
@@ -74,10 +76,10 @@ export default function Disputepage() {
       >
         {/* Reason */}
         <div className="flex flex-col">
-          <label htmlFor="reason" className="mb-2 text-sm font-medium text-gray-700">
+          <Label htmlFor="reason" className="mb-2 text-sm font-medium text-gray-700">
             {t.disputespage.reason}
-          </label>
-          <input
+          </Label>
+          <Input
             id="reason"
             type="text"
             value={reason}
@@ -90,10 +92,10 @@ export default function Disputepage() {
 
         {/* Description */}
         <div className="flex flex-col">
-          <label htmlFor="description" className="mb-2 text-sm font-medium text-gray-700">
+          <Label htmlFor="description" className="mb-2 text-sm font-medium text-gray-700">
             {t.disputespage.description}
-          </label>
-          <textarea
+          </Label>
+          <Textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -106,12 +108,12 @@ export default function Disputepage() {
 
         {/* Submit Button */}
         <div className="flex justify-end">
-          <button
+          <Button
             type="submit"
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md text-sm sm:text-base font-medium transition"
           >
             {t.disputespage.submit}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

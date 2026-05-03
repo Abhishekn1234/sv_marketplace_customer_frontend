@@ -5,6 +5,8 @@ import { useUpdatePassword } from "../hooks/usePassword";
 import { validatePassword } from "../utils/passwordvalidation";
 import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
+import Button from "@/components/input/Button";
+import { Input, Label } from "@/components/input";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -60,12 +62,12 @@ export default function ChangePasswordCard() {
     placeholder: string
   ) => (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <Label className="block text-sm font-medium text-gray-700 mb-2">
         {label}
-      </label>
+      </Label>
 
       <div className="relative">
-        <input
+        <Input
           type={showPassword[field] ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -74,7 +76,7 @@ export default function ChangePasswordCard() {
           placeholder={placeholder}
         />
 
-       <button
+       <Button
   type="button"
   onClick={() => togglePasswordVisibility(field)}
   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
@@ -84,7 +86,7 @@ export default function ChangePasswordCard() {
   ) : (
     <EyeOff className="w-5 h-5" />
   )}
-</button>
+</Button>
       </div>
     </div>
   );
@@ -94,12 +96,12 @@ export default function ChangePasswordCard() {
       <div className="w-full max-w-md">
         {/* Back Button */}
         <div className="mb-4">
-          <button
+          <Button
             onClick={() => navigate(-1)}
             className="text-sm text-gray-600 hover:text-blue-600 transition"
           >
             ← {t.changepasswordpage.backToSettings}
-          </button>
+          </Button>
         </div>
 
         {/* Card */}
@@ -141,13 +143,13 @@ export default function ChangePasswordCard() {
               )}
 
               {/* Submit */}
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
                 className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
               >
                 {loading ? t.changepasswordpage.updating: t.changepasswordpage.updatePassword}
-              </button>
+              </Button>
             </form>
           </div>
         </div>

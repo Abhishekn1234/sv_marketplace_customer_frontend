@@ -1,7 +1,9 @@
 
 
+import { Image } from "@/components/input";
 import { getStatusText } from "../helpers/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { Link } from "react-router-dom";
 export default function ProviderWorkingCard({booking}:any) {
   
  
@@ -26,7 +28,7 @@ const image =
       </h2>
 
       <div className="flex items-center gap-4 mb-5">
-        <img
+        <Image
           src={image}
           className="w-16 h-16 rounded-2xl object-cover border-4 border-gray-100"
         />
@@ -58,15 +60,15 @@ const image =
 
       {/* Buttons */}
       <div className="flex gap-3">
-        <a
-          href={worker?.phone ? `tel:${worker.phone}` : "#"}
+        <Link
+          to={worker?.phone ? `tel:${worker.phone}` : "#"}
           className="flex-1 h-11 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center justify-center"
         >
           {t.jobprogresspage.call}
-        </a>
+        </Link>
 
-        <a
-          href={
+        <Link
+        to ={
             worker?.phone
               ? `https://wa.me/${worker.phone}`
               : "#"
@@ -76,7 +78,7 @@ const image =
           className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95 flex items-center justify-center"
         >
          {t.jobprogresspage.message}
-        </a>
+        </Link>
       </div>
     </div>
   );

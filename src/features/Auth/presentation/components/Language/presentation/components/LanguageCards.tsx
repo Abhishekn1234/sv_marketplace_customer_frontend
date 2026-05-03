@@ -1,5 +1,6 @@
 
 
+import { Input, Label } from "@/components/input";
 import { useState, useEffect } from "react";
 
 interface LanguageCardsProps {
@@ -59,7 +60,7 @@ export default function LanguageCards({ selectedLanguage, onSelectLanguage }: La
         const isSelected = currentSelection === lang.code;
 
         return (
-          <label
+          <Label
             key={lang.code}
             className={`
               group relative cursor-pointer
@@ -68,7 +69,7 @@ export default function LanguageCards({ selectedLanguage, onSelectLanguage }: La
               ${isSelected ? "border-primary-600 shadow-lg" : "border-gray-200 hover:border-primary-600"}
             `}
           >
-            <input
+            <Input
               type="radio"
               name="language"
               value={lang.code}
@@ -95,7 +96,7 @@ export default function LanguageCards({ selectedLanguage, onSelectLanguage }: La
 
             <div className="text-2xl font-bold text-gray-900 mb-2">{lang.native}</div>
             <div className="text-xs font-semibold uppercase tracking-widest text-gray-400">{lang.label}</div>
-          </label>
+          </Label>
         );
       })}
     </div>

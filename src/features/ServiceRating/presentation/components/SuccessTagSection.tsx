@@ -1,3 +1,5 @@
+import { Label } from "@/components/input";
+import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { FC } from "react";
 
@@ -21,13 +23,13 @@ const SuccessTagSection: FC<SuccessTagSectionProps> = ({ tags, setTags }) => {
 
   return (
     <div className="mb-8">
-      <label className="block text-sm font-semibold text-gray-900 mb-3">
+      <Label className="block text-sm font-semibold text-gray-900 mb-3">
        {t.serviceratingpage.whatWentWell} <span className="text-gray-500 font-normal">({t.serviceratingpage.optional})</span>
-      </label>
+      </Label>
 
       <div className="flex flex-wrap gap-2.5">
         {tags.map((tag, index) => (
-          <button
+          <Button
             key={index}
             onClick={() => toggleTag(index)}
             className={`px-[18px] py-[10px] rounded-full text-sm font-medium border transition-all duration-200 whitespace-nowrap ${
@@ -37,7 +39,7 @@ const SuccessTagSection: FC<SuccessTagSectionProps> = ({ tags, setTags }) => {
             }`}
           >
             {tag.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

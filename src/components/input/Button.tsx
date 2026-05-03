@@ -1,82 +1,70 @@
-import * as React from "react";
+import React from "react";
 import { Loader2 } from "lucide-react";
-import { Button as UiButton } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger"
-  | "link";
+type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" |"none";
+type ButtonSize = "sm" | "md" | "lg";
 
-type ButtonSize = "sm" | "md" | "lg" | "icon";
-
-const buttonVariantClassNames: Record<ButtonVariant, string> = {
-  primary: "bg-blue-600 text-white hover:bg-blue-700",
-  secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-  outline:
-    "border-2 border-blue-600 bg-white text-blue-600 hover:bg-blue-50",
-  ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
-  danger: "bg-red-600 text-white hover:bg-red-700",
-  link: "bg-transparent p-0 text-blue-600 underline-offset-4 hover:underline",
-};
-
-const buttonSizeClassNames: Record<ButtonSize, string> = {
-  sm: "h-8 rounded-lg px-3 text-xs",
-  md: "h-10 rounded-xl px-4 text-sm",
-  lg: "h-12 rounded-xl px-5 text-base",
-  icon: "h-10 w-10 rounded-xl p-0",
-};
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  loading?: boolean;
+  fullWidth?: boolean;
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      variant = "primary",
-      size = "md",
-      leftIcon,
-      rightIcon,
-      loading = false,
-      disabled,
-      className,
-      children,
-      type = "button",
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <UiButton
-        ref={ref}
-        type={type}
-        disabled={disabled || loading}
-        className={cn(
-          "gap-2 font-semibold transition",
-          buttonVariantClassNames[variant],
-          buttonSizeClassNames[size],
-          className
-        )}
-        {...props}
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : leftIcon}
-        {children}
-        {!loading && rightIcon}
-      </UiButton>
-    );
-  }
-);
+export default function Button({
+  children,
+  variant = "none",
+  size = "md",
+  loading = false,
+  leftIcon,
+  rightIcon,
+  fullWidth = false,
+  disabled,
+  className = "",
+  ...props
+}: ButtonProps) {
+  const base =
+    "inline-flex items-center justify-center gap-2 font-medium rounded-lg transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed";
 
-Button.displayName = "Button";
+  const variants = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
+    danger: "bg-red-600 text-white hover:bg-red-700",
+    ghost: "bg-transparent hover:bg-gray-100 text-gray-800",
+      none: "",
+  };
 
-export const CommonButton = Button;
-export const AppButton = Button;
+  const sizes = {
+    sm: "text-sm px-3 py-1.5",
+    md: "text-sm px-4 py-2",
+    lg: "text-base px-5 py-3",
+  };
+
+  return (
+    <button
+      className={`
+        ${base}
+        ${variants[variant]}
+        ${sizes[size]}
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        leftIcon && <span className="flex items-center">{leftIcon}</span>
+      )}
+
+      <span>{children}</span>
+
+      {!loading && rightIcon && (
+        <span className="flex items-center">{rightIcon}</span>
+      )}
+    </button>
+  );
+}

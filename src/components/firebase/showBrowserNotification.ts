@@ -1,22 +1,48 @@
-export const showBrowserNotification = (payload: any) => {
+interface NotificationActionItem {
+  action: string;
+  title: string;
+  icon?: string;
+}
+
+interface SWNotificationOptions extends NotificationOptions {
+  actions?: NotificationActionItem[];
+  data?: any;
+  renotify?: boolean;
+}
+
+export const showBrowserNotification = async (payload: any) => {
   if (Notification.permission !== "granted") return;
 
-  const title = payload.notification?.title || "New Notification";
-  const options = {
-    body: payload.notification?.body || "",
-    icon: "/logo.png",
-    data: payload.data || {},
+  const registration = await navigator.serviceWorker.ready;
+  const url = payload.data?.url || "/notifications";
+
+  const options: SWNotificationOptions = {
+    body: payload.notification?.body || "You have a new update.",
+    icon: "/notification.png",
+    badge: "/badge.png",
+
+    data: { url },
+
+    tag: payload.data?.id || "general",
+    renotify: true,
+    requireInteraction: true,
+
+    actions: [
+      {
+        action: "open",
+        title: "Open",
+        icon: "/open.png",
+      },
+      // {
+      //   action: "close",
+      //   title: "Close",
+      //   icon: "/close.png",
+      // },
+    ],
   };
 
-  const notification = new Notification(title, options);
-
-  /* ✅ Handle click (VERY IMPORTANT UX) */
-  notification.onclick = () => {
-    window.focus();
-
-    // optional navigation
-    if (options.data?.url) {
-      window.location.href = options.data.url;
-    }
-  };
+  registration.showNotification(
+    payload.notification?.title || "New Notification",
+    options
+  );
 };

@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,7 +31,7 @@ export default function BookingDetailBreadCrumb() {
   }
 };
   return (
-    <button
+    <Button
       onClick={handleBack}
       className="
         flex items-center gap-2 mb-6 text-sm font-semibold mt-10 
@@ -48,6 +49,6 @@ export default function BookingDetailBreadCrumb() {
       </svg>
 
       {t.bookingdetailpage.backToServices}
-    </button>
+    </Button>
   );
 }

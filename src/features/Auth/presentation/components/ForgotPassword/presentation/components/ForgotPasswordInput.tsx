@@ -1,3 +1,5 @@
+import { Input, Label } from "@/components/input";
+import Button from "@/components/input/Button";
 import React from "react";
 import { toast } from "react-toastify";
 
@@ -32,11 +34,11 @@ export default function ForgotPasswordInput({
     <form onSubmit={handleSendOTP} className="space-y-6">
       
       <div>
-        <label className="block text-sm font-semibold text-black mb-2">
+        <Label className="block text-sm font-semibold text-black mb-2">
           Email Address
-        </label>
+        </Label>
 
-        <input
+        <Input
           type="email"
           placeholder="john@example.com"
           value={email}
@@ -46,12 +48,12 @@ export default function ForgotPasswordInput({
         />
       </div>
 
-      <button
+      <Button
         type="submit"
         className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-md transition hover:bg-blue-700 hover:-translate-y-0.5"
       >
         Send OTP
-      </button>
+      </Button>
     </form>
   );
 }

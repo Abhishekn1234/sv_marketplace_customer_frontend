@@ -1,3 +1,4 @@
+import Button from "@/components/input/Button";
 import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
@@ -20,12 +21,17 @@ export default function InvoiceModal({
   onClose,
 }: Props) {
   if (!open) return null;
-
+ 
 
   const { data: invoice } = useGenerateInvoice(booking?._id);
- const {serviceTiers}=useServices();
+ const {serviceTiers,services}=useServices();
  
- const serviceName =booking.serviceId?.name ?? booking.service?.name;
+const serviceName =
+  booking.serviceId?.name ??
+  booking.service?.name;
+
+const service = serviceName ??
+  services.find((s) => s._id === booking.serviceId)?.name;
   const serviceTier = serviceTiers?.find(
   (tier: any) => tier._id === booking?.serviceTierId
 );
@@ -90,7 +96,7 @@ const serviceTierName = serviceTier?.displayName ?? "-";
           </p>
          
           <p>
-            <b>Service:</b> {serviceName}
+            <b>Service:</b> {service}
           </p>
           <p>
             <b>Service Tier:</b> {serviceTierName}
@@ -127,12 +133,12 @@ const serviceTierName = serviceTier?.displayName ?? "-";
 
         {/* FOOTER */}
         <div className="flex justify-end">
-          <button
+          <Button
             onClick={onClose}
             className="px-4 py-2 bg-primary text-white rounded-lg"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

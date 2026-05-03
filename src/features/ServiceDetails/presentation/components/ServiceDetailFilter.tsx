@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { FilterKey, SortKey } from "../../domain/entities/filterkeys";
+import Button from "@/components/input/Button";
 
 interface Props {
   activeFilter: FilterKey;
@@ -55,7 +56,7 @@ const sortOptions: SortKey[] = [
           const isActive = filter === activeFilter;
 
           return (
-            <button
+            <Button
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200
@@ -66,14 +67,14 @@ const sortOptions: SortKey[] = [
                 }`}
             >
               {t.servicedetailpage.filters[filter]}
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {/* Sort */}
       <div className="relative" ref={dropdownRef}>
-        <button
+        <Button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center gap-1.5 text-gray-500 font-semibold text-sm hover:text-blue-600"
         >
@@ -85,12 +86,12 @@ const sortOptions: SortKey[] = [
               dropdownOpen ? "rotate-180" : ""
             }`}
           />
-        </button>
+        </Button>
 
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
             {sortOptions.map((option) => (
-              <button
+              <Button
                 key={option}
                 onClick={() => {
                   setSortBy(option);
@@ -103,7 +104,7 @@ const sortOptions: SortKey[] = [
                 }`}
               >
                 {t.servicedetailpage.filters[option]}
-              </button>
+              </Button>
             ))}
           </div>
         )}

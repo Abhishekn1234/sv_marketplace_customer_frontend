@@ -10,6 +10,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { Label, Textarea } from "@/components/input";
+import Button from "@/components/input/Button";
+import Select, { type SelectOption } from "@/components/input/Select";
 
 // -----------------------
 // CANCEL TYPES
@@ -22,6 +25,14 @@ const cancelTypes = [
   { value: "SERVICE_NO_LONGER_NEEDED", label: "Service No Longer Needed" },
   { value: "OTHER", label: "Other" },
 ];
+const options: SelectOption[] = [
+  { label: "Select cancellation reason...", value: "" },
+  ...cancelTypes.map((type) => ({
+    label: type.label,
+    value: type.value,
+  })),
+];
+
 
 // -----------------------
 // CANCEL FORM
@@ -53,26 +64,20 @@ function CancelConfirmationDialog({
 
   return (
     <div>
-      <p className="font-semibold mb-3">
+      <Label className="font-semibold mb-3">
         Are you sure you want to cancel this booking?
-      </p>
+      </Label>
 
       {/* TYPE */}
-      <select
+            <Select
+        options={options}
         value={selectedType}
-        onChange={(e) => setSelectedType(e.target.value)}
-        className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
-      >
-        <option value="">Select cancellation reason...</option>
-        {cancelTypes.map((type) => (
-          <option key={type.value} value={type.value}>
-            {type.label}
-          </option>
-        ))}
-      </select>
+        onChange={(val) => setSelectedType(val)}
+        className="w-full mb-3"
+      />
 
       {/* REASON */}
-      <textarea
+      <Textarea
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder={
@@ -85,19 +90,19 @@ function CancelConfirmationDialog({
 
       {/* ACTIONS */}
       <div className="flex gap-2 justify-end">
-        <button
+        <Button
           onClick={onCancel}
           className="px-3 py-1 text-sm rounded bg-gray-200"
         >
           No
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handleConfirm}
           className="px-3 py-1 text-sm rounded bg-red-600 text-white"
         >
           Yes, Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );

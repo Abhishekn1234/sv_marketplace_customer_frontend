@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { Image } from "@/components/input";
 
 interface Props {
   categories: Category[];
@@ -86,7 +87,7 @@ const PopularService: React.FC<Props> = ({ categories }) => {
   
       <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:bg-blue-50 group-hover:scale-110 group-hover:-rotate-6">
         {category.iconUrl ? (
-          <img
+          <Image
             src={category.iconUrl}
             alt={category.name}
             className="w-8 h-8 object-contain"

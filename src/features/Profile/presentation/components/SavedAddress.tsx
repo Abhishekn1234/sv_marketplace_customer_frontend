@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { AddressInput,Radio } from "@/components/input";
+import Button from "@/components/input/Button";
 
 export default function SavedAddress() {
   const { current_location, addAddress, updateAddress, deleteAddress } = useAuthStore();
@@ -87,33 +88,33 @@ export default function SavedAddress() {
         <div className="flex gap-2">
           {editingId === addr.id ? (
             <>
-              <button
+              <Button
                 onClick={saveEdit}
                 className="px-3 py-1 bg-green-500 text-white rounded-lg text-xs"
               >
                 {t.profilepage.save}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={cancelEdit}
                 className="px-3 py-1 bg-gray-300 rounded-lg text-xs"
               >
                 {t.profilepage.cancel}
-              </button>
+              </Button>
             </>
           ) : (
             <>
-              <button
+              <Button
                 onClick={() => startEdit(addr.id, addr.value)}
                 className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition text-xs"
               >
                 {t.profilepage.edit}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleDelete(addr.id)}
                 className="px-3 py-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition text-xs"
               >
                 {t.profilepage.delete}
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -161,13 +162,13 @@ export default function SavedAddress() {
             />
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={handleAdd}
                 className="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
               >
                 {t.profilepage.addAddress}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   setShowAddForm(false);
                   setNewAddress("");
@@ -175,16 +176,16 @@ export default function SavedAddress() {
                 className="px-5 py-2 bg-gray-200 rounded-xl text-sm"
               >
                 {t.profilepage.cancel}
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <button
+          <Button
             onClick={() => setShowAddForm(true)}
             className="w-full py-4 bg-blue-50 border-2 border-dashed border-blue-600 rounded-2xl text-blue-600 font-semibold hover:bg-blue-600 hover:text-white transition"
           >
             + {t.profilepage.addAddress}
-          </button>
+          </Button>
         )}
       </div>
     </div>
