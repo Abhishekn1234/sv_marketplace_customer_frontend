@@ -30,7 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           <input
             ref={ref}
-            className={`w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl 
+            className={`w-full px-4 py-3 pr-12  rounded-xl 
             focus:border-blue-600 focus:ring-4 focus:ring-blue-100 
             outline-none transition ${className}`}
             {...props}
