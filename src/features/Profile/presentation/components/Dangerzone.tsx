@@ -19,14 +19,14 @@ export default function DangerZone() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         
         {/* Change Password */}
-        <Button onClick={()=>navigate('/changepassword')} className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
-          <SecurityIcon className="w-[18px] h-[18px]" />
+        <Button onClick={()=>navigate('/changepassword')}  leftIcon={<> <SecurityIcon className="w-[18px] h-[18px]" /> </>} className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
+          
           {t.profilepage.changePassword}
         </Button>
 
         {/* Delete Account */}
-        <Button className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
-          <DeleteAccountIcon className="w-[18px] h-[18px]" />
+        <Button  leftIcon={<> <DeleteAccountIcon className="w-[18px] h-[18px]" /> </>}className="flex items-center justify-center gap-2 px-5 py-[14px] bg-white border-2 border-red-200 rounded-xl text-[14px] font-semibold text-red-600 transition-all duration-200 hover:bg-red-600 hover:text-white hover:border-red-600">
+         
           {t.profilepage.deleteAccount}
         </Button>
 

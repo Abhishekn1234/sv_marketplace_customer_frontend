@@ -9,6 +9,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
 import { Textarea } from "@/components/input";
+import { ArrowRight } from "@/components/icons";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
@@ -258,6 +259,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       <Button
   onClick={handleBooking}
   disabled={loading}
+  rightIcon={<ArrowRight/>}
   className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
 >
   {loading ? (
@@ -285,7 +287,7 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
     </>
   ) : (
     <>
-      {t.bookingdetailpage.confirmBooking} →
+      {t.bookingdetailpage.confirmBooking} 
     </>
   )}
 </Button>

@@ -1,6 +1,8 @@
 import GoogleIcon from "@/components/icons/google.svg?react";
 import FacebookIcon from "@/components/icons/facebook.svg?react";
 import MoneyIcon from "@/components/icons/moneybill.svg?react";
+import ReactIcon from "@/components/icons/react.svg";
+// import ViteIcon from "@/components/icons/vite.svg?react";
 import { QuickActionsIcon } from "./QuickActionsIcon";
 import { SecurityIcon } from "./SecurityIcon";
 import { BackArrowIcon } from "./BackArrowIcon";
@@ -15,8 +17,9 @@ import { DeleteAccountIcon } from "./DeleteAccountIcon";
 import { EmailNotificationIcon } from "./EmailNotificationIcon";
 import { SmsNotificationIcon } from "./SmsNotificationIcon";
 import { TwoFactorAuthIcon } from "./TwoFactorAuthIcon";
-import { UserIcon } from "./Usericon";
+import { UserIcon } from "./UserIcon";
+import { ArrowRight } from "./ArrowRight";
 
-export { GoogleIcon,UserIcon, FacebookIcon,PrivacyIcon,LogoIcon,DangerZoneIcon,DeleteAccountIcon,EmailNotificationIcon,SmsNotificationIcon,TwoFactorAuthIcon, MoneyIcon,QuickActionsIcon,SecurityIcon,BackArrowIcon,BillingIcon,HelpIcon ,PreferencesIcon,SaveIcon};
+export { GoogleIcon,UserIcon, FacebookIcon,PrivacyIcon,LogoIcon,DangerZoneIcon,DeleteAccountIcon,EmailNotificationIcon,SmsNotificationIcon,TwoFactorAuthIcon, MoneyIcon,ReactIcon,QuickActionsIcon,SecurityIcon,BackArrowIcon,BillingIcon,HelpIcon ,PreferencesIcon,SaveIcon, ArrowRight };
 
 

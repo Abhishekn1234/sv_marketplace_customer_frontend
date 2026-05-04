@@ -24,8 +24,13 @@ export default function ProfileTop() {
         onClick={() => navigate("/")}
         className="flex items-center gap-2 mb-4 text-sm font-semibold 
         text-gray-400 hover:text-blue-600 transition-colors"
+        leftIcon={
+          <>
+            <BackArrowIcon className="w-5 h-5" />
+          </>
+        }
       >
-        <BackArrowIcon className="w-5 h-5" />
+       
        {t.profilepage.backToDashboard}
       </Button>
 
@@ -43,8 +48,14 @@ export default function ProfileTop() {
           text-blue-600 font-semibold text-sm sm:text-base
           hover:bg-blue-600 hover:text-white 
           transition-all duration-200 whitespace-nowrap"
+          rightIcon={
+            <>
+               <LogOutIcon className="w-5 h-5" />
+            </>
+           
+          }
         >
-          <LogOutIcon size={18} />
+         
           {t.profilepage.logout}
         </Button>
 

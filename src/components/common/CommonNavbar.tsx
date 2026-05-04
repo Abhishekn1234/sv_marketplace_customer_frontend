@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
-  MapPin,
+  // MapPin,
   // ChevronDown,
   Search,
   Menu,
@@ -118,48 +118,44 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   >
     {/* Input box */}
     <div className="relative w-full max-w-[300px]">
-      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-600 pointer-events-none" />
+      
+    <Input
+  onClick={() => setShowDropdown((prev) => !prev)}
+  value={currentLocation || ""}
 
-      <Input
-        onClick={() => setShowDropdown((prev) => !prev)}   // ✅ IMPORTANT: toggle here
-        value={currentLocation}
-        readOnly
-        className="
-          w-full
-          pl-10 pr-3 py-2
-          rounded-full
-          border border-blue-500
-          
-          text-sm
-          font-medium
-          text-gray-800
-          focus:outline-none
-          cursor-pointer
-        "
-      />
+  readOnly
+  className={`
+    border rounded-xl cursor-pointer
+    ${currentLocation
+      ? "bg-white text-black border-gray-300"
+      : "bg-gray-100 text-gray-500 border-gray-200"
+    }
+  `}
+/>
     </div>
 
     {/* Dropdown */}
-    {showDropdown && (
-      <div
-        className={`
-          absolute top-full mt-2 w-56
-          bg-white border border-gray-200
-          rounded-xl shadow-lg z-50
-          ${isBookingPage || serviceratingpage
-            ? "left-1/2 -translate-x-1/2"
-            : "left-0"
-          }
-        `}
-      >
-        <button
-          onClick={handleUseCurrentLocation}
-          className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium"
-        >
-          {t.navbar["Use current location"]}
-        </button>
-      </div>
-    )}
+  {showDropdown && (
+  <div
+    className={`
+      absolute top-full mt-2 w-56
+      bg-white border border-gray-300
+      rounded-xl shadow-2xl z-[9999]
+      backdrop-blur-md
+      ${isBookingPage || serviceratingpage
+        ? "left-1/2 -translate-x-1/2"
+        : "left-0"
+      }
+    `}
+  >
+    <Button
+      onClick={handleUseCurrentLocation}
+      className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium text-gray-700 rounded-lg"
+    >
+      {t.navbar["Use current location"]}
+    </Button>
+  </div>
+)}
   </div>
 )}
 
@@ -208,17 +204,22 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           )}
 
           {/* SEARCH */}
-          {showSearch && (
-            <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 border rounded-xl">
-              <Search className="w-4 h-4 text-gray-400" />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={t.navbar.SearchPlaceholder}
-                className="bg-transparent outline-none text-sm"
-              />
-            </div>
-          )}
+        {showSearch && (
+  <div className="hidden md:flex items-center">
+    <Input
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder={t.navbar.SearchPlaceholder}
+      className="pl-10 bg-white"
+      size="md"
+      radius="lg"
+      rightElement={null}
+    />
+
+    {/* LEFT ICON */}
+    <Search className="w-4 h-4 text-gray-400 absolute ml-3" />
+  </div>
+)}
 
           {/* USER */}
           {showUserControls && user && (
@@ -230,7 +231,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                     onClick={() => navigate("/profile")}
                     className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
                     fallback={
-                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl  flex items-center justify-center cursor-pointer"  onClick={() => navigate("/profile")}>
                         <UserIcon />
                       </div>
                     }

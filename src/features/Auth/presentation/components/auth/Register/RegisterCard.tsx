@@ -182,54 +182,53 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
           {/* Submit */}
-          <Button
-        type="submit"
-        disabled={loading}
-        className={`w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 transition 
-        ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-800 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"}`}
+         <Button
+  type="submit"
+  disabled={loading}
+  className={`
+    group w-full h-14 rounded-full bg-blue-600 text-white font-semibold
+  
+    transition
+    ${loading
+      ? "opacity-70 cursor-not-allowed"
+      : "hover:bg-blue-800 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
+    }
+  `}
+>
+  {loading ? (
+    <>
+      {/* ✅ Proper spinner */}
+      <svg
+        className="w-5 h-5 animate-spin"
+        viewBox="0 0 24 24"
+        fill="none"
       >
-        {loading ? (
-          <>
-            {/* Spinner */}
-            <svg
-              className="w-5 h-5 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                className="opacity-25"
-              />
-              <path
-                d="M22 12a10 10 0 00-10-10"
-                stroke="currentColor"
-                strokeWidth="4"
-                className="opacity-75"
-              />
-            </svg>
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+          className="opacity-25"
+        />
+        <path
+          d="M4 12a8 8 0 018-8"
+          stroke="currentColor"
+          strokeWidth="4"
+          className="opacity-75"
+        />
+      </svg>
 
-            Loading...
-          </>
-        ) : (
-          <>
-            {t.register.submit}
-            <svg
-              className="w-5 h-5 transition-transform group-hover:translate-x-1"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M5 12h14" />
-              <path d="M12 5l7 7-7 7" />
-            </svg>
-          </>
-        )}
-      </Button>
+      <span>Loading...</span>
+    </>
+  ) : (
+    <>
+      <span>{t.register.submit}</span>
+
+      
+    </>
+  )}
+</Button>
         </form>
 
         {/* Footer */}

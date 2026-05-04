@@ -77,9 +77,9 @@ export default function ProfileList() {
           {/* Edit Button */}
           <Button
             disabled={isPending}
-            className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-full flex items-center justify-center border-4 border-white shadow-md hover:scale-105 disabled:opacity-60"
+            className="absolute bottom-0 right-0 w-10 h-10 text-blue-400 hover:bg-blue-700 transition-all duration-200 rounded-full flex items-center justify-center border-4 border-white shadow-md hover:scale-105 disabled:opacity-60"
           >
-            <Pencil className="w-4 h-4 text-white" />
+            <Pencil className="w-4 h-4 text-blue-400" />
           </Button>
           </FileInput>
         </div>

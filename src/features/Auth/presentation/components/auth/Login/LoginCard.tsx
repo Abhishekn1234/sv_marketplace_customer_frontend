@@ -126,28 +126,31 @@ const LoginCard = () => {
         </div>
 
         {/* Submit Button */}
-        <Button
+       <Button
   type="submit"
   disabled={loading}
-  className="w-full h-13 flex items-center justify-center bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
+  className="w-full h-13 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
 >
-  {loading ? (
-    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-  ) : (
-    <>
-      Continue
-      <svg
-        className="w-4 h-4 ml-2"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M5 12h14" />
-        <path d="M12 5l7 7-7 7" />
-      </svg>
-    </>
-  )}
+  <span className="inline-flex items-center gap-2 whitespace-nowrap">
+    {loading ? (
+      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+    ) : (
+      <>
+        <span>Continue</span>
+
+        <svg
+          className="w-4 h-4 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M5 12h14" />
+          <path d="M12 5l7 7-7 7" />
+        </svg>
+      </>
+    )}
+  </span>
 </Button>
       </form>
 

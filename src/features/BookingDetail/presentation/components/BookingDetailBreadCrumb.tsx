@@ -33,12 +33,9 @@ export default function BookingDetailBreadCrumb() {
   return (
     <Button
       onClick={handleBack}
-      className="
-        flex items-center gap-2 mb-6 text-sm font-semibold mt-10 
-        text-gray-400 hover:text-blue-600 transition-colors duration-200
-      "
-    >
-      <svg
+      leftIcon={
+        <>
+        <svg
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -48,6 +45,14 @@ export default function BookingDetailBreadCrumb() {
         <polyline points="15 18 9 12 15 6" />
       </svg>
 
+        </>
+      }
+      className="
+        flex items-center gap-2 mb-6 text-sm font-semibold mt-10 
+        text-gray-400 hover:text-blue-600 transition-colors duration-200
+      "
+    >
+      
       {t.bookingdetailpage.backToServices}
     </Button>
   );

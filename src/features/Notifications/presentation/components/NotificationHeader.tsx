@@ -40,8 +40,13 @@ export default function NotificationHeader({
       <Button
         onClick={markAllAsRead}
         className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
+        leftIcon={
+          <>
+            <BellRing className="w-4 h-4" />
+          </>
+        }
       >
-        <BellRing className="w-4 h-4" />
+        
         Read All
       </Button>
     ) : (
@@ -49,9 +54,14 @@ export default function NotificationHeader({
       <>
         <Button
           onClick={markSelectedAsRead}
+          leftIcon={
+            <>
+              <BellRing className="w-4 h-4" />
+            </>
+          }
           className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
         >
-          <BellRing className="w-4 h-4" />
+          
           Read Selected
         </Button>
 
