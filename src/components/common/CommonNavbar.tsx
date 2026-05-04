@@ -129,7 +129,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           pl-10 pr-3 py-2
           rounded-full
           border border-blue-500
-          bg-white
+          
           text-sm
           font-medium
           text-gray-800
