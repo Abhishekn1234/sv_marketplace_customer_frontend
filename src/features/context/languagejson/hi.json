@@ -58,10 +58,34 @@
     "verify_continue": "सत्यापित करें और आगे बढ़ें",
     "change_number": "फोन नंबर बदलें"
   },
-   "common": {
-    "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
-    "locationError": "लोकेशन प्राप्त नहीं कर सकते"
-  },
+ "common": {
+      "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
+      "locationError": "लोकेशन प्राप्त नहीं कर सकते",
+
+      "save": "सेव करें",
+      "close": "बंद करें",
+      "add": "जोड़ें",
+      "open": "खोलें",
+
+      "exportPdf": "PDF एक्सपोर्ट करें",
+
+      "service": "सेवा",
+      "serviceTier": "सेवा टियर",
+
+      "invoiceDetails": "इनवॉइस विवरण",
+      "invoiceNo": "इनवॉइस नंबर",
+      "status": "स्थिति",
+
+      "workers": "कर्मचारी",
+      "pricingMode": "प्राइसिंग मोड",
+      "rate": "दर",
+      "workedDuration": "काम का समय",
+
+      "finalAmount": "कुल राशि",
+      "date": "तारीख",
+      "payment": "भुगतान",
+      "totalPaid": "कुल भुगतान"
+    },
   "stepper": {
     "language": "भाषा",
     "location": "स्थान",
@@ -663,7 +687,31 @@
 
   "section5Title": "5. कमजोरियों की रिपोर्टिंग",
   "section5Desc": "यदि आपको कोई संभावित सुरक्षा कमजोरी मिलती है, तो कृपया तुरंत हमें security@homeease.com पर संपर्क करें ताकि हम इसे जांचकर जल्दी समाधान कर सकें।"
-}
+},
+"invoice": {
+      "title": "इनवॉइस",
+      "no": "नंबर",
+      "issued": "जारी किया गया",
+      "billedTo": "बिल किसे किया गया",
+      "serviceProfessional": "सेवा पेशेवर",
+      "verifiedProfessional": "सत्यापित पेशेवर",
+      "serviceLocation": "सेवा स्थान",
+      "servicesRendered": "दी गई सेवाएँ",
+      "description": "विवरण",
+      "tier": "टियर",
+      "qtyHours": "मात्रा / घंटे",
+      "rate": "दर",
+      "amount": "राशि",
+      "bookingRef": "बुकिंग संदर्भ",
+      "servicePeriod": "सेवा अवधि",
+      "subtotal": "उप-योग",
+      "vat": "कर (VAT)",
+      "totalDue": "कुल देय",
+      "paymentDue": "भुगतान प्राप्ति पर देय है",
+      "authorizedSignature": "अधिकृत हस्ताक्षर",
+      "customerSignature": "ग्राहक हस्ताक्षर",
+      "onDemandServices": "ऑन-डिमांड सेवाएँ"
+    }
 
 
 }

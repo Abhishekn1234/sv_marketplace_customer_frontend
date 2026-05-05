@@ -38,16 +38,7 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
       {/* Search Bar */}
       <div className="relative w-full">
         {/* Search Icon */}
-        <svg
-          className="absolute left-[18px] top-1/2 -translate-y-1/2 w-[22px] h-[22px] text-gray-400 pointer-events-none"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
+       
 
         {/* Input */}
         <Input
@@ -56,6 +47,18 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
           aria-label="Search services"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+         leftElement={
+              <svg
+                className="w-5 h-5 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            }
           className="
             w-full h-[56px]
             rounded-2xl

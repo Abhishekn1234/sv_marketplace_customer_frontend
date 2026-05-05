@@ -58,10 +58,34 @@
   "already": "هل لديك حساب؟",
   "login": "تسجيل الدخول"
   },
-  "common": {
-    "geoNotSupported": "الموقع الجغرافي غير مدعوم",
-    "locationError": "تعذر الحصول على الموقع"
-  },
+ "common": {
+      "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
+      "locationError": "تعذر الحصول على الموقع",
+
+      "save": "حفظ",
+      "close": "إغلاق",
+      "add": "إضافة",
+      "open": "فتح",
+
+      "exportPdf": "تصدير PDF",
+
+      "service": "الخدمة",
+      "serviceTier": "فئة الخدمة",
+
+      "invoiceDetails": "تفاصيل الفاتورة",
+      "invoiceNo": "رقم الفاتورة",
+      "status": "الحالة",
+
+      "workers": "العمال",
+      "pricingMode": "نموذج التسعير",
+      "rate": "السعر",
+      "workedDuration": "مدة العمل",
+
+      "finalAmount": "المبلغ النهائي",
+      "date": "التاريخ",
+      "payment": "الدفع",
+      "totalPaid": "إجمالي المدفوع"
+    },
   "stepper": {
     "language": "اللغة",
     "location": "الموقع",
@@ -663,7 +687,30 @@
 
   "section5Title": "5. الإبلاغ عن الثغرات",
   "section5Desc": "إذا اكتشفت أي ثغرة أمنية محتملة، يرجى التواصل معنا فورًا على security@homeease.com حتى نتمكن من التحقيق وحل المشكلة بسرعة."
-}
-
+},
+"invoice": {
+      "title": "فاتورة",
+      "no": "رقم",
+      "issued": "تاريخ الإصدار",
+      "billedTo": "فاتورة إلى",
+      "serviceProfessional": "المحترف",
+      "verifiedProfessional": "محترف موثّق",
+      "serviceLocation": "موقع الخدمة",
+      "servicesRendered": "الخدمات المقدمة",
+      "description": "الوصف",
+      "tier": "الفئة",
+      "qtyHours": "الكمية / الساعات",
+      "rate": "السعر",
+      "amount": "المبلغ",
+      "bookingRef": "مرجع الحجز",
+      "servicePeriod": "فترة الخدمة",
+      "subtotal": "المجموع الفرعي",
+      "vat": "ضريبة القيمة المضافة",
+      "totalDue": "الإجمالي المستحق",
+      "paymentDue": "الدفع عند الاستلام",
+      "authorizedSignature": "التوقيع المعتمد",
+      "customerSignature": "توقيع العميل",
+      "onDemandServices": "خدمات حسب الطلب"
+    }
 
 }

@@ -12,70 +12,61 @@ const RecentServices: React.FC = () => {
   const { data: categories = [] } = useServiceCategory();
   const { t } = useLanguage();
 
-  // -----------------------------
-  // normalize bookings safely
-  // -----------------------------
   const normalizedBookings = bookings;
 
-  // -----------------------------
-  // category map
-  // -----------------------------
   const serviceToCategoryMap = React.useMemo(() => {
-  const map = new Map<string, string>();
-
-  categories?.forEach((category: any) => {
-    category.services?.forEach((service: any) => {
-      map.set(String(service._id), String(category._id));
+    const map = new Map<string, string>();
+    categories?.forEach((category: any) => {
+      category.services?.forEach((service: any) => {
+        map.set(String(service._id), String(category._id));
+      });
     });
-  });
+    return map;
+  }, [categories]);
 
-  return map;
-}, [categories]);
-
- const serviceMap = React.useMemo(() => {
-  const map = new Map<string, any>();
-
-  categories?.forEach((category: any) => {
-    category.services?.forEach((service: any) => {
-      map.set(String(service._id), service);
+  const serviceMap = React.useMemo(() => {
+    const map = new Map<string, any>();
+    categories?.forEach((category: any) => {
+      category.services?.forEach((service: any) => {
+        map.set(String(service._id), service);
+      });
     });
-  });
+    return map;
+  }, [categories]);
 
-  return map;
-}, [categories]);
-  // -----------------------------
-  // sort
-  // -----------------------------
-  const recentBookings = React.useMemo(() => {
-  return [...normalizedBookings].sort((a, b) => {
-    const aTime = a.schedule?.startDateTime
-      ? new Date(a.schedule.startDateTime).getTime()
-      : 0;
+ const recentBookings = React.useMemo(() => {
+  return [...normalizedBookings]
+    .filter((b) => b.serviceId) // 👈 remove broken ones
+    .sort((a, b) => {
+      const aTime = a.schedule?.startDateTime
+        ? new Date(a.schedule.startDateTime).getTime()
+        : 0;
 
-    const bTime = b.schedule?.startDateTime
-      ? new Date(b.schedule.startDateTime).getTime()
-      : 0;
+      const bTime = b.schedule?.startDateTime
+        ? new Date(b.schedule.startDateTime).getTime()
+        : 0;
 
-    return bTime - aTime;
-  });
+      return bTime - aTime;
+    });
 }, [normalizedBookings]);
+ const validBookings = recentBookings.filter((b) => {
+  const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
+  return serviceMap.has(serviceId);
+});
+  // ✅ IMPORTANT: EARLY RETURN (removes UI completely)
+  if (!validBookings?.length) return null;
   return (
     <aside className="flex flex-col gap-5 top-6">
       <div className="bg-white rounded-[20px] p-6 border border-gray-200">
-
         <div className="flex items-center justify-between mb-5">
           <span className="text-[18px] font-bold text-gray-900">
             {t.home.Recent}
           </span>
         </div>
 
-        <div className="flex flex-col gap-4">
-        {!recentBookings?.length ? (
-          <p className="text-sm text-gray-400 text-center py-4">
-            No recent bookings available
-          </p>
-        ) : (
-    recentBookings.map((booking) => {
+       <div className="flex flex-col gap-4">
+  {validBookings?.length > 0 ? (
+    validBookings.map((booking) => {
       const serviceId = String(
         booking.serviceId?._id ?? booking.serviceId ?? ""
       );
@@ -112,7 +103,7 @@ const RecentServices: React.FC = () => {
         />
       );
     })
-  )}
+  ) : null}
 </div>
       </div>
     </aside>

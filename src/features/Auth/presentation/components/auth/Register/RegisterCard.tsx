@@ -7,6 +7,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Checkbox, PhoneInput as CustomPhoneInput } from "@/components/input";
 import Button from "@/components/input/Button";
+import { ArrowRight } from "@/components/icons";
 
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
@@ -185,6 +186,11 @@ const handleSubmit = async (e: React.FormEvent) => {
          <Button
   type="submit"
   disabled={loading}
+  rightIcon={
+    <>
+    <ArrowRight/>
+    </>
+  }
   className={`
     group w-full h-14 rounded-full bg-blue-600 text-white font-semibold
   

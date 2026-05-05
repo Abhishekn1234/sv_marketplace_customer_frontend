@@ -13,6 +13,7 @@ import {
   Info,
   Shield,
   HelpCircle,
+  MapPin,
 
 } from "lucide-react";
 
@@ -119,19 +120,19 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     {/* Input box */}
     <div className="relative w-full max-w-[300px]">
       
-    <Input
-  onClick={() => setShowDropdown((prev) => !prev)}
-  value={currentLocation || ""}
-
-  readOnly
-  className={`
-    border rounded-xl cursor-pointer
-    ${currentLocation
-      ? "bg-white text-black border-gray-300"
-      : "bg-gray-100 text-gray-500 border-gray-200"
-    }
-  `}
-/>
+        <Input
+      variant="unstyled"
+      onClick={() => setShowDropdown((prev) => !prev)}
+      value={currentLocation || ""}
+      readOnly
+      placeholder={!currentLocation ? "Select location" : ""}
+      className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
+      rightElement={
+        !currentLocation ? (
+          <MapPin className="w-4 h-4 text-gray-400" />
+        ) : null
+      }
+    />
     </div>
 
     {/* Dropdown */}

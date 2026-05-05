@@ -48,6 +48,7 @@ import ScrollToTop from "./ScrollToTop";
 
 /* 🔥 ADD THESE */
 import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
+import InvoicePrintPage from "./features/JobTracking/presentation/components/InvoicePrintPage";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -117,6 +118,7 @@ function App() {
           />
 
           <Routes>
+             <Route path="/invoice/:id" element={<InvoicePrintPage />} />
             <Route element={<DashboardLayout />}>
               {/* Public */}
               <Route path="/login" element={<LoginLayout />} />
@@ -126,6 +128,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
               <Route path="/verification" element={<VerificationPage />} />
               <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
+              
 
               {/* Protected */}
               <Route element={<ProtectedRoute />}>
@@ -149,6 +152,7 @@ function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
+                
                 <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
               </Route>
             </Route>

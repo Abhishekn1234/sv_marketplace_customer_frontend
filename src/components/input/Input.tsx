@@ -2,14 +2,15 @@ import React, { forwardRef } from "react";
 
 type Size = "sm" | "md" | "lg" | "xl";
 type Radius = "sm" | "md" | "lg" | "xl" | "full";
-
+type Variant = "default" | "unstyled";
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   containerClassName?: string;
   labelClassName?: string;
   rightElement?: React.ReactNode;
-
+  leftElement?:React.ReactNode;
+  variant?: Variant;
   size?: Size;
   radius?: Radius;
 }
@@ -29,6 +30,16 @@ const radiusStyles: Record<Radius, string> = {
   xl: "rounded-2xl",
   full: "rounded-full",
 };
+const variantStyles: Record<Variant, string> = {
+  default: `
+    border
+    focus:border-blue-600 focus:ring-4 focus:ring-blue-100
+    bg-white
+  `,
+  unstyled: `
+   bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm
+  `,
+};
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -38,7 +49,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       labelClassName,
       className = "",
       rightElement,
-
+      leftElement,
+        variant = "default",
       size = "md",
       radius = "lg",
 
@@ -60,20 +72,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             className={`
-              w-full
-              bg-white border border-gray-300
-              focus:border-blue-600 focus:ring-4 focus:ring-blue-100
-              outline-none transition
-              text-gray-900
+                w-full outline-none transition text-gray-900
+               ${variantStyles[variant]}
 
               ${sizeStyles[size]}
               ${radiusStyles[radius]}
               ${rightElement ? "pr-12" : ""}
-
+             ${leftElement ? "pl-10" : ""}
               ${className}
             `}
             {...props}
           />
+            {leftElement && (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  {leftElement}
+                </div>
+              )}
+
 
           {rightElement && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
