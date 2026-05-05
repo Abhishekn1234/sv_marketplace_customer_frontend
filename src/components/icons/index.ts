@@ -17,7 +17,7 @@ import { DeleteAccountIcon } from "./DeleteAccountIcon";
 import { EmailNotificationIcon } from "./EmailNotificationIcon";
 import { SmsNotificationIcon } from "./SmsNotificationIcon";
 import { TwoFactorAuthIcon } from "./TwoFactorAuthIcon";
-import { UserIcon } from "./UserIcon";
+import {UserIcon} from "./UserIcon";
 import { ArrowRight } from "./ArrowRight";
 
 export { GoogleIcon,UserIcon, FacebookIcon,PrivacyIcon,LogoIcon,DangerZoneIcon,DeleteAccountIcon,EmailNotificationIcon,SmsNotificationIcon,TwoFactorAuthIcon, MoneyIcon,ReactIcon,QuickActionsIcon,SecurityIcon,BackArrowIcon,BillingIcon,HelpIcon ,PreferencesIcon,SaveIcon, ArrowRight };
