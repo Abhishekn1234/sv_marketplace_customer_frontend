@@ -49,6 +49,7 @@ import ScrollToTop from "./ScrollToTop";
 /* 🔥 ADD THESE */
 import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
 import InvoicePrintPage from "./features/JobTracking/presentation/components/InvoicePrintPage";
+import WorkerChatPage from "./features/WorkerChat/presentation/WorkerChatPage";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -152,7 +153,7 @@ function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
-                
+                <Route path="message/:workerId" element={<WorkerChatPage/> }/>
                 <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
               </Route>
             </Route>
