@@ -6,7 +6,7 @@ import { useAuthStore } from "@/features/core/store/auth";
 
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { UserIcon } from "@/components/icons";
+import { UserIcon } from '@/components/icons/UserIcon';
 import { FileInput, Image } from '@/components/input';
 import Button from '@/components/input/Button';
 

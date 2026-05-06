@@ -21,7 +21,7 @@ import CommonNotificationFloater from "@/components/common/CommonNotificationFlo
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { UserIcon } from "../icons";
+import { UserIcon } from "../icons/UserIcon";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
 
