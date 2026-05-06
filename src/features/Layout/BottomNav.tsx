@@ -3,6 +3,14 @@ import clsx from "clsx";
 import { useAuthStore } from "../core/store/auth";
 import { useNavigate } from "react-router-dom";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import {
+  HomeIcon,
+  AboutIcon,
+  BookingIcon,
+  UserIcon,
+} from "@/components/icons";
+import { Image } from "@/components/input";
+import Tooltip from "@/components/common/ToolTip";
 
 const BottomNav: React.FC = () => {
   const { user } = useAuthStore();
@@ -26,11 +34,11 @@ const BottomNav: React.FC = () => {
       "
     >
       <NavItem ariaLabel="Home" tooltip="Home" onClick={() => navigate("/")}>
-        <HomeIcon />
+        <HomeIcon className={clsx(iconBase, "text-blue-600")} />
       </NavItem>
 
       <NavItem ariaLabel="About" tooltip="About" onClick={() => navigate("/about")}>
-        <AboutIcon />
+        <AboutIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
       </NavItem>
 
       <NavItem ariaLabel="Notifications" tooltip="Notifications">
@@ -38,13 +46,16 @@ const BottomNav: React.FC = () => {
       </NavItem>
 
       <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
-        <BookingIcon />
+        <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
       </NavItem>
 
       <NavItem ariaLabel="Profile" tooltip="Profile">
-        <div onClick={() => navigate("/profile")} className="w-full h-full flex items-center justify-center">
+        <div
+          onClick={() => navigate("/profile")}
+          className="w-full h-full flex items-center justify-center"
+        >
           {userphoto ? (
-            <img
+            <Image
               src={userphoto}
               alt="Profile"
               className="
@@ -57,7 +68,7 @@ const BottomNav: React.FC = () => {
               "
             />
           ) : (
-            <UserIcon />
+            <UserIcon className={clsx(iconBase, "text-gray-500")} />
           )}
         </div>
       </NavItem>
@@ -92,99 +103,29 @@ const NavItem: React.FC<NavItemProps> = ({
     cursor-pointer
   `);
 
-  return (
-    <div className="relative group">
-      {/* Tooltip */}
-      {tooltip && (
-        <span
-          className="
-            absolute -top-9 left-1/2 -translate-x-1/2
-            px-2 py-1 text-xs
-            bg-black text-white rounded-md
-            opacity-0 group-hover:opacity-100
-            transition
-            pointer-events-none
-            whitespace-nowrap
-            z-50
-          "
-        >
-          {tooltip}
-        </span>
-      )}
+  const content = onClick ? (
+    <button aria-label={ariaLabel} onClick={onClick} className={baseClass}>
+      {children}
+    </button>
+  ) : (
+    <div aria-label={ariaLabel} className={baseClass}>
+      {children}
+    </div>
+  );
 
-      {/* Button / div */}
-      {onClick ? (
-        <button aria-label={ariaLabel} onClick={onClick} className={baseClass}>
-          {children}
-        </button>
+  return (
+    <div className="flex items-center justify-center">
+      {tooltip ? (
+        <Tooltip text={tooltip} position="top">
+          {content}
+        </Tooltip>
       ) : (
-        <div aria-label={ariaLabel} className={baseClass}>
-          {children}
-        </div>
+        content
       )}
     </div>
   );
 };
 
-/* ================= ICONS ================= */
-
 const iconBase = "w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-200";
-
-const HomeIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={`${iconBase} text-blue-600`}
-  >
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
-const AboutIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={`${iconBase} text-gray-400 group-hover:text-gray-600`}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <line x1="12" y1="16" x2="12" y2="12" />
-    <line x1="12" y1="8" x2="12.01" y2="8" />
-  </svg>
-);
-
-const BookingIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={`${iconBase} text-gray-400 group-hover:text-gray-600`}
-  >
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-    <line x1="16" y1="2" x2="16" y2="6" />
-    <line x1="8" y1="2" x2="8" y2="6" />
-    <line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-);
-
-/* ================= USER ICON ================= */
-
-const UserIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={`${iconBase} text-gray-500`}
-  >
-    <path d="M20 21a8 8 0 10-16 0" />
-    <circle cx="12" cy="8" r="4" />
-  </svg>
-);
 
 export default BottomNav;

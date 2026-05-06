@@ -50,6 +50,7 @@ import ScrollToTop from "./ScrollToTop";
 import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
 import InvoicePrintPage from "./features/JobTracking/presentation/components/InvoicePrintPage";
 import WorkerChatPage from "./features/WorkerChat/presentation/WorkerChatPage";
+import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCall";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -151,6 +152,7 @@ function App() {
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="video-call/:workerId" element={<VideoCallPage/>}/>
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
                 <Route path="message/:workerId" element={<WorkerChatPage/> }/>

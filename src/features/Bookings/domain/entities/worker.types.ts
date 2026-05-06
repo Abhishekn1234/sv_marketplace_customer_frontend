@@ -1,9 +1,11 @@
 export interface Worker{
     _id?:string;
-    status?:string;
+    status?:WorkerStatus | string;
     fullName:string;
     email:string;
     profilePictureUrl:string;
-    isVerified:boolean;
+    isVerified?:boolean;
     phone:string;
+
 }
+export type WorkerStatus="ONLINE"|"OFFLINE"|"BUSY"

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Image, Input } from "../input";
+import Button from "../input/Button";
+import { PlusIcon } from "../icons";
 
 export default function CommonFaq() {
   const [open, setOpen] = useState(false);
@@ -29,13 +32,13 @@ export default function CommonFaq() {
   onClick={() => setWhatsappOpen((prev) => !prev)}
 >
         {/* Button */}
-        <button className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300">
-          <img
+        <Button className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300">
+          <Image
             src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
             alt="WhatsApp"
             className="w-7 h-7"
           />
-        </button>
+        </Button>
 
         {/* ================= HOVER MODAL ================= */}
         {whatsappOpen && (
@@ -49,7 +52,7 @@ export default function CommonFaq() {
 
             {/* Body */}
             <div className="p-4 space-y-3">
-              <input
+              <Input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -57,37 +60,36 @@ export default function CommonFaq() {
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
               />
 
-              <button
+              <Button
                 onClick={handleSendToWhatsApp}
                 className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition font-medium"
               >
                 Chat on WhatsApp
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </div>
 
       {/* ================= FAQ FLOAT BUTTON ================= */}
-      <button
+      <Button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 z-50"
       >
-        <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      </button>
+       
+       <PlusIcon />
+      </Button>
 
       {/* ================= FAQ MODAL ================= */}
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl relative">
-            <button
+            <Button
               onClick={() => setOpen(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-black"
             >
               ✕
-            </button>
+            </Button>
 
             <h2 className="text-xl font-bold mb-4">
               Frequently Asked Questions

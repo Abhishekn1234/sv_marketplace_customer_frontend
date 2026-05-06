@@ -3,7 +3,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { formatDate } from "@/features/Home/presentation/helpers/formatdate";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import CommonTable, { type Column } from "@/components/common/CommonTable";
 
+import type { InvoiceRow } from "../../domain/entities/invoicetyperow";
 export default function InvoicePrintPage() {
   const { state } = useLocation();
 const { t } = useLanguage();
@@ -39,7 +41,48 @@ const { t } = useLanguage();
   };
 
   const isPaid = invoice.status === "PAID";
+ const tableData = [
+  {
+    service,
+    tier: serviceTierName,
+    qty: workedDuration,
+    rate: rate || booking.amount,
+    amount: invoice.originalAmount || booking.totalCost,
+  },
+];
 
+const columns :Column<InvoiceRow>[] =[
+  {
+    header: t.common.service,
+    accessor: "service",
+  },
+  {
+    header: t.invoice.tier,
+    accessor: "tier",
+    render: (row: any) => (
+      <span className="tier-tag">{row.tier}</span>
+    ),
+  },
+  {
+    header: t.invoice.qtyHours,
+    accessor: "qty",
+    render: (row: any) => <div className="text-center">{row.qty}</div>,
+  },
+  {
+    header: t.invoice.rate,
+    accessor: "rate",
+    render: (row: any) => format(row.rate),
+  },
+  {
+    header: t.invoice.amount,
+    accessor: "amount",
+    render: (row: any) => (
+      <div className="font-semibold text-gray-900 text-right">
+        {format(row.amount)}
+      </div>
+    ),
+  },
+];
   return (
     <div style={{ background: "#F6F4F0", minHeight: "100vh", fontFamily: '"Inter", "system-ui", "sans-serif"' }}>
       <style>{`
@@ -566,28 +609,11 @@ const { t } = useLanguage();
             </div>
 
             {/* Table */}
-            <table className="inv-table">
-              <thead>
-                <tr>
-                  <th style={{ width: "38%" }}>{t.common.service}</th>
-                  <th style={{ width: "20%" }}>{t.invoice.tier}</th>
-                  <th className="center" style={{ width: "14%" }}>{t.invoice.qtyHours}</th>
-                  <th className="right" style={{ width: "14%" }}>{t.invoice.rate}</th>
-                  <th className="right" style={{ width: "14%" }}>{t.invoice.amount}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="service-name">{service}</td>
-                  <td className="tier-pill"><span className="tier-tag">{serviceTierName}</span></td>
-                  <td className="center">{workedDuration}</td>
-                  <td className="right">{format(rate || booking.amount)}</td>
-                  <td className="right" style={{ fontWeight: 600, color: "#1A1611" }}>
-                    {format(invoice.originalAmount || booking.totalCost)}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <CommonTable
+  data={tableData}
+  columns={columns}
+  pageSize={1}
+/>
 
             {/* Spacer to push bottom content down */}
             <div style={{ flex: 1 }} />

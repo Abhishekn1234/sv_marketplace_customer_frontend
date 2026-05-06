@@ -61,11 +61,12 @@
  "common": {
       "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
       "locationError": "लोकेशन प्राप्त नहीं कर सकते",
-
+       "Work Description":"कार्य विवरण",
       "save": "सेव करें",
       "close": "बंद करें",
       "add": "जोड़ें",
       "open": "खोलें",
+      "Video Call":"वीडियो कॉल",
 
       "exportPdf": "PDF एक्सपोर्ट करें",
 

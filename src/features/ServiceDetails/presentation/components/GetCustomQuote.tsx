@@ -1,3 +1,4 @@
+import { PlusIcon } from "@/components/icons";
 import Button from "@/components/input/Button";
 
 export default function CustomQuote() {
@@ -6,16 +7,7 @@ export default function CustomQuote() {
       
       {/* Icon */}
       <div className="w-16 h-16 flex items-center justify-center mb-4 bg-gray-50 border-2 border-gray-200 rounded-full transition-all duration-300 group-hover:bg-blue-600 group-hover:border-blue-600">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          className="w-7 h-7 text-gray-900 transition-colors duration-300 group-hover:text-white"
-        >
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
+        <PlusIcon/>
       </div>
 
       {/* Title */}

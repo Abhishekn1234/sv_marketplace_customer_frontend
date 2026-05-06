@@ -6,11 +6,12 @@
  "common": {
       "geoNotSupported": "Geolocation is not supported",
       "locationError": "Unable to get location",
-
+      "Work Description":"Work Description",
       "save": "Save",
       "close": "Close",
       "add": "Add",
       "open": "Open",
+      "Video Call":"Video Call",
 
       "exportPdf": "Export PDF",
 

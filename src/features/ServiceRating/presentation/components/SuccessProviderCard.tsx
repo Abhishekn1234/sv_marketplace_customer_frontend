@@ -10,14 +10,16 @@ import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Image } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function SuccessProviderCard() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { data, isLoading } = useBookingHistory();
-   const {t}=useLanguage();
-  // ✅ Hooks must always be called
+  const { t } = useLanguage();
+
   const [serviceRating, setServiceRating] = useState(4);
   const [workerRating, setWorkerRating] = useState(4);
+
   const [tags, setTags] = useState(
     [
       t.serviceratingpage.tags.professional,
@@ -28,15 +30,15 @@ export default function SuccessProviderCard() {
       t.serviceratingpage.tags.clean,
     ].map((label) => ({ label, selected: false }))
   );
+
   const [feedback, setFeedback] = useState("");
 
   const { mutate: submitReview } = useSubmitServiceReview();
 
-  // Flatten bookings and find the current one
   const bookings = data?.pages?.flatMap((page) => page.data || []) || [];
   const booking = bookings.find((b) => b._id === bookingId);
 
-  if (isLoading) return <CommonSpinner/>;
+  if (isLoading) return <CommonSpinner />;
   if (!booking) return <div>{t.serviceratingpage.bookingNotFound}</div>;
 
   const handleSubmit = () => {
@@ -49,17 +51,31 @@ export default function SuccessProviderCard() {
   };
 
   return (
-    <div className="bg-white rounded-4xl p-10 sm:p-8 xs:p-6 border border-gray-200 shadow-lg max-w-xl mx-auto">
+    <CommonCard className="max-w-xl mx-auto">
+      
       {/* Provider Section */}
       <div className="text-center mb-8 px-4 sm:px-6">
         <Image
-          src={booking.assignedWorkers?.[0]?.worker.profilePictureUrl || "https://via.placeholder.com/150"}
-          alt={booking.assignedWorkers?.[0]?.worker.fullName || "Provider"}
-          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
+          src={
+            booking.assignedWorkers?.[0]?.worker.profilePictureUrl ||
+            "https://via.placeholder.com/150"
+          }
+          alt={
+            booking.assignedWorkers?.[0]?.worker.fullName ||
+            "Provider"
+          }
+          className="
+            w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36
+            rounded-2xl border-4 border-gray-100 object-cover
+            mx-auto mb-4
+          "
         />
+
         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 truncate">
-          {booking.assignedWorkers?.[0]?.worker.fullName || "Provider Name"}
+          {booking.assignedWorkers?.[0]?.worker.fullName ||
+            "Provider Name"}
         </h2>
+
         <p className="text-sm sm:text-base md:text-lg text-gray-500 truncate">
           {booking.service?.name || "Service Name"}
         </p>
@@ -82,10 +98,9 @@ export default function SuccessProviderCard() {
         setFeedback={setFeedback}
         onSubmit={handleSubmit}
       />
-    </div>
+    </CommonCard>
   );
 }
-
 
 
 

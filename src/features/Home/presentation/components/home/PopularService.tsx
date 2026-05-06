@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Image } from "@/components/input";
+import { SquareIcon, StarIcon } from "@/components/icons";
 
 interface Props {
   categories: Category[];
@@ -93,15 +94,7 @@ const PopularService: React.FC<Props> = ({ categories }) => {
             className="w-8 h-8 object-contain"
           />
         ) : (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            className="w-8 h-8 text-gray-600 group-hover:text-blue-600 transition-colors duration-300"
-          >
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-          </svg>
+          <SquareIcon/>
         )}
       </div>
 
@@ -117,12 +110,7 @@ const PopularService: React.FC<Props> = ({ categories }) => {
       )}
 
       <div className="flex items-center justify-center gap-1 text-gray-500 text-sm mt-2">
-        <svg
-          viewBox="0 0 24 24"
-          className="w-4 h-4 fill-yellow-500 text-yellow-500"
-        >
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
+       <StarIcon/>
         {averageRating}
       </div>
 

@@ -1,8 +1,6 @@
 "use client";
 
-// import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { getSocket } from "@/features/core/Websocket/socket";
@@ -10,6 +8,7 @@ import { Image } from "@/components/input";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 interface Props {
   booking: Booking | null;
@@ -21,12 +20,10 @@ export default function JobTrackingWorkerDetails({
   loading,
 }: Props) {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const [localBooking, setLocalBooking] = useState<Booking | null>(null);
 
-  // -----------------------------
-  // Normalize worker
-  // -----------------------------
   const normalizeWorker = (w: any) => {
     if (!w) return null;
 
@@ -43,7 +40,6 @@ export default function JobTrackingWorkerDetails({
       isVerified: workerObj?.isVerified ?? false,
     };
   };
-  const navigate=useNavigate();
 
   const normalizeBookingWorkers = (b: any) => ({
     ...b,
@@ -51,18 +47,12 @@ export default function JobTrackingWorkerDetails({
       b.assignedWorkers?.map(normalizeWorker).filter(Boolean) || [],
   });
 
-  // -----------------------------
-  // Sync props → local state
-  // -----------------------------
   useEffect(() => {
     if (booking) {
       setLocalBooking(normalizeBookingWorkers(booking));
     }
   }, [booking]);
 
-  // -----------------------------
-  // Socket updates
-  // -----------------------------
   useEffect(() => {
     const socket = getSocket();
     if (!socket || !booking?._id) return;
@@ -93,32 +83,31 @@ export default function JobTrackingWorkerDetails({
 
   const worker = localBooking?.assignedWorkers?.[0] ?? null;
 
-  if (loading) return <div><CommonSpinner/></div>;
+  if (loading) return <CommonSpinner />;
 
   if (!worker) {
     return (
-      <div className="bg-white rounded-2xl p-4 border">
-        <h2 className="font-bold text-gray-900">
-          {t.jobtrackingpage.sections.yourProfessional}
-        </h2>
-        <p className="text-gray-500 mt-2">
+      <CommonCard
+        title={t.jobtrackingpage.sections.yourProfessional}
+      >
+        <p className="text-gray-500">
           {t.jobtrackingpage.sections.workerNotAssigned}
         </p>
-      </div>
+      </CommonCard>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 border shadow-sm">
-      <h2 className="font-bold mb-5">
-        {t.jobtrackingpage.sections.yourProfessional}
-      </h2>
-
+    <CommonCard
+      title={t.jobtrackingpage.sections.yourProfessional}
+    >
       <div className="flex items-center gap-4">
         <Image
           src={
             worker.profilePictureUrl ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(worker.fullName)}`
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              worker.fullName
+            )}`
           }
           className="w-14 h-14 rounded-xl object-cover"
         />
@@ -132,7 +121,8 @@ export default function JobTrackingWorkerDetails({
           </div>
 
           <div className="text-sm text-gray-500">
-            {localBooking?.service?.name} • {localBooking?.serviceTier?.displayName}
+            {localBooking?.service?.name} •{" "}
+            {localBooking?.serviceTier?.displayName}
           </div>
         </div>
       </div>
@@ -145,10 +135,13 @@ export default function JobTrackingWorkerDetails({
           {t.jobtrackingpage.call}
         </Link>
 
-        <Button className="flex-1 border py-2 rounded-lg" onClick={()=>navigate(`/message/${worker._id}`)}>
+        <Button
+          className="flex-1 border py-2 rounded-lg"
+          onClick={() => navigate(`/message/${worker._id}`)}
+        >
           {t.jobtrackingpage.message}
         </Button>
       </div>
-    </div>
+    </CommonCard>
   );
 }

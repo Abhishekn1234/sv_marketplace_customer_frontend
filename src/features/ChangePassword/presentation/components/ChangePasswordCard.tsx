@@ -8,6 +8,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { Input, Label } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -106,61 +107,59 @@ export default function ChangePasswordCard() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
-            <h2 className="text-2xl font-bold text-white">
-              {t.changepasswordpage.cardTitle}
-            </h2>
-            <p className="text-blue-100 mt-2 text-sm">
-              {t.changepasswordpage.cardSubtitle}
-            </p>
-          </div>
+       <CommonCard className="overflow-hidden">
+  <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
+    <h2 className="text-2xl font-bold text-white">
+      {t.changepasswordpage.cardTitle}
+    </h2>
+    <p className="text-blue-100 mt-2 text-sm">
+      {t.changepasswordpage.cardSubtitle}
+    </p>
+  </div>
 
-          <div className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {renderPasswordInput(
-                t.changepasswordpage.currentPassword,
-                oldPassword,
-                setOldPassword,
-                "old",
-                t.changepasswordpage.enterCurrentPassword
-              )}
+  <div className="p-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {renderPasswordInput(
+        t.changepasswordpage.currentPassword,
+        oldPassword,
+        setOldPassword,
+        "old",
+        t.changepasswordpage.enterCurrentPassword
+      )}
 
-              {renderPasswordInput(
-                t.changepasswordpage.newPassword,
-                newPassword,
-                setNewPassword,
-                "new",
-               
-                t.changepasswordpage.enterNewPassword
-              )}
+      {renderPasswordInput(
+        t.changepasswordpage.newPassword,
+        newPassword,
+        setNewPassword,
+        "new",
+        t.changepasswordpage.enterNewPassword
+      )}
 
-              {renderPasswordInput(
-                t.changepasswordpage.confirmNewPassword,
-                confirmPassword,
-                setConfirmPassword,
-                "confirm",
-                t.changepasswordpage.confirmNewPassword
-              )}
+      {renderPasswordInput(
+        t.changepasswordpage.confirmNewPassword,
+        confirmPassword,
+        setConfirmPassword,
+        "confirm",
+        t.changepasswordpage.confirmNewPassword
+      )}
 
-              {/* Submit */}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
-              >
-                {loading ? (
-                <span className="flex items-center gap-2">
-                  <CommonSpinner size={14} />
-                  {t.changepasswordpage.updating}
-                </span>
-              ) : (
-                t.changepasswordpage.updatePassword
-              )}
-              </Button>
-            </form>
-          </div>
-        </div>
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2"
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <CommonSpinner size={14} />
+            {t.changepasswordpage.updating}
+          </span>
+        ) : (
+          t.changepasswordpage.updatePassword
+        )}
+      </Button>
+    </form>
+  </div>
+</CommonCard>
       </div>
     </div>
   );

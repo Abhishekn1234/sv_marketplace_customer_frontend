@@ -18,6 +18,7 @@ import type { BookingHistory } from "../../domain/entities/bookinghistory.types"
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 import { useQueryClient } from "@tanstack/react-query";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 interface Props {
   activeTab: string;
@@ -171,9 +172,9 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   // ----------------------------
   if (isLoading) {
     return (
-      <div className="text-center py-16 text-gray-400">
-        Loading bookings...
-      </div>
+      <>
+      <CommonSpinner/>
+      </>
     );
   }
 
@@ -222,7 +223,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
 
       {isFetchingNextPage && (
         <div className="text-center py-4 text-gray-500">
-          Loading more...
+         <CommonSpinner className="text-red-50"/>
         </div>
       )}
 

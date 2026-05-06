@@ -12,6 +12,7 @@ import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGen
 import { toast } from "react-toastify";
 import OtpModal from "@/components/common/CommonOtpModal";
 import { getActivityMap } from "../utils/activitymap";
+import CommonCard from "@/components/common/CommonCards";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
@@ -169,8 +170,8 @@ const currentBooking = localBooking ?? booking;
   // -----------------------------
   // UI
   // -----------------------------
-  return (
-    <div className="bg-white rounded-2xl p-7 border shadow-sm">
+   return (
+    <CommonCard className="p-7">
       <div className="flex justify-between mb-6">
         <h2 className="text-lg font-bold">
           {t.jobtrackingpage.sections.serviceProgress}
@@ -224,7 +225,9 @@ const currentBooking = localBooking ?? booking;
                     navigate("/payment", {
                       state: {
                         bookingId: currentBooking._id,
-                        serviceName: currentBooking?.serviceId?.name ?? currentBooking?.service?.name,
+                        serviceName:
+                          currentBooking?.serviceId?.name ??
+                          currentBooking?.service?.name,
                         price: computedPrice,
                         currency: currentBooking.currency,
                       },
@@ -287,6 +290,6 @@ const currentBooking = localBooking ?? booking;
           onClose={() => setOtpModalOpen(false)}
         />
       </div>
-    </div>
+    </CommonCard>
   );
 }

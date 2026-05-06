@@ -2,33 +2,30 @@
 
 import { useMemo } from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-import {normalizeStatus} from "../helpers/mapstatusactivities";
+import { normalizeStatus } from "../helpers/mapstatusactivities";
+import CommonCard from "@/components/common/CommonCards";
+
 export function JobProgressCard({ booking }: any) {
   const { t } = useLanguage();
 
-  
+  const tasks = useMemo(() => {
+    const activities = booking?.activities ?? [];
 
-  // -----------------------------
-  // tasks (ALWAYS SAFE)
-  // -----------------------------
- const tasks = useMemo(() => {
-  const activities = booking?.activities ?? [];
-
-  return [...activities]
-    .filter((a: any) => a?.createdAt)
-    .sort(
-      (a: any, b: any) =>
-        new Date(a.createdAt).getTime() -
-        new Date(b.createdAt).getTime()
-    )
-    .map((a: any) => ({
-      title:
-        t.jobprogresspage[a.type as keyof typeof t.jobprogresspage] ??
-        a.type,
-      status: normalizeStatus(a.type),
-      time: a.createdAt,
-    }));
-}, [booking?.activities, t]);
+    return [...activities]
+      .filter((a: any) => a?.createdAt)
+      .sort(
+        (a: any, b: any) =>
+          new Date(a.createdAt).getTime() -
+          new Date(b.createdAt).getTime()
+      )
+      .map((a: any) => ({
+        title:
+          t.jobprogresspage[a.type as keyof typeof t.jobprogresspage] ??
+          a.type,
+        status: normalizeStatus(a.type),
+        time: a.createdAt,
+      }));
+  }, [booking?.activities, t]);
 
   const isCancelled =
     booking?.status === "WORKER_CANCELLED" ||
@@ -39,7 +36,7 @@ export function JobProgressCard({ booking }: any) {
   // -----------------------------
   if (isCancelled) {
     return (
-      <div className="bg-white rounded-[20px] p-6 border border-red-200 shadow-sm">
+      <CommonCard className="border-red-200">
         <h2 className="text-[16px] font-bold mb-4">
           {t.jobprogresspage.taskChecklist}
         </h2>
@@ -49,16 +46,16 @@ export function JobProgressCard({ booking }: any) {
             ? t.jobprogresspage.workerCancelled
             : t.jobprogresspage.customerCancelled}
         </div>
-      </div>
+      </CommonCard>
     );
   }
 
   // -----------------------------
-  // EMPTY STATE (IMPORTANT FIX)
+  // EMPTY STATE
   // -----------------------------
   if (!tasks.length) {
     return (
-      <div className="bg-white rounded-[20px] p-6 border border-gray-200">
+      <CommonCard>
         <h2 className="text-[16px] font-bold mb-4">
           {t.jobprogresspage.taskChecklist}
         </h2>
@@ -66,7 +63,7 @@ export function JobProgressCard({ booking }: any) {
         <div className="text-gray-400 text-sm text-center">
           No activities yet...
         </div>
-      </div>
+      </CommonCard>
     );
   }
 
@@ -74,7 +71,7 @@ export function JobProgressCard({ booking }: any) {
   // MAIN UI
   // -----------------------------
   return (
-    <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
+    <CommonCard>
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
         {t.jobprogresspage.taskChecklist}
       </h2>
@@ -94,7 +91,7 @@ export function JobProgressCard({ booking }: any) {
                   : "bg-gray-50 border-gray-200"
               }`}
           >
-            {/* CHECKBOX ICON */}
+            {/* ICON */}
             <div
               className={`w-6 h-6 rounded-md flex items-center justify-center border
                 ${
@@ -141,6 +138,6 @@ export function JobProgressCard({ booking }: any) {
           </div>
         ))}
       </div>
-    </div>
+    </CommonCard>
   );
 }

@@ -1,32 +1,31 @@
-
-
 import { Image } from "@/components/input";
 import { getStatusText } from "../helpers/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Link } from "react-router-dom";
-export default function ProviderWorkingCard({booking}:any) {
-  
- 
- const {t}=useLanguage();
+import CommonCard from "@/components/common/CommonCards";
 
+export default function ProviderWorkingCard({ booking }: any) {
+  const { t } = useLanguage();
 
   const assignment = booking?.assignedWorkers?.[0];
+  const worker = assignment?.worker;
 
-const worker = assignment?.worker;
+  const name = worker?.fullName ?? "Not Assigned";
 
-const name = worker?.fullName ?? "Not Assigned";
+  const image =
+    worker?.profilePictureUrl ||
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
 
-const image =
-  worker?.profilePictureUrl ||
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
   const status = booking?.status;
 
   return (
-    <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm">
+    <CommonCard>
+      {/* Header */}
       <h2 className="text-[16px] font-bold text-gray-900 mb-5">
-       {t.jobprogresspage.professionalOnSite}
+        {t.jobprogresspage.professionalOnSite}
       </h2>
 
+      {/* Worker Info */}
       <div className="flex items-center gap-4 mb-5">
         <Image
           src={image}
@@ -58,7 +57,7 @@ const image =
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* Actions */}
       <div className="flex gap-3">
         <Link
           to={worker?.phone ? `tel:${worker.phone}` : "#"}
@@ -68,18 +67,14 @@ const image =
         </Link>
 
         <Link
-        to ={
-            worker?.phone
-              ? `https://wa.me/${worker.phone}`
-              : "#"
-          }
+          to={worker?.phone ? `https://wa.me/${worker.phone}` : "#"}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95 flex items-center justify-center"
         >
-         {t.jobprogresspage.message}
+          {t.jobprogresspage.message}
         </Link>
       </div>
-    </div>
+    </CommonCard>
   );
 }

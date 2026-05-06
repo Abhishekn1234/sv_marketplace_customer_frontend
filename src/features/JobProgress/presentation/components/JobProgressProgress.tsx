@@ -5,11 +5,12 @@ import { formatDates } from "@/features/Home/presentation/helpers/formatdatestri
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 export function JobProgressProgress({ booking, loading }: any) {
   const { t } = useLanguage();
 
-  if (loading) return (<CommonSpinner/>);
+  if (loading) return <CommonSpinner />;
   if (!booking) return <div>No booking found</div>;
 
   const status = (booking?.status || "REQUESTED").toString();
@@ -34,7 +35,7 @@ export function JobProgressProgress({ booking, loading }: any) {
 
   if (isWorkerCancelled || isCustomerCancelled) {
     return (
-      <div className="bg-white rounded-[20px] p-7 border border-red-200 shadow-sm">
+      <CommonCard className="border-red-200">
         <h2 className="text-[18px] font-bold text-gray-900 mb-6">
           {t.jobprogresspage.overallProgress}
         </h2>
@@ -44,16 +45,17 @@ export function JobProgressProgress({ booking, loading }: any) {
             ? t.jobprogresspage.workerCancelled
             : t.jobprogresspage.customerCancelled}
         </div>
-      </div>
+      </CommonCard>
     );
   }
 
   return (
-    <div className="bg-white rounded-[20px] p-7 border border-gray-200 shadow-sm">
+    <CommonCard>
       <h2 className="text-[18px] font-bold mb-4">
         {t.jobprogresspage.overallProgress}
       </h2>
 
+      {/* Progress */}
       <div className="mb-4">
         <div className="flex justify-between mb-2">
           <span>{t.jobprogresspage.taskCompletion}</span>
@@ -68,10 +70,12 @@ export function JobProgressProgress({ booking, loading }: any) {
         </div>
       </div>
 
+      {/* Time Info */}
       <div className="text-sm text-gray-500">
-        {startTime !== "N/A" && `${t.jobprogresspage.startedAt} ${startTime}`}
+        {startTime !== "N/A" &&
+          `${t.jobprogresspage.startedAt} ${startTime}`}
         {endTime !== "N/A" && ` • ${endTime}`}
       </div>
-    </div>
+    </CommonCard>
   );
 }

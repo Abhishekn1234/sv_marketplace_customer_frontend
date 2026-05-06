@@ -63,7 +63,7 @@ export default function BookingHistoryViewDetailsModal({
 
         <div>
           <span className="text-xs text-gray-500 font-medium">
-            Booking ID
+           {t.invoice.bookingRef}
           </span>
           <p className="text-sm font-semibold break-all">
             {booking._id ?? "-"}
@@ -71,23 +71,23 @@ export default function BookingHistoryViewDetailsModal({
         </div>
 
         <div>
-          <span className="text-xs text-gray-500 font-medium">Date</span>
+          <span className="text-xs text-gray-500 font-medium">{t.common.date}</span>
           <p className="text-sm font-semibold">{bookingDate}</p>
         </div>
 
         <div>
-          <span className="text-xs text-gray-500 font-medium">Duration</span>
+          <span className="text-xs text-gray-500 font-medium">{t.common.workedDuration}</span>
           <p className="text-sm font-semibold">{duration}</p>
         </div>
 
         <div>
-          <span className="text-xs text-gray-500 font-medium">Price</span>
+          <span className="text-xs text-gray-500 font-medium">{t.common.totalPaid}</span>
           <p className="text-sm font-semibold">{price}</p>
         </div>
 
         <div className="sm:col-span-2">
           <span className="text-xs text-gray-500 font-medium">
-            Work Description
+            {t.common["Work Description"]}
           </span>
           <p className="text-sm font-semibold">
             {booking.workDescription ?? "-"}

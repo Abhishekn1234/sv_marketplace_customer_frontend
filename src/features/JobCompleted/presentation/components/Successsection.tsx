@@ -1,3 +1,4 @@
+import { SuccessIcon } from "@/components/icons";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function SuccessSection() {
@@ -6,12 +7,7 @@ export default function SuccessSection() {
     <div className="text-center mb-10">
       {/* Icon */}
       <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center rounded-full bg-[#34d399] shadow-lg animate-scaleIn">
-        <svg
-          viewBox="0 0 24 24"
-          className="w-12 h-12 text-white fill-current"
-        >
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
+       <SuccessIcon/>
       </div>
 
       {/* Title */}

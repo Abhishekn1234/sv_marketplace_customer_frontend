@@ -2,85 +2,17 @@
 
 import { useEffect, useRef } from "react";
 import { Check, CheckCheck } from "lucide-react";
-import type { WorkerInfo } from "./ChatHeader";
 
-export type Message = {
-  id: number;
-  text: string;
-  sender: "customer" | "worker";
-  timestamp: Date;
-  status?: "sent" | "delivered" | "read";
-};
 
-// ─── Helpers ─────────────────────────────────
+import { formatDateLabel } from "../utils/formatdateLabel";
+import { formatTime } from "../utils/formattime";
 
-function initials(name: string) {
-  const p = name.trim().split(/\s+/);
-  return p.length === 1
-    ? p[0][0].toUpperCase()
-    : (p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
+import type { Message } from "../../domain/entities/messages";
+import { TypingIndicator } from "../utils/typeindicator";
+import MiniAvatar from "../utils/miniavatar";
+import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 
-function formatTime(d: Date) {
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
 
-function formatDateLabel(d: Date) {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  if (d.toDateString() === today.toDateString()) return "Today";
-  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-
-  return d.toLocaleDateString([], {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-// ─── Avatar ─────────────────────────────────
-
-function MiniAvatar({ worker }: { worker: WorkerInfo }) {
-  return (
-    <div className="w-6.5 h-6.5 min-w-[26px] rounded-full bg-green-100 text-green-800 text-[10px] font-bold flex items-center justify-center overflow-hidden">
-      {worker.avatar ? (
-        <img
-          src={worker.avatar}
-          alt={worker.name}
-          className="w-full h-full object-cover rounded-full"
-        />
-      ) : (
-        initials(worker.name)
-      )}
-    </div>
-  );
-}
-
-// ─── Typing Indicator ───────────────────────
-
-function TypingIndicator({ worker }: { worker: WorkerInfo }) {
-  return (
-    <div className="flex items-end gap-2 mb-2">
-      <MiniAvatar worker={worker} />
-
-      <div className="bg-white border border-gray-300 rounded-2xl px-3 py-2 rounded-bl-md">
-        <div className="flex gap-1 items-center h-3">
-          {[0, 150, 300].map((d) => (
-            <span
-              key={d}
-              className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce"
-              style={{ animationDelay: `${d}ms` }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main Component ─────────────────────────
 
 export default function MessageList({
   messages,
@@ -88,7 +20,7 @@ export default function MessageList({
   isTyping,
 }: {
   messages: Message[];
-  worker: WorkerInfo;
+  worker: Worker;
   isTyping: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);

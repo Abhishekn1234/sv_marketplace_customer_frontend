@@ -14,6 +14,8 @@ import { Label, Textarea } from "@/components/input";
 import Button from "@/components/input/Button";
 import Select, { type SelectOption } from "@/components/input/Select";
 import { useQueryClient } from "@tanstack/react-query";
+import CommonCard from "@/components/common/CommonCards";
+import CommonModal from "@/components/common/CommonModal";
 
 // -----------------------
 // CANCEL TYPES
@@ -248,57 +250,45 @@ const queryClient = useQueryClient();
   if (!booking) return null;
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-      <h3 className="text-base font-bold text-gray-900 mb-4">
-        {t.jobtrackingpage.sections.needHelp}
-      </h3>
-
+   <CommonCard title={t.jobtrackingpage.sections.needHelp}>
       <div className="flex flex-col gap-3">
         {options.map((opt, idx) => (
           <div
             key={idx}
             onClick={opt.action}
-            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-white hover:shadow-sm"
+            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-white"
           >
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border">
+            <div className="w-10 h-10 bg-white border rounded-lg flex items-center justify-center">
               {opt.icon}
             </div>
-
-            <span className="text-sm font-semibold text-gray-900">
-              {opt.text}
-            </span>
+            <span className="text-sm font-semibold">{opt.text}</span>
           </div>
         ))}
-
-        {/* INVOICE */}
-        {showInvoice  && selectedBooking && (
-          <InvoiceModal
-            booking={selectedBooking}
-            services={services}
-            categories={categoriesList}
-            serviceTiers={serviceTiers}
-            open={showInvoice}
-            onClose={() => {
-              setShowInvoice(false);
-              setSelectedBooking(null);
-            }}
-          />
-        )}
       </div>
 
-      {/* -----------------------
-          CANCEL MODAL
-      ----------------------- */}
-      {showCancelModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-5 rounded-xl w-[90%] max-w-md">
-            <CancelConfirmationDialog
-              onConfirm={handleConfirmCancel}
-              onCancel={() => setShowCancelModal(false)}
-            />
-          </div>
-        </div>
+      {/* Invoice Modal */}
+      {showInvoice && selectedBooking && (
+        <InvoiceModal
+          booking={selectedBooking}
+          services={services}
+          categories={categoriesList}
+          serviceTiers={serviceTiers}
+          open={showInvoice}
+          onClose={() => setShowInvoice(false)}
+        />
       )}
-    </div>
+
+      {/* Cancel Modal */}
+      <CommonModal
+        open={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        title={t.jobtrackingpage.sections.cancelBooking}
+      >
+        <CancelConfirmationDialog
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setShowCancelModal(false)}
+        />
+      </CommonModal>
+    </CommonCard>
   );
 }

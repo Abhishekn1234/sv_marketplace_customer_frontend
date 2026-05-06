@@ -1,20 +1,21 @@
 import { Image } from "@/components/input";
 import { useLanguage } from "@/features/context/LanguageContext";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function JobCompletedProvider({ booking }: any) {
   const { t } = useLanguage();
-  console.log(booking);
+
   const worker = booking?.assignedWorkers?.[0];
 
   return (
-    <div className="bg-white rounded-[20px] p-6 border border-gray-200">
-      
+    <CommonCard>
+      {/* TITLE */}
       <h2 className="font-bold mb-4">
         {t.jobcompletedpage.yourProfessional}
       </h2>
 
+      {/* CONTENT */}
       <div className="flex items-center gap-4">
-        
         <Image
           src={
             worker?.profilePictureUrl ||
@@ -25,25 +26,16 @@ export default function JobCompletedProvider({ booking }: any) {
         />
 
         <div>
-          
           <div className="font-bold flex items-center gap-2">
             {worker?.fullName || "Unknown Worker"}
           </div>
 
           <div className="text-sm text-gray-500">
-            {worker?.email && (
-              <div>{worker.email}</div>
-            )}
-
-            {worker?.phone && (
-              <div>{worker.phone}</div>
-            )}
-
-            
+            {worker?.email && <div>{worker.email}</div>}
+            {worker?.phone && <div>{worker.phone}</div>}
           </div>
-
         </div>
       </div>
-    </div>
+    </CommonCard>
   );
 }

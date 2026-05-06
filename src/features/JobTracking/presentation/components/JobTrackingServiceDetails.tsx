@@ -1,12 +1,12 @@
 "use client";
 
-
 import { useEffect, useState, useMemo } from "react";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 interface Props {
   booking: Booking | undefined;
@@ -69,20 +69,14 @@ export default function JobTrackingServiceDetails({
     setCoordinates(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
   }, [booking]);
 
-  // -----------------------------
-  // loading
-  // -----------------------------
   if (loading || !booking) {
     return (
-      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
-       <CommonSpinner size={16}/>
-      </div>
+      <CommonCard>
+        <CommonSpinner size={16} />
+      </CommonCard>
     );
   }
 
-  // -----------------------------
-  // UI
-  // -----------------------------
   const serviceDetails = [
     {
       label: t.jobtrackingpage.serviceDetails.serviceType,
@@ -111,11 +105,9 @@ export default function JobTrackingServiceDetails({
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm w-full min-w-0">
-      <h3 className="text-base font-bold text-gray-900 mb-5">
-        {t.jobtrackingpage.serviceDetails.title}
-      </h3>
-
+    <CommonCard
+      title={t.jobtrackingpage.serviceDetails.title}
+    >
       <div className="flex flex-col divide-y divide-gray-100">
         {serviceDetails.map((item, idx) => (
           <div
@@ -140,6 +132,6 @@ export default function JobTrackingServiceDetails({
           </div>
         ))}
       </div>
-    </div>
+    </CommonCard>
   );
 }

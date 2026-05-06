@@ -6,12 +6,14 @@ import { Input } from "@/components/input";
 import { SaveIcon } from "@/components/icons";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function ProfileUpdate() {
   const { data: profile } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { user, setUser } = useAuthStore();
-  const {t}=useLanguage();
+  const { t } = useLanguage();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,11 +21,11 @@ export default function ProfileUpdate() {
     phone: "",
   });
 
-  // Split fullName into first + last
   useEffect(() => {
     if (profile) {
       const fullName = profile.fullName || "";
       const nameParts = fullName.trim().split(" ");
+
       setFormData({
         firstName: nameParts[0] || "",
         lastName: nameParts.slice(1).join(" ") || "",
@@ -34,46 +36,52 @@ export default function ProfileUpdate() {
   }, [profile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const form = new FormData();
+
+    form.append(
+      "fullName",
+      `${formData.firstName} ${formData.lastName}`.trim()
+    );
+
+    updateProfile(form, {
+      onSuccess: (updatedUser) => {
+        if (!user) return;
+
+        setUser({
+          ...user,
+          fullName: updatedUser.fullName ?? "",
+        });
+      },
     });
   };
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const form = new FormData();
-
-  form.append(
-    "fullName",
-    `${formData.firstName} ${formData.lastName}`.trim()
-  );
-
-updateProfile(form, {
-  onSuccess: (updatedUser) => {
-    if (!user) return;
-
-    setUser({
-      ...user,
-      fullName: updatedUser.fullName ?? "",
-    });
-  },
-});
-}
-
-
-
   return (
-    <div className="w-full px-4 py-8">
-      <div className="bg-white rounded-[20px] p-8 shadow-sm border border-gray-200">
-        <h3 className="text-[18px] font-bold text-gray-900 mb-6">
-          {t.profilepage.personalInfo}
-        </h3>
+    <div className="w-full px-4 py-8 flex justify-center">
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="mb-6">
+      <div className="w-full max-w-2xl">
+
+        <CommonCard>
+
+          {/* Title */}
+          <h3 className="text-[18px] font-bold text-gray-900 mb-6">
+            {t.profilepage.personalInfo}
+          </h3>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* First + Last Name */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
               <Input
                 label={t.profilepage.firstName}
                 labelClassName="block text-sm font-semibold mb-2"
@@ -82,9 +90,7 @@ updateProfile(form, {
                 value={formData.firstName}
                 onChange={handleChange}
               />
-            </div>
 
-            <div className="mb-6">
               <Input
                 label={t.profilepage.lastName}
                 labelClassName="block text-sm font-semibold mb-2"
@@ -93,10 +99,10 @@ updateProfile(form, {
                 value={formData.lastName}
                 onChange={handleChange}
               />
-            </div>
-          </div>
 
-          <div className="mb-6">
+            </div>
+
+            {/* Email */}
             <Input
               label={t.profilepage.email}
               labelClassName="block text-sm font-semibold mb-2"
@@ -105,28 +111,31 @@ updateProfile(form, {
               value={formData.email}
               onChange={handleChange}
             />
-          </div>
 
-          <div className="mb-6">
-            <Input label={t.profilepage.phone} name="phone" type="tel" value={formData.phone} onChange={handleChange} labelClassName="block text-sm font-semibold mb-2" />
-          </div>
+            {/* Phone */}
+            <Input
+              label={t.profilepage.phone}
+              labelClassName="block text-sm font-semibold mb-2"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+            />
 
-              <Button
-        type="submit"
-        disabled={isPending}
-        rightIcon={
-          <>
-           <SaveIcon className="w-5 h-5" />
-          </>
-        }
-        className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
-      > 
-        
+            {/* Submit */}
+            <Button
+              type="submit"
+              disabled={isPending}
+              rightIcon={<SaveIcon className="w-5 h-5" />}
+              className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
+            </Button>
 
-        {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
-      </Button>
+          </form>
 
-        </form>
+        </CommonCard>
+
       </div>
     </div>
   );

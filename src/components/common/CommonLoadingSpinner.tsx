@@ -6,7 +6,7 @@ interface CommonSpinnerProps {
 }
 
 export default function CommonSpinner({
-  size = 20,
+  size = 40,
   className = "",
 }: CommonSpinnerProps) {
   return (

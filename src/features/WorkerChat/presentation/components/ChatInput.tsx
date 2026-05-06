@@ -6,6 +6,7 @@ import { Textarea } from "@/components/input";
 
 import Button from "@/components/input/Button";
 import { SendIcon } from "@/components/icons";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 type Props = {
   value: string;
@@ -15,7 +16,7 @@ type Props = {
 
 export default function ChatInput({ value, onChange, onSend }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const {t}=useLanguage();
   const handleSend = () => {
     if (!value.trim()) return;
 
@@ -41,7 +42,7 @@ export default function ChatInput({ value, onChange, onSend }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Message…"
+        placeholder={t.jobtrackingpage.message}
         autoResize
         containerClassName="!mb-0"
         rightElement={

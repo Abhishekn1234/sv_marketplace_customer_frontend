@@ -61,11 +61,12 @@
  "common": {
       "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
       "locationError": "تعذر الحصول على الموقع",
-
+       "Work Description":"وصف العمل",
       "save": "حفظ",
       "close": "إغلاق",
       "add": "إضافة",
       "open": "فتح",
+      "Video Call":"مكالمة فيديو",
 
       "exportPdf": "تصدير PDF",
 

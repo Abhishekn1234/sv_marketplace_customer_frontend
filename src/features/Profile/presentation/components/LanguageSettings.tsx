@@ -3,11 +3,13 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Label, Radio } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function LanguageSettings() {
   const language = useAuthStore((state) => state.language);
   const setLanguage = useAuthStore((state) => state.setLanguage);
- const {t}=useLanguage();
+  const { t } = useLanguage();
+
   const languages = [
     { code: "EN", label: "English" },
     { code: "HI", label: "Hindi" },
@@ -16,64 +18,79 @@ export default function LanguageSettings() {
 
   return (
     <div className="flex justify-center mt-10 px-4">
-      {/* Card Container */}
-      <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-md border">
-        
-        <div className="flex items-center gap-3 mb-5">
-                {/* Icon */}
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg  text-black text-sm">
-                    🌐
-                </div>
 
-                {/* Title */}
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    {t.profilepage.selectLanguage}
-                   
-                </h2>
-                </div>
+      <div className="w-full max-w-sm sm:max-w-md">
 
-        <div className="space-y-4">
-          {languages.map((lang) => {
-            const isActive = language === lang.code;
+        <CommonCard>
 
-            return (
-          <Label
-            key={lang.code}
-            variant="card"
-            className={`flex items-center justify-between gap-3 ${
-              isActive
-                ? "border-blue-500 bg-blue-600 text-white shadow-md"
-                : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-600 hover:text-white"
-            }`}
-          >
-            {/* LEFT SIDE */}
-            <div className="flex items-center gap-3 min-w-0">
-              <Radio
-                name="language"
-                value={lang.code}
-                checked={isActive}
-                onChange={() => setLanguage(lang.code)}
-              />
-
-              <span className="text-base sm:text-lg font-semibold truncate">
-                {lang.label}
-              </span>
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-8 h-8 flex items-center justify-center rounded-lg text-black text-sm">
+              🌐
             </div>
 
-            {/* RIGHT SIDE */}
-            <span
-              className={`text-xs sm:text-sm px-3 py-1 rounded-full font-bold shrink-0 ${
-                isActive
-                  ? "bg-black/30 text-white"
-                  : "bg-gray-200 text-black"
-              }`}
-            >
-              {lang.code}
-            </span>
-          </Label>
-            );
-          })}
-        </div>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              {t.profilepage.selectLanguage}
+            </h2>
+          </div>
+
+          {/* Language Options */}
+          <div className="space-y-4">
+
+            {languages.map((lang) => {
+              const isActive = language === lang.code;
+
+              return (
+                <Label
+                  key={lang.code}
+                  variant="card"
+                  className={`
+                    flex items-center justify-between gap-3
+                    transition-all duration-200
+                    border rounded-xl p-3 cursor-pointer
+
+                    ${
+                      isActive
+                        ? "border-blue-500 bg-blue-600 text-white shadow-md"
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-50"
+                    }
+                  `}
+                >
+                  {/* LEFT */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Radio
+                      name="language"
+                      value={lang.code}
+                      checked={isActive}
+                      onChange={() => setLanguage(lang.code)}
+                    />
+
+                    <span className="text-base sm:text-lg font-semibold truncate">
+                      {lang.label}
+                    </span>
+                  </div>
+
+                  {/* RIGHT BADGE */}
+                  <span
+                    className={`
+                      text-xs sm:text-sm px-3 py-1 rounded-full font-bold shrink-0
+                      ${
+                        isActive
+                          ? "bg-black/30 text-white"
+                          : "bg-gray-200 text-black"
+                      }
+                    `}
+                  >
+                    {lang.code}
+                  </span>
+                </Label>
+              );
+            })}
+
+          </div>
+
+        </CommonCard>
+
       </div>
     </div>
   );

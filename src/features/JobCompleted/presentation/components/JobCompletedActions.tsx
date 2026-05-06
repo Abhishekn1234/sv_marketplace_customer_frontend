@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/features/context/LanguageContext";
 import InvoiceModal from "@/features/JobTracking/presentation/components/InvoiceModal";
 import ShareModal from "./ShareModal";
-
+import CommonCard from "@/components/common/CommonCards";
 
 export default function JobCompletedActions({
   booking,
@@ -16,20 +16,19 @@ export default function JobCompletedActions({
   const [openInvoice, setOpenInvoice] = useState(false);
   const [openShare, setOpenShare] = useState(false);
 
-  
-
   return (
-    <div className="bg-white rounded-[20px] p-6 border border-gray-200 shadow-sm w-full max-w-3xl mx-auto mt-5">
-
+    <CommonCard>
+      {/* TITLE */}
       <h2 className="text-base font-bold text-gray-900 mb-4">
         {t.jobcompletedpage.whatsNext}
       </h2>
 
+      {/* ACTION GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
         <div
           onClick={() => setOpenInvoice(true)}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.viewInvoice}
@@ -38,7 +37,7 @@ export default function JobCompletedActions({
 
         <div
           onClick={() => navigate("/")}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.bookAgain}
@@ -47,7 +46,7 @@ export default function JobCompletedActions({
 
         <div
           onClick={() => navigate("/help")}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.getSupport}
@@ -56,7 +55,7 @@ export default function JobCompletedActions({
 
         <div
           onClick={() => setOpenShare(true)}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
         >
           <span className="text-sm font-semibold">
             {t.jobcompletedpage.share}
@@ -64,23 +63,18 @@ export default function JobCompletedActions({
         </div>
       </div>
 
-      {/* INVOICE MODAL */}
+      {/* MODALS */}
       <InvoiceModal
         open={openInvoice}
         onClose={() => setOpenInvoice(false)}
         booking={booking}
-       
         services={services}
         categories={categories}
       />
 
-      {/* SHARE MODAL */}
       {openShare && (
-        <ShareModal
-          booking={booking}
-          onClose={() => setOpenShare(false)}
-        />
+        <ShareModal booking={booking} onClose={() => setOpenShare(false)} />
       )}
-    </div>
+    </CommonCard>
   );
 }

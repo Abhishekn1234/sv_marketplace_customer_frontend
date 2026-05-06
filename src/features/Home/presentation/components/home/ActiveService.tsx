@@ -11,7 +11,7 @@ import { useServices } from "@/features/Bookings/presentation/hooks/useServices"
 import Button from "@/components/input/Button";
 import { Image } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-
+import CommonCard from "@/components/common/CommonCards";
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
   const { t } = useLanguage();
@@ -126,88 +126,104 @@ const serviceName =
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-500 transition-all">
+  
+  <CommonCard
+    className="hover:border-blue-500 transition-all"
+  >
+    {/* HEADER */}
+    <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center gap-3">
+        <span className="relative w-2.5 h-2.5 bg-green-500 rounded-full">
+          <span className="absolute -inset-1 bg-green-500 rounded-full opacity-40 animate-pulse"></span>
+        </span>
 
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <span className="relative w-2.5 h-2.5 bg-green-500 rounded-full">
-            <span className="absolute -inset-1 bg-green-500 rounded-full opacity-40 animate-pulse"></span>
+        <span className="font-semibold text-lg">
+          {serviceName}
+        </span>
+
+        {showTracking && (
+          <span className="px-3 py-1 bg-green-100 text-green-700 border rounded-full text-xs font-semibold uppercase">
+            {isAssigned && !isStarted
+              ? "assigned"
+              : status.replace(/_/g, " ").toLowerCase()}
           </span>
-
-          <span className="font-semibold text-lg">{serviceName}</span>
-
-          {showTracking && (
-            <span className="px-3 py-1 bg-green-100 text-green-700 border rounded-full text-xs font-semibold uppercase">
-              {isAssigned && !isStarted
-                ? "assigned"
-                : status.replace(/_/g, " ").toLowerCase()}
-            </span>
-          )}
-        </div>
-
-        {isStarted && (
-          <span className="text-blue-600 font-semibold">{progress}%</span>
         )}
       </div>
 
-      <div className="flex items-center gap-3 mb-4">
-        <Image
-          src={workerImage}
-          alt={workerName}
-          className="w-12 h-12 rounded-lg border object-cover"
-        />
-
-        <div>
-          <div className="font-semibold">{workerName}</div>
-          <div className="text-sm text-gray-400">
-            {firstWorker ? "Assigned Professional" : "Waiting for worker"}
-          </div>
-        </div>
-      </div>
-
-      {showTracking ? (
-        <>
-          {isStarted && (
-            <div className="h-2 bg-gray-200 rounded-full mb-4">
-              <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            {allowedStatuses.includes(status) && (
-              <>
-                <Button
-                  onClick={() => navigate(`/jobtracking/${booking._id}`)}
-                  className="flex-1 h-12 bg-blue-600 text-white rounded-xl"
-                >
-                  {t.home.Track}
-                </Button>
-
-                <Button className="flex-1 h-12 border text-blue-600 rounded-xl">
-                  {t.home.Chat}
-                </Button>
-              </>
-            )}
-          </div>
-        </>
-      ) : isPaid ? (
-        <Button
-          onClick={() => navigate(`/servicerating/${booking._id}`)}
-          className="w-full h-12 bg-blue-600 text-white rounded-xl"
-        >
-          {t.home["Rate Service"]}
-        </Button>
-      ) : (
-        <Button
-          onClick={() => navigate(`/bookings`)}
-          className="w-full h-12 bg-blue-600 text-white rounded-xl"
-        >
-          View Booking
-        </Button>
+      {isStarted && (
+        <span className="text-blue-600 font-semibold">
+          {progress}%
+        </span>
       )}
     </div>
+
+    {/* WORKER INFO */}
+    <div className="flex items-center gap-3 mb-4">
+      <Image
+        src={workerImage}
+        alt={workerName}
+        className="w-12 h-12 rounded-lg border object-cover"
+      />
+
+      <div>
+        <div className="font-semibold">{workerName}</div>
+        <div className="text-sm text-gray-400">
+          {firstWorker
+            ? "Assigned Professional"
+            : "Waiting for worker"}
+        </div>
+      </div>
+    </div>
+
+    {/* TRACKING */}
+    {showTracking ? (
+      <>
+        {isStarted && (
+          <div className="h-2 bg-gray-200 rounded-full mb-4">
+            <div
+              className="h-full bg-blue-600 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          {allowedStatuses.includes(status) && (
+            <>
+              <Button
+                onClick={() =>
+                  navigate(`/jobtracking/${booking._id}`)
+                }
+                className="flex-1 h-12 bg-blue-600 text-white rounded-xl"
+              >
+                {t.home.Track}
+              </Button>
+
+              <Button className="flex-1 h-12 border text-blue-600 rounded-xl">
+                {t.home.Chat}
+              </Button>
+            </>
+          )}
+        </div>
+      </>
+    ) : isPaid ? (
+      <Button
+        onClick={() =>
+          navigate(`/servicerating/${booking._id}`)
+        }
+        className="w-full h-12 bg-blue-600 text-white rounded-xl"
+      >
+        {t.home["Rate Service"]}
+      </Button>
+    ) : (
+      <Button
+        onClick={() => navigate(`/bookings`)}
+        className="w-full h-12 bg-blue-600 text-white rounded-xl"
+      >
+        View Booking
+      </Button>
+    )}
+  </CommonCard>
+
   );
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import ChatHeader, { type WorkerInfo } from "./ChatHeader";
-import MessageList, { type Message } from "./MessageList";
+import ChatHeader from "./ChatHeader";
+import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
-
+import type { Message } from "../../domain/entities/messages";
+import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 const SEED_MESSAGES: Message[] = [
   {
     id: 1,
@@ -44,7 +45,7 @@ export default function WorkerChatPageContent({
   worker,
 }: {
   workerId: string;
-  worker: WorkerInfo;
+  worker: Worker;
 }) {
   const [messages, setMessages] = useState<Message[]>(SEED_MESSAGES);
   const [input, setInput] = useState("");

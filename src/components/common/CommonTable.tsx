@@ -3,7 +3,7 @@
 import { type ReactNode, useState, useMemo } from "react";
 import Button from "../input/Button";
 
-type Column<T> = {
+export type Column<T> = {
   header: string;
   accessor?: keyof T;
   render?: (row: T) => ReactNode;

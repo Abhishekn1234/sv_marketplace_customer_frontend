@@ -29,9 +29,12 @@ export default function WorkerChatPage() {
     <WorkerChatPageContent
       workerId={workerId!}
       worker={{
-        name: worker.fullName,
-        avatar: worker.profilePictureUrl ?? null,
-        status: profile?.status?? null,
+        fullName: worker.fullName,
+        profilePictureUrl: worker.profilePictureUrl ?? null,
+        status: profile?.status?? "OFFLINE",
+        phone:worker.phone??null,
+        email:worker.email??null,
+        _id:worker._id?? ""
        
       }}
     />

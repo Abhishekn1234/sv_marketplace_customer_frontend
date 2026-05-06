@@ -2,6 +2,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner"
 import { useServices } from "../../../../Bookings/presentation/hooks/useServices"
 import { circleColors } from "../../helpers/circlecolors"
 import CommonCard from "@/components/common/CommonCards"
+import { Image } from "@/components/input"
 
 export default function CategoriesRow() {
   const { categories: categoryData = [], loading, error } = useServices()
@@ -41,21 +42,21 @@ export default function CategoriesRow() {
 
           return (
             <CommonCard
-  key={category._id}
-  
-  className="
-    flex-shrink-0 snap-start cursor-pointer
-    bg-transparent border-none shadow-none
-    hover:scale-105 transition-transform
-  "
->
+                key={category._id}
+                
+                className="
+                  flex-shrink-0 snap-start cursor-pointer
+                  bg-transparent border-none shadow-none
+                  hover:scale-105 transition-transform
+                "
+              >
 
               <div className="flex flex-col items-center gap-3">
                 <div
                   className={`w-20 h-20 rounded-full flex items-center justify-center text-center px-2 bg-gradient-to-br ${colorClass} shadow-md`}
                 >
                   {service?.iconUrl ? (
-                    <img
+                    <Image
                       src={service.iconUrl}
                       alt={service.name}
                       className="w-10 h-10 object-cover rounded-full"

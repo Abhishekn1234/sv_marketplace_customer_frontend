@@ -21,13 +21,22 @@ import { PreferencesIcon } from "./PreferencesIcon";
 import { PrivacyIcon } from "./PrivacyIcon";
 import { LogoIcon } from "./LogoIcon";
 import { SaveIcon } from "./SaveIcon";
+import { PlusIcon } from "./PlusIcon";
+import { StarIcon } from "./StarIcon";
+import { SquareIcon } from "./SquareIcon";
 import { DangerZoneIcon } from "./DangerZoneIcon";
 import { DeleteAccountIcon } from "./DeleteAccountIcon";
 import { EmailNotificationIcon } from "./EmailNotificationIcon";
 import { SmsNotificationIcon } from "./SmsNotificationIcon";
 import { TwoFactorAuthIcon } from "./TwoFactorAuthIcon";
-
+import { ShieldIcon } from "./ShieldIcon";
+import { LockIcon } from "./LockIcon";
 import { ArrowRight } from "./ArrowRight";
+import { UserIcon } from "./UserIcon";
+import { HomeIcon } from "./HomeIcon";
+import { AboutIcon } from "./AboutIcon";
+import { BookingIcon } from "./BookingIcon";
+
 
 // Export everything
 export {
@@ -56,5 +65,14 @@ export {
   InfoIcon,
   SendIcon,
   ArrowRight,
-  SuccessIcon
+  SuccessIcon,
+  ShieldIcon,
+  LockIcon,
+  UserIcon,
+  HomeIcon,
+  AboutIcon,
+  BookingIcon,
+  PlusIcon,
+  SquareIcon,
+  StarIcon
 };

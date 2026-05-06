@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   loading?: boolean;
   radius?: ButtonRadius;
-
+ icon?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
@@ -27,6 +27,7 @@ export default function Button({
   rightIcon,
   fullWidth = false,
   disabled,
+  icon,
   className = "",
   ...props
 }: ButtonProps) {
@@ -61,7 +62,7 @@ return (
       inline-flex items-center justify-center
       gap-2 font-medium transition duration-200
       disabled:opacity-60 disabled:cursor-not-allowed
-
+       ${icon ? "w-8 h-8 p-0" : sizes[size]}
       ${radii[radius]}
       ${variants[variant]}
       ${sizes[size]}
