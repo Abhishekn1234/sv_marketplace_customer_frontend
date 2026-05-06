@@ -34,28 +34,33 @@ export default function BookingHistoryFilter({
       "
       >
        {tabs.map((tab) => (
-  <Button
-    key={tab.key}
-    onClick={() => setActiveTab(tab.key)}
-    className={`
-      flex-shrink-0
-      px-4 sm:px-5
-      py-2 sm:py-2.5
-      text-xs sm:text-sm
-      font-medium
-      rounded-full
-      border
-      whitespace-nowrap
-      transition-all duration-200
-      ${
-        activeTab === tab.key
-          ? "bg-blue-600 border-blue-600 text-white"
-          : "bg-white border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-600"
-      }
-    `}
-  >
-    {tab.label}
-  </Button>
+ <Button
+  key={tab.key}
+  onClick={() => setActiveTab(tab.key)}
+  radius="full"
+  className={`
+    px-4 sm:px-5
+    py-2 sm:py-2.5
+    text-xs sm:text-sm
+    font-medium
+    whitespace-nowrap
+    transition-all duration-200
+
+    border
+
+    flex items-center justify-center gap-2
+
+    focus:outline-none focus:ring-2 focus:ring-blue-200
+
+    ${
+      activeTab === tab.key
+        ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+        : "bg-white border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-600"
+    }
+  `}
+>
+  {tab.label}
+</Button>
 ))}
       </div>
     </div>

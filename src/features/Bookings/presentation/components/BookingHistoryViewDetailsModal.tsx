@@ -3,6 +3,7 @@ import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/fo
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import { formatBookingDuration } from "../helpers/formatduration";
 import Button from "@/components/input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   booking: BookingHistory | null;
@@ -16,7 +17,7 @@ export default function BookingHistoryViewDetailsModal({
   onClose,
 }: Props) {
   if (!isOpen || !booking) return null;
-
+ const {t}=useLanguage();
   // Safe values
   const serviceName = booking.service?.name ?? "Service Details";
   const tierName = booking.serviceTier?.displayName ?? "Tier";
@@ -105,7 +106,7 @@ export default function BookingHistoryViewDetailsModal({
             onClick={onClose}
             className="px-5 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 transition"
           >
-            Close
+            {t.common.close}
           </Button>
         </div>
 

@@ -4,9 +4,33 @@
     "continue": "Continue"
   },
  "common": {
-    "geoNotSupported": "Geolocation not supported",
-    "locationError": "Unable to fetch location"
-  },
+      "geoNotSupported": "Geolocation is not supported",
+      "locationError": "Unable to get location",
+
+      "save": "Save",
+      "close": "Close",
+      "add": "Add",
+      "open": "Open",
+
+      "exportPdf": "Export PDF",
+
+      "service": "Service",
+      "serviceTier": "Service Tier",
+
+      "invoiceDetails": "Invoice Details",
+      "invoiceNo": "Invoice No",
+      "status": "Status",
+
+      "workers": "Workers",
+      "pricingMode": "Pricing Mode",
+      "rate": "Rate",
+      "workedDuration": "Worked Duration",
+
+      "finalAmount": "Final Amount",
+      "date": "Date",
+      "payment": "Payment",
+      "totalPaid": "Total Paid"
+    },
   "stepper": {
     "language": "Language",
     "location": "Location",
@@ -666,7 +690,31 @@
     "paymentInitiated": "Payment Initiated",
     "paymentFailed": "Payment Failed",
     "goToBookings": "Go to Bookings"
-}
+},
+"invoice": {
+      "title": "INVOICE",
+      "no": "No",
+      "issued": "Issued",
+      "billedTo": "Billed To",
+      "serviceProfessional": "Service Professional",
+      "verifiedProfessional": "Verified Professional",
+      "serviceLocation": "Service Location",
+      "servicesRendered": "Services Rendered",
+      "description": "Description",
+      "tier": "Tier",
+      "qtyHours": "Qty / Hrs",
+      "rate": "Rate",
+      "amount": "Amount",
+      "bookingRef": "Booking Ref",
+      "servicePeriod": "Service Period",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "totalDue": "Total Due",
+      "paymentDue": "Payment due upon receipt",
+      "authorizedSignature": "Authorized Signature",
+      "customerSignature": "Customer Signature",
+      "onDemandServices": "On-Demand Services"
+    }
 
 
 }

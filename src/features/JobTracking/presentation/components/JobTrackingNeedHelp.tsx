@@ -13,6 +13,7 @@ import type { Booking } from "@/features/Bookings/domain/entities/booking.types"
 import { Label, Textarea } from "@/components/input";
 import Button from "@/components/input/Button";
 import Select, { type SelectOption } from "@/components/input/Select";
+import { useQueryClient } from "@tanstack/react-query";
 
 // -----------------------
 // CANCEL TYPES
@@ -147,7 +148,7 @@ export default function JobTrackingNeedHelp({
   // NAV
   // -----------------------
   const helpNavigate = () => navigate("/help");
-
+const queryClient = useQueryClient();
   // -----------------------
   // CANCEL OPEN
   // -----------------------
@@ -159,29 +160,48 @@ export default function JobTrackingNeedHelp({
   // -----------------------
   // CANCEL CONFIRM API
   // -----------------------
-  const handleConfirmCancel = async (
-    cancelReasonType: string,
-    reason: string
-  ) => {
-    if (!booking?._id) return;
+ const handleConfirmCancel = async (
+  cancelReasonType: string,
+  reason: string
+) => {
+  if (!booking?._id) return;
 
-    try {
-      await cancelBooking.mutateAsync({
-        bookingId: booking._id,
-        cancelReason: reason,
-        cancelReasonType,
-      });
+  try {
+    // ✅ 1. Call API
+    const updated = await cancelBooking.mutateAsync({
+      bookingId: booking._id,
+      cancelReason: reason,
+      cancelReasonType,
+    });
 
-      toast.success("Booking cancelled ✅");
+    // ✅ 2. Update cache instantly
+    queryClient.setQueryData(["bookings"], (old: any[] = []) =>
+      old.map((b) =>
+        b._id === booking._id ? { ...b, ...updated } : b
+      )
+    );
 
-      setShowCancelModal(false);
+    queryClient.setQueryData(
+      ["booking", booking._id],
+      (old: any) => ({
+        ...old,
+        ...updated,
+      })
+    );
 
-      setTimeout(() => navigate("/"), 1200);
-    } catch (err) {
-      toast.error("Failed to cancel booking ❌");
-      setShowCancelModal(false);
-    }
-  };
+    toast.success("Booking cancelled ✅");
+
+    // ✅ 3. Close modal
+    setShowCancelModal(false);
+
+    // ✅ 4. Navigate immediately (NO setTimeout)
+    navigate("/");
+
+  } catch (err) {
+    toast.error("Failed to cancel booking ❌");
+    setShowCancelModal(false);
+  }
+};
 
   // -----------------------
   // OPTIONS
@@ -206,10 +226,22 @@ export default function JobTrackingNeedHelp({
       text: t.jobtrackingpage.sections.generateInvoice,
       icon: <span>📄</span>,
       action: () => {
-        if (!booking) return toast.error("Booking not found ❌");
-        setSelectedBooking(booking);
-        setShowInvoice(true);
-      },
+        if (!booking) {
+          return toast.error("Booking not found ❌");
+        }
+
+        const isCompleted = booking.status === "COMPLETED" || booking.status==="INVOICE_GENERATED";
+
+
+            if (!isCompleted) {
+              return toast.info(
+                "Invoice can be viewed after completing the work"
+              );
+            }
+
+      setSelectedBooking(booking);
+      setShowInvoice(true);
+    },
     },
   ];
 

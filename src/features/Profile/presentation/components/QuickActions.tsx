@@ -25,26 +25,42 @@ export default function QuickActions() {
       {/* Buttons Grid */}
       <div className="grid grid-cols-2 gap-3">
         {/* Security */}
-        <ActionButton onClick={()=>navigate('/security')}>
-          <SecurityIcon className="w-[18px] h-[18px]" />
+        <ActionButton onClick={()=>navigate('/security')} leftIcon={
+          <>
+           <SecurityIcon className="w-[18px] h-[18px]" />
+          </>
+        }>
+          
           {t.profilepage.security}
         </ActionButton>
 
         {/* Billing */}
-        <ActionButton>
-          <BillingIcon className="w-[18px] h-[18px]" />
+        <ActionButton onClick={()=>navigate('/help')} leftIcon={
+          <>
+            <BillingIcon className="w-[18px] h-[18px]" />
+          </>
+        } >
+         
           {t.profilepage.billing}
         </ActionButton>
 
         {/* Privacy */}
-        <ActionButton onClick={()=>navigate('/privacy')} >
-          <PrivacyIcon className="w-[18px] h-[18px]" />
+        <ActionButton onClick={()=>navigate('/privacy')}  leftIcon={
+          <>
+            <PrivacyIcon className="w-[18px] h-[18px]" />
+          </>
+        }>
+         
           {t.profilepage.privacy}
         </ActionButton>
 
         {/* Help */}
-        <ActionButton onClick={()=>navigate('/help')}>
-          <HelpIcon className="w-[18px] h-[18px]" />
+        <ActionButton onClick={()=>navigate('/help')} leftIcon={
+          <>
+           <HelpIcon className="w-[18px] h-[18px]" />
+          </>
+        }>
+          
           {t.profilepage.help}
         </ActionButton>
       </div>
@@ -55,14 +71,17 @@ export default function QuickActions() {
 function ActionButton({
   children,
   onClick,
+  leftIcon
 }: {
   children: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  leftIcon?:React.ReactNode;
 }) {
   return (
     <Button
       onClick={onClick}
       className="flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-900 transition-all duration-200 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+     leftIcon={leftIcon}
     >
       {children}
     </Button>

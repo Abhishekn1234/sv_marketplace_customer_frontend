@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useMemo, useEffect } from "react";
 
 import en from "./languagejson/en.json";
 import hi from "./languagejson/hi.json";
@@ -23,6 +18,7 @@ type SupportedLang = keyof typeof languagesMap;
 interface LanguageContextValue {
   t: TranslationType;
   lang: SupportedLang;
+  isRTLOrder: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -34,7 +30,6 @@ export const LanguageProvider = ({
 }) => {
   const storeLang = useAuthStore((state) => state.language);
 
-  /* ================= SAFE LANGUAGE RESOLUTION ================= */
   const lang: SupportedLang = useMemo(() => {
     const normalized = (storeLang || "en").toLowerCase();
 
@@ -45,18 +40,31 @@ export const LanguageProvider = ({
     return "en";
   }, [storeLang]);
 
-  /* ================= OPTIONAL RTL SUPPORT ================= */
-  useEffect(() => {
-    document.dir = lang === "ar" ? "rtl" : "ltr";
-  }, [lang]);
+  /**
+   * TRUE RTL ORDER MODE (NOT browser RTL)
+   */
+  const isRTLOrder = lang === "ar";
 
-  /* ================= CONTEXT VALUE (MEMOIZED) ================= */
+  /**
+   * GLOBAL ORDER CONTROL (IMPORTANT PART)
+   */
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isRTLOrder) {
+      root.classList.add("rtl-order");
+    } else {
+      root.classList.remove("rtl-order");
+    }
+  }, [isRTLOrder]);
+
   const value = useMemo(
     () => ({
       lang,
       t: languagesMap[lang],
+      isRTLOrder,
     }),
-    [lang]
+    [lang, isRTLOrder]
   );
 
   return (
@@ -66,18 +74,14 @@ export const LanguageProvider = ({
   );
 };
 
-/* ================= SAFE HOOK ================= */
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
 
   if (!context) {
-    console.warn(
-      "⚠️ LanguageProvider missing - returning fallback English translations"
-    );
-
     return {
       lang: "en" as SupportedLang,
       t: languagesMap.en,
+      isRTLOrder: false,
     };
   }
 

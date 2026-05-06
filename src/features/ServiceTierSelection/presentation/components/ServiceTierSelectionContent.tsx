@@ -113,7 +113,7 @@ export default function ServiceTierSelectionContent() {
           disabled={!selectedTierId}
         >
           {t.servicetierselectionpage.buttons.continue}
-          <ArrowRight />
+          
         </Button>
 
         <p className="text-sm text-gray-400 font-medium">
@@ -122,9 +122,14 @@ export default function ServiceTierSelectionContent() {
 
         <Button
           onClick={() => navigate(-1)}
+          leftIcon={
+            <>
+             <ArrowLeft />
+            </>
+          }
           className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline"
         >
-          <ArrowLeft />
+         
         {t.servicetierselectionpage.buttons.back}
         </Button>
       </div>
@@ -243,14 +248,6 @@ function StarIcon() {
   );
 }
 
-function ArrowRight() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current" fill="none" strokeWidth={2}>
-      <path d="M5 12h14" />
-      <path d="M12 5l7 7-7 7" />
-    </svg>
-  );
-}
 
 function ArrowLeft() {
   return (

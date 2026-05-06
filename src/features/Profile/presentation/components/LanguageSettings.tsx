@@ -37,37 +37,40 @@ export default function LanguageSettings() {
             const isActive = language === lang.code;
 
             return (
-             <Label
-                    key={lang.code}
-                    className={`flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 border
-                    ${
-                        isActive
-                        ? "border-blue-500 bg-blue-600 text-white shadow-md"
-                        : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-600 hover:text-white"
-                    }`}
-                    >
-                <div className="flex items-center gap-4">
-                  <Radio
-                    name="language"
-                    value={lang.code}
-                    checked={isActive}
-                    onChange={() => setLanguage(lang.code)}
-                  />
-                  <span className="text-base sm:text-lg font-semibold">
-                    {lang.label}
-                  </span>
-                </div>
+          <Label
+            key={lang.code}
+            variant="card"
+            className={`flex items-center justify-between gap-3 ${
+              isActive
+                ? "border-blue-500 bg-blue-600 text-white shadow-md"
+                : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-600 hover:text-white"
+            }`}
+          >
+            {/* LEFT SIDE */}
+            <div className="flex items-center gap-3 min-w-0">
+              <Radio
+                name="language"
+                value={lang.code}
+                checked={isActive}
+                onChange={() => setLanguage(lang.code)}
+              />
 
-                <span
-                  className={`text-xs sm:text-sm px-3 py-1 rounded-full font-bold ${
-                    isActive
-                      ? "bg-black/30 text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
-                  {lang.code}
-                </span>
-              </Label>
+              <span className="text-base sm:text-lg font-semibold truncate">
+                {lang.label}
+              </span>
+            </div>
+
+            {/* RIGHT SIDE */}
+            <span
+              className={`text-xs sm:text-sm px-3 py-1 rounded-full font-bold shrink-0 ${
+                isActive
+                  ? "bg-black/30 text-white"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
+              {lang.code}
+            </span>
+          </Label>
             );
           })}
         </div>

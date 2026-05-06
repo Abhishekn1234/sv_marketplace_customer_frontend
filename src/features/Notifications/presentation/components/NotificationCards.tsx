@@ -113,7 +113,7 @@ export default function NotificationCards() {
         </div>
 
         <h1 className="text-xl font-semibold text-gray-800">
-          {t.notificationpage.notifications}
+          {t.notificationpage.title}
         </h1>
       </div>
 

@@ -74,19 +74,26 @@ const sortOptions: SortKey[] = [
 
       {/* Sort */}
       <div className="relative" ref={dropdownRef}>
-        <Button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center gap-1.5 text-gray-500 font-semibold text-sm hover:text-blue-600"
-        >
-         {t.servicedetailpage.filters["Sort By"]}:{" "}
-         {t.servicedetailpage.filters[sortBy as SortKey]}
+      <Button
+  onClick={() => setDropdownOpen(!dropdownOpen)}
+  className="flex items-center gap-2 text-gray-500 font-semibold text-sm hover:text-blue-600"
+ rightIcon={
+  <>
+    <ChevronDown
+    className={`w-4 h-4 transition-transform ${
+      dropdownOpen ? "rotate-180" : ""
+    }`}
+  />
+  </>
+ }
+>
+  <span className="whitespace-nowrap">
+    {t.servicedetailpage.filters["Sort By"]}:{" "}
+    {t.servicedetailpage.filters[sortBy as SortKey]}
+  </span>
 
-          <ChevronDown
-            className={`w-4 h-4 transition-transform ${
-              dropdownOpen ? "rotate-180" : ""
-            }`}
-          />
-        </Button>
+
+</Button>
 
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
