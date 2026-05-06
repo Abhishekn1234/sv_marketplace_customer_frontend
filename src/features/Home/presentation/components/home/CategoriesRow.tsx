@@ -1,15 +1,14 @@
+import CommonSpinner from "@/components/common/CommonLoadingSpinner"
 import { useServices } from "../../../../Bookings/presentation/hooks/useServices"
 import { circleColors } from "../../helpers/circlecolors"
-import { CommandCard } from "@/components/common/CommonCards"
+import CommonCard from "@/components/common/CommonCards"
 
 export default function CategoriesRow() {
   const { categories: categoryData = [], loading, error } = useServices()
 
   if (loading) {
     return (
-      <p className="text-center mt-10 text-gray-600">
-        Loading...
-      </p>
+     <CommonSpinner size={20}/>
     )
   }
 
@@ -41,9 +40,9 @@ export default function CategoriesRow() {
           const service = category.services?.[0]
 
           return (
-            <CommandCard
+            <CommonCard
   key={category._id}
-  width="w-28"
+  
   className="
     flex-shrink-0 snap-start cursor-pointer
     bg-transparent border-none shadow-none
@@ -72,7 +71,7 @@ export default function CategoriesRow() {
                   {service?.name}
                 </p>
               </div>
-            </CommandCard>
+            </CommonCard>
           )
         })}
       </div>

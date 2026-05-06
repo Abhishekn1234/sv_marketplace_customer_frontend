@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { CommandCard } from "@/components/common/CommonCards";
+import CommonCard from "@/components/common/CommonCards";
 import { useGetDispute } from "../hooks/useGetDispute";
 import type { GetDisputesQueryParams } from "../../domain/entities/getdisputesparams";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ListDisputes() {
   const [filters, setFilters] = useState<GetDisputesQueryParams>({
@@ -15,7 +16,7 @@ export default function ListDisputes() {
 
   const { data, isLoading, isError } = useGetDispute(filters);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <CommonSpinner/>;
   if (isError) return <p>Failed to load disputes</p>;
 
   return (
@@ -39,7 +40,7 @@ export default function ListDisputes() {
       {/* 🔹 List */}
       <div className="grid gap-3">
         {data?.data.map((item) => (
-          <CommandCard key={item._id}>
+          <CommonCard key={item._id}>
             <div className="p-3 space-y-1">
               <h3 className="font-semibold">
                 Reason: {item.reason}
@@ -54,7 +55,7 @@ export default function ListDisputes() {
                 <span>{new Date(item.createdAt).toLocaleString()}</span>
               </div>
             </div>
-          </CommandCard>
+          </CommonCard>
         ))}
       </div>
 

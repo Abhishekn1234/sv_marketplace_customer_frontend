@@ -6,6 +6,7 @@ import { formatDates } from "@/features/Home/presentation/helpers/formatdatestri
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 interface Props {
   booking: Booking | undefined;
@@ -74,9 +75,7 @@ export default function JobTrackingServiceDetails({
   if (loading || !booking) {
     return (
       <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
-        <p className="text-sm text-gray-500">
-          Loading service details...
-        </p>
+       <CommonSpinner size={16}/>
       </div>
     );
   }

@@ -16,6 +16,7 @@ import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTrack
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function JobTrackingTimeline({
   booking,
@@ -161,7 +162,9 @@ const currentBooking = localBooking ?? booking;
   // LOADING / EMPTY
   // -----------------------------
   // Pass false to prevent reloading of content after initial load
-  if (loading || !currentBooking) return <div>Loading...</div>;
+  if (loading || !currentBooking) return <div>
+    <CommonSpinner size={20}/>
+  </div>;
 
   // -----------------------------
   // UI

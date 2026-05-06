@@ -8,6 +8,7 @@ import JobProgressHeader from "./components/JobProgressHeader";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSocketJobProgressActivities } from "./hooks/useJobProgressSocket";
 import { useBookingDetail } from "@/features/Bookings/presentation/hooks/useBookingDetail";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function JobProgressPage() {
   const { bookingId } = useParams();
@@ -58,7 +59,7 @@ export default function JobProgressPage() {
     return (
       <PageContainer>
         <div className="flex justify-center items-center py-20">
-          <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <CommonSpinner/>
         </div>
       </PageContainer>
     );

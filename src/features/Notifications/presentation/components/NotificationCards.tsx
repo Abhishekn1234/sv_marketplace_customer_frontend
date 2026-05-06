@@ -10,10 +10,11 @@ import { useRegisterDeviceToken } from "@/features/Notifications/presentation/ho
 import { useUnreadCount } from "@/features/Notifications/presentation/hooks/useUnreadCount";
 import { useMarkAllAsRead } from "@/features/Notifications/presentation/hooks/useMarkAllAsRead";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
-import { CommandCard } from "@/components/common";
+import CommonCard from "@/components/common/CommonCards";
 import Button from "@/components/input/Button";
 import type { SelectOption } from "@/components/input/Select";
 import Select from "@/components/input/Select";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -154,7 +155,7 @@ export default function NotificationCards() {
     
 
       {/* Card */}
-      <CommandCard className="w-full max-w-5xl mx-auto flex flex-col min-h-[520px] rounded-2xl shadow-lg border border-gray-100 bg-white">
+      <CommonCard className="w-full max-w-5xl mx-auto flex flex-col min-h-[520px] rounded-2xl shadow-lg border border-gray-100 bg-white">
 
         <NotificationHeader
           toggleSelectAll={toggleSelectAll}
@@ -174,7 +175,7 @@ export default function NotificationCards() {
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="flex h-64 items-center justify-center">
-              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+              <CommonSpinner size={30} />
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-gray-500">
@@ -225,7 +226,7 @@ export default function NotificationCards() {
         {/* Pagination */}
        
 
-      </CommandCard>
+      </CommonCard>
     </div>
   </div>
 );

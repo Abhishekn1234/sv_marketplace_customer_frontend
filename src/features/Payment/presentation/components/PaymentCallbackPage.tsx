@@ -6,6 +6,7 @@ import { useVerifyPayment } from "../hooks/useVerifyPayment";
 import { toast } from "react-toastify";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useQueryClient } from "@tanstack/react-query";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function PaymentCallbackPage() {
   const { state } = useLocation();
@@ -89,7 +90,7 @@ export default function PaymentCallbackPage() {
         <h2 className="text-xl font-bold mb-3">
           {t.paymentpage.verifying}
         </h2>
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <CommonSpinner size={30} />
       </div>
     </div>
   );

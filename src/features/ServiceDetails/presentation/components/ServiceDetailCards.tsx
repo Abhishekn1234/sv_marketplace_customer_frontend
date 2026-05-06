@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CustomQuote from "./GetCustomQuote";
 import { Image } from "@/components/input";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 interface Props {
   activeFilter: string;
@@ -24,7 +25,7 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
       }, [apiResponse]);
 
   if (isPending) {
-    return <p className="text-gray-500">Loading services...</p>;
+    return <CommonSpinner/>;
   }
 
   if (error) {

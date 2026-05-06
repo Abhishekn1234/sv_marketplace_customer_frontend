@@ -7,6 +7,13 @@ import ReactIcon from "@/components/icons/react.svg?react";
 // Custom Icons (TSX components)
 import { QuickActionsIcon } from "./QuickActionsIcon";
 import { SecurityIcon } from "./SecurityIcon";
+import { PhoneIcon } from "./PhoneIcon";
+import { SendIcon } from "./SendIcon";
+import { SuccessIcon } from "./SuccessIcon";
+import { ArrowLeftIcon } from "./ArrowLeft";
+import { MoreVerticalIcon } from "./MoreVerticalIcon";
+import { VideoIcon } from "./VideoIcon";
+import { InfoIcon } from "./InfoIcon";
 import { BackArrowIcon } from "./BackArrowIcon";
 import { BillingIcon } from "./BillingIcon";
 import { HelpIcon } from "./HelpIcon";
@@ -42,6 +49,12 @@ export {
   EmailNotificationIcon,
   SmsNotificationIcon,
   TwoFactorAuthIcon,
-
+  PhoneIcon,
+  ArrowLeftIcon,
+  MoreVerticalIcon,
+  VideoIcon,
+  InfoIcon,
+  SendIcon,
   ArrowRight,
+  SuccessIcon
 };

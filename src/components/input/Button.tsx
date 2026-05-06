@@ -1,5 +1,6 @@
 import React from "react";
-import { Loader2 } from "lucide-react";
+
+import CommonSpinner from "../common/CommonLoadingSpinner";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "none";
 type ButtonSize = "sm" | "md" | "lg";
@@ -71,12 +72,15 @@ return (
     {...props}
   >
     {/* LEFT ICON */}
-    {loading ? (
-      <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-    ) : (
-      leftIcon && <span className="shrink-0 flex items-center">{leftIcon}</span>
-    )}
-
+        {loading ? (
+        <CommonSpinner size={16} />
+      ) : (
+        leftIcon && (
+          <span className="shrink-0 flex items-center">
+            {leftIcon}
+          </span>
+        )
+      )}
     {/* TEXT + RIGHT ICON WRAPPED TOGETHER */}
     <span className="flex items-center gap-1 min-w-0">
       <span className="truncate">{children}</span>

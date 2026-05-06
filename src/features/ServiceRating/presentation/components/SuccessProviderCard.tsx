@@ -9,6 +9,7 @@ import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBoo
 import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Image } from "@/components/input";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function SuccessProviderCard() {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -35,7 +36,7 @@ export default function SuccessProviderCard() {
   const bookings = data?.pages?.flatMap((page) => page.data || []) || [];
   const booking = bookings.find((b) => b._id === bookingId);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <CommonSpinner/>;
   if (!booking) return <div>{t.serviceratingpage.bookingNotFound}</div>;
 
   const handleSubmit = () => {

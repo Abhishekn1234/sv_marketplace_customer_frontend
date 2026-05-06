@@ -3,6 +3,7 @@ import JobTrackingContent from "./components/JobTrackingContent";
 import JobTrackingHeader from "./components/JobTrackingHeader";
 import { useParams } from "react-router-dom";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function JobTrackingPage() {
   const { bookingId } = useParams();
@@ -18,7 +19,7 @@ export default function JobTrackingPage() {
     return (
       <PageContainer>
         <div className="text-center py-10 text-gray-500">
-          Loading booking...
+         <CommonSpinner size={16}/>
         </div>
       </PageContainer>
     );

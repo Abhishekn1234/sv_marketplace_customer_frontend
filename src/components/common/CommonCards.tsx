@@ -1,69 +1,48 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+"use client";
 
-type CommandCardProps = React.HTMLAttributes<HTMLDivElement> & {
-  title?: string;
-  description?: string;
-  width?: string;
-  height?: string;
+import type { ReactNode } from "react";
+
+interface CommonCardProps {
+  children: ReactNode;
+  title?: ReactNode;
+  footer?: ReactNode;
   className?: string;
-  footer?: React.ReactNode;
-  children?: React.ReactNode;
-  icons?: React.ReactNode;
-};
+  onClick?: () => void;
+}
 
-export const CommandCard = React.forwardRef<
-  HTMLDivElement,
-  CommandCardProps
->(
-  (
-    {
-      title,
-      description,
-      width = "w-full",
-      height = "auto",
-      className,
-      footer,
-      children,
-      icons,
-      ...props // 👈 capture onClick, role, tabIndex, etc
-    },
-    ref
-  ) => {
-    return (
-      <Card
-        ref={ref}
-        {...props} // 👈 pass them to Card
-        className={cn(
-          width,
-          height,
-          "border rounded-xl bg-transparent",
-          className
-        )}
-      >
-        {(title || description || icons) && (
-          <CardHeader className="flex items-center gap-3 text-center">
-            {icons && <div className="mb-2">{icons}</div>}
-            {title && <CardTitle>{title}</CardTitle>}
-            {description && (
-              <CardDescription>{description}</CardDescription>
-            )}
-          </CardHeader>
-        )}
+export default function CommonCard({
+  children,
+  title,
+  footer,
+  className = "",
+  onClick,
+}: CommonCardProps) {
+  return (
+    <div
+      onClick={onClick}
+      className={`
+        bg-white border border-gray-200 rounded-xl shadow-sm
+        p-4 sm:p-5
+        ${onClick ? "cursor-pointer hover:shadow-md transition" : ""}
+        ${className}
+      `}
+    >
+      {/* Header */}
+      {title && (
+        <div className="mb-3 text-sm font-semibold text-gray-800">
+          {title}
+        </div>
+      )}
 
-        {children && <CardContent>{children}</CardContent>}
-        {footer && <CardFooter>{footer}</CardFooter>}
-      </Card>
-    );
-  }
-);
+      {/* Body */}
+      <div>{children}</div>
 
-CommandCard.displayName = "CommandCard";
+      {/* Footer */}
+      {footer && (
+        <div className="mt-4 pt-3 border-t border-gray-100">
+          {footer}
+        </div>
+      )}
+    </div>
+  );
+}

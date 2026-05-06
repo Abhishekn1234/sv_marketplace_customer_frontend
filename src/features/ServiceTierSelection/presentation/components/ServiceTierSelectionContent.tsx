@@ -5,6 +5,7 @@ import type { Feature } from "../../domain/entities/feature";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function ServiceTierSelectionContent() {
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
  const {t}=useLanguage();
-  if (!categories) return <p className="text-center">Loading services...</p>;
+  if (!categories) return <CommonSpinner/>;
 
   // ✅ Flatten services from categories
   const servicess =

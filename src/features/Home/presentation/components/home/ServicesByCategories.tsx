@@ -2,8 +2,9 @@ import { useState } from "react"
 import { useServices } from "../../../../Bookings/presentation/hooks/useServices"
 import type { Service } from "../../../../Bookings/domain/entities/service.types"
 import BookingServiceModal from "../../../../Bookings/presentation/components/bookings/BookServiceModal"
-import { CommandCard } from "@/components/common/CommonCards"
+import CommonCard from "@/components/common/CommonCards"
 import { Button } from "@/components/ui/button"
+import CommonSpinner from "@/components/common/CommonLoadingSpinner"
 
 export default function ServicesByCategory() {
   const { categories: categoryData = [], loading, error } = useServices();
@@ -22,7 +23,7 @@ export default function ServicesByCategory() {
   }
 
   if (loading)
-    return <p className="text-center mt-10 text-gray-600">Loading services...</p>
+    return <CommonSpinner/>
 
   if (error)
     return <p className="text-center mt-10 text-red-500">{error}</p>
@@ -50,9 +51,9 @@ export default function ServicesByCategory() {
                 const currency = service.currency || "SAR"
 
                 return (
-                  <CommandCard
+                  <CommonCard
                     key={service._id}
-                    width="w-80"
+                   
                     className="flex flex-col h-[500px] flex-shrink-0"
                     footer={
                       <Button
@@ -89,7 +90,7 @@ export default function ServicesByCategory() {
                         <p className="text-muted-foreground">Pricing not available</p>
                       )}
                     </div>
-                  </CommandCard>
+                  </CommonCard>
                 )
               })}
             </div>

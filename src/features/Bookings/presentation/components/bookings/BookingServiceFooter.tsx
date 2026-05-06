@@ -1,3 +1,4 @@
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 
 interface BookingServiceFooterProps {
@@ -48,10 +49,10 @@ export default function BookingServiceFooter({
           {loading ? (
             <>
               <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-              Booking...
+             <CommonSpinner/>
             </>
           ) : isGeocoding ? (
-            "Processing location..."
+          <CommonSpinner/>
           ) : (
             `Confirm Booking - ${formatPrice(calculateTotalPrice)}`
           )}

@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { Input, Label } from "@/components/input";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -148,7 +149,14 @@ export default function ChangePasswordCard() {
                 disabled={loading}
                 className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] transition hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
               >
-                {loading ? t.changepasswordpage.updating: t.changepasswordpage.updatePassword}
+                {loading ? (
+                <span className="flex items-center gap-2">
+                  <CommonSpinner size={14} />
+                  {t.changepasswordpage.updating}
+                </span>
+              ) : (
+                t.changepasswordpage.updatePassword
+              )}
               </Button>
             </form>
           </div>

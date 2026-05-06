@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useVerificationStore } from "@/features/core/store/usestep";
 import { useSendOtpMobile } from "../hooks/useSendOtpMobile";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function VerificationTab() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -211,7 +212,11 @@ const resend = async () => {
                 onClick={handleSubmitOtp}
                 className="w-full h-12 sm:h-14 cursor-pointer rounded-full bg-blue-600 text-white text-sm sm:text-base font-semibold disabled:bg-gray-300 hover:bg-blue-700 transition"
               >
-                {loading ? "Verifying..." : t.verification.verify_continue}
+                {loading ? (
+                    <CommonSpinner size={10} />
+                  ) : (
+                    t.verification.verify_continue
+                  )}
               </Button>
 
               {/* Change number */}

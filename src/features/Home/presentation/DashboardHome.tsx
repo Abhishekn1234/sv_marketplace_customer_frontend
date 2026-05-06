@@ -9,6 +9,7 @@ import SecurePayment from "./components/home/RecentPayment";
 import SatisfactionGuarantee from "./components/home/SatisificationGuarantte";
 import PromoCards from "./components/home/PromoCards";
 import CommonFaq from "@/components/common/CommonFaq";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
@@ -40,7 +41,7 @@ export default function WebsiteHome() {
     }
   };
 
-  if (isLoading) return <div>Loading categories...</div>;
+  if (isLoading) return <div><CommonSpinner size={20}/></div>;
   if (error) return <div>Error loading categories</div>;
 
   return (

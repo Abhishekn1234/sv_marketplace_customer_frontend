@@ -4,11 +4,12 @@ import { progressMap } from "@/features/Home/presentation/helpers/progressmap";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export function JobProgressProgress({ booking, loading }: any) {
   const { t } = useLanguage();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (<CommonSpinner/>);
   if (!booking) return <div>No booking found</div>;
 
   const status = (booking?.status || "REQUESTED").toString();

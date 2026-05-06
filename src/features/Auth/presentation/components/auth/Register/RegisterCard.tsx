@@ -8,6 +8,7 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Checkbox, PhoneInput as CustomPhoneInput } from "@/components/input";
 import Button from "@/components/input/Button";
 import { ArrowRight } from "@/components/icons";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 const RegistrationCard = () => {
   const [formData, setFormData] = useState({
@@ -204,28 +205,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   {loading ? (
     <>
       {/* ✅ Proper spinner */}
-      <svg
-        className="w-5 h-5 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-          className="opacity-25"
-        />
-        <path
-          d="M4 12a8 8 0 018-8"
-          stroke="currentColor"
-          strokeWidth="4"
-          className="opacity-75"
-        />
-      </svg>
-
-      <span>Loading...</span>
+     <CommonSpinner size={20}/>
     </>
   ) : (
     <>

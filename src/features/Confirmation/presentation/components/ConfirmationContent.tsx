@@ -13,6 +13,8 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { SuccessIcon } from "@/components/icons";
 
 export default function ConfirmationContent() {
   const navigate = useNavigate();
@@ -78,7 +80,7 @@ export default function ConfirmationContent() {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-81px)] bg-gray-50">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+          <CommonSpinner size={20}/>
           <p className="text-gray-500 font-medium">
             {t.confirmationpage.loading}
           </p>
@@ -96,16 +98,7 @@ export default function ConfirmationContent() {
 
         {/* Success Icon */}
         <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-6 sm:mb-8 rounded-full bg-emerald-100 border-4 border-emerald-200 flex items-center justify-center">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="w-10 h-10 sm:w-14 sm:h-14 text-emerald-500"
-          >
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
+          <SuccessIcon/>
         </div>
 
         {/* Title */}

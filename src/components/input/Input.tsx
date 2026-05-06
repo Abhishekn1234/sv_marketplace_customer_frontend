@@ -16,12 +16,11 @@ interface InputProps
 }
 /* SIZE STYLES */
 const sizeStyles: Record<Size, string> = {
-  sm: "px-3 py-2 text-sm",
-  md: "px-4 py-3 text-sm",
-  lg: "px-5 py-4 text-base",
-  xl: "px-6 py-5 text-lg",
+  sm: "px-3 py-1.5 text-sm",
+  md: "px-4 py-2 text-sm",
+  lg: "px-4 py-2.5 text-base", // 👈 best for chat
+  xl: "px-5 py-3 text-lg",
 };
-
 /* RADIUS STYLES */
 const radiusStyles: Record<Radius, string> = {
   sm: "rounded-md",
@@ -32,12 +31,14 @@ const radiusStyles: Record<Radius, string> = {
 };
 const variantStyles: Record<Variant, string> = {
   default: `
-    border
-    focus:border-blue-600 focus:ring-4 focus:ring-blue-100
+    border border-gray-300
     bg-white
+    focus:border-blue-500 focus:ring-2 focus:ring-blue-100
   `,
   unstyled: `
-   bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm
+    bg-gray-100
+    border border-transparent
+    focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100
   `,
 };
 

@@ -12,6 +12,7 @@ import { getIcon } from "./utils/getpaymentgatewayicon";
 import { getDisplayName } from "./utils/getDisplayNamepaymentgateways";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function PaymentPage() {
   const [method, setMethod] = useState<string>("");
@@ -112,9 +113,7 @@ export default function PaymentPage() {
         {/* Dynamic Methods */}
     <div className="grid grid-cols-3 gap-4 mb-6">
   {isLoading ? (
-    <p className="col-span-3 text-center text-sm text-gray-500">
-     {t.paymentpage.loading}
-    </p>
+   <CommonSpinner size={30} />
   ) : normalized.length ? (
     normalized.map((gateway) => {
       const isSelected = method === gateway.type;

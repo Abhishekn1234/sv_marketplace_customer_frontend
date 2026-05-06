@@ -9,6 +9,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { UserIcon } from '@/components/icons/UserIcon';
 import { FileInput, Image } from '@/components/input';
 import Button from '@/components/input/Button';
+import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 
 
 
@@ -22,7 +23,9 @@ export default function ProfileList() {
   const {t}=useLanguage();
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading profile...</div>;
+    return <div className="text-center py-10">
+      <CommonSpinner/>
+    </div>;
   }
 
   if (isError || !profile) {

@@ -5,6 +5,7 @@ import { useAuth } from '@/features/Auth/presentation/hooks/useAuth';
 import { Input, Label } from '@/components/input';
 import Button from '@/components/input/Button';
 import { ArrowRight } from '@/components/icons';
+import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -139,7 +140,7 @@ const LoginCard = () => {
  >
   <span className="inline-flex items-center gap-2 whitespace-nowrap">
     {loading ? (
-      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+      <CommonSpinner size={10}/>
     ) : (
       <>
         <span>Continue</span>

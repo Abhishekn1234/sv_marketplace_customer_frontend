@@ -10,6 +10,7 @@ import type { BookingStatus } from "@/features/Bookings/domain/entities/bookings
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
 import { Image } from "@/components/input";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
@@ -111,7 +112,7 @@ const serviceName =
   if (loading) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
-        Loading...
+       <CommonSpinner size={20}/>
       </div>
     );
   }

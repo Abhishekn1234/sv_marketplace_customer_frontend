@@ -1,4 +1,5 @@
 import type { Worker } from "./worker.types";
+import type { WorkerProfile } from "./workprofile.types";
 
 export interface AssignedWorker {
   _id: string;
@@ -16,4 +17,5 @@ export interface AssignedWorker {
   completedAt?: string;
 
   worker: Worker;
+  workerProfile?:WorkerProfile;
 }

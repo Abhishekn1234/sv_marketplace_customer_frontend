@@ -1,3 +1,4 @@
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import Button from "@/components/input/Button";
 import { useAuthStore } from "@/features/core/store/auth";
@@ -115,7 +116,7 @@ const selectedLocation =
               className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center justify-between"
             >
               <span>Use Current Location</span>
-              {loadingLocation && <span className="text-xs text-gray-500 ml-2">Loading...</span>}
+              {loadingLocation && <span className="text-xs text-gray-500 ml-2"><CommonSpinner/></span>}
             </Button>
 
             {/* {addresses.map((addr) => (

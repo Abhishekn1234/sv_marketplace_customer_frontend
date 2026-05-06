@@ -7,8 +7,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { getSocket } from "@/features/core/Websocket/socket";
 import { Image } from "@/components/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 interface Props {
   booking: Booking | null;
@@ -42,6 +43,7 @@ export default function JobTrackingWorkerDetails({
       isVerified: workerObj?.isVerified ?? false,
     };
   };
+  const navigate=useNavigate();
 
   const normalizeBookingWorkers = (b: any) => ({
     ...b,
@@ -91,7 +93,7 @@ export default function JobTrackingWorkerDetails({
 
   const worker = localBooking?.assignedWorkers?.[0] ?? null;
 
-  if (loading) return <div>Loading worker...</div>;
+  if (loading) return <div><CommonSpinner/></div>;
 
   if (!worker) {
     return (
@@ -143,7 +145,7 @@ export default function JobTrackingWorkerDetails({
           {t.jobtrackingpage.call}
         </Link>
 
-        <Button className="flex-1 border py-2 rounded-lg">
+        <Button className="flex-1 border py-2 rounded-lg" onClick={()=>navigate(`/message/${worker._id}`)}>
           {t.jobtrackingpage.message}
         </Button>
       </div>

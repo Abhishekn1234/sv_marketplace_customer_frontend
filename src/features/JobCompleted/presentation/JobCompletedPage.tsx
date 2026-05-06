@@ -10,7 +10,8 @@ import JobCompletedActions from "./components/JobCompletedActions";
 
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
-import { LoadingScreen } from "./components/Loadingscreen";
+
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function JobCompletedPage() {
   const { state } = useLocation();
@@ -34,7 +35,7 @@ export default function JobCompletedPage() {
   }, [bookingId, bookings]);
 
   if (!booking) {
-    return <LoadingScreen/>;
+    return <CommonSpinner/>;
   }
 
   return (

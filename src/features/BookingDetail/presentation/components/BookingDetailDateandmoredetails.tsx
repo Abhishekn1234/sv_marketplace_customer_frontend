@@ -10,6 +10,7 @@ import { useServices } from "@/features/Bookings/presentation/hooks/useServices"
 import Button from "@/components/input/Button";
 import { Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
@@ -256,41 +257,22 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
         </div>
       </div>
 
-      <Button
-  onClick={handleBooking}
-  disabled={loading}
-  rightIcon={<ArrowRight/>}
-  className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
->
-  {loading ? (
-    <>
-      <svg
-        className="w-5 h-5 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-        />
-      </svg>
-      Processing...
-    </>
-  ) : (
-    <>
-      {t.bookingdetailpage.confirmBooking} 
-    </>
-  )}
-</Button>
+          <Button
+      onClick={handleBooking}
+      disabled={loading}
+      rightIcon={<ArrowRight/>}
+      className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
+    >
+      {loading ? (
+        <>
+          <CommonSpinner size={15}/>
+        </>
+      ) : (
+        <>
+          {t.bookingdetailpage.confirmBooking} 
+        </>
+      )}
+    </Button>
     </div>
   );
 }

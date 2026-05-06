@@ -3,6 +3,7 @@ import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useSe
 import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
@@ -19,7 +20,7 @@ export default function ServiceTierSelectionBreadCrumb() {
     services.find((s: any) => s._id === id)?.name || "Service";
 
   if (isPending) {
-    return <p className="text-gray-500 text-center">Loading...</p>;
+    return <CommonSpinner/>
   }
 
   return (
