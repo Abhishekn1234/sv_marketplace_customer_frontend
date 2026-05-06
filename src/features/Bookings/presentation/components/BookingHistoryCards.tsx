@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandCard } from "@/components/common/CommonCards";
+import  CommonCard  from "@/components/common/CommonCards";
 import { Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
@@ -75,7 +75,7 @@ export default function BookingCard({
   };
 
   return (
-    <CommandCard className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
+    <CommonCard className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-4">
@@ -146,7 +146,7 @@ export default function BookingCard({
         onInvoiceClick={() => onInvoiceClick(booking)}
          navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}
       />
-    </CommandCard>
+    </CommonCard>
   );
 }
 
