@@ -19,7 +19,7 @@ import { DeleteAccountIcon } from "./DeleteAccountIcon";
 import { EmailNotificationIcon } from "./EmailNotificationIcon";
 import { SmsNotificationIcon } from "./SmsNotificationIcon";
 import { TwoFactorAuthIcon } from "./TwoFactorAuthIcon";
-import { UserIcon } from "./UserIcon";
+
 import { ArrowRight } from "./ArrowRight";
 
 // Export everything
@@ -42,6 +42,6 @@ export {
   EmailNotificationIcon,
   SmsNotificationIcon,
   TwoFactorAuthIcon,
-  UserIcon,
+
   ArrowRight,
 };
