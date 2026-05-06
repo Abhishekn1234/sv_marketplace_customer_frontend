@@ -10,6 +10,8 @@ import { UserIcon } from '@/components/icons/UserIcon';
 import { FileInput, Image } from '@/components/input';
 import Button from '@/components/input/Button';
 
+
+
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
