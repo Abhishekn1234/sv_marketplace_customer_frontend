@@ -140,7 +140,7 @@ const LoginCard = () => {
  >
   <span className="inline-flex items-center gap-2 whitespace-nowrap">
     {loading ? (
-      <CommonSpinner size={10}/>
+      <CommonSpinner size={15} color='white'/>
     ) : (
       <>
         <span>Continue</span>

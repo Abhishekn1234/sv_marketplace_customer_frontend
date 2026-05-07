@@ -213,7 +213,7 @@ const resend = async () => {
                 className="w-full h-12 sm:h-14 cursor-pointer rounded-full bg-blue-600 text-white text-sm sm:text-base font-semibold disabled:bg-gray-300 hover:bg-blue-700 transition"
               >
                 {loading ? (
-                    <CommonSpinner size={10} />
+                    <CommonSpinner size={10} color="white" />
                   ) : (
                     t.verification.verify_continue
                   )}

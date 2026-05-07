@@ -51,6 +51,7 @@ import { requestAndGetToken, initOnMessage } from "@/components/firebase/notific
 import InvoicePrintPage from "./features/JobTracking/presentation/components/InvoicePrintPage";
 import WorkerChatPage from "./features/WorkerChat/presentation/WorkerChatPage";
 import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCall";
+import AIChatPage from "./features/JobTracking/presentation/components/AIChatWindow";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -152,6 +153,7 @@ function App() {
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="/chat" element={<AIChatPage />} />
                 <Route path="video-call/:workerId" element={<VideoCallPage/>}/>
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />

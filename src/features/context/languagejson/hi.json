@@ -222,6 +222,26 @@
   "title": "जॉब ट्रैकिंग",
   "subtitle": "अपनी सेवा अनुरोध को वास्तविक समय में ट्रैक करें",
 
+"cancelBooking": {
+  "title": "बुकिंग रद्द करें",
+  "subtitle": "क्या आप वाकई अपनी बुकिंग रद्द करना चाहते हैं?",
+  "reason": "कारण",
+  "cancelType": "रद्द करने का प्रकार",
+  "placeholder": "रद्द करने का कारण दर्ज करें...",
+  "selectPlaceholder": "रद्द करने का कारण चुनें...",
+  "confirm": "हाँ, रद्द करें",
+  "cancel": "नहीं",
+
+  "types": {
+    "BOOKED_WRONG_SERVICE": "गलत सेवा बुक की",
+    "BOOKED_BY_MISTAKE": "गलती से बुक किया",
+    "SCHEDULE_CHANGED": "समय बदल गया",
+    "PRICE_TOO_HIGH": "कीमत बहुत अधिक है",
+    "SERVICE_NO_LONGER_NEEDED": "सेवा की अब आवश्यकता नहीं है",
+    "OTHER": "अन्य"
+  }
+},
+
   "sections": {
     "serviceProgress": "सेवा प्रगति",
     "needHelp": "सहायता चाहिए?",

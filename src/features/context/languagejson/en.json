@@ -234,7 +234,25 @@
     "yourProfessional": "Your Professional",
     "workerNotAssigned": "Worker not assigned yet"
   },
+  "cancelBooking": {
+  "title": "Cancel Booking",
+  "subtitle": "Are you sure you want to cancel your booking?",
+  "reason": "Reason",
+  "cancelType": "Cancellation Type",
+  "placeholder": "Enter cancellation reason...",
+  "selectPlaceholder": "Select cancellation reason...",
+  "confirm": "Yes, Cancel",
+  "cancel": "No",
 
+  "types": {
+    "BOOKED_WRONG_SERVICE": "Booked Wrong Service",
+    "BOOKED_BY_MISTAKE": "Booked by Mistake",
+    "SCHEDULE_CHANGED": "Schedule Changed",
+    "PRICE_TOO_HIGH": "Price Too High",
+    "SERVICE_NO_LONGER_NEEDED": "Service No Longer Needed",
+    "OTHER": "Other"
+  }
+},
   "serviceDetails": {
     "title": "Service Details",
     "serviceType": "Service Type",

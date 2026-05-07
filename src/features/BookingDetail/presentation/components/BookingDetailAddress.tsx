@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
+import CommonCard from "@/components/common/CommonCards";
+import CommonModal from "@/components/common/CommonModal";
 
 export default function BookingDetailAddress() {
   const { current_location, updateAddress } = useAuthStore();
@@ -68,83 +70,186 @@ export default function BookingDetailAddress() {
   return (
     <>
       {/* Inline Display */}
-      <div className="mt-6 bg-white rounded-2xl p-6 border border-gray-200">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base font-bold text-gray-900">
-            {t.bookingdetailpage.serviceAddress}
-          </h3>
+     <CommonCard className="mt-6 rounded-2xl border border-gray-200 p-6">
+  
+  {/* Header */}
+  <div className="mb-4 flex items-center justify-between">
+    <h3 className="text-base font-bold text-gray-900">
+      {t.bookingdetailpage.serviceAddress}
+    </h3>
 
-          <Button
-            onClick={() => setIsOpen(true)}
-            className="text-xs font-bold uppercase tracking-wide text-blue-600 hover:underline"
-          >
-            {t.bookingdetailpage.change}
-          </Button>
-        </div>
+    <Button
+      onClick={() => setIsOpen(true)}
+      className="
+        text-xs
+        font-bold
+        uppercase
+        tracking-wide
+        text-blue-600
+        hover:underline
+      "
+    >
+      {t.bookingdetailpage.change}
+    </Button>
+  </div>
 
-        {/* Home Address */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
-          <strong className="block text-sm font-bold text-gray-900 mb-1">
-            {t.bookingdetailpage.home}
-          </strong>
-          <p className="text-sm text-gray-500 leading-6">
-            {homeAddress || "No address added"}
-          </p>
-        </div>
+  {/* Address Card */}
+  <div
+    className="
+      mb-4
+      rounded-xl
+      border
+      border-gray-200
+      bg-gray-50
+      p-4
+    "
+  >
+    <strong
+      className="
+        mb-1
+        block
+        text-sm
+        font-bold
+        text-gray-900
+      "
+    >
+      {t.bookingdetailpage.home}
+    </strong>
 
-        {/* Entry Instructions */}
-        <Label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
-          {t.bookingdetailpage.entryInstructions}
-        </Label>
+    <p
+      className="
+        text-sm
+        leading-6
+        text-gray-500
+      "
+    >
+      {homeAddress ||
+        "No address added"}
+    </p>
+  </div>
 
-        <Input
-          type="text"
-          value={entryInstructions}
-          onChange={(e) => setEntryInstructions(e.target.value)}
-          placeholder="Apartment, street, building..."
-          className="w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 mb-2"
-        />
-      </div>
+  {/* Entry Instructions */}
+  <div>
+    <Label
+      className="
+        mb-2
+        block
+        text-xs
+        font-bold
+        uppercase
+        tracking-wide
+        text-gray-400
+      "
+    >
+      {
+        t.bookingdetailpage
+          .entryInstructions
+      }
+    </Label>
 
+    <Input
+      type="text"
+      value={entryInstructions}
+      onChange={(e) =>
+        setEntryInstructions(
+          e.target.value
+        )
+      }
+      placeholder="Apartment, street, building..."
+      className="
+        h-12
+        w-full
+        rounded-xl
+        border
+        border-gray-200
+        bg-white
+        px-4
+        text-sm
+        text-gray-900
+        outline-none
+        transition-all
+        focus:border-blue-600
+        focus:ring-4
+        focus:ring-blue-100
+      "
+    />
+  </div>
+</CommonCard>
       {/* Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              Update Home Address
-            </h2>
+    <CommonModal
+  open={isOpen}
+  onClose={() => setIsOpen(false)}
+  title="Update Home Address"
+  width="max-w-md"
+  footer={
+    <>
+      <Button
+        onClick={() => setIsOpen(false)}
+        className="
+          px-4
+          py-2
+          text-sm
+          font-semibold
+          text-gray-600
+          hover:text-gray-900
+        "
+      >
+        Cancel
+      </Button>
 
-            <Input
-              type="text"
-              value={homeAddress}
-              onChange={(e) => setHomeAddress(e.target.value)}
-              placeholder="Type your home address..."
-              className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none mb-2"
-            />
+      <Button
+        onClick={handleSave}
+        disabled={loadingLocation}
+        className="
+          rounded-xl
+          bg-blue-600
+          px-5
+          py-2
+          text-sm
+          font-semibold
+          text-white
+          transition
+          hover:bg-blue-700
+          disabled:opacity-50
+        "
+      >
+        {loadingLocation
+          ? "Getting location..."
+          : "Save"}
+      </Button>
+    </>
+  }
+>
+  <div>
+    <Input
+      type="text"
+      value={homeAddress}
+      onChange={(e) =>
+        setHomeAddress(e.target.value)
+      }
+      placeholder="Type your home address..."
+      className="
+        mb-2
+        w-full
+        rounded-xl
+        border
+        border-gray-200
+        p-3
+        text-sm
+        outline-none
+        transition-all
+        focus:border-blue-600
+        focus:ring-4
+        focus:ring-blue-100
+      "
+    />
 
-            <p className="text-xs text-gray-400 mb-3">
-              Location will be captured from your current position
-            </p>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900"
-              >
-                Cancel
-              </Button>
-
-              <Button
-                onClick={handleSave}
-                disabled={loadingLocation}
-                className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50"
-              >
-                {loadingLocation ? "Getting location..." : "Save"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+    <p className="text-xs text-gray-400">
+      Location will be captured from your
+      current position
+    </p>
+  </div>
+</CommonModal>
     </>
   );
 }

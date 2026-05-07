@@ -10,110 +10,12 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
-import { Label, Textarea } from "@/components/input";
-import Button from "@/components/input/Button";
-import Select, { type SelectOption } from "@/components/input/Select";
+
 import { useQueryClient } from "@tanstack/react-query";
 import CommonCard from "@/components/common/CommonCards";
 import CommonModal from "@/components/common/CommonModal";
+import { CancelConfirmationDialog } from "./CancelModal";
 
-// -----------------------
-// CANCEL TYPES
-// -----------------------
-const cancelTypes = [
-  { value: "BOOKED_WRONG_SERVICE", label: "Booked Wrong Service" },
-  { value: "BOOKED_BY_MISTAKE", label: "Booked by Mistake" },
-  { value: "SCHEDULE_CHANGED", label: "Schedule Changed" },
-  { value: "PRICE_TOO_HIGH", label: "Price Too High" },
-  { value: "SERVICE_NO_LONGER_NEEDED", label: "Service No Longer Needed" },
-  { value: "OTHER", label: "Other" },
-];
-const options: SelectOption[] = [
-  { label: "Select cancellation reason...", value: "" },
-  ...cancelTypes.map((type) => ({
-    label: type.label,
-    value: type.value,
-  })),
-];
-
-
-// -----------------------
-// CANCEL FORM
-// -----------------------
-function CancelConfirmationDialog({
-  onConfirm,
-  onCancel,
-}: {
-  onConfirm: (type: string, reason: string) => void;
-  onCancel: () => void;
-}) {
-  const [selectedType, setSelectedType] = useState("");
-  const [reason, setReason] = useState("");
-
-  const handleConfirm = () => {
-    if (!selectedType) {
-      toast.error("Please select a cancellation reason");
-      return;
-    }
-
-    // ✅ reason required only if NOT OTHER
-    if (selectedType !== "OTHER" && !reason.trim()) {
-      toast.error("Please enter a cancel reason");
-      return;
-    }
-
-    onConfirm(selectedType, reason.trim());
-  };
-
-  return (
-    <div>
-      <Label className="font-semibold mb-3">
-        Are you sure you want to cancel this booking?
-      </Label>
-
-      {/* TYPE */}
-            <Select
-        options={options}
-        value={selectedType}
-        onChange={(val) => setSelectedType(val)}
-        className="w-full mb-3"
-      />
-
-      {/* REASON */}
-      <Textarea
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        placeholder={
-          selectedType === "OTHER"
-            ? "Optional reason..."
-            : "Enter cancellation reason..."
-        }
-        className="w-full mb-3 p-2 border rounded text-sm dark:bg-gray-900 dark:border-gray-700"
-      />
-
-      {/* ACTIONS */}
-      <div className="flex gap-2 justify-end">
-        <Button
-          onClick={onCancel}
-          className="px-3 py-1 text-sm rounded bg-gray-200"
-        >
-          No
-        </Button>
-
-        <Button
-          onClick={handleConfirm}
-          className="px-3 py-1 text-sm rounded bg-red-600 text-white"
-        >
-          Yes, Cancel
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-// -----------------------
-// MAIN COMPONENT
-// -----------------------
 export default function JobTrackingNeedHelp({
   booking,
 }: {
@@ -214,11 +116,11 @@ const queryClient = useQueryClient();
       icon: <span>❓</span>,
       action: helpNavigate,
     },
-    {
-      text: t.jobtrackingpage.sections.chatWithUs,
-      icon: <span>💬</span>,
-      action: () => toast.info("Chat feature coming soon!"),
-    },
+ {
+  text: t.jobtrackingpage.sections.chatWithUs,
+  icon: <span>💬</span>,
+  action: () => navigate("/chat"),
+},
     {
       text: t.jobtrackingpage.sections.cancelBooking,
       icon: <span>🗑️</span>,

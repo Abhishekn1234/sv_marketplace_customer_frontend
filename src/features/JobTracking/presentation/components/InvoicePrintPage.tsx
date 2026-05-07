@@ -51,33 +51,76 @@ const { t } = useLanguage();
   },
 ];
 
-const columns :Column<InvoiceRow>[] =[
+const columns: Column<InvoiceRow>[] = [
   {
     header: t.common.service,
     accessor: "service",
+    render: (row) => (
+      <div>
+        <p className="font-semibold text-gray-900">
+          {row.service}
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+          Professional home service
+        </p>
+      </div>
+    ),
   },
+
   {
     header: t.invoice.tier,
     accessor: "tier",
-    render: (row: any) => (
-      <span className="tier-tag">{row.tier}</span>
+    render: (row) => (
+      <span
+        className="
+          inline-flex
+          rounded-full
+          bg-blue-50
+          px-3
+          py-1
+          text-xs
+          font-semibold
+          text-blue-700
+        "
+      >
+        {row.tier}
+      </span>
     ),
   },
+
   {
     header: t.invoice.qtyHours,
     accessor: "qty",
-    render: (row: any) => <div className="text-center">{row.qty}</div>,
+    render: (row) => (
+      <div className="font-medium text-gray-700">
+        {row.qty}
+      </div>
+    ),
   },
+
   {
     header: t.invoice.rate,
     accessor: "rate",
-    render: (row: any) => format(row.rate),
+    render: (row) => (
+      <div className="font-medium text-gray-700">
+        {format(row.rate)}
+      </div>
+    ),
   },
+
   {
     header: t.invoice.amount,
     accessor: "amount",
-    render: (row: any) => (
-      <div className="font-semibold text-gray-900 text-right">
+    render: (row) => (
+      <div
+        className="
+          text-right
+          text-base
+          font-bold
+          text-gray-900
+        "
+      >
         {format(row.amount)}
       </div>
     ),

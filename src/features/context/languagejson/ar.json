@@ -221,6 +221,27 @@
 "jobtrackingpage": {
   "title": "تتبع العمل",
   "subtitle": "تتبع طلب خدمتك في الوقت الفعلي",
+   
+ 
+"cancelBooking": {
+  "title": "إلغاء الحجز",
+  "subtitle": "هل أنت متأكد أنك تريد إلغاء الحجز؟",
+  "reason": "السبب",
+  "cancelType": "نوع الإلغاء",
+  "placeholder": "أدخل سبب الإلغاء...",
+  "selectPlaceholder": "اختر سبب الإلغاء...",
+  "confirm": "نعم، إلغاء",
+  "cancel": "لا",
+
+  "types": {
+    "BOOKED_WRONG_SERVICE": "تم حجز خدمة خاطئة",
+    "BOOKED_BY_MISTAKE": "تم الحجز عن طريق الخطأ",
+    "SCHEDULE_CHANGED": "تغير الموعد",
+    "PRICE_TOO_HIGH": "السعر مرتفع جدًا",
+    "SERVICE_NO_LONGER_NEEDED": "لم تعد الخدمة مطلوبة",
+    "OTHER": "أخرى"
+  }
+},
 
   "sections": {
     "serviceProgress": "تقدم الخدمة",

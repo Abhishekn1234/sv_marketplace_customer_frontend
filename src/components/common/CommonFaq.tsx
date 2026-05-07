@@ -4,11 +4,16 @@ import { useState } from "react";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
 import { PlusIcon } from "../icons";
+import CommonModal from "./CommonModal";
 
 export default function CommonFaq() {
   const [open, setOpen] = useState(false);
-  const [whatsappOpen, setWhatsappOpen] = useState(false);
-  const [message, setMessage] = useState("");
+
+  const [whatsappOpen, setWhatsappOpen] =
+    useState(false);
+
+  const [message, setMessage] =
+    useState("");
 
   const phone = "916238519397";
 
@@ -16,108 +21,225 @@ export default function CommonFaq() {
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(
       message || "Hi, I need help!"
     )}`;
+
     window.open(url, "_blank");
+
+    setWhatsappOpen(false);
+
+    setMessage("");
   };
 
   return (
     <>
+      {/* ================= WHATSAPP BUTTON ================= */}
 
-    <div
-  className="fixed bottom-24 right-6 z-50"
-  onMouseEnter={() => setWhatsappOpen(true)}
-  onMouseLeave={() => {
-    setWhatsappOpen(false);
-    setMessage("");
-  }}
-  onClick={() => setWhatsappOpen((prev) => !prev)}
->
-        {/* Button */}
-        <Button className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300">
+      <div className="fixed bottom-24 right-6 z-50">
+        <Button
+          onClick={() =>
+            setWhatsappOpen(true)
+          }
+          className="
+            w-14
+            h-14
+            bg-green-500
+            rounded-full
+            flex
+            items-center
+            justify-center
+            shadow-xl
+            hover:scale-110
+            active:scale-95
+            transition-all
+            duration-300
+          "
+        >
           <Image
             src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
             alt="WhatsApp"
             className="w-7 h-7"
           />
         </Button>
-
-        {/* ================= HOVER MODAL ================= */}
-        {whatsappOpen && (
-          <div className="absolute bottom-16 right-0 w-80 bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
-
-            {/* Header */}
-            <div className="bg-green-500 text-white p-4">
-              <h3 className="font-semibold text-sm">Chat with us on WhatsApp</h3>
-              <p className="text-xs opacity-90">We usually reply instantly ⚡</p>
-            </div>
-
-            {/* Body */}
-            <div className="p-4 space-y-3">
-              <Input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message..."
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-              />
-
-              <Button
-                onClick={handleSendToWhatsApp}
-                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition font-medium"
-              >
-                Chat on WhatsApp
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
 
+      {/* ================= WHATSAPP MODAL ================= */}
+
+      <CommonModal
+        open={whatsappOpen}
+        onClose={() =>
+          setWhatsappOpen(false)
+        }
+        title="Chat with us on WhatsApp"
+        width="max-w-md"
+      >
+        <div className="space-y-4">
+          {/* Header */}
+          <div
+            className="
+              rounded-2xl
+              bg-green-500
+              p-4
+              text-white
+            "
+          >
+            <h3 className="text-sm font-bold">
+              We usually reply instantly ⚡
+            </h3>
+
+            <p className="mt-1 text-xs text-white/90">
+              Send your message directly to
+              our support team.
+            </p>
+          </div>
+
+          {/* Input */}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
+              Your Message
+            </label>
+
+            <Input
+              type="text"
+              value={message}
+              onChange={(e) =>
+                setMessage(e.target.value)
+              }
+              placeholder="Type your message..."
+              className="
+                w-full
+                rounded-xl
+                border
+                border-gray-200
+                px-4
+                py-3
+                text-sm
+                outline-none
+                focus:border-green-500
+                focus:ring-4
+                focus:ring-green-100
+              "
+            />
+          </div>
+
+          {/* Action */}
+          <Button
+            onClick={handleSendToWhatsApp}
+            className="
+              w-full
+              rounded-xl
+              bg-green-500
+              py-3
+              font-semibold
+              text-white
+              transition
+              hover:bg-green-600
+            "
+          >
+            Chat on WhatsApp
+          </Button>
+        </div>
+      </CommonModal>
+
       {/* ================= FAQ FLOAT BUTTON ================= */}
+
       <Button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 z-50"
+        className="
+          fixed
+          bottom-6
+          right-6
+          z-50
+          flex
+          h-14
+          w-14
+          items-center
+          justify-center
+          rounded-full
+          bg-blue-600
+          text-white
+          shadow-xl
+          transition-all
+          duration-300
+          hover:scale-110
+          active:scale-95
+        "
       >
-       
-       <PlusIcon />
+        <PlusIcon
+
+        />
       </Button>
 
       {/* ================= FAQ MODAL ================= */}
-      {open && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl relative">
-            <Button
-              onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
-            >
-              ✕
-            </Button>
 
-            <h2 className="text-xl font-bold mb-4">
-              Frequently Asked Questions
-            </h2>
+      <CommonModal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Frequently Asked Questions"
+        width="max-w-md"
+      >
+        <div className="space-y-5 text-sm text-gray-700">
+          {/* FAQ 1 */}
+          <div
+            className="
+              rounded-xl
+              border
+              border-gray-100
+              bg-gray-50
+              p-4
+            "
+          >
+            <h3 className="mb-2 font-semibold text-gray-900">
+              1. How do I book a service?
+            </h3>
 
-            <div className="space-y-4 text-sm text-gray-700">
-              <div>
-                <h3 className="font-semibold">1. How do I book a service?</h3>
-                <p>
-                  You can book a service from the services page by selecting your category and confirming.
-                </p>
-              </div>
+            <p className="leading-6 text-gray-600">
+              You can book a service from
+              the services page by selecting
+              your category and confirming.
+            </p>
+          </div>
 
-              <div>
-                <h3 className="font-semibold">2. How do I cancel a booking?</h3>
-                <p>
-                  Go to your bookings section and click cancel before the service starts.
-                </p>
-              </div>
+          {/* FAQ 2 */}
+          <div
+            className="
+              rounded-xl
+              border
+              border-gray-100
+              bg-gray-50
+              p-4
+            "
+          >
+            <h3 className="mb-2 font-semibold text-gray-900">
+              2. How do I cancel a booking?
+            </h3>
 
-              <div>
-                <h3 className="font-semibold">3. Is online payment available?</h3>
-                <p>Yes, we support online and cash payments.</p>
-              </div>
-            </div>
+            <p className="leading-6 text-gray-600">
+              Go to your bookings section
+              and click cancel before the
+              service starts.
+            </p>
+          </div>
+
+          {/* FAQ 3 */}
+          <div
+            className="
+              rounded-xl
+              border
+              border-gray-100
+              bg-gray-50
+              p-4
+            "
+          >
+            <h3 className="mb-2 font-semibold text-gray-900">
+              3. Is online payment available?
+            </h3>
+
+            <p className="leading-6 text-gray-600">
+              Yes, we support online and
+              cash payments.
+            </p>
           </div>
         </div>
-      )}
+      </CommonModal>
     </>
   );
 }

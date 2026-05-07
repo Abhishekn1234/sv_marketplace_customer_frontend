@@ -52,10 +52,17 @@ const RecentServices: React.FC = () => {
   }, [normalizedBookings]);
 
   const validBookings = recentBookings.filter((b) => {
-    const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
-    return serviceMap.has(serviceId);
-  });
+  const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
 
+  const isValidService = serviceMap.has(serviceId);
+
+  const isActive =
+    b.status === "WORKER_ACCEPTED" ||
+    b.status === "REQUESTED" ||
+    b.status === "IN_PROGRESS";
+
+  return isValidService && isActive;
+});
   if (!validBookings?.length) return null;
 
   return (

@@ -6,9 +6,9 @@ export default function CustomQuote() {
     <div className="group flex flex-col items-center justify-center text-center bg-white border-2 border-dashed border-gray-200 rounded-[20px] p-8 min-h-[280px] cursor-pointer transition-all duration-300 hover:border-blue-600 hover:bg-gray-50">
       
       {/* Icon */}
-      <div className="w-16 h-16 flex items-center justify-center mb-4 bg-gray-50 border-2 border-gray-200 rounded-full transition-all duration-300 group-hover:bg-blue-600 group-hover:border-blue-600">
-        <PlusIcon/>
-      </div>
+     <div className="w-16 h-16 flex items-center justify-center mb-4 bg-blue-50 border-2 border-gray-200 rounded-full transition-all duration-300 group-hover:bg-blue-600 group-hover:border-blue-600">
+  <PlusIcon className="text-black" />
+</div>
 
       {/* Title */}
       <h3 className="text-[20px] font-bold text-gray-900 mb-2">

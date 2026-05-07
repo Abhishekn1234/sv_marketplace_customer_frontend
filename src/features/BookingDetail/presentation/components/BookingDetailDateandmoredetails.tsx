@@ -11,6 +11,7 @@ import Button from "@/components/input/Button";
 import { Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import CommonCard from "@/components/common/CommonCards";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
@@ -158,121 +159,226 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
   const decreaseDuration = () => setDuration((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
-    
-     <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-sm font-bold text-gray-900">{t.bookingdetailpage.selectDate}</h2>
-          <div className="flex gap-2">
-            <Button
-              onClick={handlePrev}
-              disabled={pageStart === 0}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-            >
-              ←
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={pageStart + datesPerPage >= allDates.length}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-            >
-              →
-            </Button>
-          </div>
-        </div>
-        <div className="flex gap-3 overflow-x-auto">
-          {visibleDates.map((item, index) => {
-            const globalIndex = pageStart + index;
-            return (
-              <div
-                key={globalIndex}
-                onClick={() => setSelectedDate(globalIndex)}
-                className={`h-[80px] flex flex-col items-center justify-center rounded-xl border-2 cursor-pointer transition min-w-[72px] ${
-                  selectedDate === globalIndex
-                    ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-                    : "bg-white border-gray-200 hover:border-blue-600"
-                }`}
-              >
-                <span className="text-xs font-bold uppercase">{item.day}</span>
-                <span className="text-2xl font-black">{item.date}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-    
-      <h2 className="text-sm font-bold text-gray-900 mb-4">{t.bookingdetailpage.selectTime}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-        {times.map((time, index) => (
-          <div
-            key={index}
-            onClick={() => setSelectedTime(index)}
-            className={`flex items-center justify-center p-4 rounded-xl border-2 text-sm font-semibold cursor-pointer transition-all ${
-              selectedTime === index
-                ? "bg-blue-600 border-blue-600 text-white shadow-lg"
-                : "bg-white border-gray-200 hover:border-blue-600"
-            }`}
-          >
-            {time}
-          </div>
-        ))}
-      </div>
-
-      <h2 className="text-sm font-bold text-gray-900 mb-4">
-        {t.bookingdetailpage.estimatedDuration}
+ <CommonCard className="border-2 border-gray-200 rounded-2xl p-6">
+  
+  {/* Select Date */}
+  <div>
+    <div className="mb-4 flex items-center justify-between">
+      <h2 className="text-sm font-bold text-gray-900">
+        {t.bookingdetailpage.selectDate}
       </h2>
-      <div className="flex items-center gap-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
-        <Button onClick={decreaseDuration} className="w-10 h-10 bg-white rounded-lg">−</Button>
-        <div className="flex-1 text-center">
-          <span className="text-3xl font-black">{duration}</span>
-          <span className="ml-2 text-sm font-semibold text-gray-500">Hours</span>
-        </div>
-        <Button onClick={increaseDuration} className="w-10 h-10 bg-white rounded-lg">+</Button>
-      </div>
 
-      <div className="mb-4">
-        <h2 className="text-sm font-bold text-gray-900 mb-2 mt-6">{t.bookingdetailpage.specialRequirement}</h2>
-        <Textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="e.g. Focus on kitchen cabinets, be careful with the glass table..."
-          className="w-full h-32 p-4 bg-white border-2 border-gray-200 rounded-lg text-sm text-gray-900 font-sans resize-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-        />
-      </div>
+      <div className="flex gap-2">
+        <Button
+          onClick={handlePrev}
+          disabled={pageStart === 0}
+          className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200 disabled:opacity-50"
+        >
+          ←
+        </Button>
 
-      <div className="border-t-2 border-dashed border-gray-200 pt-6 mb-6">
-        <div className="flex justify-between mb-2 text-sm">
-          <span>{t.bookingdetailpage.basePrice}({duration} hrs)</span>
-          <span>SAR {basePrice.toFixed(2)}</span>
-        </div>
-       
-        <div className="flex justify-between mb-2 text-sm">
-          <span>{t.bookingdetailpage.vatRate}</span>
-          <span>SAR {vatRate.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between border-t-2 border-gray-200 pt-3 mt-3">
-          <span className="text-lg font-bold">{t.bookingdetailpage.total}</span>
-          <span className="text-2xl font-black">SAR {totalCostToSend.toFixed(2)}</span>
-        </div>
+        <Button
+          onClick={handleNext}
+          disabled={
+            pageStart + datesPerPage >=
+            allDates.length
+          }
+          className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200 disabled:opacity-50"
+        >
+          →
+        </Button>
       </div>
-
-          <Button
-      onClick={handleBooking}
-      disabled={loading}
-      rightIcon={<ArrowRight/>}
-      className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full flex items-center justify-center gap-2 disabled:opacity-60"
-    >
-      {loading ? (
-        <>
-          <CommonSpinner size={15}/>
-        </>
-      ) : (
-        <>
-          {t.bookingdetailpage.confirmBooking} 
-        </>
-      )}
-    </Button>
     </div>
+
+    <div className="flex gap-3 overflow-x-auto">
+      {visibleDates.map((item, index) => {
+        const globalIndex =
+          pageStart + index;
+
+        return (
+          <div
+            key={globalIndex}
+            onClick={() =>
+              setSelectedDate(globalIndex)
+            }
+            className={`flex h-[80px] min-w-[72px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 transition
+
+              ${
+                selectedDate === globalIndex
+                  ? "border-blue-600 bg-blue-600 text-white shadow-lg"
+                  : "border-gray-200 bg-white hover:border-blue-600"
+              }
+            `}
+          >
+            <span className="text-xs font-bold uppercase">
+              {item.day}
+            </span>
+
+            <span className="text-2xl font-black">
+              {item.date}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* Select Time */}
+  <div className="mt-6">
+    <h2 className="mb-4 text-sm font-bold text-gray-900">
+      {t.bookingdetailpage.selectTime}
+    </h2>
+
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {times.map((time, index) => (
+        <div
+          key={index}
+          onClick={() =>
+            setSelectedTime(index)
+          }
+          className={`flex cursor-pointer items-center justify-center rounded-xl border-2 p-4 text-sm font-semibold transition-all
+
+            ${
+              selectedTime === index
+                ? "border-blue-600 bg-blue-600 text-white shadow-lg"
+                : "border-gray-200 bg-white hover:border-blue-600"
+            }
+          `}
+        >
+          {time}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* Duration */}
+  <div className="mt-6">
+    <h2 className="mb-4 text-sm font-bold text-gray-900">
+      {t.bookingdetailpage.estimatedDuration}
+    </h2>
+
+    <div className="flex items-center gap-4 rounded-xl border-2 border-gray-200 bg-gray-50 p-4">
+      <Button
+        onClick={decreaseDuration}
+        className="h-10 w-10 rounded-lg bg-white"
+      >
+        −
+      </Button>
+
+      <div className="flex-1 text-center">
+        <span className="text-3xl font-black">
+          {duration}
+        </span>
+
+        <span className="ml-2 text-sm font-semibold text-gray-500">
+          Hours
+        </span>
+      </div>
+
+      <Button
+        onClick={increaseDuration}
+        className="h-10 w-10 rounded-lg bg-white"
+      >
+        +
+      </Button>
+    </div>
+  </div>
+
+  {/* Notes */}
+  <div className="mt-6">
+    <h2 className="mb-2 text-sm font-bold text-gray-900">
+      {
+        t.bookingdetailpage
+          .specialRequirement
+      }
+    </h2>
+
+    <Textarea
+      value={notes}
+      onChange={(e) =>
+        setNotes(e.target.value)
+      }
+      placeholder="e.g. Focus on kitchen cabinets, be careful with the glass table..."
+      className="
+        h-32
+        w-full
+        resize-none
+        rounded-lg
+        border-2
+        border-gray-200
+        bg-white
+        p-4
+        text-sm
+        text-gray-900
+        outline-none
+        transition-all
+        focus:border-blue-600
+        focus:ring-4
+        focus:ring-blue-100
+      "
+    />
+  </div>
+
+  {/* Pricing */}
+  <div className="mb-6 mt-6 border-t-2 border-dashed border-gray-200 pt-6">
+    <div className="mb-2 flex justify-between text-sm">
+      <span>
+        {t.bookingdetailpage.basePrice}
+        ({duration} hrs)
+      </span>
+
+      <span>
+        SAR {basePrice.toFixed(2)}
+      </span>
+    </div>
+
+    <div className="mb-2 flex justify-between text-sm">
+      <span>
+        {t.bookingdetailpage.vatRate}
+      </span>
+
+      <span>
+        SAR {vatRate.toFixed(2)}
+      </span>
+    </div>
+
+    <div className="mt-3 flex justify-between border-t-2 border-gray-200 pt-3">
+      <span className="text-lg font-bold">
+        {t.bookingdetailpage.total}
+      </span>
+
+      <span className="text-2xl font-black">
+        SAR{" "}
+        {totalCostToSend.toFixed(2)}
+      </span>
+    </div>
+  </div>
+
+  {/* Booking Button */}
+  <Button
+    onClick={handleBooking}
+    disabled={loading}
+    rightIcon={<ArrowRight />}
+    className="
+      h-14
+      w-full
+      rounded-full
+      bg-blue-600
+      font-bold
+      text-white
+      hover:bg-blue-700
+      disabled:opacity-60
+    "
+  >
+    {loading ? (
+      <CommonSpinner
+        size={15}
+        color="white"
+      />
+    ) : (
+      t.bookingdetailpage.confirmBooking
+    )}
+  </Button>
+</CommonCard>
   );
 }

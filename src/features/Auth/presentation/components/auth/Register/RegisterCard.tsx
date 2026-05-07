@@ -205,7 +205,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   {loading ? (
     <>
       {/* ✅ Proper spinner */}
-     <CommonSpinner size={20}/>
+     <CommonSpinner size={20} color="white"/>
     </>
   ) : (
     <>
