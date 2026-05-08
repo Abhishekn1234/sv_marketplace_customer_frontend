@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import NotificationHeader from "./NotificationHeader";
 import NotificationContent from "./NotificationContent";
 import { Bell } from "lucide-react";
@@ -15,9 +16,11 @@ import Button from "@/components/input/Button";
 import type { SelectOption } from "@/components/input/Select";
 import Select from "@/components/input/Select";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { getNotificationTarget } from "../utils/notificationNavigation";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
@@ -47,12 +50,18 @@ export default function NotificationCards() {
   }, [type, limit]);
 
   const normalizedFCM = fcmNotifications.map((msg: any) => ({
-    id: msg._id,
+    id: msg._id || msg.id || `fcm-${msg.createdAt || crypto.randomUUID()}`,
     title: msg.title,
     message: msg.message,
     type: "ADMIN_MESSAGE",
     isRead: false,
     createdAt: msg.createdAt,
+    data: msg.data,
+    url: msg.url,
+    bookingId: msg.bookingId,
+    workerId: msg.workerId,
+    senderId: msg.senderId,
+    source: "fcm",
   }));
 
   const normalizedAPI = apiNotifications.map((n: any) => ({
@@ -101,6 +110,25 @@ export default function NotificationCards() {
     setSelected([]);
     refetchNotifications();
   };
+
+  const handleNotificationClick = async (notification: any) => {
+    const target = getNotificationTarget(notification);
+
+    if (!target) return;
+
+    if (!notification.isRead && notification.source !== "fcm") {
+      try {
+        await markAsRead(notification.id);
+        refetchUnreadCount();
+        refetchNotifications();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    navigate(target);
+  };
+
   const hasData = notifications.length > 0;
 
   return (
@@ -188,6 +216,7 @@ export default function NotificationCards() {
               notifications={notifications}
               selected={selected}
               toggleSelect={toggleSelect}
+              onNotificationClick={handleNotificationClick}
             />
              <div className="flex justify-end items-center gap-3 p-4   rounded-b-2xl">
           <Button

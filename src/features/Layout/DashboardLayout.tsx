@@ -112,12 +112,18 @@ export default function DashboardLayout({ children }: Props) {
         <VerificationStepper  />
       )}
 
-      <main className="flex-1 mx-auto max-w-7xl px-4 py-6 pb-24 w-full">
+      <main
+        className={
+          isMessagePage
+            ? "min-h-0 flex-1 w-full"
+            : "flex-1 mx-auto max-w-7xl px-4 py-6 pb-24 w-full"
+        }
+      >
         {children || <Outlet />}
         {/* <SocketModal/> */}
       </main>
 
-      {!isAuthPage && !isConfirmationPage && <BottomNav />}
+      {!isAuthPage && !isConfirmationPage && !isMessagePage && <BottomNav />}
 
       {footer}
     </div>

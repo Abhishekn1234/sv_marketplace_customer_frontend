@@ -25,13 +25,25 @@ messaging.onBackgroundMessage((payload) => {
     payload.data?.body ||
     "";
 
-  const url = payload.data?.url || "/notifications";
+  const data = payload.data || {};
+  const baseUrl = data.url || (
+    data.bookingId && data.workerId
+      ? `/message/${data.workerId}/${data.bookingId}`
+      : "/notifications"
+  );
+  const url = buildNotificationUrl(baseUrl, {
+    messageId: data.messageId || data.id,
+    text: data.text || data.message || body,
+    senderId: data.senderId,
+    timestamp: data.timestamp || data.createdAt,
+  });
 
   self.registration.showNotification(title, {
     body,
     icon: "/logo.png",
 
     data: {
+      ...data,
       url,
     },
 
@@ -54,11 +66,27 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
+function buildNotificationUrl(url, message) {
+  const hasMessage = Object.keys(message).some((key) => Boolean(message[key]));
+  if (!hasMessage) return url;
+
+  const target = new URL(url, self.location.origin);
+
+  Object.keys(message).forEach((key) => {
+    if (message[key]) target.searchParams.set(key, String(message[key]));
+  });
+
+  return `${target.pathname}${target.search}`;
+}
+
 
 // firebase-messaging-sw.js
 
 self.addEventListener("notificationclick", (event) => {
-  const url = event.notification.data?.url || "/notifications";
+  const url = new URL(
+    event.notification.data?.url || "/notifications",
+    self.location.origin
+  ).href;
 
   event.notification.close();
 
@@ -75,7 +103,8 @@ self.addEventListener("notificationclick", (event) => {
       });
 
       for (const client of clientsArr) {
-        if (client.url.includes(url) && "focus" in client) {
+        if ("navigate" in client && "focus" in client) {
+          await client.navigate(url);
           return client.focus();
         }
       }

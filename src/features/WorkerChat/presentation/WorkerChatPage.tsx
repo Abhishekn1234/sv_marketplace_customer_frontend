@@ -14,7 +14,7 @@ export default function WorkerChatPage() {
 
   const token = useAuthStore((state) => state.accessToken);
   const currentUserId = useAuthStore((state) => state.user?._id);
-  const { bookings: bookings = [] } = useBookings();
+  const { bookings: bookings = [], loading } = useBookings();
 
   const workerData = useMemo(() => {
     if (!bookingId || !workerId || !bookings?.length) return null;
@@ -25,22 +25,21 @@ export default function WorkerChatPage() {
 
     if (!booking) return null;
 
-    const assigned = booking.assignedWorkers?.find(
-      (aw: any) =>
-        aw?.worker?._id &&
-        String(aw.worker._id) === String(workerId)
-    );
+    const assigned = booking.assignedWorkers?.find((aw: any) => {
+      const assignedWorkerId = aw?.worker?._id || aw?.workerId?._id || aw?.workerId;
+      return assignedWorkerId && String(assignedWorkerId) === String(workerId);
+    });
 
     if (!assigned) return null;
 
     return {
-      worker: assigned.worker,
+      worker: assigned.worker || assigned.workerId,
       profile: assigned.workerProfile,
       bookingId: booking._id,
     };
   }, [bookings, bookingId, workerId]);
 
-  if (!token || !currentUserId) {
+  if (!token || !currentUserId || loading) {
     return <CommonSpinner />;
   }
 

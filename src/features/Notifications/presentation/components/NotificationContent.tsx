@@ -6,6 +6,7 @@ export default function NotificationContent({
   notifications,
   selected,
   toggleSelect,
+  onNotificationClick,
 }: any) {
   const { t } = useLanguage();
 
@@ -31,6 +32,7 @@ export default function NotificationContent({
         return (
           <div
             key={n.id}
+            onClick={() => onNotificationClick?.(n)}
             className={`
               flex items-start gap-3 px-4 py-4 cursor-pointer transition-all
               ${isUnread ? "bg-blue-10/40" : "bg-white"}

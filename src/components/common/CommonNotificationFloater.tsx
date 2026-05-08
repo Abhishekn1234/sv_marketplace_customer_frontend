@@ -6,6 +6,7 @@ import { useNotifications } from "@/features/Notifications/presentation/hooks/us
 
 import { useState, useRef, useEffect, } from "react";
 import { useNavigate } from "react-router-dom";
+import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
 
 interface Props {
   direction?: "up" | "down";
@@ -28,6 +29,16 @@ const { data: notifications = [] } = useNotifications({
 const unreadCount = useAuthStore(
   (state) => state.notifications.unreadCount
 );
+
+  const handleNotificationClick = (item: any) => {
+    const target = getNotificationTarget(item);
+
+    if (target) {
+      navigate(target);
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -105,7 +116,8 @@ const unreadCount = useAuthStore(
             ) : (
               notifications.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.id || item._id}
+                  onClick={() => handleNotificationClick(item)}
                   className="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-200"
                 >
                   <p className="text-sm font-semibold text-gray-800">

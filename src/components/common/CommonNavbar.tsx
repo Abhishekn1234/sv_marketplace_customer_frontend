@@ -83,7 +83,9 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
+const hasLocation =
+  current_location?.lat &&
+  current_location?.lng;
   return (
     <header
       className={`top-0 z-50 w-full relative ${
@@ -114,9 +116,11 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
         {(showLocation || isHomePage || isBookingPage || serviceratingpage || jobpresspage || jobtrackingpage) && (
   <div
-    ref={dropdownRef}
-    className={`ml-3 relative flex`}
-  >
+  ref={dropdownRef}
+  className={`ml-3 relative flex ${
+    !hasLocation ? "animate-pulse" : ""
+  }`}
+>
     {/* Input box */}
     <div className="relative w-full max-w-[300px]">
       

@@ -55,6 +55,11 @@ export async function initOnMessage(setNotifications?: any) {
     type: "ADMIN_MESSAGE",
     isRead: false,
     createdAt: new Date().toISOString(),
+    data: payload.data,
+    url: payload.data?.url,
+    bookingId: payload.data?.bookingId,
+    workerId: payload.data?.workerId,
+    senderId: payload.data?.senderId,
   };
 
   if (setNotifications) {
