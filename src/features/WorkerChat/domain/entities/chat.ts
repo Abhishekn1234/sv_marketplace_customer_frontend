@@ -1,5 +1,6 @@
 export type ChatMessage = {
   _id: string;
+  id?:string;
   bookingId: string;
   senderId: string;
   message: string;
@@ -8,7 +9,7 @@ export type ChatMessage = {
 };
 
 export type GetChatMessagesResponse = {
-  messages: ChatMessage[];
+  data: ChatMessage[];
   total: number;
   page: number;
   limit: number;

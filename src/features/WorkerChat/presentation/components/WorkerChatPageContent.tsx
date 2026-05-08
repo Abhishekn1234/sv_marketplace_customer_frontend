@@ -89,14 +89,33 @@ export default function WorkerChatPageContent({
   );
 
   // ================= MERGE API + SOCKET =================
+// ================= MERGE API + SOCKET =================
 const allMessages = useMemo(() => {
-  const apiMessages = (data?.messages || []).map((msg) => ({
-    _id: msg._id,
+  const apiMessages = (data?.data || []).map((msg) => {
+  const isMe =
+    getId(msg.senderId) === currentUserId;
+
+  return {
+    _id: msg.id,
+
+    id: msg.id,
+
     text: msg.message,
-    senderId: msg.senderId,
+
+    senderId: getId(msg.senderId),
+
+    sender: isMe
+      ? "customer"
+      : "worker",
+
+    self: isMe,
+
     timestamp: msg.createdAt,
-    status: "sent",
-  }));
+
+    status: "read" as const,
+  };
+});
+  console.log(apiMessages);
 
   const merged = [
     ...apiMessages,
@@ -115,20 +134,23 @@ const allMessages = useMemo(() => {
   // sort by date
   unique.sort(
     (a, b) =>
-      new Date(
-        a.timestamp || 0
-      ).getTime() -
-      new Date(
-        b.timestamp || 0
-      ).getTime()
+      new Date(a.timestamp || 0).getTime() -
+      new Date(b.timestamp || 0).getTime()
   );
 
   return unique;
-}, [data?.messages, socketMessages]);
-
+}, [data?.data, socketMessages]);
   // ================= UI FORMAT =================
- const mappedMessages: Message[] = allMessages.map((msg) => {
-  const status: "sent" | "delivered" | "read" | undefined =
+const mappedMessages: Message[] = allMessages.map((msg) => {
+  const senderId = getId(msg.senderId);
+
+  const isMe = senderId === currentUserId;
+
+  const status:
+    | "sent"
+    | "delivered"
+    | "read"
+    | undefined =
     msg.status === "sent" ||
     msg.status === "delivered" ||
     msg.status === "read"
@@ -138,23 +160,29 @@ const allMessages = useMemo(() => {
   return {
     id: msg._id,
 
+    _id: msg._id,
+
     text: msg.text || "",
 
-    sender:
-      getId(msg.senderId) === currentUserId
-        ? "customer"
-        : "worker",
+    sender: isMe
+      ? "customer"
+      : "worker",
 
-    senderId: getId(msg.senderId),
+    senderId,
+
+    self: isMe,
 
     timestamp:
       typeof msg.timestamp === "string"
         ? msg.timestamp
-        : new Date(msg.timestamp).toISOString(),
+        : new Date(
+            msg.timestamp
+          ).toISOString(),
 
     status,
   };
 });
+console.log(mappedMessages);
 
   // ================= SEND =================
  const handleSend = () => {
@@ -182,10 +210,11 @@ const allMessages = useMemo(() => {
 
         <div className="min-h-0 flex-1 overflow-hidden bg-[#f7f4ed]">
           <MessageList
-            messages={mappedMessages}
-            worker={worker}
-            isTyping={false}
-          />
+  messages={mappedMessages}
+  worker={worker}
+  isTyping={false}
+  myUserId={currentUserId}
+/>
         </div>
 
         <ChatInput
