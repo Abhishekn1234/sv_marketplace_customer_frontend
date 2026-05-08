@@ -199,7 +199,14 @@ const serviceName =
                 {t.home.Track}
               </Button>
 
-              <Button className="flex-1 h-12 border text-blue-600 rounded-xl">
+             <Button
+                className="flex-1 h-12 border text-blue-600 rounded-xl"
+                onClick={() =>
+                  navigate(
+                    `/message/${booking?.assignedWorkers?.[0]?.worker?._id}/${booking?._id}`
+                  )
+                }
+              >
                 {t.home.Chat}
               </Button>
             </>

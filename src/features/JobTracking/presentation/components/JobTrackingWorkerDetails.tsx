@@ -137,7 +137,7 @@ export default function JobTrackingWorkerDetails({
 
         <Button
           className="flex-1 border py-2 rounded-lg"
-          onClick={() => navigate(`/message/${worker._id}`)}
+          onClick={() => navigate(`/message/${worker._id}/${booking?._id}`)}
         >
           {t.jobtrackingpage.message}
         </Button>

@@ -119,7 +119,7 @@ const queryClient = useQueryClient();
  {
   text: t.jobtrackingpage.sections.chatWithUs,
   icon: <span>💬</span>,
-  action: () => navigate("/chat"),
+  action: () => toast.success("Chat Feature will come soon"),
 },
     {
       text: t.jobtrackingpage.sections.cancelBooking,

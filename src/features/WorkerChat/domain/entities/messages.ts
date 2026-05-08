@@ -1,8 +1,16 @@
 export type Message = {
-  id: number;
+  
+  _id?:string;
+   id?: string;
+
+  senderId?: string;
+  self?: boolean;
+  bookingId?:string;
   text: string;
-  sender: "customer" | "worker";
-  timestamp: Date;
+  senderType?:"CUSTOMER"|"WORKER"
+  sender?: "customer" | "worker";
+  workerId?:string;
+  timestamp: Date | string;
   status?: "sent" | "delivered" | "read";
 };
 

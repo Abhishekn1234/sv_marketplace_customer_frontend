@@ -3,16 +3,12 @@
 import { useEffect, useRef } from "react";
 import { Check, CheckCheck } from "lucide-react";
 
-
 import { formatDateLabel } from "../utils/formatdateLabel";
 import { formatTime } from "../utils/formattime";
-
 import type { Message } from "../../domain/entities/messages";
 import { TypingIndicator } from "../utils/typeindicator";
 import MiniAvatar from "../utils/miniavatar";
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
-
-
 
 export default function MessageList({
   messages,
@@ -29,11 +25,12 @@ export default function MessageList({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  // Group by date
   const grouped: { label: string; messages: Message[] }[] = [];
 
   for (const msg of messages) {
-    const label = formatDateLabel(msg.timestamp);
+    const safeDate = msg.timestamp ? new Date(msg.timestamp) : new Date();
+    const label = formatDateLabel(safeDate);
+
     if (!grouped.length || grouped[grouped.length - 1].label !== label) {
       grouped.push({ label, messages: [msg] });
     } else {
@@ -42,97 +39,93 @@ export default function MessageList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-3 py-4 flex flex-col">
-      {grouped.map((group) => (
-        <div key={group.label}>
-          {/* Date label */}
-          <div className="text-center text-xs text-gray-500 bg-white/70 border border-gray-300 rounded-full px-3 py-1 w-fit mx-auto mb-3">
-            {group.label}
-          </div>
+    <div className="flex h-full flex-col overflow-y-auto bg-[#f7f4ed] px-3 py-4 sm:px-5">
+      <div className="flex-1" />
 
-          {group.messages.map((msg, i) => {
-            const isMe = msg.sender === "customer";
-            const prev = group.messages[i - 1];
-            const next = group.messages[i + 1];
+      <div className="mx-auto w-full max-w-4xl">
+        {grouped.map((group) => (
+          <div key={group.label}>
+            <div className="mx-auto mb-4 w-fit rounded-full border border-white/80 bg-white/80 px-3 py-1 text-center text-xs font-medium text-gray-500 shadow-sm backdrop-blur">
+              {group.label}
+            </div>
 
-            const isContinuation = prev?.sender === msg.sender;
-            const isLastInGroup = next?.sender !== msg.sender;
+            {group.messages.map((msg, i) => {
+              const isMe = msg.sender === "customer";
+              const prev = group.messages[i - 1];
+              const next = group.messages[i + 1];
+              const isContinuation = prev?.sender === msg.sender;
+              const isLastInGroup = next?.sender !== msg.sender;
+              const safeTime = msg.timestamp ? new Date(msg.timestamp) : new Date();
 
-            return (
-              <div
-                key={msg.id}
-                className={`flex items-end gap-2 ${
-                  isMe ? "justify-end" : "justify-start"
-                } ${isContinuation ? "mb-1" : "mb-3"}`}
-              >
-                {/* Avatar */}
-                {!isMe && (
+              const baseBubble =
+                "px-3.5 py-2.5 text-sm leading-relaxed break-words transition-all";
+              const bubbleShape = "rounded-2xl";
+              const meBubble = "bg-blue-600 text-white shadow-sm shadow-blue-600/20";
+              const otherBubble = "border border-gray-200 bg-white text-gray-800 shadow-sm";
+
+              const meRadius = isContinuation
+                ? isLastInGroup
+                  ? "rounded-[18px_18px_4px_18px]"
+                  : "rounded-[18px_4px_4px_18px]"
+                : "rounded-[18px_18px_4px_18px]";
+
+              const otherRadius = isContinuation
+                ? isLastInGroup
+                  ? "rounded-[18px_18px_18px_4px]"
+                  : "rounded-[4px_18px_18px_4px]"
+                : "rounded-[18px_18px_18px_4px]";
+
+              const bubbleClass = [
+                baseBubble,
+                bubbleShape,
+                isMe ? meBubble : otherBubble,
+                isMe ? meRadius : otherRadius,
+              ].join(" ");
+
+              return (
+                <div
+                  key={msg.id || `${msg.text}-${i}`}
+                  className={`flex items-end gap-2 ${
+                    isMe ? "justify-end" : "justify-start"
+                  } ${isContinuation ? "mb-1" : "mb-3"}`}
+                >
+                  {!isMe && (
+                    <div className={isLastInGroup ? "visible" : "invisible"}>
+                      <MiniAvatar worker={worker} />
+                    </div>
+                  )}
+
                   <div
-                    className={`${
-                      isLastInGroup ? "visible" : "invisible"
+                    className={`flex max-w-[82%] flex-col sm:max-w-[70%] ${
+                      isMe ? "items-end" : "items-start"
                     }`}
                   >
-                    <MiniAvatar worker={worker} />
-                  </div>
-                )}
+                    <div className={bubbleClass}>{msg.text}</div>
 
-                {/* Message */}
-                <div
-                  className={`max-w-[75%] flex flex-col ${
-                    isMe ? "items-end" : "items-start"
-                  }`}
-                >
-                  <div
-                    className={`
-                      px-3 py-2 text-sm leading-relaxed break-words rounded-2xl
-                      ${
-                        isMe
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-gray-800 border border-gray-300"
-                      }
-                      ${
-                        isMe
-                          ? isContinuation
-                            ? "rounded-br-2xl"
-                            : "rounded-br-md"
-                          : isContinuation
-                          ? "rounded-bl-2xl"
-                          : "rounded-bl-md"
-                      }
-                    `}
-                  >
-                    {msg.text}
-                  </div>
+                    <div className="mt-1 flex items-center gap-1 px-1 text-[11px] text-gray-400">
+                      <span>{formatTime(safeTime)}</span>
 
-                  {/* Meta */}
-                  <div className="flex items-center gap-1 mt-1 px-1 text-[11px] text-gray-400">
-                    <span>{formatTime(msg.timestamp)}</span>
-
-                    {isMe && msg.status && (
-                      <span
-                        className={`flex items-center ${
-                          msg.status === "read"
-                            ? "text-green-600"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {msg.status === "sent" ? (
-                          <Check size={12} />
-                        ) : (
-                          <CheckCheck size={12} />
-                        )}
-                      </span>
-                    )}
+                      {isMe && msg.status && (
+                        <span
+                          className={`flex items-center ${
+                            msg.status === "read" ? "text-green-600" : "text-gray-400"
+                          }`}
+                        >
+                          {msg.status === "sent" ? <Check size={12} /> : <CheckCheck size={12} />}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
+              );
+            })}
+          </div>
+        ))}
 
-      {isTyping && <TypingIndicator worker={worker} />}
-      <div ref={bottomRef} />
+        {isTyping && <TypingIndicator worker={worker} />}
+
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 }

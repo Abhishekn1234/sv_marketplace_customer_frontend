@@ -65,7 +65,6 @@ return (
        ${icon ? "w-8 h-8 p-0" : sizes[size]}
       ${radii[radius]}
       ${variants[variant]}
-      ${sizes[size]}
       ${fullWidth ? "w-full" : ""}
       ${className}
     `}

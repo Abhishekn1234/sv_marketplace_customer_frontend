@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import Button from "@/components/input/Button";
 import {
   ArrowLeftIcon,
   PhoneIcon,
-  VideoIcon,
   MoreVerticalIcon,
   InfoIcon,
 } from "@/components/icons";
@@ -20,13 +20,14 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ChatHeader({ worker }: { worker: Worker }) {
   const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const {t}=useLanguage();
+  const { t } = useLanguage();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // close dropdown on outside click
+  const isOnline = Boolean(worker.status && worker.status.toLowerCase() !== "offline");
+  const statusLabel = isOnline ? worker.status : "Offline";
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (!menuRef.current?.contains(e.target as Node)) {
@@ -43,179 +44,154 @@ export default function ChatHeader({ worker }: { worker: Worker }) {
     window.location.href = `tel:${worker.phone}`;
   };
 
-  const handleVideo = () => {
-    if (!worker?._id) return;
-    navigate(`/video-call/${worker._id}`);
-  };
-
   const handleInfo = () => {
     setInfoOpen(true);
     setOpen(false);
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 bg-white shadow-sm relative z-50">
-
-      {/* Back */}
+    <div className="relative z-50 flex items-center gap-3 border-b border-gray-200 bg-white/95 px-3 py-3 shadow-sm backdrop-blur sm:px-4">
       <Tooltip text="Go back" position="bottom">
-        <Button onClick={() => navigate(-1)} variant="ghost">
+        <Button
+          onClick={() => navigate(-1)}
+          variant="ghost"
+          icon
+          radius="full"
+          className="text-gray-700 hover:bg-gray-100"
+          aria-label="Go back"
+        >
           <ArrowLeftIcon size={20} />
         </Button>
       </Tooltip>
 
-      {/* Avatar */}
       <Avatar worker={worker} />
 
-      {/* Name + Status */}
-      <div className="flex-1 min-w-0 flex items-center gap-2">
-        <span className="text-sm font-semibold text-gray-800 truncate">
+      <div className="min-w-0 flex-1">
+        <span className="block truncate text-[15px] font-semibold text-gray-900">
           {worker.fullName}
         </span>
-
-        {worker.status && (
-          <>
-            <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-xs text-green-600 font-medium">
-              {worker.status}
-            </span>
-          </>
-        )}
+        <span className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-gray-500">
+          <span
+            className={`h-2 w-2 rounded-full ${
+              isOnline ? "bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.12)]" : "bg-gray-300"
+            }`}
+          />
+          {statusLabel}
+        </span>
       </div>
 
-      {/* Desktop actions */}
-      <div className="hidden sm:flex items-center gap-1">
+      <div className="hidden items-center gap-1 sm:flex">
         <Tooltip text="Call" position="bottom">
-          <Button onClick={handleCall} variant="ghost">
+          <Button
+            onClick={handleCall}
+            variant="ghost"
+            icon
+            radius="full"
+            className="text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+            aria-label="Call worker"
+          >
             <PhoneIcon size={20} />
           </Button>
         </Tooltip>
-
-        <Tooltip text="Video Call" position="bottom">
-          <Button onClick={handleVideo} variant="ghost">
-            <VideoIcon size={20} />
-          </Button>
-        </Tooltip>
       </div>
 
-      {/* Menu */}
       <div className="relative" ref={menuRef}>
         <Tooltip text="More" position="bottom">
-         <Button
-          onClick={() => setOpen((p) => !p)}
-          className="p-2 rounded hover:bg-gray-100"
-        >
-          <MoreVerticalIcon />
-        </Button>
+          <Button
+            onClick={() => setOpen((p) => !p)}
+            variant="ghost"
+            icon
+            radius="full"
+            className="text-gray-700 hover:bg-gray-100"
+            aria-label="More options"
+          >
+            <MoreVerticalIcon />
+          </Button>
         </Tooltip>
-        
 
         {open && (
-          <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden">
-
+          <div className="absolute right-0 z-[9999] mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-xl">
             <Button
               onClick={handleCall}
-              className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-100 sm:hidden"
+              leftIcon={<PhoneIcon size={16} />}
+              className="w-full justify-start rounded-none px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 sm:hidden"
             >
-              <PhoneIcon size={16} />
-             {t.jobtrackingpage.call}
-            </Button>
-
-            <Button
-              onClick={handleVideo}
-              className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-100 sm:hidden"
-            >
-              <VideoIcon size={16} />
-             {t.common["Video Call"]}
+              {t.jobtrackingpage.call}
             </Button>
 
             <Button
               onClick={handleInfo}
-              className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-100"
+              leftIcon={<InfoIcon size={16} />}
+              className="w-full justify-start rounded-none px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
-              <InfoIcon size={16} />
-             {t.Bookingspage.Actions.viewDetails}
+              {t.Bookingspage.Actions.viewDetails}
             </Button>
           </div>
         )}
       </div>
 
-      {/* ✅ SINGLE MODAL ONLY */}
-    <CommonModal open={infoOpen} onClose={() => setInfoOpen(false)}>
-  
-  {/* ✅ ADD THIS WRAPPER */}
-  <div className="relative w-full max-w-sm mx-auto bg-white rounded-2xl overflow-hidden">
-
-    {/* Close Button */}
-            <Button
+      <CommonModal open={infoOpen} onClose={() => setInfoOpen(false)}>
+        <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <Button
             icon
-            variant="secondary"
+            variant="ghost"
+            radius="full"
             onClick={() => setInfoOpen(false)}
-            className="absolute top-3 right-3"
+            className="absolute right-3 top-3 text-gray-500 hover:bg-white/80 hover:text-gray-900"
+            aria-label="Close details"
+          >
+            <X size={18} />
+          </Button>
+
+          <div className="flex flex-col items-center bg-gradient-to-b from-blue-50 to-white px-5 pb-4 pt-7">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-100 shadow-md">
+              {worker.profilePictureUrl ? (
+                <Image
+                  src={worker.profilePictureUrl}
+                  alt={worker.fullName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-xl font-bold text-blue-800">
+                  {initials(worker?.fullName)}
+                </span>
+              )}
+            </div>
+
+            <h2 className="mt-3 text-lg font-bold text-gray-900">
+              {worker.fullName}
+            </h2>
+
+            <div className="mt-1 flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`} />
+              <span className="text-sm text-gray-600">{statusLabel}</span>
+            </div>
+          </div>
+
+          <div className="space-y-3 px-5 py-4 text-sm">
+            <div className="flex justify-between gap-4">
+              <span className="text-gray-500">{t.profilepage.phone}</span>
+              <span className="font-medium text-gray-800">{worker.phone || "N/A"}</span>
+            </div>
+
+            <div className="flex justify-between gap-4">
+              <span className="text-gray-500">{t.profilepage.email}</span>
+              <span className="break-all text-right font-medium text-gray-800">
+                {worker.email || "N/A"}
+              </span>
+            </div>
+          </div>
+
+          <div className="px-5 pb-5">
+            <Button
+              onClick={() => setInfoOpen(false)}
+              className="w-full rounded-xl bg-blue-600 py-2 text-white hover:bg-blue-700"
             >
-            ✕
+              {t.common.close}
             </Button>
-
-    {/* Header */}
-    <div className="flex flex-col items-center pt-6 pb-4 bg-gradient-to-b from-green-50 to-white">
-
-      <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md bg-green-100 flex items-center justify-center">
-        {worker.profilePictureUrl ? (
-          <Image
-            src={worker.profilePictureUrl}
-            alt={worker.fullName}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-green-800 text-xl font-bold">
-            {initials(worker?.fullName)}
-          </span>
-        )}
-      </div>
-
-      <h2 className="mt-3 text-lg font-bold text-gray-800">
-        {worker.fullName}
-      </h2>
-
-      <div className="flex items-center gap-2 mt-1">
-        <span className={`w-2 h-2 rounded-full ${
-          worker.status ? "bg-green-500" : "bg-gray-400"
-        }`} />
-        <span className="text-sm text-gray-600">
-          {worker.status || "Offline"}
-        </span>
-      </div>
-    </div>
-
-    {/* Details */}
-    <div className="px-5 py-4 space-y-3 text-sm">
-      <div className="flex justify-between">
-        <span className="text-gray-500">{t.profilepage.phone}</span>
-        <span className="font-medium text-gray-800">
-          {worker.phone || "N/A"}
-        </span>
-      </div>
-
-      <div className="flex justify-between">
-        <span className="text-gray-500">{t.profilepage.email}</span>
-        <span className="font-medium text-gray-800 break-all text-right">
-          {worker.email || "N/A"}
-        </span>
-      </div>
-    </div>
-
-    {/* Footer */}
-    <div className="px-5 pb-5">
-      <Button
-        onClick={() => setInfoOpen(false)}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2"
-      >
-        {t.common.close}
-      </Button>
-    </div>
-
-  </div>
-</CommonModal>
-
+          </div>
+        </div>
+      </CommonModal>
     </div>
   );
 }

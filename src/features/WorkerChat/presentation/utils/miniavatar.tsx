@@ -3,14 +3,14 @@ import { Image } from "@/components/input";
 import { initials } from "./initials";
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 
-export  default function MiniAvatar({ worker }: { worker: Worker}) {
+export default function MiniAvatar({ worker }: { worker: Worker}) {
   return (
-    <div className="w-6.5 h-6.5 min-w-[26px] rounded-full bg-green-100 text-green-800 text-[10px] font-bold flex items-center justify-center overflow-hidden">
+    <div className="flex h-[26px] min-w-[26px] items-center justify-center overflow-hidden rounded-full bg-blue-100 text-[10px] font-bold text-blue-800 shadow-sm">
       {worker.profilePictureUrl ? (
         <Image
           src={worker.profilePictureUrl}
           alt={worker.fullName}
-          className="w-full h-full object-cover rounded-full"
+          className="h-full w-full rounded-full object-cover"
         />
       ) : (
         initials(worker.fullName)

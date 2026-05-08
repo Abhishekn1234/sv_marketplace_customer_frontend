@@ -90,9 +90,13 @@ export default function DashboardLayout({ children }: Props) {
       : undefined;
 
   const footer = getFooter(pathname);
-
+  const isMessagePage = pathname.startsWith("/message/");
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 relative flex flex-col">
+        <div
+        className={`min-h-screen text-gray-900 relative flex flex-col ${
+          isMessagePage ? "bg-[#F1EFE8]" : "bg-gray-50"
+        }`}
+      >
       <CommonNavbar
         {...navbarProps}
         showUserControls={!isAuthPage}

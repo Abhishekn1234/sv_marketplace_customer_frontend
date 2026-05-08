@@ -4,126 +4,58 @@ import { useState } from "react";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
-import type { Message } from "../../domain/entities/messages";
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
-const SEED_MESSAGES: Message[] = [
-  {
-    id: 1,
-    text: "Hi! I'm on my way. Is the main water valve accessible?",
-    sender: "worker",
-    timestamp: new Date(Date.now() - 10 * 60000),
-  },
-  {
-    id: 2,
-    text: "Yes it's in the utility room next to the boiler.",
-    sender: "customer",
-    timestamp: new Date(Date.now() - 9 * 60000),
-    status: "read",
-  },
-  {
-    id: 3,
-    text: "Perfect, thanks. Should be there in about 10 mins.",
-    sender: "worker",
-    timestamp: new Date(Date.now() - 8 * 60000),
-  },
-  {
-    id: 4,
-    text: "Hi, are you coming?",
-    sender: "customer",
-    timestamp: new Date(Date.now() - 3 * 60000),
-    status: "read",
-  },
-  {
-    id: 5,
-    text: "Yes, 10 mins",
-    sender: "worker",
-    timestamp: new Date(Date.now() - 2 * 60000),
-  },
-];
+import { useChatSocket } from "../hooks/usechatsocket";
 
 export default function WorkerChatPageContent({
   worker,
+  bookingId,
+  token,
+  currentUserId,
 }: {
   workerId: string;
   worker: Worker;
+  bookingId: string;
+  token: string;
+  currentUserId: string;
 }) {
-  const [messages, setMessages] = useState<Message[]>(SEED_MESSAGES);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+
+  const { messages, sendMessage } = useChatSocket(
+    token,
+    bookingId,
+    worker._id,
+    currentUserId,
+    worker.fullName
+  );
+
+  const mappedMessages = messages.map((msg) => ({
+    id: msg._id || msg.id,
+    text: msg.text,
+    sender: msg.senderId === currentUserId ? ("customer" as const) : ("worker" as const),
+    senderId: msg.senderId,
+    timestamp: msg.timestamp || new Date().toISOString(),
+    status: msg.status,
+  }));
 
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const newMsg: Message = {
-      id: Date.now(),
-      text: input.trim(),
-      sender: "customer",
-      timestamp: new Date(),
-      status: "sent",
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
+    sendMessage(input);
     setInput("");
-
-    // delivered
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === newMsg.id ? { ...m, status: "delivered" as const } : m
-        )
-      );
-    }, 800);
-
-    // typing indicator
-    setTimeout(() => setIsTyping(true), 1500);
-
-    // reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev.map((m) =>
-          m.id === newMsg.id ? { ...m, status: "read" as const } : m
-        ),
-        {
-          id: Date.now() + 1,
-          text: "Got it! I'll be there shortly.",
-          sender: "worker",
-          timestamp: new Date(),
-        },
-      ]);
-
-      setIsTyping(false);
-    }, 3500);
   };
 
   return (
-    <div className="flex flex-col h-screen  overflow-hidden">
-      
-      {/* Optional global animation */}
-      <style>{`
-        @keyframes bounce {
-          0%,80%,100% { transform: translateY(0); }
-          40% { transform: translateY(-5px); }
-        }
-      `}</style>
+    <main className="min-h-[100dvh] bg-[#F1EFE8] px-0 sm:px-4 sm:py-4 lg:px-6">
+      <div className="mx-auto flex h-[100dvh] max-w-5xl flex-col overflow-hidden bg-white shadow-none sm:h-[calc(100dvh-2rem)] sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
+        <ChatHeader worker={worker} />
 
-      {/* Header */}
-      <ChatHeader worker={worker} />
+        <div className="min-h-0 flex-1 overflow-hidden bg-[#f7f4ed]">
+          <MessageList messages={mappedMessages} worker={worker} isTyping={false} />
+        </div>
 
-      {/* Messages (scroll area) */}
-      <div className="flex-1 overflow-hidden">
-        <MessageList
-          messages={messages}
-          worker={worker}
-          isTyping={isTyping}
-        />
+        <ChatInput value={input} onChange={setInput} onSend={handleSend} />
       </div>
-
-      {/* Input */}
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSend={handleSend}
-      />
-    </div>
+    </main>
   );
 }

@@ -16,6 +16,8 @@ export interface TextareaProps
   autoResize?: boolean;
   maxHeight?: number;
   rightElement?: React.ReactNode;
+  inputWrapperClassName?: string;
+  rightElementClassName?: string;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -33,6 +35,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       autoResize = false,
       maxHeight = 120,
       rightElement,
+      inputWrapperClassName,
+      rightElementClassName,
 
       onChange,
       ...props
@@ -62,16 +66,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         required={required}
         containerClassName={containerClassName}
         labelClassName={labelClassName}
-      >
-        <div
-          className={cn(
-            "relative flex items-end w-full",
-            
-            "px-3 py-1",
-            "",
-            "transition-all duration-150"
-          )}
         >
+          <div
+            className={cn(
+              "relative flex w-full items-end px-3 py-1 transition-all duration-150",
+              inputWrapperClassName
+            )}
+          >
           <textarea
             ref={innerRef}
             id={id}
@@ -93,7 +94,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           />
 
           {rightElement && (
-            <div className="absolute right-5 bottom-15  flex items-center">
+            <div className={cn("absolute bottom-2 right-5 flex items-center", rightElementClassName)}>
               {rightElement}
             </div>
           )}

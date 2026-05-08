@@ -157,7 +157,10 @@ function App() {
                 <Route path="video-call/:workerId" element={<VideoCallPage/>}/>
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
-                <Route path="message/:workerId" element={<WorkerChatPage/> }/>
+                <Route
+                  path="message/:workerId/:bookingId"
+                  element={<WorkerChatPage />}
+                 />
                 <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
               </Route>
             </Route>

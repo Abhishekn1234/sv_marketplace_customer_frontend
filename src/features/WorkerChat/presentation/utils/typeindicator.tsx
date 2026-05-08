@@ -7,7 +7,7 @@ export function TypingIndicator({ worker }: { worker: Worker }) {
     <div className="flex items-end gap-2 mb-2">
       <MiniAvatar worker={worker} />
 
-      <div className="bg-white border border-gray-300 rounded-2xl px-3 py-2 rounded-bl-md">
+      <div className="rounded-2xl rounded-bl-md border border-gray-200 bg-white px-3 py-2 shadow-sm">
         <div className="flex gap-1 items-center h-3">
           {[0, 150, 300].map((d) => (
             <span
