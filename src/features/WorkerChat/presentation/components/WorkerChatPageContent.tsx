@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
@@ -13,13 +17,19 @@ import type { Message } from "../../domain/entities/messages";
 import { useChatSocket } from "../hooks/usechatsocket";
 import { useGetChatMessages } from "../hooks/useGetChatMessages";
 import { useSendChatMessage } from "../hooks/useSendChatMessage";
+
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+
+const LIMIT = 30;
+
 const getId = (value: any) => {
   if (!value) return "";
 
   if (typeof value === "string") return value;
 
-  if (typeof value === "object")
+  if (typeof value === "object") {
     return value._id || value.id || "";
+  }
 
   return String(value);
 };
@@ -38,44 +48,31 @@ export default function WorkerChatPageContent({
 }) {
   const [input, setInput] = useState("");
 
-  const [searchParams] = useSearchParams();
+  const [page, setPage] = useState(1);
 
-  
-  const { data } = useGetChatMessages(
+  const [allApiMessages, setAllApiMessages] =
+    useState<any[]>([]);
+
+  const containerRef =
+    useRef<HTMLDivElement>(null);
+
+  // ================= API =================
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+  } = useGetChatMessages(
     bookingId,
-    1,
-    50
+    page,
+    LIMIT
   );
-  const { mutate: sendChatMessage} =
-  useSendChatMessage();
 
-  
-  const notificationMessage =
-    useMemo<Message | null>(() => {
-      const text = searchParams.get("text");
-
-      if (!text) return null;
-
-      return {
-        _id:
-          searchParams.get("messageId") ||
-          `notification-${bookingId}-${searchParams.get("timestamp") || Date.now()}`,
-
-        text,
-
-        senderId:
-          searchParams.get("senderId") ||
-          worker._id,
-
-        timestamp:
-          searchParams.get("timestamp") ||
-          new Date().toISOString(),
-
-        status: "sent",
-      };
-    }, [bookingId, searchParams, worker._id]);
+  const { mutate: sendChatMessage } =
+    useSendChatMessage();
 
   // ================= SOCKET =================
+
   const {
     messages: socketMessages,
     sendMessage,
@@ -84,138 +81,257 @@ export default function WorkerChatPageContent({
     bookingId,
     worker._id,
     currentUserId,
-    worker.fullName,
-    notificationMessage
+    worker.fullName
   );
 
-  // ================= MERGE API + SOCKET =================
-// ================= MERGE API + SOCKET =================
-const allMessages = useMemo(() => {
-  const apiMessages = (data?.data || []).map((msg) => {
-  const isMe =
-    getId(msg.senderId) === currentUserId;
+  // ================= APPEND PAGINATED MESSAGES =================
 
-  return {
-    _id: msg.id,
+  useEffect(() => {
+    if (!data?.data) return;
 
-    id: msg.id,
+    setAllApiMessages((prev) => {
+      const merged = [
+        ...data.data,
+        ...prev,
+      ];
 
-    text: msg.message,
+      const unique = merged.filter(
+        (msg, index, self) =>
+          index ===
+          self.findIndex(
+            (m) => m.id === msg.id
+          )
+      );
 
-    senderId: getId(msg.senderId),
+      return unique;
+    });
+  }, [data]);
 
-    sender: isMe
-      ? "customer"
-      : "worker",
+  // ================= LOAD MORE ON TOP SCROLL =================
 
-    self: isMe,
+  useEffect(() => {
+    const container =
+      containerRef.current;
 
-    timestamp: msg.createdAt,
+    if (!container) return;
 
-    status: "read" as const,
-  };
-});
-  console.log(apiMessages);
+    const handleScroll = () => {
+      if (
+        container.scrollTop < 100 &&
+        !isFetching &&
+       (data?.data?.length ?? 0) >= LIMIT
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
 
-  const merged = [
-    ...apiMessages,
-    ...socketMessages,
-  ];
+    container.addEventListener(
+      "scroll",
+      handleScroll
+    );
 
-  // remove duplicates
-  const unique = merged.filter(
-    (msg, index, self) =>
-      index ===
-      self.findIndex(
-        (m) => m._id === msg._id
-      )
-  );
+    return () => {
+      container.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+    };
+  }, [isFetching, data]);
 
-  // sort by date
-  unique.sort(
-    (a, b) =>
-      new Date(a.timestamp || 0).getTime() -
-      new Date(b.timestamp || 0).getTime()
-  );
+  // ================= MERGE =================
 
-  return unique;
-}, [data?.data, socketMessages]);
+  const allMessages = useMemo(() => {
+    const apiMessages =
+      allApiMessages.map((msg) => {
+        const isMe =
+          getId(msg.senderId) ===
+          currentUserId;
+
+        return {
+          _id: msg.id,
+
+          id: msg.id,
+
+          text: msg.message || "",
+
+          senderId: getId(
+            msg.senderId
+          ),
+
+          sender: isMe
+            ? "customer"
+            : "worker",
+
+          self: isMe,
+
+          timestamp:
+            msg.createdAt ||
+            new Date().toISOString(),
+
+          status:
+            msg.status ||
+            "delivered",
+        };
+      });
+
+    const merged = [
+      ...apiMessages,
+      ...socketMessages,
+    ];
+
+    const unique = merged.filter(
+      (msg, index, self) =>
+        index ===
+        self.findIndex((m) => {
+          const sameId =
+            String(
+              m._id || m.id
+            ) ===
+            String(
+              msg._id || msg.id
+            );
+
+          const sameContent =
+            m.text?.trim() ===
+              msg.text?.trim() &&
+            getId(m.senderId) ===
+              getId(msg.senderId) &&
+            Math.abs(
+              new Date(
+                m.timestamp || 0
+              ).getTime() -
+                new Date(
+                  msg.timestamp || 0
+                ).getTime()
+            ) < 15000;
+
+          return (
+            sameId || sameContent
+          );
+        })
+    );
+
+    unique.sort(
+      (a, b) =>
+        new Date(
+          a.timestamp || 0
+        ).getTime() -
+        new Date(
+          b.timestamp || 0
+        ).getTime()
+    );
+
+    return unique;
+  }, [
+    allApiMessages,
+    socketMessages,
+    currentUserId,
+  ]);
+
   // ================= UI FORMAT =================
-const mappedMessages: Message[] = allMessages.map((msg) => {
-  const senderId = getId(msg.senderId);
 
-  const isMe = senderId === currentUserId;
+  const mappedMessages: Message[] =
+    allMessages.map((msg) => {
+      const senderId = getId(
+        msg.senderId
+      );
 
-  const status:
-    | "sent"
-    | "delivered"
-    | "read"
-    | undefined =
-    msg.status === "sent" ||
-    msg.status === "delivered" ||
-    msg.status === "read"
-      ? msg.status
-      : undefined;
+      const isMe =
+        senderId === currentUserId;
 
-  return {
-    id: msg._id,
+      return {
+        id: msg._id,
 
-    _id: msg._id,
+        _id: msg._id,
 
-    text: msg.text || "",
+        text: msg.text || "",
 
-    sender: isMe
-      ? "customer"
-      : "worker",
+        sender: isMe
+          ? "customer"
+          : "worker",
 
-    senderId,
+        senderId,
 
-    self: isMe,
+        self: isMe,
 
-    timestamp:
-      typeof msg.timestamp === "string"
-        ? msg.timestamp
-        : new Date(
-            msg.timestamp
-          ).toISOString(),
+        timestamp:
+          typeof msg.timestamp ===
+          "string"
+            ? msg.timestamp
+            : new Date(
+                msg.timestamp
+              ).toISOString(),
 
-    status,
-  };
-});
-console.log(mappedMessages);
+        status:
+          msg.status ||
+          "delivered",
+      };
+    });
 
   // ================= SEND =================
- const handleSend = () => {
-  if (!input.trim()) return;
 
-  const messageText = input;
+  const handleSend = () => {
+    if (!input.trim()) return;
 
-  // optimistic socket update
-  sendMessage(messageText);
+    const messageText =
+      input.trim();
 
-  // API persist
-  sendChatMessage({
-    bookingId,
-    message: messageText,
-  });
+    sendMessage(messageText);
 
-  setInput("");
-};
+    sendChatMessage({
+      bookingId,
+      message: messageText,
+    });
+
+    setInput("");
+  };
+
+  // ================= INITIAL LOADING =================
+
+  if (isLoading && page === 1) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <CommonSpinner />
+      </div>
+    );
+  }
 
   return (
     <main className="h-full min-h-0 bg-[#F1EFE8] px-0 sm:px-4 sm:py-4 lg:px-6">
       <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden bg-white shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
-        
+
+        {/* HEADER */}
+
         <ChatHeader worker={worker} />
 
-        <div className="min-h-0 flex-1 overflow-hidden bg-[#f7f4ed]">
+        {/* MESSAGES */}
+
+        <div
+          ref={containerRef}
+          className="min-h-0 flex-1 overflow-y-auto bg-[#f7f4ed]"
+        >
+          {/* TOP LOADER */}
+
+          {isFetching &&
+            page > 1 && (
+              <div className="py-4">
+                <CommonSpinner />
+              </div>
+            )}
+
           <MessageList
-  messages={mappedMessages}
-  worker={worker}
-  isTyping={false}
-  myUserId={currentUserId}
-/>
+            messages={
+              mappedMessages
+            }
+            worker={worker}
+            isTyping={false}
+            myUserId={
+              currentUserId
+            }
+          />
         </div>
+
+        {/* INPUT */}
 
         <ChatInput
           value={input}

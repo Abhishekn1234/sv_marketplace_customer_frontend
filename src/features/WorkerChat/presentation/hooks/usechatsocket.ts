@@ -7,130 +7,11 @@ import { showBrowserNotification } from "@/components/firebase/showBrowserNotifi
 import { playNotificationSound } from "@/components/firebase/sound";
 
 import { apiUrl } from "@/features/api/apiConfig";
+import { mergeMessages } from "../utils/mergemessages";
+import { unpackMessages } from "../utils/unpackmessages";
+import { normalizeMessage } from "../utils/normalizemessages";
 
 const SOCKET_URL = `${apiUrl}/chat`;
-
-const getId = (value: any) => {
-  if (!value) return "";
-
-  if (typeof value === "string") return value;
-
-  if (typeof value === "object") {
-    return value._id || value.id || "";
-  }
-
-  return String(value);
-};
-
-const unpackMessages = (payload: any): any[] => {
-  if (!payload) return [];
-
-  if (Array.isArray(payload)) return payload;
-
-  if (Array.isArray(payload.messages)) {
-    return payload.messages;
-  }
-
-  if (Array.isArray(payload.data)) {
-    return payload.data;
-  }
-
-  if (Array.isArray(payload.data?.messages)) {
-    return payload.data.messages;
-  }
-
-  return [payload];
-};
-
-const normalizeMessage = (
-  msg: any,
-  myUserId?: string
-): Message => ({
-  ...msg,
-
-  _id:
-    msg._id ||
-    msg.id ||
-    `temp-${Date.now()}-${Math.random()}`,
-
-  senderId: getId(
-    msg.senderId ||
-      msg.sender ||
-      msg.userId
-  ),
-
-  text:
-    msg.text ||
-    msg.message ||
-    msg.body ||
-    "",
-
-  timestamp:
-    msg.timestamp ||
-    msg.createdAt ||
-    new Date().toISOString(),
-
-  self:
-    getId(
-      msg.senderId ||
-        msg.sender ||
-        msg.userId
-    ) === myUserId,
-
-  status: msg.status || "sent",
-});
-
-const mergeMessages = (
-  prev: Message[],
-  incoming: Message[]
-) => {
-  const merged = [...prev];
-
-  incoming.forEach((newMessage) => {
-    const exists = merged.some((oldMessage) => {
-      // same real database id
-      if (
-        newMessage._id &&
-        !String(newMessage._id).startsWith(
-          "temp-"
-        ) &&
-        oldMessage._id === newMessage._id
-      ) {
-        return true;
-      }
-
-      // optimistic duplicate check
-      return (
-        oldMessage.text === newMessage.text &&
-        oldMessage.senderId ===
-          newMessage.senderId &&
-        Math.abs(
-          new Date(
-            oldMessage.timestamp || 0
-          ).getTime() -
-            new Date(
-              newMessage.timestamp || 0
-            ).getTime()
-        ) < 5000
-      );
-    });
-
-    if (!exists) {
-      merged.push(newMessage);
-    }
-  });
-
-  return merged.sort(
-    (a, b) =>
-      new Date(
-        a.timestamp || 0
-      ).getTime() -
-      new Date(
-        b.timestamp || 0
-      ).getTime()
-  );
-};
-
 export function useChatSocket(
   token: string,
   bookingId: string,
@@ -370,21 +251,13 @@ export function useChatSocket(
         return;
       }
 
-      const optimisticMessage: Message =
-        {
+            const optimisticMessage: Message = {
           _id: `temp-${Date.now()}`,
-
           text,
-
-          senderId:
-            myUserId || "",
-
-          timestamp:
-            new Date().toISOString(),
-
+          senderId: myUserId || "",
+          timestamp: new Date().toISOString(),
           self: true,
-
-          status: "sent",
+          status: "delivered",
         };
 
       // optimistic update

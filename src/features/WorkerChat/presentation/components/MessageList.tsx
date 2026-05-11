@@ -233,28 +233,24 @@ export default function MessageList({
 
                         {/* STATUS */}
 
-                        {isMe && (
+                      {isMe && (
                           <span
                             className={`flex items-center ${
-                              msg.status ===
-                              "read"
-                                ? "text-green-600"
+                              msg.status === "read"
+                                ? "text-blue-500"
                                 : "text-gray-400"
                             }`}
                           >
-                            {msg.status ===
-                            "read" ? (
-                              <CheckCheck
-                                size={
-                                  12
-                                }
-                              />
-                            ) : (
-                              <Check
-                                size={
-                                  12
-                                }
-                              />
+                            {msg.status === "sent" && (
+                              <Check size={12} />
+                            )}
+
+                            {msg.status === "delivered" && (
+                              <CheckCheck size={12} />
+                            )}
+
+                            {msg.status === "read" && (
+                              <CheckCheck size={12} />
                             )}
                           </span>
                         )}

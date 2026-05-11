@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export function useSocketTimelineJobTracking({
   bookingId,
   setLocalBooking,
+  navigate
 }: any) {
   const queryClient = useQueryClient();
 
@@ -21,20 +22,48 @@ export function useSocketTimelineJobTracking({
 
       let mappedStatus = booking.status;
 
-      switch (eventName) {
-        case "booking.worker.accepted":
-          mappedStatus = "WORKER_ACCEPTED";
-          break;
-        case "booking.work.started":
-          mappedStatus = "IN_PROGRESS";
-          break;
-        case "booking.work.completed-by-worker":
-          mappedStatus = "WORK_COMPLETED_BY_WORKER";
-          break;
-        case "booking.completion.confirmed":
-          mappedStatus = "COMPLETED";
-          break;
-      }
+     switch (eventName) {
+  case "booking.worker.accepted":
+    mappedStatus = "WORKER_ACCEPTED";
+    break;
+
+  case "booking.work.started":
+    mappedStatus = "IN_PROGRESS";
+    break;
+
+  case "booking.work.completed-by-worker":
+    mappedStatus =
+      "WORK_COMPLETED_BY_WORKER";
+    break;
+
+  case "booking.completion.confirmed":
+    mappedStatus = "COMPLETED";
+    break;
+
+  // ADD THESE
+
+  case "booking.worker.cancelled":
+    mappedStatus =
+      "WORKER_CANCELLED";
+    break;
+
+  case "booking.customer.cancelled":
+    mappedStatus =
+      "CUSTOMER_CANCELLED";
+    break;
+}
+if (
+  mappedStatus ===
+    "WORKER_CANCELLED" ||
+  mappedStatus ===
+    "CUSTOMER_CANCELLED"
+) {
+  navigate("/", {
+    replace: true,
+  });
+
+  return;
+}
 
       const updatedBooking = {
         ...booking,
@@ -68,12 +97,16 @@ export function useSocketTimelineJobTracking({
       setLocalBooking(updatedBooking);
     };
 
-    const events = [
-      "booking.worker.accepted",
-      "booking.work.started",
-      "booking.work.completed-by-worker",
-      "booking.completion.confirmed",
-    ];
+  const events = [
+  "booking.worker.accepted",
+  "booking.work.started",
+  "booking.work.completed-by-worker",
+  "booking.completion.confirmed",
+
+  // ADD THESE
+  "booking.cancelled.worker",
+  "booking.customer.cancelled",
+];
 
     events.forEach((e) => socket.on(e, handler));
 

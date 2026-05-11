@@ -69,6 +69,7 @@ export default function JobTrackingTimeline({
   useSocketTimelineJobTracking({
     bookingId,
     setLocalBooking,
+    navigate
   });
 
   // ✅ Use localBooking (merged with socket updates) for instant UI display

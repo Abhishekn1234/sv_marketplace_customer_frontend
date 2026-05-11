@@ -1,6 +1,7 @@
 export type ChatMessage = {
   _id: string;
   id?:string;
+  status:"read"|"delivered"|"sent";
   bookingId: string;
   senderId: string;
   message: string;

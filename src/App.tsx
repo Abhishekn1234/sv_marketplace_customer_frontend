@@ -52,6 +52,7 @@ import InvoicePrintPage from "./features/JobTracking/presentation/components/Inv
 import WorkerChatPage from "./features/WorkerChat/presentation/WorkerChatPage";
 import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCall";
 import AIChatPage from "./features/JobTracking/presentation/components/AIChatWindow";
+import NotificationNavigation from "./NavigationNotification";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -104,6 +105,7 @@ function App() {
     <ThemeProvider>
       <LanguageProvider>
         <Router>
+          <NotificationNavigation/>
           <ScrollToTop />
 
           <ToastContainer

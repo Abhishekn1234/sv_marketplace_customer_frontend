@@ -82,36 +82,60 @@ function buildNotificationUrl(url, message) {
 
 // firebase-messaging-sw.js
 
-self.addEventListener("notificationclick", (event) => {
-  const url = new URL(
-    event.notification.data?.url || "/notifications",
-    self.location.origin
-  ).href;
+self.addEventListener(
+  "notificationclick",
+  (event) => {
+    event.notification.close();
 
-  event.notification.close();
+    const targetUrl =
+      event.notification.data?.url ||
+      "/notifications";
 
-  event.waitUntil((async () => {
-    // 🟢 Handle actions first
-    if (event.action === "close") {
-      return; // just exit
+    // HANDLE OPEN BUTTON
+    if (event.action === "open") {
+      event.waitUntil(
+        handleNavigation(targetUrl)
+      );
+
+      return;
     }
 
-    if (event.action === "open" || !event.action) {
-      const clientsArr = await clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
+    // HANDLE NORMAL CLICK
+    event.waitUntil(
+      handleNavigation(targetUrl)
+    );
+  }
+);
+
+async function handleNavigation(
+  targetUrl
+) {
+  const clientList =
+    await clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    });
+
+  // EXISTING TAB
+  for (const client of clientList) {
+    if (
+      client.url.startsWith(
+        self.location.origin
+      )
+    ) {
+      await client.focus();
+
+      client.postMessage({
+        type: "NAVIGATE",
+        url: targetUrl,
       });
 
-      for (const client of clientsArr) {
-        if ("navigate" in client && "focus" in client) {
-          await client.navigate(url);
-          return client.focus();
-        }
-      }
-
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
+      return;
     }
-  })());
-});
+  }
+
+  // NO TAB OPEN
+  await clients.openWindow(
+    targetUrl
+  );
+}
