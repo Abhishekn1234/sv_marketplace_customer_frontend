@@ -12,7 +12,7 @@ import { TypingIndicator } from "../utils/typeindicator";
 import MiniAvatar from "../utils/miniavatar";
 
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
-
+import CommonCard from "@/components/common/CommonCards";
 export default function MessageList({
   messages,
   worker,
@@ -69,6 +69,41 @@ export default function MessageList({
       ].messages.push(msg);
     }
   }
+ if (!messages || messages.length === 0) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center bg-[#f7f4ed] px-4">
+      
+      <CommonCard className="w-full max-w-md text-center">
+        
+        <div className="mb-3 flex justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-lg">
+            💬
+          </div>
+        </div>
+
+        <h2 className="text-lg font-semibold text-gray-800">
+          Start the conversation
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-500">
+          You haven’t chatted with{" "}
+          <span className="font-medium text-gray-700">
+            {worker.fullName}
+          </span>{" "}
+          yet. Send a message to begin.
+        </p>
+
+        <div className="mt-4 rounded-xl bg-gray-50 px-3 py-2 text-xs text-gray-500">
+          Based on your current booking
+        </div>
+
+      </CommonCard>
+
+      {/* keeps scroll anchor safe */}
+      <div ref={bottomRef} />
+    </div>
+  );
+}
 
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-[#f7f4ed] px-3 py-4 sm:px-5">

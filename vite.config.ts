@@ -14,6 +14,9 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
+   optimizeDeps: {
+    include: ["react-joyride"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

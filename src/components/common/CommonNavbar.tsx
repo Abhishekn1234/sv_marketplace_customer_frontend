@@ -24,7 +24,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { UserIcon } from "../icons";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
-
+import Joyride,{type Step } from "react-joyride";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -55,7 +55,8 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
-
+  
+  
   const profilePic = user?.profilePictureUrl;
   const location = current_location?.addresses ?? [];
 
@@ -66,6 +67,31 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+ const [runTour, setRunTour] = useState(false);
+
+  const steps: Step[] = [
+    {
+      target: "[data-tour='location-input'] input",
+      content: "Select your location here to continue using HomeEase",
+      placement: "bottom",
+    },
+  ];
+
+
+
+  // run only once ever (persisted)
+useEffect(() => {
+  const seen = localStorage.getItem("location-tour-seen");
+
+  if (!currentLocation && !seen) {
+    const timer = setTimeout(() => {
+      setRunTour(true);
+      localStorage.setItem("location-tour-seen", "true");
+    }, 500); // ⬅ important delay for DOM render
+
+    return () => clearTimeout(timer);
+  }
+}, [currentLocation]);
 
   const isBookingPage = routerLocation.pathname === "/bookings";
   const isHomePage = routerLocation.pathname === "/";
@@ -87,6 +113,28 @@ const hasLocation =
   current_location?.lat &&
   current_location?.lng;
   return (
+    <>
+     <Joyride
+  steps={steps}
+  run={runTour}
+  continuous
+  showSkipButton
+  showProgress
+  disableOverlayClose
+  scrollToFirstStep
+  styles={{
+    options: {
+      zIndex: 99999,
+    },
+  }}
+  callback={(data) => {
+    if (["finished", "skipped"].includes(data.status)) {
+      setRunTour(false);
+    }
+  }}
+/>
+
+
     <header
       className={`top-0 z-50 w-full relative ${
         isBookingPage
@@ -122,22 +170,24 @@ const hasLocation =
   }`}
 >
     {/* Input box */}
-    <div className="relative w-full max-w-[300px]">
-      
-        <Input
-      variant="unstyled"
-      onClick={() => setShowDropdown((prev) => !prev)}
-      value={currentLocation || ""}
-      readOnly
-      placeholder={!currentLocation ? "Select location" : ""}
-      className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
-      rightElement={
-        !currentLocation ? (
-          <MapPin className="w-4 h-4 text-gray-400" />
-        ) : null
-      }
-    />
-    </div>
+      <div data-tour="location-input">
+                    <Input
+                      variant="unstyled"
+                      onClick={() => setShowDropdown((prev) => !prev)}
+                      value={currentLocation || ""}
+                      readOnly
+                      placeholder={
+                        !currentLocation ? "Select location" : ""
+                      }
+                      className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
+                      rightElement={
+                        !currentLocation ? (
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                        ) : null
+                      }
+                    />
+                  </div>
+    
 
     {/* Dropdown */}
   {showDropdown && (
@@ -292,6 +342,7 @@ const hasLocation =
           </div>
         )}
     </header>
+    </>
   );
 };
 

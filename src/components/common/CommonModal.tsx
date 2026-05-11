@@ -8,6 +8,7 @@ type CommonModalProps = {
   title?: string;
   children: ReactNode;
   footer?: ReactNode;
+  className?: string;
   width?: string; // e.g. "max-w-md", "max-w-2xl"
 };
 
@@ -16,6 +17,7 @@ export default function CommonModal({
   onClose,
   title,
   children,
+  className,
   footer,
   width = "max-w-lg",
 }: CommonModalProps) {
@@ -42,7 +44,7 @@ export default function CommonModal({
 
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-2xl shadow-xl w-full ${width} mx-4`}
+        className={`relative bg-white rounded-2xl shadow-xl w-full ${width} ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         

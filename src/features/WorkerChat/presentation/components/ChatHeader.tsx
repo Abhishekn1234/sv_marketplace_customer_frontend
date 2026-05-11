@@ -129,69 +129,72 @@ export default function ChatHeader({ worker }: { worker: Worker }) {
           </div>
         )}
       </div>
+     {infoOpen &&
+      <CommonModal open={infoOpen} onClose={() => setInfoOpen(false)} width="max-w-sm" className="mt-90">
 
-      <CommonModal open={infoOpen} onClose={() => setInfoOpen(false)}>
-        <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
-          <Button
-            icon
-            variant="ghost"
-            radius="full"
-            onClick={() => setInfoOpen(false)}
-            className="absolute right-3 top-3 text-gray-500 hover:bg-white/80 hover:text-gray-900"
-            aria-label="Close details"
-          >
-            <X size={18} />
-          </Button>
+  <Button
+    icon
+    variant="ghost"
+    radius="full"
+    onClick={() => setInfoOpen(false)}
+    className="absolute right-3 top-3 text-gray-500 hover:bg-white/80 hover:text-gray-900"
+  >
+    <X size={18} />
+  </Button>
 
-          <div className="flex flex-col items-center bg-gradient-to-b from-blue-50 to-white px-5 pb-4 pt-7">
-            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-100 shadow-md">
-              {worker.profilePictureUrl ? (
-                <Image
-                  src={worker.profilePictureUrl}
-                  alt={worker.fullName}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-xl font-bold text-blue-800">
-                  {initials(worker?.fullName)}
-                </span>
-              )}
-            </div>
+  {/* CONTENT ONLY */}
+  <div className="flex flex-col items-center bg-gradient-to-b from-blue-50 to-white px-5 pb-4 pt-7">
+    
+    <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-100 shadow-md">
+      {worker.profilePictureUrl ? (
+        <Image
+          src={worker.profilePictureUrl}
+          alt={worker.fullName}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <span className="text-xl font-bold text-blue-800">
+          {initials(worker?.fullName)}
+        </span>
+      )}
+    </div>
 
-            <h2 className="mt-3 text-lg font-bold text-gray-900">
-              {worker.fullName}
-            </h2>
+    <h2 className="mt-3 text-lg font-bold text-gray-900">
+      {worker.fullName}
+    </h2>
 
-            <div className="mt-1 flex items-center gap-2">
-              <span className={`h-2 w-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`} />
-              <span className="text-sm text-gray-600">{statusLabel}</span>
-            </div>
-          </div>
+    <div className="mt-1 flex items-center gap-2">
+      <span className={`h-2 w-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`} />
+      <span className="text-sm text-gray-600">{statusLabel}</span>
+    </div>
+  </div>
 
-          <div className="space-y-3 px-5 py-4 text-sm">
-            <div className="flex justify-between gap-4">
-              <span className="text-gray-500">{t.profilepage.phone}</span>
-              <span className="font-medium text-gray-800">{worker.phone || "N/A"}</span>
-            </div>
+  <div className="space-y-3 px-5 py-4 text-sm">
+    <div className="flex justify-between">
+      <span className="text-gray-500">{t.profilepage.phone}</span>
+      <span className="font-medium">{worker.phone || "N/A"}</span>
+    </div>
 
-            <div className="flex justify-between gap-4">
-              <span className="text-gray-500">{t.profilepage.email}</span>
-              <span className="break-all text-right font-medium text-gray-800">
-                {worker.email || "N/A"}
-              </span>
-            </div>
-          </div>
+    <div className="flex justify-between">
+      <span className="text-gray-500">{t.profilepage.email}</span>
+      <span className="font-medium break-all text-right">
+        {worker.email || "N/A"}
+      </span>
+    </div>
+  </div>
 
-          <div className="px-5 pb-5">
-            <Button
-              onClick={() => setInfoOpen(false)}
-              className="w-full rounded-xl bg-blue-600 py-2 text-white hover:bg-blue-700"
-            >
-              {t.common.close}
-            </Button>
-          </div>
-        </div>
-      </CommonModal>
+  <div className="px-5 pb-5">
+    <Button
+      onClick={() => setInfoOpen(false)}
+      className="w-full rounded-xl bg-blue-600 py-2 text-white hover:bg-blue-700"
+    >
+      {t.common.close}
+    </Button>
+  </div>
+
+</CommonModal>
+     }
+     
     </div>
   );
 }
