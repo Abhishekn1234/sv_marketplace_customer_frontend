@@ -3,12 +3,13 @@
 import { useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useCreateDispute } from "./hooks/useCreateDispute";
 import { toast } from "react-toastify";
 import Button from "@/components/input/Button";
 import { Input, Label, Textarea } from "@/components/input";
+import { ArrowLeftIcon } from "@/components/icons";
 
 
 
@@ -56,8 +57,9 @@ export default function Disputepage() {
          
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base"
+          leftIcon={<ArrowLeftIcon className="w-4 h-4" />}
         >
-          <ArrowLeft className="w-4 h-4" />
+          
           {t.disputespage.back}
         </Button>
       </div>

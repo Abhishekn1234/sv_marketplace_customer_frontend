@@ -163,12 +163,12 @@ const hasLocation =
           </div>
 
         {(showLocation || isHomePage || isBookingPage || serviceratingpage || jobpresspage || jobtrackingpage) && (
-  <div
-  ref={dropdownRef}
-  className={`ml-3 relative flex ${
-    !hasLocation ? "animate-pulse" : ""
-  }`}
->
+              <div
+              ref={dropdownRef}
+              className={`ml-3 relative flex ${
+                !hasLocation ? "" : ""
+              }`}
+            >
     {/* Input box */}
       <div data-tour="location-input">
                     <Input

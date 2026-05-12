@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Image, Input } from "../input";
+import { Image, Input, Label } from "../input";
 import Button from "../input/Button";
 import { PlusIcon } from "../icons";
 import CommonModal from "./CommonModal";
@@ -72,30 +72,13 @@ export default function CommonFaq() {
         width="max-w-md"
       >
         <div className="space-y-4">
-          {/* Header */}
-          <div
-            className="
-              rounded-2xl
-              bg-green-500
-              p-4
-              text-white
-            "
-          >
-            <h3 className="text-sm font-bold">
-              We usually reply instantly ⚡
-            </h3>
-
-            <p className="mt-1 text-xs text-white/90">
-              Send your message directly to
-              our support team.
-            </p>
-          </div>
+          
 
           {/* Input */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-gray-700">
+            <Label className="mb-2 block text-sm font-semibold text-gray-700">
               Your Message
-            </label>
+            </Label>
 
             <Input
               type="text"

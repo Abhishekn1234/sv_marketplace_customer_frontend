@@ -45,7 +45,9 @@ export default function NotificationCards() {
     setPage(1);
   }, [type, limit]);
 
-  // ✅ normalize API
+  // ========================
+  // NORMALIZE DATA
+  // ========================
   const normalizedAPI = useMemo(
     () =>
       apiNotifications.map((n: any) => ({
@@ -56,7 +58,6 @@ export default function NotificationCards() {
     [apiNotifications]
   );
 
-  // ⚠️ show FCM ONLY on first page
   const normalizedFCM = useMemo(
     () =>
       page === 1
@@ -72,14 +73,29 @@ export default function NotificationCards() {
     [fcmNotifications, page]
   );
 
-  // ✅ final merged list
+  // ========================
+  // FINAL NOTIFICATIONS
+  // ========================
   const notifications = useMemo(
     () => [...normalizedFCM, ...normalizedAPI],
     [normalizedFCM, normalizedAPI]
   );
 
-  // ✅ SELECT ONLY
+  // ========================
+  // UNREAD ONLY
+  // ========================
+  const unreadNotifications = useMemo(
+    () => notifications.filter((n) => !n.isRead),
+    [notifications]
+  );
+
+  // ========================
+  // SELECT SINGLE
+  // ========================
   const toggleSelect = (id: string) => {
+    const target = notifications.find((n) => n.id === id);
+    if (!target || target.isRead) return; // block read
+
     setSelected((prev) =>
       prev.includes(id)
         ? prev.filter((x) => x !== id)
@@ -87,18 +103,28 @@ export default function NotificationCards() {
     );
   };
 
-  // ✅ SELECT ALL (current page only)
+  // ========================
+  // SELECT ALL (UNREAD ONLY)
+  // ========================
   const toggleSelectAll = () => {
-    const ids = notifications.map((n) => n.id);
+    const unreadIds = unreadNotifications.map((n) => n.id);
 
-    if (selected.length === ids.length) {
-      setSelected([]);
+    const allSelected =
+      unreadIds.length > 0 &&
+      unreadIds.every((id) => selected.includes(id));
+
+    if (allSelected) {
+      setSelected((prev) =>
+        prev.filter((id) => !unreadIds.includes(id))
+      );
     } else {
-      setSelected(ids);
+      setSelected(unreadIds);
     }
   };
 
-  // ✅ READ SELECTED ONLY
+  // ========================
+  // MARK SELECTED AS READ
+  // ========================
   const markSelectedAsRead = async () => {
     try {
       if (selected.length === 0) return;
@@ -113,7 +139,9 @@ export default function NotificationCards() {
     }
   };
 
-  // ✅ READ ALL (current dataset)
+  // ========================
+  // MARK ALL AS READ
+  // ========================
   const markAllAsReadSafe = async () => {
     try {
       await Promise.all(notifications.map((n) => markAsRead(n.id)));
@@ -126,26 +154,19 @@ export default function NotificationCards() {
     }
   };
 
-  // ✅ NAVIGATION
+  // ========================
+  // NAVIGATION
+  // ========================
   const handleNotificationClick = (notification: any) => {
     const target = getNotificationTarget(notification);
     if (target) navigate(target);
   };
 
   // ========================
-  // ✅ PAGINATION LOGIC FIX
+  // PAGINATION
   // ========================
-
   const hasNextPage = apiNotifications.length === limit;
   const hasPrevPage = page > 1;
-
-  const nextPage = () => {
-    if (hasNextPage) setPage((p) => p + 1);
-  };
-
-  const prevPage = () => {
-    if (hasPrevPage) setPage((p) => p - 1);
-  };
 
   return (
     <div className="min-h-screen">
@@ -159,55 +180,50 @@ export default function NotificationCards() {
           </h1>
         </div>
 
-        {/* CARD */}
         <CommonCard className="max-w-5xl mx-auto flex flex-col min-h-[520px]">
-                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
 
-  {/* LEFT: LIMIT SELECT */}
-  <div className="w-full sm:w-auto">
-    <Select
-      options={[
-        { label: "5 / page", value: "5" },
-        { label: "10 / page", value: "10" },
-        { label: "20 / page", value: "20" },
-        { label: "50 / page", value: "50" },
-      ]}
-      value={limit.toString()}
-      onChange={(val) => setLimit(Number(val))}
-      className="w-full sm:w-[140px]"
-    />
-  </div>
+          {/* FILTER BAR */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
 
-  {/* RIGHT: FILTER BUTTONS */}
-  <div className="flex flex-wrap gap-2 sm:justify-end">
+            <Select
+              options={[
+                { label: "5 / page", value: "5" },
+                { label: "10 / page", value: "10" },
+                { label: "20 / page", value: "20" },
+                { label: "50 / page", value: "50" },
+              ]}
+              value={limit.toString()}
+              onChange={(val) => setLimit(Number(val))}
+              className="w-full sm:w-[140px]"
+            />
 
-    {[
-      { label: t.notificationpage.filters.All, value: undefined },
-      { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
-      { label: t.notificationpage.filters.Updates, value: "BOOKING_UPDATE" },
-      { label: t.notificationpage.filters.Admin, value: "ADMIN_MESSAGE" },
-    ].map((f, i) => (
-      <Button
-        key={i}
-        onClick={() => setType(f.value)}
-        className={`px-3 py-1 text-sm rounded-full transition whitespace-nowrap
-          ${
-            type === f.value
-              ? "bg-blue-600 text-white shadow"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-      >
-        {f.label}
-      </Button>
-    ))}
+            <div className="flex flex-wrap gap-2 sm:justify-end">
+              {[
+                { label: t.notificationpage.filters.All, value: undefined },
+                { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
+                { label: t.notificationpage.filters.Updates, value: "BOOKING_UPDATE" },
+                { label: t.notificationpage.filters.Admin, value: "ADMIN_MESSAGE" },
+              ].map((f, i) => (
+                <Button
+                  key={i}
+                  onClick={() => setType(f.value)}
+                  className={`px-3 py-1 text-sm rounded-full ${
+                    type === f.value
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {f.label}
+                </Button>
+              ))}
+            </div>
+          </div>
 
-  </div>
-
-</div>
+          {/* HEADER */}
           <NotificationHeader
             toggleSelectAll={toggleSelectAll}
             selected={selected}
-            total={notifications.length}
+            total={unreadNotifications.length}
             markAllAsRead={markAllAsReadSafe}
             markSelectedAsRead={markSelectedAsRead}
           />
@@ -229,35 +245,27 @@ export default function NotificationCards() {
 
                 {/* PAGINATION */}
                 <div className="flex justify-end items-center gap-3 p-4 border-t">
-
                   <Button
                     disabled={!hasPrevPage}
-                    onClick={prevPage}
-                    className={`px-4 py-2 rounded text-sm ${
-                      hasPrevPage
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-400"
+                    onClick={() => setPage((p) => p - 1)}
+                    className={`px-4 py-2 ${
+                      hasPrevPage ? "bg-blue-600 text-white" : "bg-gray-200"
                     }`}
                   >
                     Previous
                   </Button>
 
-                  <span className="text-sm text-gray-600">
-                    Page {page}
-                  </span>
+                  <span className="text-sm">Page {page}</span>
 
                   <Button
                     disabled={!hasNextPage}
-                    onClick={nextPage}
-                    className={`px-4 py-2 rounded text-sm ${
-                      hasNextPage
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-400"
+                    onClick={() => setPage((p) => p + 1)}
+                    className={`px-4 py-2 ${
+                      hasNextPage ? "bg-blue-600 text-white" : "bg-gray-200"
                     }`}
                   >
                     Next
                   </Button>
-
                 </div>
               </>
             )}
