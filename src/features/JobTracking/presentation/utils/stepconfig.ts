@@ -9,4 +9,5 @@
     { key: "INVOICE_GENERATED", title: "Invoice Generated" },
     { key: "PAYMENT_PENDING", title: "Payment Pending" },
     { key: "PAID", title: "Payment Done" },
+    {key:"COMPLETED",title:"Completed"}
   ];

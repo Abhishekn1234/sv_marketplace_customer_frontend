@@ -490,6 +490,12 @@
   },
   "notificationpage": {
     "title": "الإشعارات",
+   "filters": {
+    "All": "الكل",
+    "Updates": "التحديثات",
+    "Admin": "الإدارة",
+    "Requested": "الطلبات"
+  },
     "chooseAction": "اختر إجراءً من الأعلى.",
     "new": "جديد",
     "noNotifications": "لا توجد إشعارات بعد",

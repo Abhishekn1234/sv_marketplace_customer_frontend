@@ -1,5 +1,6 @@
 import Button from "@/components/input/Button";
-import {  CheckSquare, Square, BellRing } from "lucide-react";
+import { useLanguage } from "@/features/context/LanguageContext";
+import { CheckSquare, Square, BellRing } from "lucide-react";
 
 export default function NotificationHeader({
   toggleSelectAll,
@@ -7,16 +8,16 @@ export default function NotificationHeader({
   total,
   markAllAsRead,
   markSelectedAsRead,
-  
 }: any) {
   const hasSelection = selected.length > 0;
   const allSelected = selected.length === total && total > 0;
-
+  const {t}=useLanguage();
   return (
-    <div className="sticky top-0 bg-white px-4 py-3 z-10">
+    <div className="sticky top-0 bg-white px-4 py-3 z-10 border-b">
       <div className="flex justify-between items-center">
-    {hasSelection && (
-       <Button
+
+        {/* SELECT ALL */}
+        <Button
           onClick={toggleSelectAll}
           disabled={total === 0}
           className="flex items-center gap-2 text-sm"
@@ -26,50 +27,37 @@ export default function NotificationHeader({
           ) : (
             <Square className="text-gray-400" />
           )}
-          {hasSelection
-            ? `${selected.length} selected`
-            : "Select All"}
+
+          {allSelected ? t.notificationpage.unselect : t.notificationpage.selectAll}
         </Button>
 
-    )}
-      
-       <div className="flex gap-2">
-  {hasSelection && (
-    allSelected ? (
-      // ✅ ALL SELECTED
-      <Button
-        onClick={markAllAsRead}
-        className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
-        leftIcon={
-          <>
-            <BellRing className="w-4 h-4" />
-          </>
-        }
-      >
-        
-        Read All
-      </Button>
-    ) : (
-      // ✅ PARTIAL SELECTION
-      <>
-        <Button
-          onClick={markSelectedAsRead}
-          leftIcon={
+        {/* ACTIONS */}
+        <div className="flex gap-2">
+
+          {/* SHOW ONLY WHEN SELECTED */}
+          {hasSelection && (
             <>
-              <BellRing className="w-4 h-4" />
-            </>
-          }
-          className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
-        >
-          
-          Read Selected
-        </Button>
+              {/* READ SELECTED */}
+              <Button
+                onClick={markSelectedAsRead}
+                className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
+                leftIcon={<BellRing className="w-4 h-4" />}
+              >
+              {t.notificationpage.read}
+              </Button>
 
-       
-      </>
-    )
-  )}
-</div>
+              {/* READ ALL */}
+              <Button
+                onClick={markAllAsRead}
+                className="px-3 py-2 bg-green-600 text-white rounded text-sm flex items-center gap-1"
+                leftIcon={<BellRing className="w-4 h-4" />}
+              >
+              {t.notificationpage.markAllRead}
+              </Button>
+            </>
+          )}
+
+        </div>
       </div>
     </div>
   );

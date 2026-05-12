@@ -7,12 +7,15 @@ interface NotificationActionItem {
 interface SWNotificationOptions
   extends NotificationOptions {
   actions?: NotificationActionItem[];
+
   data?: any;
+
   renotify?: boolean;
 }
 
 export const showBrowserNotification =
   async (payload: any) => {
+    // ❌ permission denied
     if (
       Notification.permission !==
       "granted"
@@ -23,38 +26,35 @@ export const showBrowserNotification =
     const registration =
       await navigator.serviceWorker.ready;
 
-    const data = payload.data || {};
+    const data =
+      payload.data || {};
 
-    // CLEAN URL ONLY
+    // ✅ CHAT URL
     const url =
       data.url ||
-      (data.bookingId &&
-      data.workerId
-        ? `/message/${data.workerId}/${data.bookingId}`
-        : "/notifications");
+      `/message/${data.workerId}/${data.bookingId}`;
+
+    // ✅ UNIQUE TAG
+    const tag =
+      data.notificationId ||
+      `${Date.now()}-${Math.random()}`;
 
     const options: SWNotificationOptions =
       {
         body:
-          payload.notification?.body ||
-          "You have a new update.",
+          payload.notification
+            ?.body ||
+          "You have a new message",
 
         icon: "/notification.png",
 
         badge: "/badge.png",
 
-        data: {
-          url,
-        },
-
-        tag:
-          payload.data?.id ||
-          "general",
+        requireInteraction: true,
 
         renotify: true,
 
-        requireInteraction: true,
-
+        // ✅ ONLY OPEN BUTTON
         actions: [
           {
             action: "open",
@@ -62,10 +62,20 @@ export const showBrowserNotification =
             icon: "/open.png",
           },
         ],
+
+        // ✅ NAVIGATION DATA
+        data: {
+          ...data,
+          url,
+        },
+
+        // ✅ MULTIPLE NOTIFICATIONS
+        tag,
       };
 
-    registration.showNotification(
-      payload.notification?.title ||
+    await registration.showNotification(
+      payload.notification
+        ?.title ||
         "New Notification",
       options
     );

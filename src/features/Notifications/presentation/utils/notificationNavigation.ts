@@ -22,7 +22,13 @@ const getFirstString = (...values: unknown[]) =>
   values.find((value): value is string => typeof value === "string" && value.trim().length > 0);
 
 export function getNotificationTarget(notification: NotificationLike) {
-  const data = notification.data || notification.payload || notification.metadata || {};
+  const data =
+    notification.data ||
+    notification.payload ||
+    notification.metadata ||
+    {};
+
+  const type = notification.type;
 
   const directUrl = getFirstString(
     notification.url,
@@ -35,7 +41,12 @@ export function getNotificationTarget(notification: NotificationLike) {
 
   if (directUrl) return withMessageParams(directUrl, notification, data);
 
-  const bookingId = getFirstString(notification.bookingId, data.bookingId, data.booking?._id);
+  const bookingId = getFirstString(
+    notification.bookingId,
+    data.bookingId,
+    data.booking?._id
+  );
+
   const workerId = getFirstString(
     notification.workerId,
     data.workerId,
@@ -44,8 +55,40 @@ export function getNotificationTarget(notification: NotificationLike) {
     data.senderId
   );
 
+  // 💬 1. CHAT MESSAGE (highest priority)
+  if (
+    type === "CHAT_MESSAGE" ||
+    type === "NEW_MESSAGE" ||
+    data?.chatId
+  ) {
+    if (workerId && bookingId) {
+      return withMessageParams(
+        `/message/${workerId}/${bookingId}`,
+        notification,
+        data
+      );
+    }
+    return "/messages";
+  }
+
+  // 📦 2. BOOKING FLOW
+  if (
+    type === "BOOKING_REQUEST" ||
+    type === "BOOKING_UPDATE"
+  ) {
+    if (bookingId) {
+      return `/jobtracking/${bookingId}`;
+    }
+    return "/bookings";
+  }
+
+  // fallback: old logic
   if (bookingId && workerId) {
-    return withMessageParams(`/message/${workerId}/${bookingId}`, notification, data);
+    return withMessageParams(
+      `/message/${workerId}/${bookingId}`,
+      notification,
+      data
+    );
   }
 
   if (bookingId) {

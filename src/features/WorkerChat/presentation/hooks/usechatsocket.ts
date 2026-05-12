@@ -12,6 +12,7 @@ import { unpackMessages } from "../utils/unpackmessages";
 import { normalizeMessage } from "../utils/normalizemessages";
 
 const SOCKET_URL = `${apiUrl}/chat`;
+
 export function useChatSocket(
   token: string,
   bookingId: string,
@@ -52,7 +53,7 @@ export function useChatSocket(
   }, [initialMessage]);
 
   // =========================
-  // SOCKET CONNECTION
+  // SOCKET
   // =========================
 
   useEffect(() => {
@@ -67,6 +68,10 @@ export function useChatSocket(
     });
 
     socketRef.current = socket;
+
+    // =========================
+    // ADD MESSAGES
+    // =========================
 
     const addMessages = (
       payload: any,
@@ -95,10 +100,14 @@ export function useChatSocket(
         )
       );
 
+      // =========================
+      // NOTIFICATION
+      // =========================
+
       if (!notify) return;
 
       normalized.forEach((msg) => {
-        // no notification for self
+        // ❌ no self notification
         if (
           msg.senderId === myUserId
         ) {
@@ -115,12 +124,24 @@ export function useChatSocket(
 
             body:
               msg.text ||
-              "You have a new chat message",
+              "You have a new message",
           },
 
-       data: {
-  url: `/message/${workerId}/${bookingId}`,
-},
+          data: {
+            type: "CHAT_MESSAGE",
+
+            bookingId,
+
+            workerId,
+
+            senderId: msg.senderId,
+
+            url: `/message/${workerId}/${bookingId}`,
+
+            notificationId:
+              msg._id ||
+              `${Date.now()}`,
+          },
         });
       });
     };
@@ -131,7 +152,7 @@ export function useChatSocket(
 
     socket.on("connect", () => {
       console.log(
-        "Connected:",
+        "✅ Connected:",
         socket.id
       );
 
@@ -153,7 +174,7 @@ export function useChatSocket(
       "disconnect",
       () => {
         console.log(
-          "Disconnected"
+          "❌ Disconnected"
         );
 
         setConnected(false);
@@ -161,14 +182,14 @@ export function useChatSocket(
     );
 
     // =========================
-    // SINGLE MESSAGE
+    // MESSAGE
     // =========================
 
     socket.on(
       "booking.chat.message",
       (payload: any) => {
         console.log(
-          "Message:",
+          "📩 Message:",
           payload
         );
 
@@ -180,14 +201,14 @@ export function useChatSocket(
     );
 
     // =========================
-    // CHAT HISTORY
+    // HISTORY
     // =========================
 
     socket.on(
       "booking.chat.history",
       (payload: any) => {
         console.log(
-          "History:",
+          "📜 History:",
           payload
         );
 
@@ -199,14 +220,14 @@ export function useChatSocket(
     );
 
     // =========================
-    // SOCKET ERROR
+    // ERROR
     // =========================
 
     socket.on(
       "connect_error",
       (err) => {
         console.log(
-          "Socket error:",
+          "❌ Socket error:",
           err.message
         );
       }
@@ -251,16 +272,24 @@ export function useChatSocket(
         return;
       }
 
-            const optimisticMessage: Message = {
+      const optimisticMessage: Message =
+        {
           _id: `temp-${Date.now()}`,
+
           text,
-          senderId: myUserId || "",
-          timestamp: new Date().toISOString(),
+
+          senderId:
+            myUserId || "",
+
+          timestamp:
+            new Date().toISOString(),
+
           self: true,
+
           status: "delivered",
         };
 
-      // optimistic update
+      // optimistic
       setMessages((prev) =>
         mergeMessages(prev, [
           optimisticMessage,

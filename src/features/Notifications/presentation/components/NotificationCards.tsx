@@ -1,22 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+
 import NotificationHeader from "./NotificationHeader";
 import NotificationContent from "./NotificationContent";
+
 import { Bell } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
+
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useRegisterDeviceToken } from "@/features/Notifications/presentation/hooks/useRegisterDeviceToken";
 import { useUnreadCount } from "@/features/Notifications/presentation/hooks/useUnreadCount";
-import { useMarkAllAsRead } from "@/features/Notifications/presentation/hooks/useMarkAllAsRead";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
+
 import CommonCard from "@/components/common/CommonCards";
-import Button from "@/components/input/Button";
-import type { SelectOption } from "@/components/input/Select";
-import Select from "@/components/input/Select";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+
 import { getNotificationTarget } from "../utils/notificationNavigation";
+import Select from "@/components/input/Select";
+import Button from "@/components/input/Button";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -31,69 +34,77 @@ export default function NotificationCards() {
     data: apiNotifications = [],
     loading,
     refetch: refetchNotifications,
-  } = useNotifications({
-    page,
-    limit,
-    type,
-    unreadOnly: false,
-  });
+  } = useNotifications({ page, limit, type });
 
-  const { count: unreadCount, refetch: refetchUnreadCount } =
-    useUnreadCount();
-
-  const { markAllAsRead } = useMarkAllAsRead();
+  const { refetch: refetchUnreadCount } = useUnreadCount();
   const { markAsRead } = useMarkNotificationRead();
+
   const { fcmNotifications = [] } = useRegisterDeviceToken();
 
   useEffect(() => {
     setPage(1);
   }, [type, limit]);
 
-  const normalizedFCM = fcmNotifications.map((msg: any) => ({
-    id: msg._id || msg.id || `fcm-${msg.createdAt || crypto.randomUUID()}`,
-    title: msg.title,
-    message: msg.message,
-    type: "ADMIN_MESSAGE",
-    isRead: false,
-    createdAt: msg.createdAt,
-    data: msg.data,
-    url: msg.url,
-    bookingId: msg.bookingId,
-    workerId: msg.workerId,
-    senderId: msg.senderId,
-    source: "fcm",
-  }));
+  // ✅ normalize API
+  const normalizedAPI = useMemo(
+    () =>
+      apiNotifications.map((n: any) => ({
+        ...n,
+        id: String(n._id),
+        source: "api",
+      })),
+    [apiNotifications]
+  );
 
-  const normalizedAPI = apiNotifications.map((n: any) => ({
-    ...n,
-    id: String(n._id),
-  }));
+  // ⚠️ show FCM ONLY on first page
+  const normalizedFCM = useMemo(
+    () =>
+      page === 1
+        ? fcmNotifications.map((msg: any) => ({
+            id: msg._id || msg.id,
+            title: msg.title,
+            message: msg.message,
+            isRead: false,
+            createdAt: msg.createdAt,
+            source: "fcm",
+          }))
+        : [],
+    [fcmNotifications, page]
+  );
 
-  const notifications =
-    page === 1
-      ? [...normalizedFCM, ...normalizedAPI]
-      : normalizedAPI;
+  // ✅ final merged list
+  const notifications = useMemo(
+    () => [...normalizedFCM, ...normalizedAPI],
+    [normalizedFCM, normalizedAPI]
+  );
 
+  // ✅ SELECT ONLY
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
       prev.includes(id)
-        ? prev.filter((item) => item !== id)
+        ? prev.filter((x) => x !== id)
         : [...prev, id]
     );
   };
 
+  // ✅ SELECT ALL (current page only)
   const toggleSelectAll = () => {
-    if (selected.length === notifications.length) {
+    const ids = notifications.map((n) => n.id);
+
+    if (selected.length === ids.length) {
       setSelected([]);
     } else {
-      setSelected(notifications.map((n) => n.id));
+      setSelected(ids);
     }
   };
 
-  // ✅ BULK READ USING YOUR HOOK
+  // ✅ READ SELECTED ONLY
   const markSelectedAsRead = async () => {
     try {
-      await Promise.all(selected.map(markAsRead));
+      if (selected.length === 0) return;
+
+      await Promise.all(selected.map((id) => markAsRead(id)));
+
       setSelected([]);
       refetchNotifications();
       refetchUnreadCount();
@@ -101,162 +112,159 @@ export default function NotificationCards() {
       console.error(err);
     }
   };
- const limitOptions: SelectOption[] = [5, 10, 20, 25].map((l) => ({
-  label: `${l} / page`,
-  value: l.toString(), // Select works with string values
-}));
-  const deleteSelected = async () => {
-    console.log("Deleting:", selected); // replace with API
-    setSelected([]);
-    refetchNotifications();
-  };
 
-  const handleNotificationClick = async (notification: any) => {
-    const target = getNotificationTarget(notification);
+  // ✅ READ ALL (current dataset)
+  const markAllAsReadSafe = async () => {
+    try {
+      await Promise.all(notifications.map((n) => markAsRead(n.id)));
 
-    if (!target) return;
-
-    if (!notification.isRead && notification.source !== "fcm") {
-      try {
-        await markAsRead(notification.id);
-        refetchUnreadCount();
-        refetchNotifications();
-      } catch (err) {
-        console.error(err);
-      }
+      setSelected([]);
+      refetchNotifications();
+      refetchUnreadCount();
+    } catch (err) {
+      console.error(err);
     }
-
-    navigate(target);
   };
 
-  const hasData = notifications.length > 0;
+  // ✅ NAVIGATION
+  const handleNotificationClick = (notification: any) => {
+    const target = getNotificationTarget(notification);
+    if (target) navigate(target);
+  };
+
+  // ========================
+  // ✅ PAGINATION LOGIC FIX
+  // ========================
+
+  const hasNextPage = apiNotifications.length === limit;
+  const hasPrevPage = page > 1;
+
+  const nextPage = () => {
+    if (hasNextPage) setPage((p) => p + 1);
+  };
+
+  const prevPage = () => {
+    if (hasPrevPage) setPage((p) => p - 1);
+  };
 
   return (
-  <div className="min-h-screen ">
-    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6">
+    <div className="min-h-screen">
+      <div className="w-full px-4 py-6">
 
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-blue-100 rounded-xl shadow-sm">
+        {/* HEADER */}
+        <div className="flex items-center gap-3 mb-6">
           <Bell className="text-blue-600 w-6 h-6" />
+          <h1 className="text-xl font-semibold">
+            {t.notificationpage.title}
+          </h1>
         </div>
 
-        <h1 className="text-xl font-semibold text-gray-800">
-          {t.notificationpage.title}
-        </h1>
-      </div>
+        {/* CARD */}
+        <CommonCard className="max-w-5xl mx-auto flex flex-col min-h-[520px]">
+                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
 
-      {/* Filters */}
-    {hasData && (
-  <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+  {/* LEFT: LIMIT SELECT */}
+  <div className="w-full sm:w-auto">
+    <Select
+      options={[
+        { label: "5 / page", value: "5" },
+        { label: "10 / page", value: "10" },
+        { label: "20 / page", value: "20" },
+        { label: "50 / page", value: "50" },
+      ]}
+      value={limit.toString()}
+      onChange={(val) => setLimit(Number(val))}
+      className="w-full sm:w-[140px]"
+    />
+  </div>
+
+  {/* RIGHT: FILTER BUTTONS */}
+  <div className="flex flex-wrap gap-2 sm:justify-end">
+
     {[
-      { label: "All", value: undefined },
-      { label: "Requests", value: "BOOKING_REQUEST" },
-      { label: "Updates", value: "BOOKING_UPDATE" },
-      { label: "Admin", value: "ADMIN_MESSAGE" },
+      { label: t.notificationpage.filters.All, value: undefined },
+      { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
+      { label: t.notificationpage.filters.Updates, value: "BOOKING_UPDATE" },
+      { label: t.notificationpage.filters.Admin, value: "ADMIN_MESSAGE" },
     ].map((f, i) => (
       <Button
         key={i}
         onClick={() => setType(f.value)}
-        className={`px-4 py-2 text-sm rounded-full transition whitespace-nowrap ${
-          type === f.value
-            ? "bg-blue-600 text-white shadow"
-            : "bg-white border hover:bg-gray-50 text-gray-600"
-        }`}
+        className={`px-3 py-1 text-sm rounded-full transition whitespace-nowrap
+          ${
+            type === f.value
+              ? "bg-blue-600 text-white shadow"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
       >
         {f.label}
       </Button>
     ))}
-  </div>
-)}
 
-      {hasData &&(
-          <div className="flex justify-end mb-3">
-                <Select
-          options={limitOptions}
-          value={limit.toString()}
-          onChange={(val) => setLimit(Number(val))}
-          className="w-auto min-w-[120px]"
-        />
+  </div>
+
+</div>
+          <NotificationHeader
+            toggleSelectAll={toggleSelectAll}
+            selected={selected}
+            total={notifications.length}
+            markAllAsRead={markAllAsReadSafe}
+            markSelectedAsRead={markSelectedAsRead}
+          />
+
+          {/* BODY */}
+          <div className="flex-1 overflow-y-auto">
+            {loading ? (
+              <div className="flex h-64 items-center justify-center">
+                <CommonSpinner />
+              </div>
+            ) : (
+              <>
+                <NotificationContent
+                  notifications={notifications}
+                  selected={selected}
+                  toggleSelect={toggleSelect}
+                  onNotificationClick={handleNotificationClick}
+                />
+
+                {/* PAGINATION */}
+                <div className="flex justify-end items-center gap-3 p-4 border-t">
+
+                  <Button
+                    disabled={!hasPrevPage}
+                    onClick={prevPage}
+                    className={`px-4 py-2 rounded text-sm ${
+                      hasPrevPage
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-400"
+                    }`}
+                  >
+                    Previous
+                  </Button>
+
+                  <span className="text-sm text-gray-600">
+                    Page {page}
+                  </span>
+
+                  <Button
+                    disabled={!hasNextPage}
+                    onClick={nextPage}
+                    className={`px-4 py-2 rounded text-sm ${
+                      hasNextPage
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-400"
+                    }`}
+                  >
+                    Next
+                  </Button>
+
+                </div>
+              </>
+            )}
+          </div>
+
+        </CommonCard>
       </div>
-      )}
-    
-
-      {/* Card */}
-      <CommonCard className="w-full max-w-5xl mx-auto flex flex-col min-h-[520px] rounded-2xl shadow-lg border border-gray-100 bg-white">
-
-        <NotificationHeader
-          toggleSelectAll={toggleSelectAll}
-          selected={selected}
-          total={notifications.length}
-          markAllAsRead={async () => {
-            await markAllAsRead();
-            refetchUnreadCount();
-            refetchNotifications();
-          }}
-          markSelectedAsRead={markSelectedAsRead}
-          deleteSelected={deleteSelected}
-          unreadCount={unreadCount}
-        />
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="flex h-64 items-center justify-center">
-              <CommonSpinner size={30} />
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="flex h-64 items-center justify-center text-gray-500">
-              {t.notificationpage.noNotifications}
-            </div>
-          ) : (
-            
-            <>
-            <NotificationContent
-              notifications={notifications}
-              selected={selected}
-              toggleSelect={toggleSelect}
-              onNotificationClick={handleNotificationClick}
-            />
-             <div className="flex justify-end items-center gap-3 p-4   rounded-b-2xl">
-          <Button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className={`px-4 py-2 rounded text-sm transition ${
-              page === 1
-                ? "bg-gray-100 text-gray-400"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }`}
-          >
-            Previous
-          </Button>
-
-          <span className="text-sm text-gray-600">
-            Page {page}
-          </span>
-
-          <Button
-            disabled={apiNotifications.length < limit}
-            onClick={() => setPage((p) => p + 1)}
-            className={`px-4 py-2 rounded text-sm transition ${
-              apiNotifications.length < limit
-                ? "bg-gray-100 text-gray-400"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }`}
-          >
-            Next
-          </Button>
-        </div>
-            </>
-            
-          )}
-        </div>
-
-        {/* Pagination */}
-       
-
-      </CommonCard>
     </div>
-  </div>
-);
+  );
 }

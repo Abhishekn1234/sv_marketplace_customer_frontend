@@ -493,6 +493,12 @@
     "notification": "सूचना",
     "notifications": "सूचनाएं",
     "total": "कुल",
+    "filters": {
+    "All": "सभी",
+    "Updates": "अपडेट्स",
+    "Admin": "एडमिन",
+    "Requested": "अनुरोध"
+  },
 
     "bookingConfirmed": "बुकिंग पुष्टि",
     "bookingConfirmedMsg": "आपकी बुकिंग की पुष्टि हो गई है। सेवा जल्द शुरू होगी।",

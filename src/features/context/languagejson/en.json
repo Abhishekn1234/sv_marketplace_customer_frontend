@@ -474,7 +474,12 @@
     "notification": "notification",
     "notifications": "notifications",
     "total": "total",
-
+    "filters": {
+    "All": "All",
+    "Updates": "Updates",
+    "Admin": "Admin",
+    "Requested": "Requested"
+  },
     "bookingConfirmed": "Booking Confirmed",
     "bookingConfirmedMsg": "Your booking has been confirmed. Service will start shortly.",
 
