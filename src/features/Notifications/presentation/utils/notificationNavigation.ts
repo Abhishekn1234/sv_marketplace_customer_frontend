@@ -18,10 +18,11 @@ type NotificationLike = {
   type?: string;
 };
 
+
 const getFirstString = (...values: unknown[]) =>
   values.find((value): value is string => typeof value === "string" && value.trim().length > 0);
 
-export function getNotificationTarget(notification: NotificationLike) {
+export function getNotificationTarget(notification: NotificationLike): string | null {
   const data =
     notification.data ||
     notification.payload ||
@@ -29,17 +30,6 @@ export function getNotificationTarget(notification: NotificationLike) {
     {};
 
   const type = notification.type;
-
-  const directUrl = getFirstString(
-    notification.url,
-    notification.link,
-    notification.route,
-    data.url,
-    data.link,
-    data.route
-  );
-
-  if (directUrl) return withMessageParams(directUrl, notification, data);
 
   const bookingId = getFirstString(
     notification.bookingId,
@@ -55,40 +45,24 @@ export function getNotificationTarget(notification: NotificationLike) {
     data.senderId
   );
 
-  // 💬 1. CHAT MESSAGE (highest priority)
-  if (
-    type === "CHAT_MESSAGE" ||
-    type === "NEW_MESSAGE" ||
-    data?.chatId
-  ) {
+  // 💬 CHAT
+  if (type === "CHAT_MESSAGE" || type === "NEW_MESSAGE" || data?.chatId) {
     if (workerId && bookingId) {
-      return withMessageParams(
-        `/message/${workerId}/${bookingId}`,
-        notification,
-        data
-      );
+      return `/message/${workerId}/${bookingId}`;
     }
     return "/messages";
   }
 
-  // 📦 2. BOOKING FLOW
-  if (
-    type === "BOOKING_REQUEST" ||
-    type === "BOOKING_UPDATE"
-  ) {
+  // 📦 BOOKING
+  if (type === "BOOKING_REQUEST" || type === "BOOKING_UPDATE") {
     if (bookingId) {
       return `/jobtracking/${bookingId}`;
     }
     return "/bookings";
   }
 
-  // fallback: old logic
   if (bookingId && workerId) {
-    return withMessageParams(
-      `/message/${workerId}/${bookingId}`,
-      notification,
-      data
-    );
+    return `/message/${workerId}/${bookingId}`;
   }
 
   if (bookingId) {
@@ -97,32 +71,31 @@ export function getNotificationTarget(notification: NotificationLike) {
 
   return null;
 }
+// function withMessageParams(
+//   url: string,
+//   notification: NotificationLike,
+//   data: Record<string, any>
+// ) {
+//   const text = getFirstString(
+//     notification.text,
+//     notification.message,
+//     notification.body,
+//     data.text,
+//     data.message,
+//     data.body
+//   );
 
-function withMessageParams(
-  url: string,
-  notification: NotificationLike,
-  data: Record<string, any>
-) {
-  const text = getFirstString(
-    notification.text,
-    notification.message,
-    notification.body,
-    data.text,
-    data.message,
-    data.body
-  );
+//   if (!text) return url;
 
-  if (!text) return url;
+//   const target = new URL(url, window.location.origin);
+//   const messageId = getFirstString(notification.messageId, data.messageId, notification.id, data.id);
+//   const senderId = getFirstString(notification.senderId, data.senderId);
+//   const timestamp = getFirstString(notification.timestamp, data.timestamp, notification.createdAt, data.createdAt);
 
-  const target = new URL(url, window.location.origin);
-  const messageId = getFirstString(notification.messageId, data.messageId, notification.id, data.id);
-  const senderId = getFirstString(notification.senderId, data.senderId);
-  const timestamp = getFirstString(notification.timestamp, data.timestamp, notification.createdAt, data.createdAt);
+//   target.searchParams.set("text", text);
+//   if (messageId) target.searchParams.set("messageId", messageId);
+//   if (senderId) target.searchParams.set("senderId", senderId);
+//   if (timestamp) target.searchParams.set("timestamp", timestamp);
 
-  target.searchParams.set("text", text);
-  if (messageId) target.searchParams.set("messageId", messageId);
-  if (senderId) target.searchParams.set("senderId", senderId);
-  if (timestamp) target.searchParams.set("timestamp", timestamp);
-
-  return `${target.pathname}${target.search}`;
-}
+//   return `${target.pathname}${target.search}`;
+// }

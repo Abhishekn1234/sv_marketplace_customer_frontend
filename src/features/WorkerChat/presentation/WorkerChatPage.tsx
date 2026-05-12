@@ -1,23 +1,31 @@
 "use client";
 
-import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useMemo, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import WorkerChatPageContent from "./components/WorkerChatPageContent";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { toast } from "react-toastify";
+import { Splash } from "./components/Splash";
 
 export default function WorkerChatPage() {
   const { workerId, bookingId } =
     useParams<{ workerId: string; bookingId: string }>();
 
+  const navigate = useNavigate();
+
   const token = useAuthStore((state) => state.accessToken);
   const currentUserId = useAuthStore((state) => state.user?._id);
-  const { bookings: bookings = [], loading } = useBookings();
 
+  const { bookings = [], loading } = useBookings();
+
+  // =========================
+  // FIND WORKER DATA
+  // =========================
   const workerData = useMemo(() => {
-    if (!bookingId || !workerId || !bookings?.length) return null;
+    if (!bookingId || !workerId || !bookings.length) return null;
 
     const booking = bookings.find(
       (b: any) => String(b._id) === String(bookingId)
@@ -26,8 +34,13 @@ export default function WorkerChatPage() {
     if (!booking) return null;
 
     const assigned = booking.assignedWorkers?.find((aw: any) => {
-      const assignedWorkerId = aw?.worker?._id || aw?.workerId?._id || aw?.workerId;
-      return assignedWorkerId && String(assignedWorkerId) === String(workerId);
+      const assignedWorkerId =
+        aw?.worker?._id || aw?.workerId?._id || aw?.workerId;
+
+      return (
+        assignedWorkerId &&
+        String(assignedWorkerId) === String(workerId)
+      );
     });
 
     if (!assigned) return null;
@@ -39,24 +52,44 @@ export default function WorkerChatPage() {
     };
   }, [bookings, bookingId, workerId]);
 
+  // =========================
+  // AUTH / LOADING GUARD
+  // =========================
   if (!token || !currentUserId || loading) {
     return <CommonSpinner />;
   }
 
+  // =========================
+  // INVALID ROUTE
+  // =========================
   if (!workerId || !bookingId) {
     return (
       <Splash>
-        <p>Invalid route.</p>
+        <p>Invalid chat route</p>
       </Splash>
     );
   }
 
+  // =========================
+  // NOT FOUND HANDLING (FIXED)
+  // =========================
+  useEffect(() => {
+    if (!loading && !workerData) {
+      toast.error("Worker or booking not found Because Your current Booking is already completed");
+
+      const timer = setTimeout(() => {
+        navigate("/bookings", { replace: true });
+      }, 1200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, workerData, navigate]);
+
+  // =========================
+  // SAFE RENDER
+  // =========================
   if (!workerData) {
-    return (
-      <Splash>
-        <p>Worker or booking not found.</p>
-      </Splash>
-    );
+    return <CommonSpinner />;
   }
 
   const { worker, profile } = workerData;
@@ -79,12 +112,3 @@ export default function WorkerChatPage() {
   );
 }
 
-function Splash({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex h-[100dvh] flex-col items-center justify-center gap-3 bg-[#F1EFE8] px-4">
-      <div className="rounded-2xl border border-red-100 bg-white px-5 py-4 text-center text-sm font-medium text-red-500 shadow-sm">
-        {children}
-      </div>
-    </div>
-  );
-}

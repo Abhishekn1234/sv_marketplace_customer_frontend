@@ -1,36 +1,58 @@
 import PageContainer from "@/components/common/PageContainer";
 import JobTrackingContent from "./components/JobTrackingContent";
 import JobTrackingHeader from "./components/JobTrackingHeader";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function JobTrackingPage() {
   const { bookingId } = useParams();
+  const navigate = useNavigate();
 
   const { bookings, loading } = useBookings();
-  console.log(bookings);
+
   const booking = bookings?.find(
     (b) => String(b._id) === String(bookingId)
   );
 
-  // loading state
+  // =========================
+  // REDIRECT HANDLING
+  // =========================
+  useEffect(() => {
+    if (!loading && !booking) {
+      toast.error("Booking not found or already finished");
+
+      const timer = setTimeout(() => {
+        navigate("/bookings", { replace: true });
+      }, 1200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, booking, navigate]);
+
+  // =========================
+  // LOADING STATE
+  // =========================
   if (loading) {
     return (
       <PageContainer>
-        <div className="text-center py-10 text-gray-500">
-         <CommonSpinner size={16}/>
+        <div className="flex justify-center items-center py-10">
+          <CommonSpinner size={20} />
         </div>
       </PageContainer>
     );
   }
 
-  // not found state (ONLY after loading finished)
+  // =========================
+  // SAFE RENDER (important guard)
+  // =========================
   if (!booking) {
     return (
       <PageContainer>
-        <div className="text-center py-10 text-red-500">
-          Booking not found
+        <div className="flex justify-center items-center py-10">
+          <CommonSpinner size={18} />
         </div>
       </PageContainer>
     );

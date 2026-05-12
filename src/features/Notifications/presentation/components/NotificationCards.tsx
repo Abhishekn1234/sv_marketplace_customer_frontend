@@ -20,6 +20,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import Select from "@/components/input/Select";
 import Button from "@/components/input/Button";
+import { toast } from "react-toastify";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -157,11 +158,16 @@ export default function NotificationCards() {
   // ========================
   // NAVIGATION
   // ========================
-  const handleNotificationClick = (notification: any) => {
-    const target = getNotificationTarget(notification);
-    if (target) navigate(target);
-  };
+ const handleNotificationClick = (notification: any) => {
+  const url = getNotificationTarget(notification);
 
+  if (typeof url !== "string") {
+    toast.error("Booking not found or already finished");
+    return;
+  }
+
+  navigate(url);
+};
   // ========================
   // PAGINATION
   // ========================
