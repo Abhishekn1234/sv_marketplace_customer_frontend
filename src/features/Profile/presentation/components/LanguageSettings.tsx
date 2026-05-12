@@ -4,6 +4,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { Label, Radio } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
 import CommonCard from "@/components/common/CommonCards";
+import { toast } from "react-toastify";
 
 export default function LanguageSettings() {
   const language = useAuthStore((state) => state.language);
@@ -16,26 +17,30 @@ export default function LanguageSettings() {
     { code: "AR", label: "Arabic" },
   ];
 
+  const handleChange = (code: string, label: string) => {
+    setLanguage(code);
+    toast.success(`Language changed to ${label}`);
+  };
+
   return (
     <div className="flex justify-center mt-10 px-4">
+      <div className="w-full max-w-md">
 
-      <div className="w-full max-w-sm sm:max-w-md">
+        <CommonCard className="p-6">
 
-        <CommonCard>
-
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg text-black text-sm">
+          {/* HEADER */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-100 text-blue-600 text-lg">
               🌐
             </div>
 
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-gray-800">
               {t.profilepage.selectLanguage}
             </h2>
           </div>
 
-          {/* Language Options */}
-          <div className="space-y-4">
+          {/* LIST */}
+          <div className="space-y-3">
 
             {languages.map((lang) => {
               const isActive = language === lang.code;
@@ -43,46 +48,53 @@ export default function LanguageSettings() {
               return (
                 <Label
                   key={lang.code}
-                  variant="card"
                   className={`
-                    flex items-center justify-between gap-3
-                    transition-all duration-200
-                    border rounded-xl p-3 cursor-pointer
+                    flex items-center justify-between
+                    p-4 rounded-xl cursor-pointer
+                    border transition-all duration-200
 
                     ${
                       isActive
                         ? "border-blue-500 bg-blue-600 text-white shadow-md"
-                        : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-blue-50"
+                        : "border-gray-200 bg-white hover:bg-gray-50"
                     }
                   `}
                 >
-                  {/* LEFT */}
-                  <div className="flex items-center gap-3 min-w-0">
+                  {/* LEFT SIDE (radio + label + code same line) */}
+                  <div className="flex items-center gap-3">
                     <Radio
                       name="language"
                       value={lang.code}
                       checked={isActive}
-                      onChange={() => setLanguage(lang.code)}
+                      onChange={() => handleChange(lang.code, lang.label)}
                     />
 
-                    <span className="text-base sm:text-lg font-semibold truncate">
-                      {lang.label}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-base">
+                        {lang.label}
+                      </span>
+
+                      <span
+                        className={`
+                          text-xs px-2 py-0.5 rounded-full font-semibold
+                          ${
+                            isActive
+                              ? "bg-black/20 text-white"
+                              : "bg-gray-200 text-gray-700"
+                          }
+                        `}
+                      >
+                        {lang.code}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* RIGHT BADGE */}
-                  <span
-                    className={`
-                      text-xs sm:text-sm px-3 py-1 rounded-full font-bold shrink-0
-                      ${
-                        isActive
-                          ? "bg-black/30 text-white"
-                          : "bg-gray-200 text-black"
-                      }
-                    `}
-                  >
-                    {lang.code}
-                  </span>
+                  {/* RIGHT CHECK STATE */}
+                  {isActive && (
+                    <span className="text-sm font-semibold text-white">
+                      Selected
+                    </span>
+                  )}
                 </Label>
               );
             })}
@@ -90,7 +102,6 @@ export default function LanguageSettings() {
           </div>
 
         </CommonCard>
-
       </div>
     </div>
   );
