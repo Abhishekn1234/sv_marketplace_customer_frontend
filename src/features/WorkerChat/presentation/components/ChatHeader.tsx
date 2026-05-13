@@ -18,7 +18,7 @@ import { initials } from "../utils/initials";
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 import { useLanguage } from "@/features/context/LanguageContext";
 
-export default function ChatHeader({ worker }: { worker: Worker }) {
+export default function ChatHeader({ worker,bookingId }: { worker: Worker,bookingId:string }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -53,7 +53,7 @@ export default function ChatHeader({ worker }: { worker: Worker }) {
     <div className="relative z-50 flex items-center gap-3 border-b border-gray-200 bg-white/95 px-3 py-3 shadow-sm backdrop-blur sm:px-4">
       <Tooltip text="Go back" position="bottom">
         <Button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(`/jobtracking/${bookingId}`)}
           variant="ghost"
           icon
           radius="full"

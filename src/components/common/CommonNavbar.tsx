@@ -83,15 +83,23 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 useEffect(() => {
   const seen = localStorage.getItem("location-tour-seen");
 
-  if (!currentLocation && !seen) {
+  // check full location validity
+  const hasValidLocation =
+    current_location &&
+    current_location.lat != null &&
+    current_location.lng != null &&
+    currentLocation &&
+    currentLocation.trim() !== "";
+
+  if (!hasValidLocation && !seen) {
     const timer = setTimeout(() => {
       setRunTour(true);
       localStorage.setItem("location-tour-seen", "true");
-    }, 500); // ⬅ important delay for DOM render
+    }, 500);
 
     return () => clearTimeout(timer);
   }
-}, [currentLocation]);
+}, [current_location, currentLocation]);
 
   const isBookingPage = routerLocation.pathname === "/bookings";
   const isHomePage = routerLocation.pathname === "/";
@@ -110,8 +118,9 @@ useEffect(() => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 const hasLocation =
-  current_location?.lat &&
-  current_location?.lng;
+  current_location?.lat != null &&
+  current_location?.lng != null &&
+  currentLocation?.trim() !== "";
   return (
     <>
      <Joyride

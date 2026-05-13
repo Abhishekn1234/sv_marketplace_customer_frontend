@@ -10,53 +10,49 @@ export default function NotificationHeader({
   markSelectedAsRead,
 }: any) {
   const hasSelection = selected.length > 0;
-  const allSelected = selected.length === total && total > 0;
+  const allSelected = total > 0 && selected.length === total;
   const {t}=useLanguage();
-  return (
-    <div className="sticky top-0 bg-white px-4 py-3 z-10 border-b">
-      <div className="flex justify-between items-center">
 
+  return (
+    <div className="sticky top-0 bg-white/80 backdrop-blur-md px-4 py-3 z-10 border-b border-gray-100">
+      <div className="flex justify-between items-center">
         {/* SELECT ALL */}
         <Button
           onClick={toggleSelectAll}
+          variant="ghost"
+          className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
           disabled={total === 0}
-          className="flex items-center gap-2 text-sm"
         >
           {allSelected ? (
-            <CheckSquare className="text-blue-600" />
+            <CheckSquare className="w-5 h-5 text-blue-600" />
           ) : (
-            <Square className="text-gray-400" />
+            <Square className="w-5 h-5 text-gray-400" />
           )}
-
           {allSelected ? t.notificationpage.unselect : t.notificationpage.selectAll}
         </Button>
-
         {/* ACTIONS */}
         <div className="flex gap-2">
-
           {/* SHOW ONLY WHEN SELECTED */}
           {hasSelection && (
             <>
               {/* READ SELECTED */}
               <Button
                 onClick={markSelectedAsRead}
-                className="px-3 py-2 bg-blue-600 text-white rounded text-sm flex items-center gap-1"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
                 leftIcon={<BellRing className="w-4 h-4" />}
               >
-              {t.notificationpage.read}
+                {t.notificationpage.read}
               </Button>
-
               {/* READ ALL */}
               <Button
                 onClick={markAllAsRead}
-                className="px-3 py-2 bg-green-600 text-white rounded text-sm flex items-center gap-1"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
                 leftIcon={<BellRing className="w-4 h-4" />}
               >
-              {t.notificationpage.markAllRead}
+                {t.notificationpage.markAllRead}
               </Button>
             </>
           )}
-
         </div>
       </div>
     </div>

@@ -176,47 +176,47 @@ export default function NotificationCards() {
 
   return (
     <div className="min-h-screen">
-      <div className="w-full px-4 py-6">
-
+      <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-3 mb-6">
-          <Bell className="text-blue-600 w-6 h-6" />
-          <h1 className="text-xl font-semibold">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
+              <Bell className="text-white w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             {t.notificationpage.title}
           </h1>
+          </div>
         </div>
 
-        <CommonCard className="max-w-5xl mx-auto flex flex-col min-h-[520px]">
-
+        <CommonCard className="overflow-hidden border-none shadow-xl shadow-gray-200/50 flex flex-col min-h-[600px] p-0 sm:p-0">
           {/* FILTER BAR */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-
+          <div className="px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
             <Select
               options={[
-                { label: "5 / page", value: "5" },
-                { label: "10 / page", value: "10" },
-                { label: "20 / page", value: "20" },
-                { label: "50 / page", value: "50" },
+                { label: "5 per page", value: "5" },
+                { label: "10 per page", value: "10" },
+                { label: "20 per page", value: "20" },
+                { label: "50 per page", value: "50" },
               ]}
               value={limit.toString()}
               onChange={(val) => setLimit(Number(val))}
-              className="w-full sm:w-[140px]"
+              className="w-full sm:w-[160px] text-sm font-medium"
             />
-
-            <div className="flex flex-wrap gap-2 sm:justify-end">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
               {[
                 { label: t.notificationpage.filters.All, value: undefined },
                 { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
                 { label: t.notificationpage.filters.Updates, value: "BOOKING_UPDATE" },
                 { label: t.notificationpage.filters.Admin, value: "ADMIN_MESSAGE" },
-              ].map((f, i) => (
+              ].map((f) => (
                 <Button
-                  key={i}
+                  key={f.label}
                   onClick={() => setType(f.value)}
-                  className={`px-3 py-1 text-sm rounded-full ${
+                  className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap transition-all font-medium ${
                     type === f.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-blue-400 hover:bg-blue-50/50"
                   }`}
                 >
                   {f.label}
@@ -224,8 +224,6 @@ export default function NotificationCards() {
               ))}
             </div>
           </div>
-
-          {/* HEADER */}
           <NotificationHeader
             toggleSelectAll={toggleSelectAll}
             selected={selected}
@@ -233,8 +231,6 @@ export default function NotificationCards() {
             markAllAsRead={markAllAsReadSafe}
             markSelectedAsRead={markSelectedAsRead}
           />
-
-          {/* BODY */}
           <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="flex h-64 items-center justify-center">
@@ -248,35 +244,32 @@ export default function NotificationCards() {
                   toggleSelect={toggleSelect}
                   onNotificationClick={handleNotificationClick}
                 />
-
-                {/* PAGINATION */}
-                <div className="flex justify-end items-center gap-3 p-4 border-t">
+                <div className="flex justify-between items-center gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+                  <span className="text-sm font-medium text-gray-500">
+                    Page <span className="text-gray-900">{page}</span>
+                  </span>
+                  <div className="flex items-center gap-2">
                   <Button
+                      variant="secondary"
                     disabled={!hasPrevPage}
                     onClick={() => setPage((p) => p - 1)}
-                    className={`px-4 py-2 ${
-                      hasPrevPage ? "bg-blue-600 text-white" : "bg-gray-200"
-                    }`}
+                      className="px-5 py-2 text-sm font-semibold rounded-xl"
                   >
                     Previous
                   </Button>
-
-                  <span className="text-sm">Page {page}</span>
-
                   <Button
+                      variant="primary"
                     disabled={!hasNextPage}
                     onClick={() => setPage((p) => p + 1)}
-                    className={`px-4 py-2 ${
-                      hasNextPage ? "bg-blue-600 text-white" : "bg-gray-200"
-                    }`}
+                      className="px-5 py-2 text-sm font-semibold rounded-xl"
                   >
                     Next
                   </Button>
                 </div>
+                </div>
               </>
             )}
           </div>
-
         </CommonCard>
       </div>
     </div>

@@ -3,8 +3,8 @@ import { io, Socket } from "socket.io-client";
 
 import type { Message } from "../../domain/entities/messages";
 
-import { showBrowserNotification } from "@/components/firebase/showBrowserNotification";
-import { playNotificationSound } from "@/components/firebase/sound";
+
+
 
 import { apiUrl } from "@/features/api/apiConfig";
 import { mergeMessages } from "../utils/mergemessages";
@@ -114,35 +114,35 @@ export function useChatSocket(
           return;
         }
 
-        playNotificationSound();
+        // playNotificationSound();
 
-        showBrowserNotification({
-          notification: {
-            title: `New message from ${
-              workerName || "Worker"
-            }`,
+        // showBrowserNotification({
+        //   notification: {
+        //     title: `New message from ${
+        //       workerName || "Worker"
+        //     }`,
 
-            body:
-              msg.text ||
-              "You have a new message",
-          },
+        //     body:
+        //       msg.text ||
+        //       "You have a new message",
+        //   },
 
-          data: {
-            type: "CHAT_MESSAGE",
+        //   data: {
+        //     type: "CHAT_MESSAGE",
 
-            bookingId,
+        //     bookingId,
 
-            workerId,
+        //     workerId,
 
-            senderId: msg.senderId,
+        //     senderId: msg.senderId,
 
-            url: `/message/${workerId}/${bookingId}`,
+        //     url: `/message/${workerId}/${bookingId}`,
 
-            notificationId:
-              msg._id ||
-              `${Date.now()}`,
-          },
-        });
+        //     notificationId:
+        //       msg._id ||
+        //       `${Date.now()}`,
+        //   },
+        // });
       });
     };
 

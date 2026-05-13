@@ -9,7 +9,6 @@ import DashboardLayout from "./features/Layout/DashboardLayout";
 import { ProtectedRoute } from "./ProtectedLayout";
 
 import WebsiteHome from "./features/Home/presentation/DashboardHome";
-
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 import Profile from "./features/Profile/presentation/ProfilePage";
 import LoginLayout from "./features/Auth/presentation/components/auth/Login/LoginLayout";
@@ -38,54 +37,60 @@ import PaymentPage from "./features/Payment/presentation/Paymentpage";
 import PaymentCallbackPage from "./features/Payment/presentation/components/PaymentCallbackPage";
 import ListDisputes from "./features/Disputes/presentation/components/ListDisputes";
 
-import { useNotification } from "./features/utils/useNotification";
-import { useEffect } from "react";
-import "./App.css";
-
-import { useAuthStore } from "./features/core/store/auth";
-import { initializeSocket } from "./features/core/Websocket/socket";
-import ScrollToTop from "./ScrollToTop";
-
-/* 🔥 ADD THESE */
-import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
 import InvoicePrintPage from "./features/JobTracking/presentation/components/InvoicePrintPage";
 import WorkerChatPage from "./features/WorkerChat/presentation/WorkerChatPage";
 import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCall";
 import AIChatPage from "./features/JobTracking/presentation/components/AIChatWindow";
-import NotificationNavigation from "./NavigationNotification";
+
+
+import ScrollToTop from "./ScrollToTop";
+
+import { useNotification } from "./features/utils/useNotification";
+import { useEffect } from "react";
+import { useAuthStore } from "./features/core/store/auth";
+import { initializeSocket } from "./features/core/Websocket/socket";
+
+/* 🔥 FCM */
+import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
+
+import "./App.css";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
 
-  useNotification(); // your existing hook
+  useNotification();
 
-  /* ✅ SERVICE WORKER + NOTIFICATION INIT */
+  // =========================
+  // 🔥 NOTIFICATION SETUP (FIXED)
+  // =========================
   useEffect(() => {
     const setupNotifications = async () => {
       try {
         if (!("serviceWorker" in navigator)) return;
 
-        // Register service worker
-        const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-        console.log("✅ SW registered:", reg);
+        // ✅ Avoid duplicate SW registration
+        const existingReg = await navigator.serviceWorker.getRegistration();
 
-        // Request permission
+        if (!existingReg) {
+          await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+          console.log("✅ Service Worker registered");
+        } else {
+          console.log("♻️ Service Worker already active");
+        }
+
+        // ✅ Ask permission
         const permission = await Notification.requestPermission();
-
         if (permission !== "granted") {
           console.warn("❌ Notification permission denied");
           return;
         }
 
-        console.log("✅ Notification permission granted");
-
-        // Get FCM token
+        // ✅ Get FCM token
         const token = await requestAndGetToken();
         console.log("🔥 FCM Token:", token);
 
-        // Listen for foreground messages
+        // ✅ Foreground listener (NO UI NOTIFICATIONS INSIDE)
         initOnMessage();
-
       } catch (err) {
         console.error("❌ Notification setup error:", err);
       }
@@ -94,7 +99,9 @@ function App() {
     setupNotifications();
   }, []);
 
-  /* ✅ SOCKET INIT */
+  // =========================
+  // 🔥 SOCKET INIT
+  // =========================
   useEffect(() => {
     if (isLoggedIn && accessToken) {
       initializeSocket(accessToken);
@@ -105,27 +112,25 @@ function App() {
     <ThemeProvider>
       <LanguageProvider>
         <Router>
-          <NotificationNavigation/>
+          
           <ScrollToTop />
 
           <ToastContainer
             position="top-right"
             autoClose={3000}
-            hideProgressBar={false}
             newestOnTop
             closeOnClick
             pauseOnHover
             draggable
             theme="light"
             style={{ top: "80px", right: "20px" }}
-            toastClassName="rounded-xl shadow-lg border border-gray-200"
-            className="text-sm font-medium"
           />
+
 
           <Routes>
              <Route path="/invoice/:id" element={<InvoicePrintPage />} />
+            {/* Public */}
             <Route element={<DashboardLayout />}>
-              {/* Public */}
               <Route path="/login" element={<LoginLayout />} />
               <Route path="/register" element={<RegisterLayout />} />
               <Route path="/language" element={<LanguagePage />} />
@@ -133,41 +138,38 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
               <Route path="/verification" element={<VerificationPage />} />
               <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
-              
+             
 
               {/* Protected */}
               <Route element={<ProtectedRoute />}>
                 <Route index element={<WebsiteHome />} />
-                <Route path="bookingdetail/:serviceId/:serviceTierId" element={<BookingDetailPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="changepassword" element={<ChangePasswordPage />} />
-                <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage />} />
                 <Route path="bookings" element={<MyBookings />} />
+                <Route path="profile" element={<Profile />} />
                 <Route path="about" element={<AboutPage />} />
-                <Route path="servicerating/:bookingId" element={<ServiceRating />} />
-                <Route path="jobcompleted" element={<JobCompletedPage />} />
-                <Route path="services/:id" element={<ServiceDetailPage />} />
-                <Route path="privacy" element={<PrivacyPolicyPage />} />
-                <Route path="payment" element={<PaymentPage />} />
-                <Route path="disputes" element={<ListDisputes />} />
-                <Route path="payment/callback" element={<PaymentCallbackPage />} />
-                <Route path="dispute/:bookingId" element={<Disputepage />} />
                 <Route path="help" element={<HelpPage />} />
                 <Route path="security" element={<SecurityPage />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="/chat" element={<AIChatPage />} />
-                <Route path="video-call/:workerId" element={<VideoCallPage/>}/>
+                <Route path="payment" element={<PaymentPage />} />
+                <Route path="payment/callback" element={<PaymentCallbackPage />} />
+                <Route path="disputes" element={<ListDisputes />} />
+                <Route path="dispute/:bookingId" element={<Disputepage />} />
                 <Route path="jobtracking/:bookingId" element={<JobTrackingPage />} />
                 <Route path="jobprogress/:bookingId" element={<JobProgressPage />} />
-                <Route
-                  path="message/:workerId/:bookingId"
-                  element={<WorkerChatPage />}
-                 />
+                <Route path="video-call/:workerId" element={<VideoCallPage />} />
+                <Route path="message/:workerId/:bookingId" element={<WorkerChatPage />} />
+                <Route path="chat" element={<AIChatPage />} />
+                <Route path="privacy" element={<PrivacyPolicyPage />} />
                 <Route path="confirmation/:bookingId" element={<ConfirmationPage />} />
+                <Route path="servicetierselection/:id" element={<ServiceTierSelectionPage />} />
+                <Route path="bookingdetail/:serviceId/:serviceTierId" element={<BookingDetailPage />} />
+                <Route path="services/:id" element={<ServiceDetailPage />} />
+                <Route path="servicerating/:bookingId" element={<ServiceRating />} />
+                <Route path="jobcompleted" element={<JobCompletedPage />} />
+                <Route path="changepassword" element={<ChangePasswordPage />} />
               </Route>
-            </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
           </Routes>
         </Router>
       </LanguageProvider>

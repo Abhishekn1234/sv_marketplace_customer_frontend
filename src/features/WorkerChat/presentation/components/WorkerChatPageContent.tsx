@@ -302,7 +302,7 @@ export default function WorkerChatPageContent({
 
         {/* HEADER */}
 
-        <ChatHeader worker={worker} />
+        <ChatHeader worker={worker}  bookingId={bookingId}/>
 
         {/* MESSAGES */}
 
