@@ -1,8 +1,10 @@
 import { useLanguage } from "@/features/context/LanguageContext";
-// import { useAuthStore } from "@/features/core/store/auth";
+import { useAuthStore } from "@/features/core/store/auth";
+
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 
-import { useState, useRef, useEffect } from "react";
+
+import { useState, useRef, useEffect, } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
 
@@ -18,22 +20,18 @@ export default function CommonNotificationFloater({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
-  const { data: notifications = [] } = useNotifications({
-    page: 1,
-    limit: 100,
-    unreadOnly: false,
-  });
+const { data: notifications = [] } = useNotifications({
+  page: 1,
+  limit: 100,
+  unreadOnly: false,
+});
 
-  // ✅ Derive unread count from API (FIX)
-  const unreadCount = notifications.filter(
-    (n: any) => !n.isRead
-  ).length;
+const unreadCount = useAuthStore(
+  (state) => state.notifications.unreadCount
+);
 
   const handleNotificationClick = (item: any) => {
     const target = getNotificationTarget(item);
-
-    // optional: mark as read locally (optimistic UI)
-    item.isRead = true;
 
     if (target) {
       navigate(target);
@@ -52,8 +50,7 @@ export default function CommonNotificationFloater({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -74,7 +71,7 @@ export default function CommonNotificationFloater({
           <path d="M13.73 21a2 2 0 01-3.46 0" />
         </svg>
 
-        {/* 🔴 Badge */}
+        {/* 🔴 Unread badge */}
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white">
             {unreadCount}
@@ -85,11 +82,13 @@ export default function CommonNotificationFloater({
       {/* Dropdown */}
       {open && (
         <div
-          className={`absolute z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden w-72 sm:w-80 right-0 ${
-            direction === "up"
+          className={`
+            absolute z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden
+            w-72 sm:w-80 right-0
+            ${direction === "up"
               ? "left-1/2 -translate-x-1/2 bottom-full mb-3"
-              : "top-full mt-3"
-          }`}
+              : "top-full mt-3"}
+          `}
         >
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
@@ -115,22 +114,18 @@ export default function CommonNotificationFloater({
                 No notifications
               </p>
             ) : (
-              notifications.map((item: any, index: number) => (
+              notifications.map((item) => (
                 <div
-                  key={item._id ?? item.id ?? index}
+                  key={item.id || item._id}
                   onClick={() => handleNotificationClick(item)}
-                  className={`px-4 py-3 cursor-pointer transition-colors duration-200 ${
-                    item.isRead ? "hover:bg-gray-50" : "hover:bg-blue-50"
-                  }`}
+                  className="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-200"
                 >
                   <p className="text-sm font-semibold text-gray-800">
                     {item.title}
                   </p>
-
                   <p className="text-xs text-gray-500 truncate">
                     {item.message}
                   </p>
-
                   <p className="text-xs text-gray-400 mt-1">
                     {item.time}
                   </p>
