@@ -34,7 +34,7 @@ export default function NotificationCards() {
 
   const {
     data: apiNotifications = [],
-    loading,
+  isLoading: loading,
   } = useNotifications(filters);
 
   const { fcmNotifications = [] } = useRegisterDeviceToken();

@@ -14,7 +14,6 @@ import type { Booking } from "../../domain/entities/booking.types";
 import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
 
-
 import { getSocket } from "@/features/core/Websocket/socket";
 import { bookingKeys } from "@/features/Confirmation/presentation/helpers/bookingkeys";
 
@@ -27,11 +26,12 @@ export const useBookings = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // ================= FETCH =================
+  // ================= FETCH BOOKINGS =================
   const { data = [], isLoading, isError } = useQuery<Booking[]>({
     queryKey: bookingKeys.all,
-
     queryFn: async () => {
+      console.log("📡 FETCH BOOKINGS API CALLED");
+
       const res = await getBookings.execute();
       const list = res?.bookings ?? [];
 
@@ -52,57 +52,58 @@ export const useBookings = () => {
     refetchOnReconnect: false,
   });
 
-  // ================= SOCKET =================
+  // ================= SOCKET UPDATES =================
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
-   const handler = (payload: any) => {
-  const bookingId = payload?.bookingId || payload?._id || payload?.booking?._id;
-  if (!bookingId) return;
+    const handler = (payload: any) => {
+      const bookingId =
+        payload?.bookingId || payload?._id || payload?.booking?._id;
 
-  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
-    if (!Array.isArray(old)) return [];
+      if (!bookingId) return;
 
-    return old.map((b) => {
-      if (b._id !== bookingId) return b;
+      // UPDATE LIST CACHE
+      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
+        if (!Array.isArray(old)) return [];
 
-      return {
-        ...b,
-        ...payload.booking,   // full update if backend sends it
-        ...payload,           // partial update fallback
+        return old.map((b) => {
+          if (b._id !== bookingId) return b;
 
-        // 🔥 FORCE STATUS CONSISTENCY
-        status:
-          payload.status ??
-          payload.booking?.status ??
-          b.status,
-      };
-    });
-  });
+          return {
+            ...b,
+            ...payload.booking,
+            ...payload,
+            status:
+              payload.status ??
+              payload.booking?.status ??
+              b.status,
+          };
+        });
+      });
 
-  queryClient.setQueryData(
-    bookingKeys.detail(bookingId),
-    (old: Booking | undefined) => {
-      if (!old) return payload.booking ?? payload;
+      // UPDATE DETAIL CACHE
+      queryClient.setQueryData(
+        bookingKeys.detail(bookingId),
+        (old: Booking | undefined) => {
+          if (!old) return payload.booking ?? payload;
 
-      return {
-        ...old,
-        ...payload.booking,
-        ...payload,
-        status:
-          payload.status ??
-          payload.booking?.status ??
-          old.status,
-      };
-    }
-  );
-};
+          return {
+            ...old,
+            ...payload.booking,
+            ...payload,
+            status:
+              payload.status ??
+              payload.booking?.status ??
+              old.status,
+          };
+        }
+      );
+    };
 
     const events = [
       "booking:update",
       "booking.status.changed",
-      // "booking.worker.assigned",
       "booking.worker.accepted",
       "booking.work.started",
       "booking.work.completed-by-worker",
@@ -116,15 +117,16 @@ export const useBookings = () => {
     };
   }, [queryClient]);
 
-  // ================= CREATE =================
+  // ================= CREATE BOOKING =================
   const create = useMutation({
-    mutationFn: (payload: BookingPayload) => createBooking.execute(payload),
+    mutationFn: (payload: BookingPayload) =>
+      createBooking.execute(payload),
 
     onSuccess: (newBooking) => {
-      queryClient.setQueryData(bookingKeys.all, (old: Booking[] = []) => [
-        newBooking,
-        ...old,
-      ]);
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) => [newBooking, ...old]
+      );
 
       queryClient.setQueryData(
         bookingKeys.detail(newBooking._id),
@@ -136,35 +138,38 @@ export const useBookings = () => {
     },
   });
 
-  // ================= CANCEL =================
+  // ================= CANCEL BOOKING =================
   const cancel = useMutation({
     mutationFn: (req: CancelBookingRequest) =>
       cancelBooking.execute(req),
 
-   onSuccess: (updated) => {
-  // 1. Update list
-  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
-    if (!Array.isArray(old)) return [];
+    onSuccess: (updated) => {
+      // UPDATE LIST
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) => {
+          if (!Array.isArray(old)) return [];
 
-    return old.map((b) =>
-      b._id === updated._id ? { ...b, ...updated } : b
-    );
-  });
+          return old.map((b) =>
+            b._id === updated._id ? { ...b, ...updated } : b
+          );
+        }
+      );
 
-  // 2. Update detail cache (VERY IMPORTANT)
-  queryClient.setQueryData(
-    bookingKeys.detail(updated._id),
-    (old: Booking | undefined) => ({
-      ...old,
-      ...updated,
-    })
-  );
+      // UPDATE DETAIL
+      queryClient.setQueryData(
+        bookingKeys.detail(updated._id),
+        (old: Booking | undefined) => ({
+          ...old,
+          ...updated,
+        })
+      );
 
-  // 3. Safety net (forces UI consistency)
-  queryClient.invalidateQueries({
-    queryKey: bookingKeys.all,
-  });
-}
+      toast.success("Booking cancelled");
+
+      // ❌ IMPORTANT: DO NOT invalidate here
+      // It causes extra API calls
+    },
   });
 
   return {

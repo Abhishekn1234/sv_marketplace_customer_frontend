@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
-import { RegisterDeviceTokenUseCase } from "../../domain/usecase/RegisterDeveiceTokenUsecase";
+import { RegisterDeviceTokenUseCase } from "../../domain/usecases/RegisterDeveiceTokenUsecase";
 import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useDeviceStore } from "@/features/core/store/device";

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
-import { UnregisterDeviceTokenUseCase } from "../../domain/usecase/UnregisterDeviceTokenUsecase";
+import { UnregisterDeviceTokenUseCase } from "../../domain/usecases/UnregisterDeviceTokenUsecase";
 import { useDeviceStore } from "@/features/core/store/device";
 
 export const useUnregisterDeviceToken = () => {

@@ -8,7 +8,7 @@ export const getFirebaseMessaging = async () => {
     if (typeof window === "undefined") return null;
 
     const supported = await isSupported();
-    console.log("🔥 Firebase Messaging supported:", supported);
+    // console.log("🔥 Firebase Messaging supported:", supported);
 
     if (!supported) return null;
 
@@ -16,7 +16,7 @@ export const getFirebaseMessaging = async () => {
 
     messagingInstance = getMessaging(app);
 
-    console.log("🔥 Messaging initialized:", messagingInstance);
+    // console.log("🔥 Messaging initialized:", messagingInstance);
 
     return messagingInstance;
   } catch (err) {

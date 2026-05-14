@@ -9,11 +9,13 @@ import type { Category } from "../../domain/entities/category.types";
 const getServiceCategoriesUseCase = new GetServiceCategoriesUseCase(
   ServiceRepository
 );
-
 export const useServiceCategory = () => {
   return useQuery<Category[], Error>({
     queryKey: ["service-categories"],
     queryFn: () => getServiceCategoriesUseCase.execute(),
+
     staleTime: 5 * 60 * 1000,
+
+    gcTime: 10 * 60 * 1000, // 👈 keep cache longer
   });
 };

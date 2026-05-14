@@ -23,19 +23,19 @@ export const initializeSocket = (token: string): Socket => {
   });
 
   socket.on("connect", () => {
-    console.log("✅ Socket connected:", socket?.id);
+    // console.log("✅ Socket connected:", socket?.id);
   });
-  socket.onAny((event, data) => {
+  socket.onAny((event, _data) => {
   if (!event.startsWith("booking") && !event.startsWith("customer")) return;
 
-  console.log("📡 [CUSTOMER SOCKET]", {
-    event,
-    data,
-  });
+  // console.log("📡 [CUSTOMER SOCKET]", {
+  //   event,
+  //   data,
+  // });
 });
 
-  socket.on("disconnect", (reason) => {
-    console.log("❌ Socket disconnected:", reason);
+  socket.on("disconnect", (_reason) => {
+    // console.log("❌ Socket disconnected:", reason);
   });
 
   socket.on("connect_error", (err) => {
@@ -43,8 +43,8 @@ export const initializeSocket = (token: string): Socket => {
   });
 
   // 🔍 Debug all events
-  socket.onAny((event, data) => {
-    console.log("📡 Event:", event, data);
+  socket.onAny((_event, _data) => {
+    // console.log("📡 Event:", event, data);
   });
 
   return socket;

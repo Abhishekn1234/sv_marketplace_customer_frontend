@@ -15,27 +15,21 @@ export class ServiceRepository implements IServiceRepository {
  private readonly baseUrl = "booking"; 
 
 
-  async getServices(params: GetServicesParams = {}): Promise<APIResponse<Service[]>> {
-    const queryParams = new URLSearchParams();
+  async getServices(
+  params: GetServicesParams = {}
+): Promise<APIResponse<Service[]>> {
+  const response = await apiClient.get<APIResponse<Service[]>>(
+    `${this.baseUrl}/services`,
+    {
+      params,
+    }
+  );
 
-    if (params.page !== undefined) queryParams.append("page", params.page.toString());
-    if (params.limit !== undefined) queryParams.append("limit", params.limit.toString());
-    if (params.sort) queryParams.append("sort", params.sort);
-    if (params.search) queryParams.append("search", params.search);
-    if (params.categoryId) queryParams.append("categoryId", params.categoryId);
-
-    const url = `${this.baseUrl}/services?${queryParams.toString()}`;
-
-    const response = await apiClient.get<APIResponse<Service[]>>(url);
-
-    console.log("Full Axios Response:", response);
-    console.log("Actual API Data:", response.data);
-
-    return response.data;
-  }
+  return response.data;
+}
   async getBookings(): Promise<GetBookingsResponse> {
   const response = await apiClient.get<GetBookingsResponse>(`/booking`);
-  console.log("Single booking object:", response.data);
+  // console.log("Single booking object:", response.data);
   
   
   return   response.data ;
@@ -45,7 +39,7 @@ export class ServiceRepository implements IServiceRepository {
     const response = await apiClient.get<ServiceTierRef[]>(
       `${this.baseUrl}/pricing-tiers`
     );
-    console.log(response);
+    // console.log(response);
     return response.data;
   }
 
@@ -59,8 +53,8 @@ export class ServiceRepository implements IServiceRepository {
   async getCategories(): Promise<Category[]> {
   const response = await apiClient.get<APIResponse<Category[]>>("/services");
 
-  console.log("Full API response:", response);
-  console.log("Categories array:", response.data.data);
+  // console.log("Full API response:", response);
+  // console.log("Categories array:", response.data.data);
 
   return response.data.data;
 }

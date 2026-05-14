@@ -51,8 +51,8 @@ import { useAuthStore } from "./features/core/store/auth";
 import { initializeSocket } from "./features/core/Websocket/socket";
 
 /* 🔥 FCM */
-import { requestAndGetToken, initOnMessage } from "@/components/firebase/notifications";
-
+import {  initOnMessage } from "@/components/firebase/notifications";
+// requestAndGetToken,
 import "./App.css";
 
 function App() {
@@ -73,9 +73,9 @@ function App() {
 
         if (!existingReg) {
           await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-          console.log("✅ Service Worker registered");
+          // console.log("✅ Service Worker registered");
         } else {
-          console.log("♻️ Service Worker already active");
+          // console.log("♻️ Service Worker already active");
         }
 
         // ✅ Ask permission
@@ -86,8 +86,8 @@ function App() {
         }
 
         // ✅ Get FCM token
-        const token = await requestAndGetToken();
-        console.log("🔥 FCM Token:", token);
+        // const token = await requestAndGetToken();
+        // console.log("🔥 FCM Token:", token);
 
         // ✅ Foreground listener (NO UI NOTIFICATIONS INSIDE)
         initOnMessage();

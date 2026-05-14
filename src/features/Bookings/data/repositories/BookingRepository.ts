@@ -20,14 +20,14 @@ export class BookingRepository implements IBookingRepository {
       `${this.baseUrl}/create`,
       payload
     );
-    console.log("Created Booking:", response.data);
+    // console.log("Created Booking:", response.data);
     return response.data;
   }
 
 async getBookings(): Promise<GetBookingsResponse> {
   const response = await apiClient.get("/booking");
 
-  console.log("Fetched Bookings:", response.data);
+  // console.log("Fetched Bookings:", response.data);
 
   // ✅ Ensure always array
   const bookingsArray = Array.isArray(response.data)
@@ -48,7 +48,7 @@ async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHisto
       params
     }
   );
-  console.log(response);
+  // console.log(response);
 
   return response.data;
 }
@@ -56,7 +56,7 @@ async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHisto
   
   async getBookingById(bookingId: string): Promise<BookingById> {
     const response = await apiClient.get<BookingById>(`${this.baseUrl}/${bookingId}`);
-    console.log("Fetched Booking by ID:", response.data);
+    // console.log("Fetched Booking by ID:", response.data);
     return response.data;
   }
 

@@ -22,7 +22,7 @@ const { services } = useServices();
 const selectedService = services?.find(
   (s: any) => s._id === serviceId
 );
-console.log("Selected Service in BookingDetailDateandmoredetails:", selectedService);
+// console.log("Selected Service in BookingDetailDateandmoredetails:", selectedService);
   const { current_location } = useAuthStore();
   const {t}=useLanguage();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -57,18 +57,18 @@ console.log("Selected Service in BookingDetailDateandmoredetails:", selectedServ
       const selectedPricing = selectedService?.pricingTiers?.[0]; 
       // ✅ replace this with .find(...) if multiple tiers exist
 
-      console.log("Selected Pricing Tier:", selectedPricing);
+      // console.log("Selected Pricing Tier:", selectedPricing);
 
 
       const unitPrice =selectedPricing?.HOURLY?.ratePerHour ?? selectedPricing?.PER_DAY?.ratePerDay ?? 0;
 
       const safeUnitPrice = unitPrice ?? 0;
-      console.log(selectedService);
+      // console.log(selectedService);
       const vatPercent = selectedService?.vatRate ?? 0;
-      console.log("VAT Percent:", vatPercent);
-      console.log(selectedService);
+      // console.log("VAT Percent:", vatPercent);
+      // console.log(selectedService);
       const basePrice = (duration ?? 0) * safeUnitPrice;
-       console.log(basePrice);
+       // console.log(basePrice);
       const vatRate = useMemo(
         () => (basePrice * vatPercent) / 100,
         [basePrice, vatPercent]

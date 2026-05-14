@@ -1,52 +1,38 @@
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
-import { GetNotificationsUseCase } from "../../domain/usecase/GetNotificationsUsecase";
+import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
+import type { GetNotificationsParams } from "../../domain/entities/notificationgetparams";
 
-export const useNotifications = (filters?: any) => {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  const repo = useMemo(() => new NotificationRepositoryImpl(), []);
-  const useCase = useMemo(() => new GetNotificationsUseCase(repo), [repo]);
+const repo = new NotificationRepositoryImpl();
+const useCase = new GetNotificationsUseCase(repo);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      setLoading(true);
+export const useNotifications = (
+  filters?: GetNotificationsParams
+) => {
+  return useQuery({
+    queryKey: ["notifications", filters],
 
-      try {
-        const res = await useCase.execute(filters);
-        setData(res);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    queryFn: async () => {
+      const safeFilters: GetNotificationsParams = {
+        page: filters?.page ?? 1,
+        limit: filters?.limit ?? 1000,
+        type: filters?.type,
+        unreadOnly: filters?.unreadOnly,
+      };
 
-    fetchNotifications();
-  }, [
-    useCase,
-    filters?.page,
-    filters?.limit,
-    filters?.type,
-  ]);
+      const res = await useCase.execute(safeFilters);
 
-  const refetch = async () => {
-    setLoading(true);
+      return Array.isArray(res?.data) ? res.data : [];
+    },
 
-    try {
-      const res = await useCase.execute(filters);
-      setData(res);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
 
-  return {
-    data,
-    loading,
-    refetch,
-  };
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+
+    retry: 1,
+  });
 };

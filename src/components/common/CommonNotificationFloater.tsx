@@ -1,7 +1,7 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
 
@@ -23,9 +23,9 @@ export default function CommonNotificationFloater({
   const { t } = useLanguage();
 
   // -----------------------------
-  // ZUSTAND (GLOBAL BADGE)
+  // ZUSTAND
   // -----------------------------
-    const setUnreadCount = useAuthStore(
+  const setUnreadCount = useAuthStore(
     (state) => state.setUnreadCount
   );
 
@@ -33,34 +33,46 @@ export default function CommonNotificationFloater({
     (state) => state.notifications.unreadCount
   );
 
-  const { data: notifications = [] } = useNotifications({
+  // -----------------------------
+  // FIXED FILTER (IMPORTANT)
+  // -----------------------------
+  const notificationFilters = useMemo(() => ({
     page: 1,
     limit: 100,
     unreadOnly: false,
-  });
+  }), []);
 
-  // ✅ sync API → zustand ONCE
+  const { data: notifications = [] } =
+    useNotifications(notificationFilters);
+
+  // -----------------------------
+  // SYNC UNREAD COUNT (NO LOOP)
+  // -----------------------------
   useEffect(() => {
-    const count = notifications.filter((n: any) => !n.isRead).length;
-    setUnreadCount(count);
-  }, [notifications]);
+    const count = notifications.filter(
+      (n: any) => !n.isRead
+    ).length;
 
+    const current = useAuthStore.getState().notifications.unreadCount;
+
+    if (current !== count) {
+      setUnreadCount(count);
+    }
+  }, [notifications, setUnreadCount]);
+
+  // -----------------------------
+  // CLICK HANDLER
+  // -----------------------------
   const handleNotificationClick = (item: any) => {
     const target = getNotificationTarget(item);
 
     if (!target) return;
 
-    // 🔥 instant update (NO REFRESH)
     setUnreadCount(Math.max(0, unreadCount - 1));
 
     navigate(target);
     setOpen(false);
   };
-
-  // -----------------------------
-  // CLICK NOTIFICATION
-  // -----------------------------
-
 
   // -----------------------------
   // OUTSIDE CLICK CLOSE
@@ -76,8 +88,12 @@ export default function CommonNotificationFloater({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   // -----------------------------
@@ -85,14 +101,12 @@ export default function CommonNotificationFloater({
   // -----------------------------
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Bell Button */}
       <Button
         onClick={() => setOpen((prev) => !prev)}
-        className="relative p-2 text-gray-400 hover:text-blue-600 transition-colors"
+        className="relative p-2 text-gray-400 hover:text-blue-600"
       >
-       <BellIcon/>
+        <BellIcon />
 
-        {/* Badge */}
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white">
             {unreadCount}
@@ -100,22 +114,17 @@ export default function CommonNotificationFloater({
         )}
       </Button>
 
-      {/* Dropdown */}
       {open && (
         <div
-          className={`
-            absolute z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden
-            w-72 sm:w-80 right-0
-            ${
-              direction === "up"
-                ? "left-1/2 -translate-x-1/2 bottom-full mb-3"
-                : "top-full mt-3"
-            }
-          `}
+          className={`absolute z-50 bg-white rounded-2xl shadow-xl border w-72 sm:w-80 right-0 ${
+            direction === "up"
+              ? "bottom-full mb-3"
+              : "top-full mt-3"
+          }`}
         >
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-            <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
+          {/* HEADER */}
+          <div className="px-4 py-3 border-b flex justify-between">
+            <h3 className="font-semibold text-sm">
               {t.notificationpage.title} ({notifications.length})
             </h3>
 
@@ -124,13 +133,13 @@ export default function CommonNotificationFloater({
                 navigate("/notifications");
                 setOpen(false);
               }}
-              className="text-xs sm:text-sm text-blue-600 hover:underline"
+              className="text-xs text-blue-600"
             >
               {t.navbar["Show All"]}
             </Button>
           </div>
 
-          {/* List */}
+          {/* LIST */}
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">
@@ -140,19 +149,16 @@ export default function CommonNotificationFloater({
               notifications.map((item: any) => (
                 <div
                   key={item.id || item._id}
-                  onClick={() => handleNotificationClick(item)}
-                  className="px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-200"
+                  onClick={() =>
+                    handleNotificationClick(item)
+                  }
+                  className="px-4 py-3 cursor-pointer hover:bg-blue-50"
                 >
-                  <p className="text-sm font-semibold text-gray-800">
+                  <p className="text-sm font-semibold">
                     {item.title}
                   </p>
-
                   <p className="text-xs text-gray-500 truncate">
                     {item.message}
-                  </p>
-
-                  <p className="text-xs text-gray-400 mt-1">
-                    {item.time}
                   </p>
                 </div>
               ))

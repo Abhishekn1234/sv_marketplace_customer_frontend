@@ -68,17 +68,17 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => {
-    const config =
-      response.config as InternalAxiosRequestConfigWithMetadata;
-    const duration =
-      Date.now() - (config.metadata?.startTime ?? 0);
+    // const config =
+    //   response.config as InternalAxiosRequestConfigWithMetadata;
+    // const duration =
+    //   Date.now() - (config.metadata?.startTime ?? 0);
 
-    console.log("✅ API RESPONSE", {
-      method: config.method,
-      url: config.url,
-      status: response.status,
-      duration: `${duration}ms`,
-    });
+    // console.log("✅ API RESPONSE", {
+    //   method: config.method,
+    //   url: config.url,
+    //   status: response.status,
+    //   duration: `${duration}ms`,
+    // });
 
     return response;
   },

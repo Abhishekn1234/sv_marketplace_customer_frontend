@@ -15,18 +15,18 @@ export default function BookingDetailHeader() {
   const service = categories
     ?.flatMap((cat) => cat.services)
     ?.find((service) => service._id === serviceId);
-    console.log(service);
+    // console.log(service);
 
   // 🔎 Find category of that service
   const category = categories?.find((cat) =>
     cat.services?.some((s) => s._id === serviceId)
   );
 
-  console.log(category);
+  // console.log(category);
   const tier = service?.pricingTiers?.find(
     (tier) => tier.tierId === serviceTierId
   );
-  console.log(tier);
+  // console.log(tier);
 
   const servicename = service?.name;
   const servicedescription = service?.description;

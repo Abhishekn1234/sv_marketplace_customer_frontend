@@ -1,10 +1,10 @@
 import type { GetNotificationsParams } from "../entities/notificationgetparams";
-import type { Notification } from "../entities/notifications";
+import type {  NotificationResponse } from "../entities/notifications";
 import type { RegisterDeviceTokenPayload } from "../entities/RegisterTokenPayload";
 import type { UnregisterDeviceTokenPayload } from "../entities/UnregisterDeviceTokenPayload";
 
 export interface NotificationRepository {
-  getNotifications(params: GetNotificationsParams): Promise<Notification[]>;
+  getNotifications(params: GetNotificationsParams): Promise<NotificationResponse>;
   registerDeviceToken(
     payload: RegisterDeviceTokenPayload
   ): Promise<void>;
