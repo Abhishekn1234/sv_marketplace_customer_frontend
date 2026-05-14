@@ -23,7 +23,7 @@ export default function ConfirmationContent() {
 
   // ✅ SINGLE BOOKING (NOT LIST)
   const { booking: data, loading} = useBookingById(bookingId);
- console.log("Booking Data in ConfirmationContent:", data);
+//  console.log("Booking Data in ConfirmationContent:", data);
   const [placeName, setPlaceName] = useState("Loading...");
   const [showLoader, setShowLoader] = useState(true);
 

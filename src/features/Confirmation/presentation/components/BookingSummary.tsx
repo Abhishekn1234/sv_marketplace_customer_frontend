@@ -3,6 +3,7 @@ import SummaryItem from "./SummaryItem";
 import { formatSmartDate } from "../helpers/formatdatetime";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/helpers/formatduration";
+import { InfoIcon } from "@/components/icons";
 
 
 
@@ -39,11 +40,7 @@ const serviceName = data.serviceId?.name
         {/* Info Box */}
         <div className="flex items-start gap-4 p-5 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
           <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-emerald-500">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
+           <InfoIcon/>
           </div>
           <div>
             <h4 className="text-sm font-bold text-gray-900 mb-1">{t.confirmationpage.bookingSummary.providerAssignmentTitle}</h4>

@@ -10,6 +10,7 @@ export default function BookingDetailHeader() {
   const { serviceId, serviceTierId } = useParams();
 
   const { data: categories } = useServiceCategory();
+  
   const {t}=useLanguage();
   // 🔎 Find service inside categories
   const service = categories

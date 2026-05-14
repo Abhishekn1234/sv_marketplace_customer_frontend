@@ -60,38 +60,33 @@ export async function initOnMessage(
   if (!messaging) return;
 
   onMessage(messaging, (payload) => {
-    console.log(
-      "📩 Foreground:",
-      payload
-    );
+  console.log("📩 Foreground:", payload);
 
-    const data =
-      payload.data || {};
+  const data = payload.data || {};
 
-    const notification = {
-      id:
-        data.notificationId ||
-        payload.messageId,
+  const notification = {
+    id:
+      data.notificationId ||
+      payload.messageId,
 
-      title:
-        data.title ||
-        "Notification",
+    title:
+      payload.notification?.title ||
+      data.title ||
+      "Notification",
 
-      message:
-        data.body ||
-        "You have a new update",
+    message:
+      payload.notification?.body ||
+      data.body ||
+      "You have a new update",
 
-      data,
-    };
+    data,
+  };
 
-    // ✅ ONLY STATE UPDATE
-    // ❌ NO showNotification
-    // ❌ NO new Notification()
-    // ❌ NO duplicate popup
+  console.log("✅ Parsed Notification:", notification);
 
-    setNotifications?.((prev: any) => [
-      notification,
-      ...prev,
-    ]);
-  });
+  setNotifications?.((prev: any) => [
+    notification,
+    ...prev,
+  ]);
+});
 }
