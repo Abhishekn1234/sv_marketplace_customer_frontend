@@ -20,6 +20,7 @@ import { getNotificationTarget } from "../utils/notificationNavigation";
 import Select from "@/components/input/Select";
 import Button from "@/components/input/Button";
 import { toast } from "react-toastify";
+import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -132,19 +133,25 @@ export default function NotificationCards() {
   // ========================
   // MARK ALL AS READ
   // ========================
-  const markAllAsReadSafe = async () => {
-    try {
-      await Promise.all(localNotifications.map((n) => markAsRead(n.id)));
+    const { markAllAsRead } = useMarkAllAsRead();
 
-      setLocalNotifications((prev) =>
-        prev.map((n) => ({ ...n, isRead: true }))
-      );
+    const handleMarkAllAsRead = async () => {
+      try {
+        await markAllAsRead();
 
-      setSelected([]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+        // optimistic update
+        setLocalNotifications((prev) =>
+          prev.map((n) => ({
+            ...n,
+            isRead: true,
+          }))
+        );
+
+        setSelected([]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
   // ========================
   // NAVIGATION
@@ -234,8 +241,9 @@ export default function NotificationCards() {
             toggleSelectAll={toggleSelectAll}
             selected={selected}
             total={unreadNotifications.length}
-            markAllAsRead={markAllAsReadSafe}
+            markAllAsRead={handleMarkAllAsRead}
             markSelectedAsRead={markSelectedAsRead}
+          
           />
 
           {/* LIST */}

@@ -8,6 +8,7 @@ export default function NotificationHeader({
   total,
   markAllAsRead,
   markSelectedAsRead,
+ 
 }: any) {
   const hasSelection = selected.length > 0;
   const allSelected = total > 0 && selected.length === total;
