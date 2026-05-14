@@ -243,6 +243,7 @@
   "selectPlaceholder": "Select cancellation reason...",
   "confirm": "Yes, Cancel",
   "cancel": "No",
+   
 
   "types": {
     "BOOKED_WRONG_SERVICE": "Booked Wrong Service",
@@ -253,6 +254,20 @@
     "OTHER": "Other"
   }
 },
+"buttons": {
+      "startWorkOtp": "Start Work OTP",
+      "completeWorkOtp": "Complete Work OTP",
+      "payNow": "Pay Now",
+      "verifyPayment": "Verify Payment",
+      "rateService": "Rate Service"
+    },
+    "messages": {
+      "workStartOtp": "Work Start OTP",
+      "workCompleteOtp": "Work Complete OTP",
+      "failedStartOtp": "Failed to generate start OTP",
+      "failedCompleteOtp": "Failed to generate completion OTP",
+      "paymentVerificationFailed": "Payment verification failed"
+    },
   "serviceDetails": {
     "title": "Service Details",
     "serviceType": "Service Type",

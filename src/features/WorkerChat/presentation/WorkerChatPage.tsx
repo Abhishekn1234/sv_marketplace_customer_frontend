@@ -22,7 +22,7 @@ export default function WorkerChatPage() {
   const { bookings = [], loading } = useBookings();
 
   // =========================
-  // FIND WORKER DATA
+  // MUST BE BEFORE RETURNS
   // =========================
   const workerData = useMemo(() => {
     if (!bookingId || !workerId || !bookings.length) return null;
@@ -53,29 +53,13 @@ export default function WorkerChatPage() {
   }, [bookings, bookingId, workerId]);
 
   // =========================
-  // AUTH / LOADING GUARD
-  // =========================
-  if (!token || !currentUserId || loading) {
-    return <CommonSpinner />;
-  }
-
-  // =========================
-  // INVALID ROUTE
-  // =========================
-  if (!workerId || !bookingId) {
-    return (
-      <Splash>
-        <p>Invalid chat route</p>
-      </Splash>
-    );
-  }
-
-  // =========================
-  // NOT FOUND HANDLING (FIXED)
+  // EFFECT MUST ALSO BE BEFORE RETURNS
   // =========================
   useEffect(() => {
     if (!loading && !workerData) {
-      toast.error("Worker or booking not found Because Your current Booking is already completed");
+      toast.error(
+        "Worker or booking not found. Booking may be completed."
+      );
 
       const timer = setTimeout(() => {
         navigate("/bookings", { replace: true });
@@ -86,8 +70,20 @@ export default function WorkerChatPage() {
   }, [loading, workerData, navigate]);
 
   // =========================
-  // SAFE RENDER
+  // SAFE CONDITIONS AFTER HOOKS
   // =========================
+  if (!token || !currentUserId || loading) {
+    return <CommonSpinner />;
+  }
+
+  if (!workerId || !bookingId) {
+    return (
+      <Splash>
+        <p>Invalid chat route</p>
+      </Splash>
+    );
+  }
+
   if (!workerData) {
     return <CommonSpinner />;
   }
@@ -111,4 +107,3 @@ export default function WorkerChatPage() {
     />
   );
 }
-

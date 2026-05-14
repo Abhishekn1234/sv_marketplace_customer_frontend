@@ -34,21 +34,42 @@ const messaging = firebase.messaging();
 // =========================
 
 function buildRoute(data) {
+  const workerId =
+    data.workerId ||
+    data.worker?._id ||
+    data.worker?.id ||
+    data.receiverId ||
+    data.senderId
+    "unknown";
+
+  const senderId =
+    data.senderId ||
+    data.sender?._id ||
+    data.from ||
+    null;
+
+  const bookingId = data.bookingId;
+
   switch (data.type) {
     case "CHAT_MESSAGE":
-      return `/message/${data.workerId}/${data.bookingId}`;
+      if (!bookingId) return "/notifications";
+      if (!senderId) return `/message/${workerId}/${bookingId}`;
+      if (senderId === workerId) return `/message/${workerId}/${bookingId}`;
+      if(workerId) return `/message/${workerId}/${bookingId}`;
+      if(!workerId) return "/notifications";
+      
+      return `/message/${workerId}/${bookingId}?senderId=${senderId}`;
 
     case "BOOKING_UPDATE":
-      return `/jobtracking/${data.bookingId}`;
+      return `/jobtracking/${bookingId}`;
 
     case "WORK_ASSIGNED":
-      return `/jobprogress/${data.bookingId}`;
+      return `/jobprogress/${bookingId}`;
 
     default:
       return "/notifications";
   }
 }
-
 // =========================
 // BACKGROUND MESSAGE
 // =========================

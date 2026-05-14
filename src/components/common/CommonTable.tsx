@@ -165,7 +165,7 @@ export default function CommonTable<T>({
         {/* Controls */}
         <div className="flex items-center gap-2">
           {/* Prev */}
-          <button
+          <Button
             onClick={() =>
               goToPage(currentPage - 1)
             }
@@ -187,7 +187,7 @@ export default function CommonTable<T>({
             "
           >
             Prev
-          </button>
+          </Button>
 
           {/* Page Numbers */}
           {Array.from({

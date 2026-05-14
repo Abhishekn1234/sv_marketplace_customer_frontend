@@ -18,6 +18,7 @@ import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { useTranslationMessages } from "../utils/translationMessages";
 
 export default function JobTrackingTimeline({
   booking,
@@ -45,7 +46,7 @@ export default function JobTrackingTimeline({
 
   // ✅ Local state for instant socket updates - prevents reloading
   const [localBooking, setLocalBooking] = useState<Booking | null>(null);
-
+ const translationMessages = useTranslationMessages();
   // Initialize local state from prop (only once, no reloading)
   useEffect(() => {
     if (booking && !localBooking) {
@@ -57,6 +58,7 @@ export default function JobTrackingTimeline({
   const verifyPaymentMutation = useVerifyPayment();
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
+
 
   // -----------------------------
   // SOCKET INIT
@@ -120,10 +122,10 @@ const currentBooking = localBooking ?? booking;
       {
         onSuccess: (data) => {
           setOtpData(data?.otp ?? "");
-          setOtpPurpose("Work Start OTP");
+          setOtpPurpose(translationMessages["Work Start OTP"]);
           setOtpModalOpen(true);
         },
-        onError: () => toast.error("Failed to generate start OTP"),
+        onError: () => toast.error(translationMessages["Failed Start OTP"]),
       }
     );
   };
@@ -139,10 +141,10 @@ const currentBooking = localBooking ?? booking;
       {
         onSuccess: (data) => {
           setOtpData(data?.otp ?? "");
-          setOtpPurpose("Work Complete OTP");
+          setOtpPurpose(translationMessages["Work Completed OTP"]);
           setOtpModalOpen(true);
         },
-        onError: () => toast.error("Failed to generate completion OTP"),
+        onError: () => toast.error(translationMessages["Failed Complete OTP"]),
       }
     );
   };
@@ -207,7 +209,7 @@ const currentBooking = localBooking ?? booking;
                   onClick={handleStartOtp}
                   className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
                 >
-                  Start Work OTP
+                 {t.jobtrackingpage.buttons.startWorkOtp}
                 </Button>
               )}
 
@@ -216,7 +218,7 @@ const currentBooking = localBooking ?? booking;
                   onClick={handleCompleteOtp}
                   className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
                 >
-                  Complete Work OTP
+                  {t.jobtrackingpage.buttons.completeWorkOtp}
                 </Button>
               )}
 
@@ -236,7 +238,7 @@ const currentBooking = localBooking ?? booking;
                   }
                   className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
                 >
-                  Pay Now
+                  {t.jobtrackingpage.buttons.payNow}
                 </Button>
               )}
 
@@ -259,14 +261,14 @@ const currentBooking = localBooking ?? booking;
                           });
                         },
                         onError: () => {
-                          toast.error("Payment verification failed");
+                          toast.error(translationMessages["Payment Verification Failed"]);
                         },
                       }
                     );
                   }}
                   className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
                 >
-                  Verify Payment
+                  {t.jobtrackingpage.buttons.verifyPayment}
                 </Button>
               )}
 
@@ -277,7 +279,7 @@ const currentBooking = localBooking ?? booking;
                   }
                   className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded"
                 >
-                  Rate Service
+                  {t.jobtrackingpage.buttons.rateService}
                 </Button>
               )}
             </div>

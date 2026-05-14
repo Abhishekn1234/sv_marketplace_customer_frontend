@@ -7,6 +7,6 @@ export class GenerateOtpUsecase{
          this.Generateotp=generateotp;
     }
     async execute(data:GenerateotpRequest){
-        return this.Generateotp.generateOtp(data);
+        return this.Generateotp.generateotp(data);
     }
 }

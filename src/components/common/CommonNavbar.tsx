@@ -3,28 +3,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
-  // MapPin,
-  // ChevronDown,
   Search,
   Menu,
   X,
   BookOpen,
-  // Briefcase,
   Info,
   Shield,
   HelpCircle,
   MapPin,
-
 } from "lucide-react";
 
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
 import { useLanguage } from "@/features/context/LanguageContext";
+
 import { UserIcon } from "../icons";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
-import Joyride,{type Step } from "react-joyride";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -51,13 +47,14 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 }) => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
- 
+
   const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
-  
-  
+  const { t } = useLanguage();
+
   const profilePic = user?.profilePictureUrl;
+
   const location = current_location?.addresses ?? [];
 
   const currentLocation =
@@ -66,271 +63,377 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
   const dropdownRef = useRef<HTMLDivElement | null>(null);
- const [runTour, setRunTour] = useState(false);
 
-  const steps: Step[] = [
-    {
-      target: "[data-tour='location-input'] input",
-      content: "Select your location here to continue using HomeEase",
-      placement: "bottom",
-    },
-  ];
+  const hasLocation =
+    current_location?.lat != null &&
+    current_location?.lng != null &&
+    currentLocation?.trim() !== "";
 
+  useEffect(() => {
+    const seen = localStorage.getItem("location-onboarding-seen");
 
+    if (!hasLocation && !seen) {
+      setShowOnboarding(true);
+    }
+  }, [hasLocation]);
 
-  // run only once ever (persisted)
-useEffect(() => {
-  const seen = localStorage.getItem("location-tour-seen");
-
-  // check full location validity
-  const hasValidLocation =
-    current_location &&
-    current_location.lat != null &&
-    current_location.lng != null &&
-    currentLocation &&
-    currentLocation.trim() !== "";
-
-  if (!hasValidLocation && !seen) {
-    const timer = setTimeout(() => {
-      setRunTour(true);
-      localStorage.setItem("location-tour-seen", "true");
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }
-}, [current_location, currentLocation]);
+  const completeOnboarding = () => {
+    localStorage.setItem("location-onboarding-seen", "true");
+    setShowOnboarding(false);
+  };
 
   const isBookingPage = routerLocation.pathname === "/bookings";
   const isHomePage = routerLocation.pathname === "/";
-   const serviceratingpage=routerLocation.pathname==="/servicerating";
-   const jobpresspage=routerLocation.pathname.startsWith('/jobprogress/')
-   const jobtrackingpage=routerLocation.pathname.startsWith('/jobtracking/');
-   const jobcompletepage=routerLocation.pathname==="/jobcompleted";
-    const {t}=useLanguage();
+  const serviceRatingPage =
+    routerLocation.pathname === "/servicerating";
+
+  const jobProgressPage =
+    routerLocation.pathname.startsWith("/jobprogress/");
+
+  const jobTrackingPage =
+    routerLocation.pathname.startsWith("/jobtracking/");
+
+  const jobCompletePage =
+    routerLocation.pathname === "/jobcompleted";
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
+
     document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "click",
+        handleClickOutside
+      );
+    };
   }, []);
-const hasLocation =
-  current_location?.lat != null &&
-  current_location?.lng != null &&
-  currentLocation?.trim() !== "";
+
   return (
     <>
-     <Joyride
-  steps={steps}
-  run={runTour}
-  continuous
-  showSkipButton
-  showProgress
-  disableOverlayClose
-  scrollToFirstStep
-  styles={{
-    options: {
-      zIndex: 99999,
-    },
-  }}
-  callback={(data) => {
-    if (["finished", "skipped"].includes(data.status)) {
-      setRunTour(false);
-    }
-  }}
-/>
-
-
-    <header
-      className={`top-0 z-50 w-full relative ${
-        isBookingPage
-          ? "bg-transparent shadow-none"
-          : isHomePage
-          ? "bg-transparent":jobtrackingpage?"bg-transparent shadow-none":
-          serviceratingpage?"bg-transparent shadow-none":jobpresspage?"bg-transparent shadow-none":jobcompletepage?"bg-transparent shadow-none"
-          : "bg-white border-b border-gray-200 shadow-sm"
-      }`}
-    >
-      <div
-        className={`flex items-center py-3 px-4 sm:px-6 lg:px-8 ${
-          isBookingPage || isHomePage || serviceratingpage || jobpresspage ||jobtrackingpage || jobcompletepage? "max-w-7xl mx-auto justify-between" : "w-full justify-between"
+      <header
+        className={`top-0 z-50 w-full relative ${
+          isBookingPage
+            ? "bg-transparent shadow-none"
+            : isHomePage
+            ? "bg-transparent"
+            : jobTrackingPage
+            ? "bg-transparent shadow-none"
+            : serviceRatingPage
+            ? "bg-transparent shadow-none"
+            : jobProgressPage
+            ? "bg-transparent shadow-none"
+            : jobCompletePage
+            ? "bg-transparent shadow-none"
+            : "bg-white border-b border-gray-200 shadow-sm"
         }`}
       >
-        {/* LEFT SECTION */}
-        <div className="flex items-center gap-4 min-w-0">
-          {/* LOGO */}
-          <div onClick={() => navigate("/")} className="flex items-center gap-2 cursor-pointer">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-                <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
-              </svg>
-            </div>
-            <span className="hidden sm:block font-bold text-lg text-gray-900">{title}</span>
-          </div>
-
-        {(showLocation || isHomePage || isBookingPage || serviceratingpage || jobpresspage || jobtrackingpage) && (
-              <div
-              ref={dropdownRef}
-              className={`ml-3 relative flex ${
-                !hasLocation ? "" : ""
-              }`}
+        <div
+          className={`flex items-center py-3 px-4 sm:px-6 lg:px-8 ${
+            isBookingPage ||
+            isHomePage ||
+            serviceRatingPage ||
+            jobProgressPage ||
+            jobTrackingPage ||
+            jobCompletePage
+              ? "max-w-7xl mx-auto justify-between"
+              : "w-full justify-between"
+          }`}
+        >
+          {/* LEFT SECTION */}
+          <div className="flex items-center gap-4 min-w-0">
+            {/* LOGO */}
+            <div
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 cursor-pointer"
             >
-    {/* Input box */}
-      <div data-tour="location-input">
-                    <Input
-                      variant="unstyled"
-                      onClick={() => setShowDropdown((prev) => !prev)}
-                      value={currentLocation || ""}
-                      readOnly
-                      placeholder={
-                        !currentLocation ? "Select location" : ""
-                      }
-                      className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
-                      rightElement={
-                        !currentLocation ? (
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                        ) : null
-                      }
-                    />
-                  </div>
-    
-
-    {/* Dropdown */}
-  {showDropdown && (
-  <div
-    className={`
-      absolute top-full mt-2 w-56
-      bg-white border border-gray-300
-      rounded-xl shadow-2xl z-[9999]
-      backdrop-blur-md
-      ${isBookingPage || serviceratingpage
-        ? "left-1/2 -translate-x-1/2"
-        : "left-0"
-      }
-    `}
-  >
-    <Button
-      onClick={handleUseCurrentLocation}
-      className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium text-gray-700 rounded-lg"
-    >
-      {t.navbar["Use current location"]}
-    </Button>
-  </div>
-)}
-  </div>
-)}
-
-{/* BACK BUTTON */}
-{showBackButton && (
-  <button
-    onClick={() => navigate(-1)}
-    className="px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
-  >
-    {t.navbar.Back}
-  </button>
-)}
-        </div>
-
-        {/* RIGHT SECTION */}
-        <div className="flex items-center gap-3">
-          {/* RIGHT BUTTON */}
-          {rightButton && (
-            <Link
-              to={rightButton.to}
-              className="hidden sm:flex items-center justify-center px-5 py-2 text-blue-600 border-2 border-blue-600 rounded-full text-sm font-semibold hover:bg-blue-600 hover:text-white transition"
-            >
-              {rightButton.label}
-            </Link>
-          )}
-
-          {/* DESKTOP LINKS */}
-          {showHomeLinks && (
-            <div className="hidden lg:flex items-center gap-2">
-              {[
-                { label: t.navbar.Bookings, to: "/bookings" },
-               
-                { label: t.navbar.About, to: "/about" },
-                { label: t.navbar.Privacy, to: "/privacy" },
-                { label: t.navbar.Help, to: "/help" },
-              ].map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="px-4 py-2 text-sm font-medium rounded-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition"
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5 fill-white"
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
+                </svg>
+              </div>
+
+              <span className="hidden sm:block font-bold text-lg text-gray-900">
+                {title}
+              </span>
             </div>
-          )}
 
-          {/* SEARCH */}
-        {showSearch && (
-  <div className="hidden md:flex items-center">
-    <Input
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      placeholder={t.navbar.SearchPlaceholder}
-      className="pl-10 bg-white"
-      size="md"
-      radius="lg"
-      rightElement={null}
-    />
-
-    {/* LEFT ICON */}
-    <Search className="w-4 h-4 text-gray-400 absolute ml-3" />
-  </div>
-)}
-
-          {/* USER */}
-          {showUserControls && user && (
-            <>
-              <CommonNotificationFloater />
-               <Image
-                    src={profilePic}
-                    alt="Profile"
-                    onClick={() => navigate("/profile")}
-                    className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
-                    fallback={
-                      <div className="w-10 h-10 rounded-xl  flex items-center justify-center cursor-pointer"  onClick={() => navigate("/profile")}>
-                        <UserIcon />
-                      </div>
+            {/* LOCATION */}
+            {(showLocation ||
+              isHomePage ||
+              isBookingPage ||
+              serviceRatingPage ||
+              jobProgressPage ||
+              jobTrackingPage) && (
+              <div
+                ref={dropdownRef}
+                className="ml-3 relative flex flex-col"
+              >
+                {/* LOCATION INPUT */}
+                <div>
+                  <Input
+                    variant="unstyled"
+                    onClick={() =>
+                      setShowDropdown((prev) => !prev)
+                    }
+                    value={currentLocation || ""}
+                    readOnly
+                    placeholder={
+                      !currentLocation
+                        ? "Select location"
+                        : ""
+                    }
+                    className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
+                    rightElement={
+                      !currentLocation ? (
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                      ) : null
                     }
                   />
-            </>
-          )}
+                </div>
 
-          {/* MOBILE MENU */}
-          {showHomeLinks && (
-            <Button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </Button>
-          )}
+                {/* ONBOARDING */}
+                {showOnboarding && !hasLocation && (
+                  <div className="absolute top-full mt-3 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-sm">
+                          Complete setup
+                        </h3>
+
+                        <p className="text-xs text-gray-500 mt-1">
+                          Finish these steps to continue
+                        </p>
+                      </div>
+
+                      <Button
+                        onClick={completeOnboarding}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                            1
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              Set your location
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              Required for nearby services
+                            </p>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => {
+                            handleUseCurrentLocation();
+                            completeOnboarding();
+                          }}
+                          className="px-3 py-1 text-xs rounded-lg"
+                        >
+                          Use
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* DROPDOWN */}
+                {showDropdown && (
+                  <div
+                    className={`
+                      absolute top-full mt-2 w-56
+                      bg-white border border-gray-300
+                      rounded-xl shadow-2xl z-[9999]
+                      backdrop-blur-md
+                      ${
+                        isBookingPage || serviceRatingPage
+                          ? "left-1/2 -translate-x-1/2"
+                          : "left-0"
+                      }
+                    `}
+                  >
+                    <Button
+                      onClick={handleUseCurrentLocation}
+                      className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium text-gray-700 rounded-lg"
+                    >
+                      {t.navbar["Use current location"]}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* BACK BUTTON */}
+            {showBackButton && (
+              <Button
+                onClick={() => navigate(-1)}
+                className="px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition"
+              >
+                {t.navbar.Back}
+              </Button>
+            )}
+          </div>
+
+          {/* RIGHT SECTION */}
+          <div className="flex items-center gap-3">
+            {/* RIGHT BUTTON */}
+            {rightButton && (
+              <Link
+                to={rightButton.to}
+                className="hidden sm:flex items-center justify-center px-5 py-2 text-blue-600 border-2 border-blue-600 rounded-full text-sm font-semibold hover:bg-blue-600 hover:text-white transition"
+              >
+                {rightButton.label}
+              </Link>
+            )}
+
+            {/* DESKTOP LINKS */}
+            {showHomeLinks && (
+              <div className="hidden lg:flex items-center gap-2">
+                {[
+                  {
+                    label: t.navbar.Bookings,
+                    to: "/bookings",
+                  },
+                  {
+                    label: t.navbar.About,
+                    to: "/about",
+                  },
+                  {
+                    label: t.navbar.Privacy,
+                    to: "/privacy",
+                  },
+                  {
+                    label: t.navbar.Help,
+                    to: "/help",
+                  },
+                ].map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="px-4 py-2 text-sm font-medium rounded-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* SEARCH */}
+            {showSearch && (
+              <div className="hidden md:flex items-center relative">
+                <Input
+                  value={searchTerm}
+                  onChange={(e) =>
+                    setSearchTerm(e.target.value)
+                  }
+                  placeholder={t.navbar.SearchPlaceholder}
+                  className="pl-10 bg-white"
+                  size="md"
+                  radius="lg"
+                  rightElement={null}
+                />
+
+                <Search className="w-4 h-4 text-gray-400 absolute left-3" />
+              </div>
+            )}
+
+            {/* USER */}
+            {showUserControls && user && (
+              <>
+                <CommonNotificationFloater />
+
+                <Image
+                  src={profilePic}
+                  alt="Profile"
+                  onClick={() => navigate("/profile")}
+                  className="w-10 h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
+                  fallback={
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer"
+                      onClick={() => navigate("/profile")}
+                    >
+                      <UserIcon />
+                    </div>
+                  }
+                />
+              </>
+            )}
+
+            {/* MOBILE MENU */}
+            {showHomeLinks && (
+              <Button
+                onClick={() =>
+                  setMobileMenuOpen((prev) => !prev)
+                }
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
 
-    
-      {mobileMenuOpen && (
+        {/* MOBILE MENU CONTENT */}
+        {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-white shadow-md">
             <div className="flex flex-col p-4 gap-3">
               {[
-                { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
-                { icon: Info, label: t.navbar.About, to: "/about" },
-                { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
-                { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
+                {
+                  icon: BookOpen,
+                  label: t.navbar.Bookings,
+                  to: "/bookings",
+                },
+                {
+                  icon: Info,
+                  label: t.navbar.About,
+                  to: "/about",
+                },
+                {
+                  icon: Shield,
+                  label: t.navbar.Privacy,
+                  to: "/privacy",
+                },
+                {
+                  icon: HelpCircle,
+                  label: t.navbar.Help,
+                  to: "/help",
+                },
               ].map((item) => {
                 const Icon = item.icon;
+
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() =>
+                      setMobileMenuOpen(false)
+                    }
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
                   >
                     <Icon className="w-5 h-5 text-gray-400" />
@@ -350,7 +453,7 @@ const hasLocation =
             </div>
           </div>
         )}
-    </header>
+      </header>
     </>
   );
 };

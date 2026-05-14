@@ -11,7 +11,6 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useRegisterDeviceToken } from "@/features/Notifications/presentation/hooks/useRegisterDeviceToken";
-import { useUnreadCount } from "@/features/Notifications/presentation/hooks/useUnreadCount";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 
 import CommonCard from "@/components/common/CommonCards";
@@ -31,36 +30,27 @@ export default function NotificationCards() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
+  const filters = useMemo(() => ({ page, limit, type }), [page, limit, type]);
+
   const {
     data: apiNotifications = [],
     loading,
-    refetch: refetchNotifications,
-  } = useNotifications({ page, limit, type });
-
-  const { refetch: refetchUnreadCount } = useUnreadCount();
-  const { markAsRead } = useMarkNotificationRead();
+  } = useNotifications(filters);
 
   const { fcmNotifications = [] } = useRegisterDeviceToken();
 
+  // ✅ LOCAL STATE (MAIN FIX)
+  const [localNotifications, setLocalNotifications] = useState<any[]>([]);
+
+  // sync API → local only when API changes
   useEffect(() => {
-    setPage(1);
-  }, [type, limit]);
+    const normalizedAPI = apiNotifications.map((n: any) => ({
+      ...n,
+      id: String(n._id),
+      source: "api",
+    }));
 
-  // ========================
-  // NORMALIZE DATA
-  // ========================
-  const normalizedAPI = useMemo(
-    () =>
-      apiNotifications.map((n: any) => ({
-        ...n,
-        id: String(n._id),
-        source: "api",
-      })),
-    [apiNotifications]
-  );
-
-  const normalizedFCM = useMemo(
-    () =>
+    const normalizedFCM =
       page === 1
         ? fcmNotifications.map((msg: any) => ({
             id: msg._id || msg.id,
@@ -70,32 +60,25 @@ export default function NotificationCards() {
             createdAt: msg.createdAt,
             source: "fcm",
           }))
-        : [],
-    [fcmNotifications, page]
-  );
+        : [];
 
-  // ========================
-  // FINAL NOTIFICATIONS
-  // ========================
-  const notifications = useMemo(
-    () => [...normalizedFCM, ...normalizedAPI],
-    [normalizedFCM, normalizedAPI]
-  );
+    setLocalNotifications([...normalizedFCM, ...normalizedAPI]);
+  }, [apiNotifications, fcmNotifications, page]);
 
-  // ========================
-  // UNREAD ONLY
-  // ========================
+  // ✅ UNREAD COUNT (FROM LOCAL STATE)
   const unreadNotifications = useMemo(
-    () => notifications.filter((n) => !n.isRead),
-    [notifications]
+    () => localNotifications.filter((n) => !n.isRead),
+    [localNotifications]
   );
+
+  const { markAsRead } = useMarkNotificationRead();
 
   // ========================
   // SELECT SINGLE
   // ========================
   const toggleSelect = (id: string) => {
-    const target = notifications.find((n) => n.id === id);
-    if (!target || target.isRead) return; // block read
+    const target = localNotifications.find((n) => n.id === id);
+    if (!target || target.isRead) return;
 
     setSelected((prev) =>
       prev.includes(id)
@@ -105,7 +88,7 @@ export default function NotificationCards() {
   };
 
   // ========================
-  // SELECT ALL (UNREAD ONLY)
+  // SELECT ALL
   // ========================
   const toggleSelectAll = () => {
     const unreadIds = unreadNotifications.map((n) => n.id);
@@ -124,7 +107,7 @@ export default function NotificationCards() {
   };
 
   // ========================
-  // MARK SELECTED AS READ
+  // MARK SELECTED AS READ (OPTIMISTIC)
   // ========================
   const markSelectedAsRead = async () => {
     try {
@@ -132,9 +115,15 @@ export default function NotificationCards() {
 
       await Promise.all(selected.map((id) => markAsRead(id)));
 
+      setLocalNotifications((prev) =>
+        prev.map((n) =>
+          selected.includes(n.id)
+            ? { ...n, isRead: true }
+            : n
+        )
+      );
+
       setSelected([]);
-      refetchNotifications();
-      refetchUnreadCount();
     } catch (err) {
       console.error(err);
     }
@@ -145,11 +134,13 @@ export default function NotificationCards() {
   // ========================
   const markAllAsReadSafe = async () => {
     try {
-      await Promise.all(notifications.map((n) => markAsRead(n.id)));
+      await Promise.all(localNotifications.map((n) => markAsRead(n.id)));
+
+      setLocalNotifications((prev) =>
+        prev.map((n) => ({ ...n, isRead: true }))
+      );
 
       setSelected([]);
-      refetchNotifications();
-      refetchUnreadCount();
     } catch (err) {
       console.error(err);
     }
@@ -158,16 +149,26 @@ export default function NotificationCards() {
   // ========================
   // NAVIGATION
   // ========================
- const handleNotificationClick = (notification: any) => {
-  const url = getNotificationTarget(notification);
+  const handleNotificationClick = (notification: any) => {
+    const url = getNotificationTarget(notification);
 
-  if (typeof url !== "string") {
-    toast.error("Booking not found or already finished");
-    return;
-  }
+    if (typeof url !== "string") {
+      toast.error("Booking not found or already finished");
+      return;
+    }
 
-  navigate(url);
-};
+    // 🔥 instantly mark as read
+    setLocalNotifications((prev) =>
+      prev.map((n) =>
+        n.id === notification.id
+          ? { ...n, isRead: true }
+          : n
+      )
+    );
+
+    navigate(url);
+  };
+
   // ========================
   // PAGINATION
   // ========================
@@ -177,21 +178,23 @@ export default function NotificationCards() {
   return (
     <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+
         {/* HEADER */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
               <Bell className="text-white w-6 h-6" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            {t.notificationpage.title}
-          </h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {t.notificationpage.title}
+            </h1>
           </div>
         </div>
 
-        <CommonCard className="overflow-hidden border-none shadow-xl shadow-gray-200/50 flex flex-col min-h-[600px] p-0 sm:p-0">
-          {/* FILTER BAR */}
-          <div className="px-4 py-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
+        <CommonCard className="min-h-[600px] p-0">
+
+          {/* FILTER */}
+          <div className="px-4 py-4 flex justify-between gap-4">
             <Select
               options={[
                 { label: "5 per page", value: "5" },
@@ -201,9 +204,10 @@ export default function NotificationCards() {
               ]}
               value={limit.toString()}
               onChange={(val) => setLimit(Number(val))}
-              className="w-full sm:w-[160px] text-sm font-medium"
+              className="w-[160px]"
             />
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
+
+            <div className="flex gap-2">
               {[
                 { label: t.notificationpage.filters.All, value: undefined },
                 { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
@@ -213,10 +217,10 @@ export default function NotificationCards() {
                 <Button
                   key={f.label}
                   onClick={() => setType(f.value)}
-                  className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap transition-all font-medium ${
+                  className={`px-4 py-1 rounded-full ${
                     type === f.value
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                      : "bg-white text-gray-600 border border-gray-200 hover:border-blue-400 hover:bg-blue-50/50"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-gray-600"
                   }`}
                 >
                   {f.label}
@@ -224,6 +228,8 @@ export default function NotificationCards() {
               ))}
             </div>
           </div>
+
+          {/* HEADER ACTIONS */}
           <NotificationHeader
             toggleSelectAll={toggleSelectAll}
             selected={selected}
@@ -231,45 +237,44 @@ export default function NotificationCards() {
             markAllAsRead={markAllAsReadSafe}
             markSelectedAsRead={markSelectedAsRead}
           />
-          <div className="flex-1 overflow-y-auto">
+
+          {/* LIST */}
+          <div className="overflow-y-auto">
             {loading ? (
-              <div className="flex h-64 items-center justify-center">
+              <div className="h-64 flex items-center justify-center">
                 <CommonSpinner />
               </div>
             ) : (
-              <>
-                <NotificationContent
-                  notifications={notifications}
-                  selected={selected}
-                  toggleSelect={toggleSelect}
-                  onNotificationClick={handleNotificationClick}
-                />
-                <div className="flex justify-between items-center gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/30">
-                  <span className="text-sm font-medium text-gray-500">
-                    Page <span className="text-gray-900">{page}</span>
-                  </span>
-                  <div className="flex items-center gap-2">
-                  <Button
-                      variant="secondary"
-                    disabled={!hasPrevPage}
-                    onClick={() => setPage((p) => p - 1)}
-                      className="px-5 py-2 text-sm font-semibold rounded-xl"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                      variant="primary"
-                    disabled={!hasNextPage}
-                    onClick={() => setPage((p) => p + 1)}
-                      className="px-5 py-2 text-sm font-semibold rounded-xl"
-                  >
-                    Next
-                  </Button>
-                </div>
-                </div>
-              </>
+              <NotificationContent
+                notifications={localNotifications}
+                selected={selected}
+                toggleSelect={toggleSelect}
+                onNotificationClick={handleNotificationClick}
+              />
             )}
+
+            {/* PAGINATION */}
+            <div className="flex justify-between p-4 border-t">
+              <span>Page {page}</span>
+
+              <div className="flex gap-2">
+                <Button
+                  disabled={!hasPrevPage}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Previous
+                </Button>
+
+                <Button
+                  disabled={!hasNextPage}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           </div>
+
         </CommonCard>
       </div>
     </div>

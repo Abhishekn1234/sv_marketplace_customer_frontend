@@ -1,3 +1,4 @@
+import Button from "./Button";
 
 
 interface ToggleProps {
@@ -8,7 +9,7 @@ interface ToggleProps {
 
 export function Toggle({ enabled, setEnabled, className }: ToggleProps) {
   return (
-    <button
+    <Button
       type="button"
       onClick={() => setEnabled(!enabled)}
       className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
@@ -21,6 +22,6 @@ export function Toggle({ enabled, setEnabled, className }: ToggleProps) {
           enabled ? 'translate-x-5' : 'translate-x-0'
         }`}
       />
-    </button>
+    </Button>
   );
 }

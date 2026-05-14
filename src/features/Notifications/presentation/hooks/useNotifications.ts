@@ -9,8 +9,31 @@ export const useNotifications = (filters?: any) => {
   const repo = useMemo(() => new NotificationRepositoryImpl(), []);
   const useCase = useMemo(() => new GetNotificationsUseCase(repo), [repo]);
 
-  const fetchNotifications = async () => {
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true);
+
+      try {
+        const res = await useCase.execute(filters);
+        setData(res);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, [
+    useCase,
+    filters?.page,
+    filters?.limit,
+    filters?.type,
+  ]);
+
+  const refetch = async () => {
     setLoading(true);
+
     try {
       const res = await useCase.execute(filters);
       setData(res);
@@ -21,9 +44,9 @@ export const useNotifications = (filters?: any) => {
     }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [JSON.stringify(filters)]);
-
-  return { data, loading, refetch: fetchNotifications };
+  return {
+    data,
+    loading,
+    refetch,
+  };
 };

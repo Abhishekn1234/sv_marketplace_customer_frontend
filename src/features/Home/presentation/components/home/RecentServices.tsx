@@ -8,36 +8,68 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import CommonCard from "@/components/common/CommonCards";
 
+const ACTIVE_STATUSES = new Set([
+  "WORKER_ACCEPTED",
+  "REQUESTED",
+  "IN_PROGRESS",
+]);
+
+const CANCELLED_STATUSES = new Set([
+  "WORKER_CANCELLED",
+  "CUSTOMER_CANCELLED",
+]);
+
 const RecentServices: React.FC = () => {
   const { bookings } = useBookings();
   const { data: categories = [] } = useServiceCategory();
   const { t } = useLanguage();
 
-  const normalizedBookings = bookings;
-
+  // =========================
+  // MAP: service -> category
+  // =========================
   const serviceToCategoryMap = React.useMemo(() => {
     const map = new Map<string, string>();
+
     categories?.forEach((category: any) => {
       category.services?.forEach((service: any) => {
         map.set(String(service._id), String(category._id));
       });
     });
+
     return map;
   }, [categories]);
 
+  // =========================
+  // MAP: service details
+  // =========================
   const serviceMap = React.useMemo(() => {
     const map = new Map<string, any>();
+
     categories?.forEach((category: any) => {
       category.services?.forEach((service: any) => {
         map.set(String(service._id), service);
       });
     });
+
     return map;
   }, [categories]);
 
-  const recentBookings = React.useMemo(() => {
-    return [...normalizedBookings]
-      .filter((b) => b.serviceId)
+  // =========================
+  // FILTER + SORT BOOKINGS
+  // =========================
+  const validBookings = React.useMemo(() => {
+    if (!bookings?.length) return [];
+
+    return bookings
+      .filter((b) => {
+        const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
+        const hasService = serviceMap.has(serviceId);
+
+        const isNotCancelled = !CANCELLED_STATUSES.has(b.status);
+        const isActive = ACTIVE_STATUSES.has(b.status);
+
+        return hasService && isNotCancelled && isActive;
+      })
       .sort((a, b) => {
         const aTime = a.schedule?.startDateTime
           ? new Date(a.schedule.startDateTime).getTime()
@@ -49,22 +81,13 @@ const RecentServices: React.FC = () => {
 
         return bTime - aTime;
       });
-  }, [normalizedBookings]);
+  }, [bookings, serviceMap]);
 
-  const validBookings = recentBookings.filter((b) => {
-  const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
+  if (!validBookings.length) return null;
 
-  const isValidService = serviceMap.has(serviceId);
-
-  const isActive =
-    b.status === "WORKER_ACCEPTED" ||
-    b.status === "REQUESTED" ||
-    b.status === "IN_PROGRESS";
-
-  return isValidService && isActive;
-});
-  if (!validBookings?.length) return null;
-
+  // =========================
+  // UI
+  // =========================
   return (
     <CommonCard
       title={
@@ -83,9 +106,6 @@ const RecentServices: React.FC = () => {
 
         const service = serviceMap.get(serviceId);
 
-        const serviceName = service?.name ?? "";
-        const iconUrl = service?.iconUrl;
-
         const priceValue = getBookingPrice(booking);
 
         const price =
@@ -101,14 +121,14 @@ const RecentServices: React.FC = () => {
             bookingId={booking._id}
             categoryId={categoryId}
             serviceId={serviceId}
-            title={serviceName}
+            title={service?.name ?? ""}
             date={
               booking.bookingType === "SCHEDULED"
                 ? formatDate(booking.schedule?.startDateTime)
                 : formatDate(booking.updatedAt)
             }
             price={price}
-            iconUrl={iconUrl}
+            iconUrl={service?.iconUrl}
             status={booking.status}
           />
         );

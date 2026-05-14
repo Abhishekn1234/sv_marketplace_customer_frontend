@@ -221,7 +221,21 @@
 "jobtrackingpage": {
   "title": "تتبع العمل",
   "subtitle": "تتبع طلب خدمتك في الوقت الفعلي",
-   
+   "buttons": {
+      "startWorkOtp": "رمز بدء العمل",
+      "completeWorkOtp": "رمز إكمال العمل",
+      "payNow": "ادفع الآن",
+      "verifyPayment": "تحقق من الدفع",
+      "rateService": "قيّم الخدمة"
+    },
+    "messages": {
+      "workStartOtp": "رمز بدء العمل",
+      "workCompleteOtp": "رمز إكمال العمل",
+      "failedStartOtp": "فشل إنشاء رمز بدء العمل",
+      "failedCompleteOtp": "فشل إنشاء رمز إكمال العمل",
+      "paymentVerificationFailed": "فشل التحقق من الدفع"
+    },
+  
  
 "cancelBooking": {
   "title": "إلغاء الحجز",

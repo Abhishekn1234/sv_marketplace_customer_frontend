@@ -241,6 +241,20 @@
     "OTHER": "अन्य"
   }
 },
+"buttons": {
+      "startWorkOtp": "कार्य शुरू OTP",
+      "completeWorkOtp": "कार्य पूर्ण OTP",
+      "payNow": "अभी भुगतान करें",
+      "verifyPayment": "भुगतान सत्यापित करें",
+      "rateService": "सेवा को रेट करें"
+    },
+    "messages": {
+      "workStartOtp": "कार्य शुरू OTP",
+      "workCompleteOtp": "कार्य पूर्ण OTP",
+      "failedStartOtp": "स्टार्ट OTP जनरेट करने में विफल",
+      "failedCompleteOtp": "पूर्ण OTP जनरेट करने में विफल",
+      "paymentVerificationFailed": "भुगतान सत्यापन विफल"
+    },
 
   "sections": {
     "serviceProgress": "सेवा प्रगति",

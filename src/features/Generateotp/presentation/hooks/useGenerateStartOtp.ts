@@ -4,7 +4,7 @@ import { GenerateOtpUsecase } from "../../domain/usecase/Generatestartotpusecase
 import type { GenerateotpRequest } from "../../domain/entities/generateotprequest";
 import { toast } from "react-toastify";
 
-export function useGenerateOtp() {
+export function useGenerateStartOtp() {
   const repo = new GenerateOtpImplement();   
   const usecase = new GenerateOtpUsecase(repo);
 

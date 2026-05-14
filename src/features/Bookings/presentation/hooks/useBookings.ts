@@ -57,35 +57,53 @@ export const useBookings = () => {
     const socket = getSocket();
     if (!socket) return;
 
-    const handler = (booking: Booking) => {
-      if (!booking?._id) return;
+   const handler = (payload: any) => {
+  const bookingId = payload?.bookingId || payload?._id || payload?.booking?._id;
+  if (!bookingId) return;
 
-      // LIST UPDATE
-      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
-        if (!Array.isArray(old)) return [];
+  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
+    if (!Array.isArray(old)) return [];
 
-        const exists = old.findIndex((b) => b._id === booking._id);
+    return old.map((b) => {
+      if (b._id !== bookingId) return b;
 
-        if (exists !== -1) {
-          return old.map((b) =>
-            b._id === booking._id ? { ...b, ...booking } : b
-          );
-        }
+      return {
+        ...b,
+        ...payload.booking,   // full update if backend sends it
+        ...payload,           // partial update fallback
 
-        return [booking, ...old];
-      });
+        // 🔥 FORCE STATUS CONSISTENCY
+        status:
+          payload.status ??
+          payload.booking?.status ??
+          b.status,
+      };
+    });
+  });
 
-      // DETAIL UPDATE
-      queryClient.setQueryData(
-        bookingKeys.detail(booking._id),
-        booking
-      );
-    };
+  queryClient.setQueryData(
+    bookingKeys.detail(bookingId),
+    (old: Booking | undefined) => {
+      if (!old) return payload.booking ?? payload;
+
+      return {
+        ...old,
+        ...payload.booking,
+        ...payload,
+        status:
+          payload.status ??
+          payload.booking?.status ??
+          old.status,
+      };
+    }
+  );
+};
 
     const events = [
       "booking:update",
       "booking.status.changed",
-      "booking.worker.assigned",
+      // "booking.worker.assigned",
+      "booking.worker.accepted",
       "booking.work.started",
       "booking.work.completed-by-worker",
       "booking.cancelled.worker",

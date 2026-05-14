@@ -11,29 +11,18 @@ export const useMarkAllAsRead = () => {
     [repo]
   );
 
-  const resetUnread = useAuthStore(
-    (state) => state.resetUnread
-  );
+  const resetUnread = useAuthStore((s) => s.resetUnread);
 
   const markAllAsRead = useCallback(async () => {
     try {
       await useCase.execute();
 
-      // ✅ update global state
+      // ✅ INSTANT RESET
       resetUnread();
 
       toast.success("All notifications marked as read");
     } catch (err: any) {
-      console.error(err);
-
-      const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to mark all as read";
-
-      toast.error(message);
-
-      throw err;
+      toast.error(err?.message || "Failed");
     }
   }, [useCase, resetUnread]);
 

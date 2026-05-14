@@ -11,29 +11,19 @@ export const useMarkNotificationRead = () => {
     [repo]
   );
 
-  const decrementUnread = useAuthStore(
-    (state) => state.decrementUnread
-  );
+  const decrementUnread = useAuthStore((s) => s.decrementUnread);
 
   const markAsRead = useCallback(
     async (notificationId: string) => {
       try {
         await useCase.execute(notificationId);
 
-        // ✅ update global state
+        // ✅ INSTANT UI UPDATE (NO API CALL)
         decrementUnread();
 
         toast.success("Notification marked as read");
       } catch (err: any) {
-        console.error(err);
-
-        const message =
-          err?.response?.data?.message ||
-          err?.message ||
-          "Something went wrong";
-
-        toast.error(message);
-
+        toast.error(err?.message || "Something went wrong");
         throw err;
       }
     },
@@ -42,4 +32,3 @@ export const useMarkNotificationRead = () => {
 
   return { markAsRead };
 };
-
