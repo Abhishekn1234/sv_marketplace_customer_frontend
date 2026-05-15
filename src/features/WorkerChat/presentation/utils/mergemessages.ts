@@ -8,14 +8,14 @@ export const mergeMessages = (
 
   incoming.forEach((newMessage) => {
     const newId = String(
-      newMessage._id || newMessage.id || ""
+      newMessage._id || newMessage._id || ""
     );
 
     const existsIndex = merged.findIndex(
       (oldMessage) => {
         const oldId = String(
           oldMessage._id ||
-            oldMessage.id ||
+            oldMessage._id ||
             ""
         );
 

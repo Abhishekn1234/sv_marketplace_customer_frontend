@@ -1,7 +1,8 @@
 import type {
   GetChatMessagesPayload,
-  GetChatMessagesResponse,
+  
 } from "../entities/chat";
+import type { PaginatedMessages } from "../entities/messages";
 
 import type { ChatRepository } from "../repositories/ChatRepository";
 
@@ -10,7 +11,7 @@ export class GetChatMessagesUsecase {
 
   execute(
     payload: GetChatMessagesPayload
-  ): Promise<GetChatMessagesResponse> {
+  ): Promise<PaginatedMessages> {
     return this.repository.getMessages(payload);
   }
 }
