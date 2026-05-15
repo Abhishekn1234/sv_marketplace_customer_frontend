@@ -1,10 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import {
   ThemeProvider,
 } from "./features/context/themeContext";
@@ -107,7 +101,7 @@ function App() {
   } = useAuthStore();
 
   useNotification();
-
+const navigate = useNavigate();
   // =========================
   // 🔔 NOTIFICATION STATE
   // =========================
@@ -183,7 +177,20 @@ function App() {
 
     setupNotifications();
   }, []);
+useEffect(() => {
+  const handler = (e: any) => {
+    const url = e.detail?.url;
+    if (url) {
+      navigate(url);
+    }
+  };
 
+  window.addEventListener("app:navigate", handler);
+
+  return () => {
+    window.removeEventListener("app:navigate", handler);
+  };
+}, [navigate]);
   // =========================
   // 🔥 DEBUG NOTIFICATIONS
   // =========================
@@ -194,6 +201,15 @@ function App() {
     //   notifications
     // );
   }, [notifications]);
+  useEffect(() => {
+  const handler = (e: any) => {
+    const url = e.detail?.url;
+    if (url) navigate(url);
+  };
+
+  window.addEventListener("app:navigate", handler);
+  return () => window.removeEventListener("app:navigate", handler);
+}, [navigate]);
 
   // =========================
   // 🔥 SOCKET INIT
@@ -216,7 +232,7 @@ function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <Router>
+        
           <ScrollToTop />
 
           <ToastContainer
@@ -484,7 +500,7 @@ function App() {
               />
             </Route>
           </Routes>
-        </Router>
+       
       </LanguageProvider>
     </ThemeProvider>
   );

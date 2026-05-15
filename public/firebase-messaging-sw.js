@@ -128,18 +128,24 @@ messaging.onBackgroundMessage(
 // =========================
 // CLICK HANDLER
 // =========================
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
 
-self.addEventListener(
-  "notificationclick",
-  (event) => {
-    event.notification.close();
+  const url = event.notification.data?.url || "/notifications";
 
-    const url =
-      event.notification.data?.url ||
-      "/notifications";
-
+  if (event.action === "open") {
     event.waitUntil(
-      clients.openWindow(url)
+      clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          if (client.url.includes(self.origin) && "focus" in client) {
+            client.navigate(url);
+            return client.focus();
+          }
+        }
+        return clients.openWindow(url);
+      })
     );
+  } else {
+    event.waitUntil(clients.openWindow(url));
   }
-);
+});

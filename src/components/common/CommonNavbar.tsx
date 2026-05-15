@@ -205,7 +205,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   />
                 </div>
 
-                {/* ONBOARDING */}
+               
                 {showOnboarding && !hasLocation && (
                   <div className="absolute top-full mt-3 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]">
                     <div className="flex items-start justify-between mb-3">
@@ -259,7 +259,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   </div>
                 )}
 
-                {/* DROPDOWN */}
+                
                 {showDropdown && (
                   <div
                     className={`
@@ -296,9 +296,9 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* RIGHT SECTION */}
+          
           <div className="flex items-center gap-3">
-            {/* RIGHT BUTTON */}
+           
             {rightButton && (
               <Link
                 to={rightButton.to}
@@ -308,7 +308,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </Link>
             )}
 
-            {/* DESKTOP LINKS */}
+          
             {showHomeLinks && (
               <div className="hidden lg:flex items-center gap-2">
                 {[
@@ -340,7 +340,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* SEARCH */}
+            
             {showSearch && (
               <div className="hidden md:flex items-center relative">
                 <Input
@@ -359,7 +359,6 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* USER */}
             {showUserControls && user && (
               <>
                 <CommonNotificationFloater />
@@ -381,7 +380,6 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </>
             )}
 
-            {/* MOBILE MENU */}
             {showHomeLinks && (
               <Button
                 onClick={() =>
@@ -399,7 +397,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* MOBILE MENU CONTENT */}
+        
         {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-white shadow-md">
             <div className="flex flex-col p-4 gap-3">
