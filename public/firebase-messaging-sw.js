@@ -32,33 +32,15 @@ const messaging = firebase.messaging();
 // =========================
 // ROUTE BUILDER
 // =========================
-
 function buildRoute(data) {
-  const workerId =
-    data.workerId ||
-    data.worker?._id ||
-    data.worker?.id ||
-    data.receiverId ||
-    data.senderId
-    "unknown";
-
-  const senderId =
-    data.senderId ||
-    data.sender?._id ||
-    data.from ||
-    null;
-
   const bookingId = data.bookingId;
+  const workerId = data.workerId;
 
   switch (data.type) {
     case "CHAT_MESSAGE":
-      if (!bookingId) return "/notifications";
-      if (!senderId) return `/message/${workerId}/${bookingId}`;
-      if (senderId === workerId) return `/message/${workerId}/${bookingId}`;
-      if(workerId) return `/message/${workerId}/${bookingId}`;
-      if(!workerId) return "/notifications";
-      
-      return `/message/${workerId}/${bookingId}?senderId=${senderId}`;
+      return workerId && bookingId
+        ? `/message/${workerId}/${bookingId}`
+        : "/notifications";
 
     case "BOOKING_UPDATE":
       return `/jobtracking/${bookingId}`;
@@ -70,82 +52,68 @@ function buildRoute(data) {
       return "/notifications";
   }
 }
+
 // =========================
-// BACKGROUND MESSAGE
+// BACKGROUND NOTIFICATION
 // =========================
 
-messaging.onBackgroundMessage(
-  (payload) => {
-    console.log(
-      "📩 SW Background:",
-      payload
-    );
+messaging.onBackgroundMessage((payload) => {
+  console.log("📩 SW Background:", payload);
 
-    const data = payload.data || {};
+  const data = payload.data || {};
 
-    const title =
-      data.title || "Notification";
+  const title =
+    payload.notification?.title ||
+    data.title ||
+    "Notification";
 
-    const body =
-      data.body ||
-      "You have a new update";
+  const body =
+    payload.notification?.body ||
+    data.body ||
+    "You have a new update";
 
-    const url = buildRoute(data);
+  const url = buildRoute(data);
 
-    const tag = `${data.type}-${data.bookingId}-${data.notificationId}`;
+  const tag = `${data.type}-${data.messageId || data.bookingId}`;
 
-    self.registration.showNotification(
-      title,
+  self.registration.showNotification(title, {
+    body,
+    icon: "/logo.png",
+    badge: "/logo.png",
+    tag,
+    renotify: false,
+    requireInteraction: true,
+    data: {
+      ...data,
+      url,
+    },
+    actions: [
       {
-        body,
-
-        icon: "/logo.png",
-
-        badge: "/logo.png",
-
-        tag,
-
-        renotify: false,
-
-        requireInteraction: true,
-
-        data: {
-          ...data,
-          url,
-        },
-
-        actions: [
-          {
-            action: "open",
-            title: "Open",
-          },
-        ],
-      }
-    );
-  }
-);
+        action: "open",
+        title: "Open",
+      },
+    ],
+  });
+});
 
 // =========================
 // CLICK HANDLER
 // =========================
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const url = event.notification.data?.url || "/notifications";
 
-  if (event.action === "open") {
-    event.waitUntil(
-      clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-        for (const client of clientList) {
-          if (client.url.includes(self.origin) && "focus" in client) {
-            client.navigate(url);
-            return client.focus();
-          }
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ("focus" in client) {
+          client.navigate(url);
+          return client.focus();
         }
-        return clients.openWindow(url);
-      })
-    );
-  } else {
-    event.waitUntil(clients.openWindow(url));
-  }
+      }
+      return clients.openWindow(url);
+    })
+  );
 });

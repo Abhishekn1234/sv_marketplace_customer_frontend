@@ -92,7 +92,7 @@ export default function WorkerChatPage() {
 
   return (
     <WorkerChatPageContent
-      workerId={workerId}
+     
       bookingId={bookingId}
       token={token}
       currentUserId={currentUserId}

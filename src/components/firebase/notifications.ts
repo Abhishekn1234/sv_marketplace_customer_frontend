@@ -1,13 +1,7 @@
-import {
-  getToken,
-  onMessage,
-} from "firebase/messaging";
-
+import { getToken, onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "./messaging";
 
-const VAPID_KEY =
-  import.meta.env
-    .VITE_FIREBASE_VAPID_KEY;
+const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 // =========================
 // TOKEN
@@ -15,78 +9,83 @@ const VAPID_KEY =
 
 export async function requestAndGetToken() {
   try {
-    const messaging =
-      await getFirebaseMessaging();
-
+    const messaging = await getFirebaseMessaging();
     if (!messaging) return null;
 
-    const permission =
-      await Notification.requestPermission();
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return null;
 
-    if (permission !== "granted")
-      return null;
+    const registration = await navigator.serviceWorker.ready;
 
-    const registration =
-      await navigator.serviceWorker.ready;
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration,
+    });
 
-    return await getToken(
-      messaging,
-      {
-        vapidKey: VAPID_KEY,
-        serviceWorkerRegistration:
-          registration,
-      }
-    );
+    console.log("🔥 FCM Token:", token);
+    return token;
   } catch (err) {
-    console.error(
-      "FCM error:",
-      err
-    );
-
+    console.error("FCM token error:", err);
     return null;
   }
 }
 
 // =========================
-// FOREGROUND
+// FOREGROUND LISTENER
 // =========================
 
 export async function initOnMessage(
-  setNotifications?: any
+  setNotifications?: React.Dispatch<React.SetStateAction<any[]>>
 ) {
-  const messaging =
-    await getFirebaseMessaging();
-
+  const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
   onMessage(messaging, (payload) => {
-  console.log("📩 Foreground:", payload);
+    // console.log("📩 Foreground FCM:", payload);
 
-  const data = payload.data || {};
+    const data = payload.data || {};
 
-  const notification = {
-    id:
-      data.notificationId ||
-      payload.messageId,
+    const notification = {
+      id:
+        data.notificationId ||
+        payload.messageId ||
+        Date.now().toString(),
 
-    title:
-      payload.notification?.title ||
-      data.title ||
-      "Notification",
+      title:
+        payload.notification?.title ||
+        data.title ||
+        "Notification",
 
-    message:
-      payload.notification?.body ||
-      data.body ||
-      "You have a new update",
+      message:
+        payload.notification?.body ||
+        data.body ||
+        "You have a new update",
 
-    data,
-  };
+      type: data.type || "GENERAL",
 
-  console.log("✅ Parsed Notification:", notification);
+      bookingId: data.bookingId || null,
 
-  setNotifications?.((prev: any) => [
-    notification,
-    ...prev,
-  ]);
-});
+      raw: data,
+    };
+
+    // console.log("✅ Parsed Notification:", notification);
+
+    // =========================
+    // UPDATE STATE SAFELY
+    // =========================
+    setNotifications?.((prev: any[] = []) => {
+      return [notification, ...prev];
+    });
+
+    // =========================
+    // OPTIONAL: system notification in foreground
+    // =========================
+    if (Notification.permission === "granted") {
+      new Notification(notification.title, {
+        body: notification.message,
+        icon: "/logo.png",
+        data: notification,
+      });
+    }
+  });
 }

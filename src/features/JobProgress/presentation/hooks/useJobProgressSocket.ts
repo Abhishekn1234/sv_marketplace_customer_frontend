@@ -3,22 +3,23 @@
 import { useEffect } from "react";
 import { getSocket } from "@/features/core/Websocket/socket";
 
-// 🔥 map socket event → activity type
-function mapEventToActivityType(eventName: string) {
-  const map: any = {
-    "booking.created": "CREATED",
-    "booking:update": "UPDATED",
-    "booking.worker.accepted": "WORKER_ACCEPTED",
-    "booking.work-start-otp.generated": "WORK_START_OTP_GENERATED",
-    "booking.work.started": "WORK_STARTED",
-    "booking.work.completed-by-worker": "WORK_COMPLETED_BY_WORKER",
-    "booking.completion-otp.generated": "COMPLETION_OTP_GENERATED",
-    "booking.completion.confirmed": "COMPLETED",
-    "booking.invoice.generated": "INVOICE_GENERATED",
-  };
+// function mapEventToActivityType(eventName: string) {
+//   const map: Record<string, string> = {
+//     "booking.created": "CREATED",
+//     "booking:update": "UPDATED",
+//     "booking.worker.accepted": "WORKER_ACCEPTED",
+//     "booking.work-start-otp.generated": "WORK_START_OTP_GENERATED",
+//     "booking.work.started": "WORK_STARTED",
+//     "booking.work.completed-by-worker": "WORK_COMPLETED_BY_WORKER",
+//     "booking.completion-otp.generated": "COMPLETION_OTP_GENERATED",
+//     "booking.completion.confirmed": "COMPLETED",
+//     "booking.invoice.generated": "INVOICE_GENERATED",
+//     "booking.cancelled.worker": "WORKER_CANCELLED",
+//     "booking.customer.cancelled": "CUSTOMER_CANCELLED",
+//   };
 
-  return map[eventName] || eventName;
-}
+//   return map[eventName] || eventName;
+// }
 
 export function useSocketJobProgressActivities({
   bookingId,
@@ -35,67 +36,38 @@ export function useSocketJobProgressActivities({
         data?.bookingId || data?.booking?._id
       );
 
-      // ❌ ignore other bookings
       if (eventBookingId !== String(bookingId)) return;
 
+      const booking = data.booking;
+
+      const mappedStatus =
+        data.status || booking?.status;
+
+      const updatedBooking = {
+        ...booking,
+        status: mappedStatus,
+        activities:
+          booking?.activities || [],
+      };
+
+      // 🔥 ALWAYS FULL REPLACE (NO PATCH LOGIC)
       setLocalBooking((prev: any) => {
-        if (!prev) return prev;
-
-        // ✅ CASE 1: backend sends full booking + activities
-        if (data.booking?.activities) {
-          return {
-            ...prev,
-            ...data.booking,
-            activities: data.booking.activities,
-          };
-        }
-
-        // ✅ CASE 2: only event → create activity manually
-        const newActivity = {
-          _id: `${data.eventName}-${Date.now()}`, // temp unique id
-          type: mapEventToActivityType(data.eventName),
-          createdAt:
-            data.occurredAt || new Date().toISOString(),
-        };
+        if (!prev) return updatedBooking;
 
         return {
           ...prev,
-          ...data.booking,
-          status: data.status || prev.status,
-
-          // ✅ append activity safely
-          activities: [
-            ...(prev.activities || []),
-
-            // prevent duplicate same type
-            ...(prev.activities?.some(
-              (a: any) => a.type === newActivity.type
-            )
-              ? []
-              : [newActivity]),
-          ],
+          ...updatedBooking,
+          status: updatedBooking.status,
+          activities: updatedBooking.activities,
         };
       });
     };
 
-    // 🔥 all events
-    const events = [
-      "booking.created",
-      "booking:update",
-      "booking.worker.accepted",
-      "booking.work-start-otp.generated",
-      "booking.work.started",
-      "booking.work.completed-by-worker",
-      "booking.completion-otp.generated",
-      "booking.completion.confirmed",
-      "booking.invoice.generated",
-      "booking.cancelled.worker",
-    ];
-
-    events.forEach((event) => socket.on(event, handler));
+    // ⚡ ONLY ONE SOURCE EVENT (IMPORTANT FIX)
+    socket.on("bookingUpdated", handler);
 
     return () => {
-      events.forEach((event) => socket.off(event, handler));
+      socket.off("bookingUpdated", handler);
     };
   }, [bookingId, setLocalBooking]);
 }

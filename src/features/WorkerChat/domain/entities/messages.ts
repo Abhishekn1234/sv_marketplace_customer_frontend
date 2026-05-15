@@ -10,6 +10,8 @@ export type Message = {
   senderType?:"CUSTOMER"|"WORKER"
   sender?: "customer" | "worker";
   workerId?:string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   timestamp: Date | string;
   status?: "sent" | "delivered" | "read";
 };

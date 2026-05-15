@@ -11,6 +11,8 @@ import {
   Shield,
   HelpCircle,
   MapPin,
+  CheckCircle2,
+  // Circle,
 } from "lucide-react";
 
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
@@ -35,6 +37,17 @@ interface NavbarProps {
   showUserControls?: boolean;
   showHomeLinks?: boolean;
 }
+
+// Onboarding steps definition — extend this array to add more steps
+const ONBOARDING_STEPS = [
+  {
+    id: "location",
+    label: "Set your location",
+    description: "Required for nearby services",
+  },
+] as const;
+
+type OnboardingStepId = (typeof ONBOARDING_STEPS)[number]["id"];
 
 const CommonNavbar: React.FC<NavbarProps> = ({
   showBackButton = false,
@@ -72,32 +85,45 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     current_location?.lng != null &&
     currentLocation?.trim() !== "";
 
-  useEffect(() => {
-    const seen = localStorage.getItem("location-onboarding-seen");
+  // Derive per-step completion from real state
+  const stepCompletion: Record<OnboardingStepId, boolean> = {
+    location: hasLocation,
+  };
 
-    if (!hasLocation && !seen) {
+  const allStepsDone = ONBOARDING_STEPS.every(
+    (step) => stepCompletion[step.id]
+  );
+
+  // Show onboarding if any step is incomplete and the user hasn't dismissed it
+  useEffect(() => {
+    const dismissed = localStorage.getItem("location-onboarding-seen");
+    if (!dismissed) {
       setShowOnboarding(true);
     }
-  }, [hasLocation]);
+  }, []);
 
-  const completeOnboarding = () => {
+  // Auto-dismiss once every step is complete
+  useEffect(() => {
+    if (allStepsDone && showOnboarding) {
+      const timer = setTimeout(() => {
+        localStorage.setItem("location-onboarding-seen", "true");
+        setShowOnboarding(false);
+      }, 1500); // brief delay so user sees the final checkmark
+      return () => clearTimeout(timer);
+    }
+  }, [allStepsDone, showOnboarding]);
+
+  const dismissOnboarding = () => {
     localStorage.setItem("location-onboarding-seen", "true");
     setShowOnboarding(false);
   };
 
   const isBookingPage = routerLocation.pathname === "/bookings";
   const isHomePage = routerLocation.pathname === "/";
-  const serviceRatingPage =
-    routerLocation.pathname === "/servicerating";
-
-  const jobProgressPage =
-    routerLocation.pathname.startsWith("/jobprogress/");
-
-  const jobTrackingPage =
-    routerLocation.pathname.startsWith("/jobtracking/");
-
-  const jobCompletePage =
-    routerLocation.pathname === "/jobcompleted";
+  const serviceRatingPage = routerLocation.pathname === "/servicerating";
+  const jobProgressPage = routerLocation.pathname.startsWith("/jobprogress/");
+  const jobTrackingPage = routerLocation.pathname.startsWith("/jobtracking/");
+  const jobCompletePage = routerLocation.pathname === "/jobcompleted";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -108,15 +134,8 @@ const CommonNavbar: React.FC<NavbarProps> = ({
         setShowDropdown(false);
       }
     };
-
     document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener(
-        "click",
-        handleClickOutside
-      );
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
@@ -158,108 +177,134 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-2 cursor-pointer"
             >
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 fill-white"
-                >
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
                   <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
                 </svg>
               </div>
-
               <span className="hidden sm:block font-bold text-lg text-gray-900">
                 {title}
               </span>
             </div>
 
-            {/* LOCATION */}
+            {/* LOCATION + ONBOARDING */}
             {(showLocation ||
               isHomePage ||
               isBookingPage ||
               serviceRatingPage ||
               jobProgressPage ||
               jobTrackingPage) && (
-              <div
-                ref={dropdownRef}
-                className="ml-3 relative flex flex-col"
-              >
+              <div ref={dropdownRef} className="ml-3 relative flex flex-col">
                 {/* LOCATION INPUT */}
-                <div>
-                  <Input
-                    variant="unstyled"
-                    onClick={() =>
-                      setShowDropdown((prev) => !prev)
-                    }
-                    value={currentLocation || ""}
-                    readOnly
-                    placeholder={
-                      !currentLocation
-                        ? "Select location"
-                        : ""
-                    }
-                    className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
-                    rightElement={
-                      !currentLocation ? (
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                      ) : null
-                    }
-                  />
-                </div>
+                <Input
+                  variant="unstyled"
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  value={currentLocation || ""}
+                  readOnly
+                  placeholder={!currentLocation ? "Select location" : ""}
+                  className="cursor-pointer px-0 py-0 placeholder:text-gray-400"
+                  rightElement={
+                    !currentLocation ? (
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                    ) : null
+                  }
+                />
 
-               
-                {showOnboarding && !hasLocation && (
+                {/* ONBOARDING CHECKLIST */}
+                {showOnboarding && (
                   <div className="absolute top-full mt-3 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]">
+                    {/* Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-900 text-sm">
-                          Complete setup
+                          {allStepsDone ? "You're all set! 🎉" : "Complete setup"}
                         </h3>
-
-                        <p className="text-xs text-gray-500 mt-1">
-                          Finish these steps to continue
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {allStepsDone
+                            ? "Setup complete, closing shortly…"
+                            : `${
+                                ONBOARDING_STEPS.filter(
+                                  (s) => stepCompletion[s.id]
+                                ).length
+                              } of ${ONBOARDING_STEPS.length} steps done`}
                         </p>
                       </div>
-
                       <Button
-                        onClick={completeOnboarding}
+                        onClick={dismissOnboarding}
                         className="text-gray-400 hover:text-gray-600"
                       >
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                            1
+                    {/* Progress bar */}
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full mb-3 overflow-hidden">
+                      <div
+                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${
+                            (ONBOARDING_STEPS.filter(
+                              (s) => stepCompletion[s.id]
+                            ).length /
+                              ONBOARDING_STEPS.length) *
+                            100
+                          }%`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Step list */}
+                    <div className="space-y-2">
+                      {ONBOARDING_STEPS.map((step, index) => {
+                        const done = stepCompletion[step.id];
+                        return (
+                          <div
+                            key={step.id}
+                            className={`flex items-center justify-between rounded-xl p-3 transition-colors ${
+                              done ? "bg-green-50" : "bg-blue-50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              {/* Step icon: check when done, numbered circle when pending */}
+                              {done ? (
+                                <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
+                              ) : (
+                                <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                  {index + 1}
+                                </div>
+                              )}
+                              <div>
+                                <p
+                                  className={`text-sm font-medium ${
+                                    done
+                                      ? "text-green-700 line-through"
+                                      : "text-gray-800"
+                                  }`}
+                                >
+                                  {step.label}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {step.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Action button only for incomplete steps */}
+                            {!done && step.id === "location" && (
+                              <Button
+                                onClick={handleUseCurrentLocation}
+                                className="px-3 py-1 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 shrink-0"
+                              >
+                                Use
+                              </Button>
+                            )}
                           </div>
-
-                          <div>
-                            <p className="text-sm font-medium text-gray-800">
-                              Set your location
-                            </p>
-
-                            <p className="text-xs text-gray-500">
-                              Required for nearby services
-                            </p>
-                          </div>
-                        </div>
-
-                        <Button
-                          onClick={() => {
-                            handleUseCurrentLocation();
-                            completeOnboarding();
-                          }}
-                          className="px-3 py-1 text-xs rounded-lg"
-                        >
-                          Use
-                        </Button>
-                      </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
-                
+                {/* LOCATION DROPDOWN */}
                 {showDropdown && (
                   <div
                     className={`
@@ -296,9 +341,8 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          
+          {/* RIGHT SECTION */}
           <div className="flex items-center gap-3">
-           
             {rightButton && (
               <Link
                 to={rightButton.to}
@@ -308,26 +352,13 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </Link>
             )}
 
-          
             {showHomeLinks && (
               <div className="hidden lg:flex items-center gap-2">
                 {[
-                  {
-                    label: t.navbar.Bookings,
-                    to: "/bookings",
-                  },
-                  {
-                    label: t.navbar.About,
-                    to: "/about",
-                  },
-                  {
-                    label: t.navbar.Privacy,
-                    to: "/privacy",
-                  },
-                  {
-                    label: t.navbar.Help,
-                    to: "/help",
-                  },
+                  { label: t.navbar.Bookings, to: "/bookings" },
+                  { label: t.navbar.About, to: "/about" },
+                  { label: t.navbar.Privacy, to: "/privacy" },
+                  { label: t.navbar.Help, to: "/help" },
                 ].map((link) => (
                   <Link
                     key={link.to}
@@ -340,21 +371,17 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            
             {showSearch && (
               <div className="hidden md:flex items-center relative">
                 <Input
                   value={searchTerm}
-                  onChange={(e) =>
-                    setSearchTerm(e.target.value)
-                  }
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={t.navbar.SearchPlaceholder}
                   className="pl-10 bg-white"
                   size="md"
                   radius="lg"
                   rightElement={null}
                 />
-
                 <Search className="w-4 h-4 text-gray-400 absolute left-3" />
               </div>
             )}
@@ -362,7 +389,6 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             {showUserControls && user && (
               <>
                 <CommonNotificationFloater />
-
                 <Image
                   src={profilePic}
                   alt="Profile"
@@ -382,9 +408,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
             {showHomeLinks && (
               <Button
-                onClick={() =>
-                  setMobileMenuOpen((prev) => !prev)
-                }
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
               >
                 {mobileMenuOpen ? (
@@ -397,41 +421,22 @@ const CommonNavbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        
+        {/* MOBILE MENU */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-white shadow-md">
             <div className="flex flex-col p-4 gap-3">
               {[
-                {
-                  icon: BookOpen,
-                  label: t.navbar.Bookings,
-                  to: "/bookings",
-                },
-                {
-                  icon: Info,
-                  label: t.navbar.About,
-                  to: "/about",
-                },
-                {
-                  icon: Shield,
-                  label: t.navbar.Privacy,
-                  to: "/privacy",
-                },
-                {
-                  icon: HelpCircle,
-                  label: t.navbar.Help,
-                  to: "/help",
-                },
+                { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
+                { icon: Info, label: t.navbar.About, to: "/about" },
+                { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
+                { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
               ].map((item) => {
                 const Icon = item.icon;
-
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
-                    onClick={() =>
-                      setMobileMenuOpen(false)
-                    }
+                    onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
                   >
                     <Icon className="w-5 h-5 text-gray-400" />

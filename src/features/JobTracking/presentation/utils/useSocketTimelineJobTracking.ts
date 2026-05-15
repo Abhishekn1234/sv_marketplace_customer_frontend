@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export function useSocketTimelineJobTracking({
   bookingId,
   setLocalBooking,
-  navigate
+  navigate,
 }: any) {
   const queryClient = useQueryClient();
 
@@ -14,104 +14,78 @@ export function useSocketTimelineJobTracking({
     if (!socket || !bookingId) return;
 
     const handler = (data: any) => {
-      const booking = data.booking ?? data;
-
+      const booking = data.booking;
       if (!booking?._id || String(booking._id) !== String(bookingId)) return;
 
       const eventName = data.eventName;
 
-      let mappedStatus = booking.status;
+      let mappedStatus = data.status || booking.status;
 
-     switch (eventName) {
-  case "booking.worker.accepted":
-    mappedStatus = "WORKER_ACCEPTED";
-    break;
+      switch (eventName) {
+        case "booking.worker.accepted":
+          mappedStatus = "WORKER_ACCEPTED";
+          break;
 
-  case "booking.work.started":
-    mappedStatus = "IN_PROGRESS";
-    break;
+        case "booking.work.started":
+          mappedStatus = "IN_PROGRESS";
+          break;
 
-  case "booking.work.completed-by-worker":
-    mappedStatus =
-      "WORK_COMPLETED_BY_WORKER";
-    break;
+        case "booking.work.completed-by-worker":
+          mappedStatus = "WORK_COMPLETED_BY_WORKER";
+          break;
 
-  case "booking.completion.confirmed":
-    mappedStatus = "COMPLETED";
-    break;
+        case "booking.completion-otp.generated":
+          mappedStatus = "WORK_COMPLETED_PENDING";
+          break;
 
-  // ADD THESE
+        case "booking.completion.confirmed":
+          mappedStatus = "COMPLETED";
+          break;
 
-  case "booking.worker.cancelled":
-    mappedStatus =
-      "WORKER_CANCELLED";
-    break;
+        case "booking.customer.cancelled":
+          mappedStatus = "CUSTOMER_CANCELLED";
+          break;
 
-  case "booking.customer.cancelled":
-    mappedStatus =
-      "CUSTOMER_CANCELLED";
-    break;
-}
-if (
-  mappedStatus ===
-    "WORKER_CANCELLED" ||
-  mappedStatus ===
-    "CUSTOMER_CANCELLED"
-) {
-  navigate("/", {
-    replace: true,
-  });
+        case "booking.worker.cancelled":
+          mappedStatus = "WORKER_CANCELLED";
+          break;
+      }
 
-  return;
-}
+      // 🚨 NAVIGATION ON CANCEL
+      if (
+        mappedStatus === "CUSTOMER_CANCELLED" ||
+        mappedStatus === "WORKER_CANCELLED"
+      ) {
+        navigate("/", { replace: true });
+        return;
+      }
 
       const updatedBooking = {
         ...booking,
         status: mappedStatus,
-        activities: [
-          ...(booking.activities || []),
-          {
-            _id: `${eventName}-${Date.now()}`,
-            type: mappedStatus,
-            createdAt: data.occurredAt || new Date().toISOString(),
-          },
-        ],
+        activities: booking.activities || [],
       };
 
-      // ✅ 1. React Query update
-      queryClient.setQueryData(
-        ["bookings"],
-        (old: any = []) =>
-          old.map((b: any) =>
-            b._id === bookingId ? updatedBooking : b
-          )
-      );
-
-      // ✅ 2. IMPORTANT: detail cache
+      // 1. React Query sync
       queryClient.setQueryData(
         ["bookingDetail", bookingId],
         updatedBooking
       );
 
-      // ✅ 3. Instant UI update
+      queryClient.setQueryData(["bookings"], (old: any = []) =>
+        old.map((b: any) =>
+          b._id === bookingId ? updatedBooking : b
+        )
+      );
+
+      // 2. Local UI update
       setLocalBooking(updatedBooking);
     };
 
-  const events = [
-  "booking.worker.accepted",
-  "booking.work.started",
-  "booking.work.completed-by-worker",
-  "booking.completion.confirmed",
-
-  // ADD THESE
-  "booking.cancelled.worker",
-  "booking.customer.cancelled",
-];
-
-    events.forEach((e) => socket.on(e, handler));
+    socket.on("bookingUpdated", handler);
 
     return () => {
-      events.forEach((e) => socket.off(e, handler));
+      socket.off("bookingUpdated", handler);
     };
   }, [bookingId, queryClient]);
 }

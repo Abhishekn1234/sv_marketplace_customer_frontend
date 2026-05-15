@@ -30,103 +30,75 @@ export const useBookings = () => {
   const { data = [], isLoading, isError } = useQuery<Booking[]>({
     queryKey: bookingKeys.all,
     queryFn: async () => {
-      console.log("📡 FETCH BOOKINGS API CALLED");
-
       const res = await getBookings.execute();
       const list = res?.bookings ?? [];
 
-      if (!Array.isArray(list)) return [];
-
-      return list.map((b) => ({
-        ...b,
-        service: b.serviceId,
-        serviceTier: b.serviceTierId,
-      }));
+      return Array.isArray(list)
+        ? list.map((b) => ({
+            ...b,
+            service: b.serviceId,
+            serviceTier: b.serviceTierId,
+          }))
+        : [];
     },
 
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
-
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
-  // ================= SOCKET UPDATES =================
+  // ================= SOCKET =================
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
-    const handler = (payload: any) => {
-      const bookingId =
-        payload?.bookingId || payload?._id || payload?.booking?._id;
+    const handler = (data: any) => {
+      const booking = data?.booking;
+      const bookingId = booking?._id || data?.bookingId;
 
       if (!bookingId) return;
 
-      // UPDATE LIST CACHE
-      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => {
-        if (!Array.isArray(old)) return [];
+      const updatedBooking: Booking = {
+        ...booking,
+        ...data,
+        status: data.status || booking?.status,
+      };
 
-        return old.map((b) => {
-          if (b._id !== bookingId) return b;
+      // 🔥 LIST CACHE (SOURCE OF TRUTH)
+      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
+        old.map((b) =>
+          String(b._id) === String(bookingId)
+            ? { ...b, ...updatedBooking }
+            : b
+        )
+      );
 
-          return {
-            ...b,
-            ...payload.booking,
-            ...payload,
-            status:
-              payload.status ??
-              payload.booking?.status ??
-              b.status,
-          };
-        });
-      });
-
-      // UPDATE DETAIL CACHE
+      // 🔥 DETAIL CACHE
       queryClient.setQueryData(
         bookingKeys.detail(bookingId),
-        (old: Booking | undefined) => {
-          if (!old) return payload.booking ?? payload;
-
-          return {
-            ...old,
-            ...payload.booking,
-            ...payload,
-            status:
-              payload.status ??
-              payload.booking?.status ??
-              old.status,
-          };
-        }
+        (old: Booking | undefined) =>
+          old
+            ? { ...old, ...updatedBooking }
+            : updatedBooking
       );
     };
 
-    const events = [
-      "booking:update",
-      "booking.status.changed",
-      "booking.worker.accepted",
-      "booking.work.started",
-      "booking.work.completed-by-worker",
-      "booking.cancelled.worker",
-    ];
-
-    events.forEach((e) => socket.on(e, handler));
+    socket.on("bookingUpdated", handler);
 
     return () => {
-      events.forEach((e) => socket.off(e, handler));
+      socket.off("bookingUpdated", handler);
     };
   }, [queryClient]);
 
-  // ================= CREATE BOOKING =================
+  // ================= CREATE =================
   const create = useMutation({
     mutationFn: (payload: BookingPayload) =>
       createBooking.execute(payload),
 
     onSuccess: (newBooking) => {
-      queryClient.setQueryData<Booking[]>(
-        bookingKeys.all,
-        (old = []) => [newBooking, ...old]
-      );
+      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => [
+        newBooking,
+        ...old,
+      ]);
 
       queryClient.setQueryData(
         bookingKeys.detail(newBooking._id),
@@ -138,25 +110,18 @@ export const useBookings = () => {
     },
   });
 
-  // ================= CANCEL BOOKING =================
+  // ================= CANCEL =================
   const cancel = useMutation({
     mutationFn: (req: CancelBookingRequest) =>
       cancelBooking.execute(req),
 
     onSuccess: (updated) => {
-      // UPDATE LIST
-      queryClient.setQueryData<Booking[]>(
-        bookingKeys.all,
-        (old = []) => {
-          if (!Array.isArray(old)) return [];
-
-          return old.map((b) =>
-            b._id === updated._id ? { ...b, ...updated } : b
-          );
-        }
+      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
+        old.map((b) =>
+          b._id === updated._id ? { ...b, ...updated } : b
+        )
       );
 
-      // UPDATE DETAIL
       queryClient.setQueryData(
         bookingKeys.detail(updated._id),
         (old: Booking | undefined) => ({
@@ -166,9 +131,6 @@ export const useBookings = () => {
       );
 
       toast.success("Booking cancelled");
-
-      // ❌ IMPORTANT: DO NOT invalidate here
-      // It causes extra API calls
     },
   });
 
