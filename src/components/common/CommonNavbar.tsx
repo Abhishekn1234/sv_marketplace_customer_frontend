@@ -11,7 +11,7 @@ import {
   Shield,
   HelpCircle,
   MapPin,
-  CheckCircle2,
+  // CheckCircle2,
   // Circle,
 } from "lucide-react";
 
@@ -23,6 +23,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { UserIcon } from "../icons";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
+import OnboardingChecklist from "./OnboardingCheckList";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -210,99 +211,18 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                 />
 
                 {/* ONBOARDING CHECKLIST */}
-                {showOnboarding && (
-                  <div className="absolute top-full mt-3 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-sm">
-                          {allStepsDone ? "You're all set! 🎉" : "Complete setup"}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {allStepsDone
-                            ? "Setup complete, closing shortly…"
-                            : `${
-                                ONBOARDING_STEPS.filter(
-                                  (s) => stepCompletion[s.id]
-                                ).length
-                              } of ${ONBOARDING_STEPS.length} steps done`}
-                        </p>
-                      </div>
-                      <Button
-                        onClick={dismissOnboarding}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-full h-1.5 bg-gray-100 rounded-full mb-3 overflow-hidden">
-                      <div
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${
-                            (ONBOARDING_STEPS.filter(
-                              (s) => stepCompletion[s.id]
-                            ).length /
-                              ONBOARDING_STEPS.length) *
-                            100
-                          }%`,
-                        }}
-                      />
-                    </div>
-
-                    {/* Step list */}
-                    <div className="space-y-2">
-                      {ONBOARDING_STEPS.map((step, index) => {
-                        const done = stepCompletion[step.id];
-                        return (
-                          <div
-                            key={step.id}
-                            className={`flex items-center justify-between rounded-xl p-3 transition-colors ${
-                              done ? "bg-green-50" : "bg-blue-50"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              {/* Step icon: check when done, numbered circle when pending */}
-                              {done ? (
-                                <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
-                              ) : (
-                                <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
-                                  {index + 1}
-                                </div>
-                              )}
-                              <div>
-                                <p
-                                  className={`text-sm font-medium ${
-                                    done
-                                      ? "text-green-700 line-through"
-                                      : "text-gray-800"
-                                  }`}
-                                >
-                                  {step.label}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {step.description}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Action button only for incomplete steps */}
-                            {!done && step.id === "location" && (
-                              <Button
-                                onClick={handleUseCurrentLocation}
-                                className="px-3 py-1 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 shrink-0"
-                              >
-                                Use
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                                  {showOnboarding && (
+                    <OnboardingChecklist
+                      steps={ONBOARDING_STEPS.map((step) => ({
+                        ...step,
+                        onAction: handleUseCurrentLocation,
+                        actionLabel: "Use",
+                      }))}
+                      completion={stepCompletion}
+                      onClose={dismissOnboarding}
+                      allDone={allStepsDone}
+                    />
+                  )}
 
                 {/* LOCATION DROPDOWN */}
                 {showDropdown && (
