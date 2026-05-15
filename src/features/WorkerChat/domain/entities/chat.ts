@@ -1,6 +1,7 @@
 export type ChatMessage = {
   _id: string;
   id?:string;
+  clientId?:string;
   status:"read"|"delivered"|"sent";
   bookingId: string;
   senderId: string;
@@ -19,6 +20,7 @@ export type GetChatMessagesResponse = {
 export type SendChatMessagePayload = {
   bookingId: string;
   message: string;
+  clientId?: string;
 };
 
 export type GetChatMessagesPayload = {

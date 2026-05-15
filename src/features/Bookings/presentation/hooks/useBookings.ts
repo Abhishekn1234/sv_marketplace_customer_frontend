@@ -116,22 +116,25 @@ export const useBookings = () => {
       cancelBooking.execute(req),
 
     onSuccess: (updated) => {
-      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
-        old.map((b) =>
-          b._id === updated._id ? { ...b, ...updated } : b
-        )
-      );
+  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
+    old.map((b) =>
+      String(b._id) === String(updated._id)
+        ? { ...b, ...updated }
+        : b
+    )
+  );
 
-      queryClient.setQueryData(
-        bookingKeys.detail(updated._id),
-        (old: Booking | undefined) => ({
-          ...old,
-          ...updated,
-        })
-      );
+  queryClient.setQueryData(
+    bookingKeys.detail(updated._id),
+    updated
+  );
 
-      toast.success("Booking cancelled");
-    },
+  queryClient.invalidateQueries({
+    queryKey: bookingKeys.all,
+  });
+
+  // toast.success("Booking cancelled");
+}
   });
 
   return {

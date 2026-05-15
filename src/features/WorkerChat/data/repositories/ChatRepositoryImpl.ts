@@ -3,16 +3,17 @@ import apiClient from "@/features/api/interceptor";
 import type {
   ChatMessage,
   GetChatMessagesPayload,
-  GetChatMessagesResponse,
+  // GetChatMessagesResponse,
   SendChatMessagePayload,
 } from "../../domain/entities/chat";
 
 import type { ChatRepository } from "../../domain/repositories/ChatRepository";
+import type { PaginatedMessages } from "../../domain/entities/messages";
 
 export class ChatRepositoryImpl implements ChatRepository {
   async getMessages(
     payload: GetChatMessagesPayload
-  ): Promise<GetChatMessagesResponse> {
+  ): Promise<PaginatedMessages> {
     const { bookingId, page = 1, limit = 30 } = payload;
 
     const response = await apiClient.get(

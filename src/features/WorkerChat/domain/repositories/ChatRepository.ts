@@ -1,14 +1,15 @@
 import type {
   GetChatMessagesPayload,
-  GetChatMessagesResponse,
+ 
   SendChatMessagePayload,
   ChatMessage,
 } from "../entities/chat";
+import type { PaginatedMessages } from "../entities/messages";
 
 export interface ChatRepository {
   getMessages(
     payload: GetChatMessagesPayload
-  ): Promise<GetChatMessagesResponse>;
+  ): Promise<PaginatedMessages>;
 
   sendMessage(
     payload: SendChatMessagePayload

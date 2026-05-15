@@ -1,11 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+
 import { useGetChatMessages } from "../hooks/useGetChatMessages";
 import { useSendChatMessage } from "../hooks/useSendChatMessage";
+
 import type { Message } from "../../domain/entities/messages";
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
+
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 
 export default function WorkerChatPageContent({
@@ -21,89 +32,178 @@ export default function WorkerChatPageContent({
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const LIMIT = 30; // messages per page
-  // ================= API (ONLY SOURCE OF TRUTH) =================
+  const containerRef =
+    useRef<HTMLDivElement>(null);
+
+  const LIMIT = 30;
+
+  // =========================
+  // API
+  // =========================
+
   const {
     data,
     isLoading,
     isFetching,
     refetch,
-  } = useGetChatMessages(bookingId, page, LIMIT);
+  } = useGetChatMessages(
+    bookingId,
+    page,
+    LIMIT
+  );
 
-  const { mutate: sendMessage } = useSendChatMessage();
+  const { mutate: sendMessage, isPending } =
+    useSendChatMessage();
 
-  // ================= OPTIONAL: POLLING (realtime replacement) =================
+  // =========================
+  // POLLING
+  // =========================
+
   useEffect(() => {
     const interval = setInterval(() => {
-      refetch(); // keeps chat updated without socket
-    }, 5000); // adjust: 3–10s depending on load
+      refetch();
+    }, 10000); // 10 sec
 
     return () => clearInterval(interval);
   }, [refetch]);
 
-  // ================= PAGINATION =================
+  // =========================
+  // PAGINATION
+  // =========================
+
+  const handleScroll = useCallback(() => {
+    const el = containerRef.current;
+
+    if (!el || isFetching) return;
+
+    const hasMore =
+      (data?.data?.length ?? 0) >=
+      page * LIMIT;
+
+    if (el.scrollTop < 100 && hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  }, [
+    isFetching,
+    data,
+    page,
+    LIMIT,
+  ]);
+
   useEffect(() => {
     const el = containerRef.current;
+
     if (!el) return;
 
-    const onScroll = () => {
-      if (
-        el.scrollTop < 100 &&
-        !isFetching &&
-        (data?.data?.length ?? 0) >= LIMIT
-      ) {
-        setPage((p) => p + 1);
-      }
+    el.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
+    return () => {
+      el.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
+  }, [handleScroll]);
 
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [isFetching, data]);
+  // =========================
+  // NORMALIZE MESSAGES
+  // =========================
 
-  // ================= NORMALIZED MESSAGES =================
   const messages: Message[] = useMemo(() => {
-    const apiMessages: Message[] = (data?.data || []).map((msg: any) => ({
-      _id: msg._id,
-      id: msg._id,
-      text: msg.message || "",
-      senderId: typeof msg.senderId === "string"
-        ? msg.senderId
-        : msg.senderId?._id || "",
+    const rawMessages =
+      Array.isArray(data?.data)
+        ? data.data
+        : [];
 
-      self:
-        (typeof msg.senderId === "string"
-          ? msg.senderId
-          : msg.senderId?._id) === currentUserId,
+    const normalized = rawMessages.map(
+      (msg: any): Message => {
+        const senderId =
+          typeof msg.senderId === "string"
+            ? msg.senderId
+            : msg.senderId?._id || "";
 
-      status: msg.status || "delivered",
-      timestamp: msg.createdAt,
-    }));
+        return {
+          _id:
+            msg._id ||
+            crypto.randomUUID(),
 
-    // ONLY API DATA NOW
-    return apiMessages.sort(
+         
+
+          text:
+            msg.message ||
+            msg.text ||
+            "",
+
+          senderId,
+
+          self:
+            senderId === currentUserId,
+
+          status:
+            msg.status || "delivered",
+
+          // IMPORTANT
+          timestamp:
+            msg.timestamp ||
+            msg.createdAt ||
+            new Date().toISOString(),
+        };
+      }
+    );
+
+    // REMOVE DUPLICATES
+    const unique = Array.from(
+      new Map(
+        normalized.map((m) => [
+          m._id,
+          m,
+        ])
+      ).values()
+    );
+
+    // SAFE SORT
+    return [...unique].sort(
       (a, b) =>
-        new Date(a.timestamp || 0).getTime() -
-        new Date(b.timestamp || 0).getTime()
+        new Date(
+          a.timestamp || 0
+        ).getTime() -
+        new Date(
+          b.timestamp || 0
+        ).getTime()
     );
   }, [data, currentUserId]);
 
-  // ================= SEND MESSAGE =================
-  const handleSend = () => {
-    if (!input.trim()) return;
+  // =========================
+  // SEND MESSAGE
+  // =========================
 
-    sendMessage({
-      bookingId,
-      message: input.trim(),
-    });
+  const handleSend = () => {
+    const trimmed = input.trim();
+
+    if (!trimmed || isPending) return;
+
+    sendMessage(
+      {
+        bookingId,
+        message: trimmed,
+      },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
 
     setInput("");
-
-    // optional: instant refresh after send
-    setTimeout(() => refetch(), 200);
   };
 
-  // ================= LOADING =================
+  // =========================
+  // LOADING
+  // =========================
+
   if (isLoading && page === 1) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -112,16 +212,27 @@ export default function WorkerChatPageContent({
     );
   }
 
+  // =========================
+  // UI
+  // =========================
+
   return (
-   <main className="h-full min-h-0 bg-[#F1EFE8] px-0 sm:px-4 sm:py-4 lg:px-6"> 
-   <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden bg-white shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
-        <ChatHeader worker={worker} bookingId={bookingId} />
+    <main className="h-full min-h-0 bg-[#F1EFE8] px-0 sm:px-4 sm:py-4 lg:px-6">
+      <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden bg-white shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
+
+        <ChatHeader
+          worker={worker}
+          bookingId={bookingId}
+        />
 
         <div
           ref={containerRef}
           className="flex-1 overflow-y-auto bg-[#f7f4ed]"
         >
-          {isFetching && page > 1 && <CommonSpinner />}
+          {isFetching &&
+            page > 1 && (
+              <CommonSpinner />
+            )}
 
           <MessageList
             messages={messages}
