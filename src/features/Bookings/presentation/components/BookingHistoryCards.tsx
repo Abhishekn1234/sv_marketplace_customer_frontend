@@ -39,7 +39,7 @@ export default function BookingCard({
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
   const {services}=useServices();
-  console.log(booking);
+  // console.log(booking);
   const handleActionButtonClick = () => {
     if (!clickable) return;
     

@@ -5,7 +5,7 @@ import type { GenerateOtp } from "../../domain/repositories/Generateotprepo";
 export class GenerateOtpImplement implements GenerateOtp{
     async generateStartOtp(data:GenerateotpRequest):Promise<GenerateotpRequest>{
      const response=await apiClient.post('/booking/generate-start-otp',data);
-     console.log(response);
+    //  console.log(response);
      return response.data;
     }
     async generatecompleteOtp(data:GenerateotpRequest):Promise<GenerateotpRequest>{

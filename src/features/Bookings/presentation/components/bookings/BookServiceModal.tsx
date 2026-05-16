@@ -159,7 +159,7 @@ export default function BookingServiceModal({
         coordinates: [lng, lat],
       },
     };
-    console.log(payload);
+    // console.log(payload);
     try {
       await createBooking.mutate(payload);
       // toast.success("Booking created successfully");

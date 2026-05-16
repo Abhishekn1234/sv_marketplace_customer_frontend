@@ -8,7 +8,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner"
 
 export default function ServicesByCategory() {
   const { categories: categoryData = [], loading, error } = useServices();
-  console.log(categoryData);
+  // console.log(categoryData);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<Service | null>(null)
 

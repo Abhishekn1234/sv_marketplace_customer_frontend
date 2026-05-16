@@ -10,7 +10,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
   const {data:categories}=useServiceCategory();
-  console.log(categories);
+  // console.log(categories);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
  const {t}=useLanguage();
@@ -19,7 +19,7 @@ export default function ServiceTierSelectionContent() {
   // ✅ Flatten services from categories
   const servicess =
     categories?.flatMap((category: any) => category.services) ?? [];
-    console.log(servicess);
+    // console.log(servicess);
 
   // ✅ Find the current service
   const currentService = servicess.find((s: any) => s._id === id);

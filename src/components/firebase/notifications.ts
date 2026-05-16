@@ -80,12 +80,12 @@ export async function initOnMessage(
     // =========================
     // OPTIONAL: system notification in foreground
     // =========================
-    if (Notification.permission === "granted") {
-      new Notification(notification.title, {
-        body: notification.message,
-        icon: "/logo.png",
-        data: notification,
-      });
-    }
+    // if (Notification.permission === "granted") {
+    //   new Notification(notification.title, {
+    //     body: notification.message,
+    //     icon: "/logo.png",
+    //     data: notification,
+    //   });
+    // }
   });
 }

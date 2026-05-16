@@ -17,7 +17,7 @@ export default function JobCompletedPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { bookings } = useBookings();
-  console.log("All bookings in JobCompletedPage:", bookings);
+  // console.log("All bookings in JobCompletedPage:", bookings);
   const {services}=useServices();
   const bookingId = state?.bookingId;
   const [booking, setBooking] = useState<any>(null);
@@ -29,7 +29,7 @@ export default function JobCompletedPage() {
     }
 
     const found = bookings?.find((b: any) => b._id === bookingId);
-    console.log("Found booking for Job Completed:", found);
+    // console.log("Found booking for Job Completed:", found);
     if (found) setBooking(found);
 
   }, [bookingId, bookings]);

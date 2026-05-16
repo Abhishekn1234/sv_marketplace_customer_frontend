@@ -21,7 +21,7 @@ export const useUnregisterDeviceToken = () => {
         // deviceId, // ✅ IMPORTANT
       });
 
-      console.log("✅ Token unregistered");
+      // console.log("✅ Token unregistered");
 
       /* ✅ Clean state properly */
       clearDevice();

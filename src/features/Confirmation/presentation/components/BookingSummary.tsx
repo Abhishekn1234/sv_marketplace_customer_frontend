@@ -17,7 +17,7 @@ export default function BookingSummary({ data, placeName, tierName }: BookingSum
   const {t}=useLanguage();
   const duration = formatBookingDurationWithTranslation(data, t);
 
-  console.log(data);
+  // console.log(data);
 const serviceName = data.serviceId?.name
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">

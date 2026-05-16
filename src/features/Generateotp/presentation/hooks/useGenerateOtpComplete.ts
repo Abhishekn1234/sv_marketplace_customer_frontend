@@ -11,8 +11,8 @@ export function useGenerateOtpComplete() {
   return useMutation({
     mutationFn: (data: GenerateotpRequest) => usecase.execute(data),
     mutationKey: ["generate-otp"],
-    onSuccess: (data) => {
-      console.log("OTP generated successfully", data);
+    onSuccess: (_data) => {
+      // console.log("OTP generated successfully", data);
       // You can perform additional actions here
       toast.success("OTP generate successfully");
     },

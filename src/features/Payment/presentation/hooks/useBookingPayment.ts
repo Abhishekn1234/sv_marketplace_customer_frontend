@@ -12,9 +12,9 @@ export function useBookingPayment() {
     mutationFn: (data: PaymentInitial) => usecase.execute(data),
     mutationKey: ["bookingpayment"],
 
-    onSuccess: (response, variables) => {
+    onSuccess: (_response, variables) => {
       const bookingId = variables.bookingId;
-      console.log(response);
+      // console.log(response);
       // ✅ Update ALL booking-history caches (any params)
       queryClient.setQueriesData(
         { queryKey: ["booking-history"], exact: false }, // 🔥 KEY FIX

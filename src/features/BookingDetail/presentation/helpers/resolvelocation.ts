@@ -11,7 +11,7 @@ export async function resolveLocation(
   let lat: number | undefined;
   let lng: number | undefined;
 
-  console.log("🏠 Home Address:", homeAddress);
+  // console.log("🏠 Home Address:", homeAddress);
 
   // 🔹 1. Check if "lat,lng"
   const isLatLngString =
@@ -22,14 +22,14 @@ export async function resolveLocation(
     lat = parsedLat;
     lng = parsedLng;
 
-    console.log("✅ Parsed from string:", lat, lng);
+    // console.log("✅ Parsed from string:", lat, lng);
   }
 
   // 🔹 2. Geocode if needed
   if (lat === undefined || lng === undefined) {
     try {
       const coords = await getCoordinatesFromQuery(homeAddress);
-      console.log("🌍 Geocoded:", coords);
+      // console.log("🌍 Geocoded:", coords);
 
       if (coords?.lat !== undefined && coords?.lng !== undefined) {
         lat = coords.lat;
@@ -49,7 +49,7 @@ export async function resolveLocation(
       lat = current_location.lat;
       lng = current_location.lng;
 
-      console.log("✅ Using current_location:", lat, lng);
+      // console.log("✅ Using current_location:", lat, lng);
     }
   }
 
@@ -61,11 +61,11 @@ export async function resolveLocation(
       lng = coords[0];
       lat = coords[1];
 
-      console.log("✅ Using GeoJSON:", lat, lng);
+      // console.log("✅ Using GeoJSON:", lat, lng);
     }
   }
 
-  console.log("🎯 Final coords:", lat, lng);
+  // console.log("🎯 Final coords:", lat, lng);
 
   if (lat === undefined || lng === undefined) return null;
 

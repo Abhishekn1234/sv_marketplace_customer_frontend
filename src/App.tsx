@@ -178,17 +178,52 @@ const navigate = useNavigate();
     setupNotifications();
   }, []);
 useEffect(() => {
-  const handler = (e: any) => {
-    const url = e.detail?.url;
-    if (url) {
-      navigate(url);
+  if (!navigator.serviceWorker) return;
+
+  navigator.serviceWorker.addEventListener(
+    "message",
+    (event) => {
+      const data = event.data;
+
+      if (
+        data?.type ===
+        "PUSH_NAVIGATION"
+      ) {
+        navigate(data.url, {
+          state: data.payload,
+        });
+      }
     }
+  );
+}, [navigate]);
+useEffect(() => {
+  const handler = (e: any) => {
+    // console.log(
+    //   "🔥 app:navigate event",
+    //   e.detail
+    // );
+
+    const url = e.detail?.url;
+    const payload =
+      e.detail?.payload;
+
+    if (!url) return;
+
+    navigate(url, {
+      state: payload,
+    });
   };
 
-  window.addEventListener("app:navigate", handler);
+  window.addEventListener(
+    "app:navigate",
+    handler
+  );
 
   return () => {
-    window.removeEventListener("app:navigate", handler);
+    window.removeEventListener(
+      "app:navigate",
+      handler
+    );
   };
 }, [navigate]);
   // =========================
@@ -201,15 +236,7 @@ useEffect(() => {
     //   notifications
     // );
   }, [notifications]);
-  useEffect(() => {
-  const handler = (e: any) => {
-    const url = e.detail?.url;
-    if (url) navigate(url);
-  };
-
-  window.addEventListener("app:navigate", handler);
-  return () => window.removeEventListener("app:navigate", handler);
-}, [navigate]);
+ 
 
   // =========================
   // 🔥 SOCKET INIT

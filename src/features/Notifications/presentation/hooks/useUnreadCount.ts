@@ -21,7 +21,7 @@ export const useUnreadCount = () => {
       const useCase = new GetUnreadCountUseCase(repo);
 
       const res = await useCase.execute();
-      console.log("Unread count:", res);
+      // console.log("Unread count:", res);
 
       setCount(res); // ✅ now updates Zustand store
     } catch (err) {

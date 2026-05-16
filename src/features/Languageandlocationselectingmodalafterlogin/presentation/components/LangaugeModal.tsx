@@ -16,7 +16,7 @@ export default function LanguageModal() {
     try {
       await setLanguage(selected.toLowerCase() as "en" | "ar" | "hi");
       // optional: close modal or trigger a state update
-      console.log("Language saved:", selected);
+      // console.log("Language saved:", selected);
     } catch (err) {
       console.error("Failed to save language", err);
     }

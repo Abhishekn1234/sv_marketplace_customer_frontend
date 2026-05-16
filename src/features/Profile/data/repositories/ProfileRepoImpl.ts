@@ -8,7 +8,7 @@ export class ProfileRepoImpl implements ProfileRepo {
     try {
       const response = await apiClient.get<Profile>("/user/me");
 
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching profile:", error);
