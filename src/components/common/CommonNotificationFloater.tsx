@@ -1,13 +1,15 @@
-import { useLanguage } from "@/features/context/LanguageContext";
-import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
+"use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { useLanguage } from "@/features/context/LanguageContext";
+import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
 
-import { useAuthStore } from "@/features/core/store/auth";
-import { BellIcon } from "../icons/BellIcon";
 import Button from "../input/Button";
+import { BellIcon } from "../icons/BellIcon";
 
 interface Props {
   direction?: "up" | "down";
@@ -20,55 +22,51 @@ export default function CommonNotificationFloater({
 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
   const { t } = useLanguage();
 
   // -----------------------------
-  // ZUSTAND
+  // FIXED FILTER
   // -----------------------------
-  const setUnreadCount = useAuthStore(
-    (state) => state.setUnreadCount
+  const notificationFilters = useMemo(
+    () => ({
+      page: 1,
+      limit: 100,
+      unreadOnly: false,
+    }),
+    []
   );
-
-  const unreadCount = useAuthStore(
-    (state) => state.notifications.unreadCount
-  );
-
-  // -----------------------------
-  // FIXED FILTER (IMPORTANT)
-  // -----------------------------
-  const notificationFilters = useMemo(() => ({
-    page: 1,
-    limit: 100,
-    unreadOnly: false,
-  }), []);
 
   const { data: notifications = [] } =
     useNotifications(notificationFilters);
 
   // -----------------------------
-  // SYNC UNREAD COUNT (NO LOOP)
+  // DERIVED UNREAD COUNT (SOURCE OF TRUTH = API)
   // -----------------------------
-  useEffect(() => {
-    const count = notifications.filter(
-      (n: any) => !n.isRead
-    ).length;
-
-    const current = useAuthStore.getState().notifications.unreadCount;
-
-    if (current !== count) {
-      setUnreadCount(count);
-    }
-  }, [notifications, setUnreadCount]);
+  const unreadCount = useMemo(() => {
+    return notifications.filter((n: any) => !n.isRead).length;
+  }, [notifications]);
 
   // -----------------------------
-  // CLICK HANDLER
+  // CLICK HANDLER (OPTIMISTIC UPDATE)
   // -----------------------------
   const handleNotificationClick = (item: any) => {
     const target = getNotificationTarget(item);
-
     if (!target) return;
 
-    setUnreadCount(Math.max(0, unreadCount - 1));
+    // optimistic update → instant UI change
+    queryClient.setQueryData(
+      ["notifications", notificationFilters],
+      (old: any[] = []) =>
+        old.map((n) =>
+          n.id === item.id || n._id === item._id
+            ? { ...n, isRead: true }
+            : n
+        )
+    );
+
+    // optional API call (fire and forget or await if needed)
+    // markAsRead(item.id);
 
     navigate(target);
     setOpen(false);
@@ -90,10 +88,7 @@ export default function CommonNotificationFloater({
     document.addEventListener("mousedown", handleClickOutside);
 
     return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // -----------------------------

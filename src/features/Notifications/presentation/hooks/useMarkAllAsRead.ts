@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkAllNotificationsReadUseCase } from "../../domain/usecases/MarkAllNotificationsReadUseCase";
 import { toast } from "react-toastify";
-import { useAuthStore } from "@/features/core/store/auth";
 
 export const useMarkAllAsRead = () => {
   const repo = useMemo(() => new NotificationRepositoryImpl(), []);
@@ -11,20 +11,24 @@ export const useMarkAllAsRead = () => {
     [repo]
   );
 
-  const resetUnread = useAuthStore((s) => s.resetUnread);
+  const queryClient = useQueryClient();
 
   const markAllAsRead = useCallback(async () => {
     try {
       await useCase.execute();
 
-      // ✅ INSTANT RESET
-      resetUnread();
+      // ✅ INSTANT UPDATE ALL
+      queryClient.setQueryData(
+        ["notifications"],
+        (old: any[] = []) =>
+          old.map((n) => ({ ...n, isRead: true }))
+      );
 
       toast.success("All notifications marked as read");
     } catch (err: any) {
       toast.error(err?.message || "Failed");
     }
-  }, [useCase, resetUnread]);
+  }, [useCase, queryClient]);
 
   return { markAllAsRead };
 };

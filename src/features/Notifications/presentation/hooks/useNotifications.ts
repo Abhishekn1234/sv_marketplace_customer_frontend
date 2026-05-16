@@ -7,14 +7,12 @@ import type { GetNotificationsParams } from "../../domain/entities/notificationg
 const repo = new NotificationRepositoryImpl();
 const useCase = new GetNotificationsUseCase(repo);
 
-export const useNotifications = (
-  filters?: GetNotificationsParams
-) => {
+export const useNotifications = (filters?: GetNotificationsParams) => {
   return useQuery({
     queryKey: ["notifications", filters],
 
     queryFn: async () => {
-      const safeFilters: GetNotificationsParams = {
+      const safeFilters = {
         page: filters?.page ?? 1,
         limit: filters?.limit ?? 1000,
         type: filters?.type,
@@ -22,17 +20,9 @@ export const useNotifications = (
       };
 
       const res = await useCase.execute(safeFilters);
-
       return Array.isArray(res?.data) ? res.data : [];
     },
 
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
-
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-
-    retry: 1,
+    staleTime: 0, // 🔥 IMPORTANT
   });
 };

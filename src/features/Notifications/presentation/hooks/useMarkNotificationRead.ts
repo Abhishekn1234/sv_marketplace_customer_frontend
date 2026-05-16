@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkNotificationReadUseCase } from "../../domain/usecases/MarkNotificationReadUseCase";
 import { toast } from "react-toastify";
-import { useAuthStore } from "@/features/core/store/auth";
 
 export const useMarkNotificationRead = () => {
   const repo = useMemo(() => new NotificationRepositoryImpl(), []);
@@ -11,24 +11,29 @@ export const useMarkNotificationRead = () => {
     [repo]
   );
 
-  const decrementUnread = useAuthStore((s) => s.decrementUnread);
+  const queryClient = useQueryClient();
 
-  const markAsRead = useCallback(
-    async (notificationId: string) => {
-      try {
-        await useCase.execute(notificationId);
+  const markAsRead = useCallback(async (notificationId: string) => {
+    try {
+      await useCase.execute(notificationId);
 
-        // ✅ INSTANT UI UPDATE (NO API CALL)
-        decrementUnread();
+      // ✅ INSTANT UI UPDATE
+      queryClient.setQueryData(
+        ["notifications"],
+        (old: any[] = []) =>
+          old.map((n) =>
+            n.id === notificationId || n._id === notificationId
+              ? { ...n, isRead: true }
+              : n
+          )
+      );
 
-        toast.success("Notification marked as read");
-      } catch (err: any) {
-        toast.error(err?.message || "Something went wrong");
-        throw err;
-      }
-    },
-    [useCase, decrementUnread]
-  );
+      toast.success("Notification marked as read");
+    } catch (err: any) {
+      toast.error(err?.message || "Something went wrong");
+      throw err;
+    }
+  }, [useCase, queryClient]);
 
   return { markAsRead };
 };

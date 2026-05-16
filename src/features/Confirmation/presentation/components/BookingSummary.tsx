@@ -4,6 +4,7 @@ import { formatSmartDate } from "../helpers/formatdatetime";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/helpers/formatduration";
 import { InfoIcon } from "@/components/icons";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 
 
@@ -17,8 +18,21 @@ export default function BookingSummary({ data, placeName, tierName }: BookingSum
   const {t}=useLanguage();
   const duration = formatBookingDurationWithTranslation(data, t);
 
-  // console.log(data);
-const serviceName = data.serviceId?.name
+   const { services } = useServices();
+
+const serviceObject = services?.find(
+  (s: any) =>
+    String(s._id) ===
+    String(data.service || data.serviceId)
+);
+
+const serviceName =
+  serviceObject?.name ||
+  data.serviceName ||
+  "N/A";
+
+// console.log("Service Object:", serviceObject);
+// console.log("Service Name:", serviceName);
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">
