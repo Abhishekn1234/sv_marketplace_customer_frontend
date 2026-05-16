@@ -3,6 +3,24 @@
     "title": "अपनी भाषा चुनें",
     "continue": "जारी रखें"
   },
+  "onboarding": {
+    "title": "सेटअप पूरा करें",
+    "completedTitle": "आप तैयार हैं 🎉",
+    "completedSubtitle": "सेटअप पूरा हो गया, जल्द ही बंद होगा…",
+    "progressLabel": "सेटअप प्रगति",
+    "stepCount": "{{done}} में से {{total}} चरण पूरे हुए",
+    "location": {
+      "label": "अपना स्थान सेट करें",
+      "description": "नज़दीकी सेवाओं के लिए आवश्यक",
+      "action": "वर्तमान स्थान उपयोग करें"
+    },
+    "notifications": {
+      "label": "नोटिफिकेशन चालू करें",
+      "description": "बुकिंग और संदेशों के अपडेट पाएं",
+      "action": "चेक करें"
+    },
+    "close": "बंद करें"
+  },
   "location": {
     "searchPlaceholder": "सड़क, इमारत या क्षेत्र खोजें",
     "useCurrent": "मेरी वर्तमान लोकेशन का उपयोग करें",

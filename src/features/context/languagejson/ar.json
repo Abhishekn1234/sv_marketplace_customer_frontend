@@ -3,6 +3,25 @@
     "title": "اختر لغتك",
     "continue": "متابعة"
   },
+   
+   "onboarding": {
+    "title": "إكمال الإعداد",
+    "completedTitle": "تم الإعداد بالكامل 🎉",
+    "completedSubtitle": "اكتمل الإعداد، سيتم الإغلاق قريبًا…",
+    "progressLabel": "تقدم الإعداد",
+    "stepCount": "تم إكمال {{done}} من أصل {{total}} خطوة",
+    "location": {
+      "label": "تحديد موقعك",
+      "description": "مطلوب للخدمات القريبة",
+      "action": "استخدام الموقع الحالي"
+    },
+     "notifications": {
+      "label": "تفعيل الإشعارات",
+      "description": "احصل على تحديثات الحجوزات والرسائل",
+      "action": "تحقق"
+    },
+    "close": "إغلاق"
+  },
   "location": {
     "searchPlaceholder": "ابحث عن شارع أو مبنى أو منطقة",
     "useCurrent": "استخدم موقعي الحالي",

@@ -40,15 +40,8 @@ interface NavbarProps {
 }
 
 // Onboarding steps definition — extend this array to add more steps
-const ONBOARDING_STEPS = [
-  {
-    id: "location",
-    label: "Set your location",
-    description: "Required for nearby services",
-  },
-] as const;
 
-type OnboardingStepId = (typeof ONBOARDING_STEPS)[number]["id"];
+
 
 const CommonNavbar: React.FC<NavbarProps> = ({
   showBackButton = false,
@@ -70,6 +63,20 @@ const CommonNavbar: React.FC<NavbarProps> = ({
   const profilePic = user?.profilePictureUrl;
 
   const location = current_location?.addresses ?? [];
+ const ONBOARDING_STEPS = [
+  {
+    id: "location",
+    label: t.onboarding.location.label,
+    description: t.onboarding.location.description,
+  },
+  {
+    id: "notifications",
+    label: t.onboarding.notifications.label,
+    description: t.onboarding.notifications.description,
+  },
+] as const;
+const notificationRef = useRef<HTMLDivElement | null>(null);
+
 
   const currentLocation =
     location.find((addr) => addr.type === "home")?.value ||
@@ -87,9 +94,12 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     currentLocation?.trim() !== "";
 
   // Derive per-step completion from real state
-  const stepCompletion: Record<OnboardingStepId, boolean> = {
-    location: hasLocation,
-  };
+const hasNotificationsEnabled = true; // replace with real API/state
+
+const stepCompletion = {
+  location: hasLocation,
+  notifications: hasNotificationsEnabled,
+};
 
   const allStepsDone = ONBOARDING_STEPS.every(
     (step) => stepCompletion[step.id]
@@ -97,11 +107,12 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
   // Show onboarding if any step is incomplete and the user hasn't dismissed it
   useEffect(() => {
-    const dismissed = localStorage.getItem("location-onboarding-seen");
-    if (!dismissed) {
-      setShowOnboarding(true);
-    }
-  }, []);
+  const dismissed = localStorage.getItem("location-onboarding-seen");
+
+  if (!hasLocation && !dismissed) {
+    setShowOnboarding(true);
+  }
+}, [hasLocation]);
 
   // Auto-dismiss once every step is complete
   useEffect(() => {
@@ -212,17 +223,21 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
                 {/* ONBOARDING CHECKLIST */}
                                   {showOnboarding && (
-                    <OnboardingChecklist
-                      steps={ONBOARDING_STEPS.map((step) => ({
-                        ...step,
-                        onAction: handleUseCurrentLocation,
-                        actionLabel: "Use",
-                      }))}
-                      completion={stepCompletion}
-                      onClose={dismissOnboarding}
-                      allDone={allStepsDone}
-                    />
-                  )}
+  <OnboardingChecklist
+    steps={ONBOARDING_STEPS.map((step) => ({
+      ...step,
+      onAction:
+        step.id === "location"
+          ? handleUseCurrentLocation
+          : () => notificationRef.current?.scrollIntoView({ behavior: "smooth" }),
+      actionLabel: step.id === "location" ? "Use" : "View",
+    }))}
+    completion={stepCompletion}
+    onClose={dismissOnboarding}
+    allDone={allStepsDone}
+    anchorRef={notificationRef}
+  />
+)}
 
                 {/* LOCATION DROPDOWN */}
                 {showDropdown && (
@@ -308,7 +323,9 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
             {showUserControls && user && (
               <>
+            <div ref={notificationRef}>
                 <CommonNotificationFloater />
+              </div>
                 <Image
                   src={profilePic}
                   alt="Profile"

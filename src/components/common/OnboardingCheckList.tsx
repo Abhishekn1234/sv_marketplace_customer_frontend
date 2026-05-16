@@ -5,6 +5,7 @@ import { X, CheckCircle2 } from "lucide-react";
 
 import Button from "../input/Button";
 import AppProgress from "./CommonAppProgress";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export interface OnboardingStep {
   id: string;
@@ -19,6 +20,7 @@ interface Props {
   completion: Record<string, boolean>;
   onClose: () => void;
   allDone: boolean;
+  anchorRef?: React.RefObject<HTMLElement | null>;
 }
 
 const OnboardingChecklist: React.FC<Props> = ({
@@ -26,25 +28,43 @@ const OnboardingChecklist: React.FC<Props> = ({
   completion,
   onClose,
   allDone,
+  anchorRef,
 }) => {
-  const doneCount = steps.filter((s) => completion[s.id]).length;
+  const { t } = useLanguage();
 
+  const doneCount = steps.filter((s) => completion[s.id]).length;
   const progress =
     steps.length > 0 ? (doneCount / steps.length) * 100 : 0;
 
+  const rect = anchorRef?.current?.getBoundingClientRect();
+
+  const top = rect ? rect.bottom + 12 : 80;
+  const left = rect ? rect.left : 20;
+
   return (
-    <div className="absolute top-full mt-3 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]">
-      {/* Header */}
+    <div
+      className="fixed w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-[9999]"
+      style={{
+        top,
+        left,
+      }}
+    >
+      {/* ARROW */}
+      <div className="absolute -top-2 left-10 w-4 h-4 bg-white border-l border-t rotate-45" />
+
+      {/* HEADER */}
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="font-semibold text-gray-900 text-sm">
-            {allDone ? "You're all set! 🎉" : "Complete setup"}
+            {allDone ? t.onboarding.completedTitle : t.onboarding.title}
           </h3>
 
           <p className="text-xs text-gray-500 mt-0.5">
             {allDone
-              ? "Setup complete, closing shortly…"
-              : `${doneCount} of ${steps.length} steps done`}
+              ? t.onboarding.completedSubtitle
+              : t.onboarding.stepCount
+                  .replace("{{done}}", String(doneCount))
+                  .replace("{{total}}", String(steps.length))}
           </p>
         </div>
 
@@ -53,16 +73,16 @@ const OnboardingChecklist: React.FC<Props> = ({
         </Button>
       </div>
 
-      {/* Progress (REUSABLE COMPONENT) */}
+      {/* PROGRESS */}
       <AppProgress
         value={progress}
         height={6}
         color="bg-blue-600"
         showLabel
-        label="Setup Progress"
+        label={t.onboarding.progressLabel}
       />
 
-      {/* Steps */}
+      {/* STEPS */}
       <div className="space-y-2 mt-3">
         {steps.map((step, index) => {
           const done = completion[step.id];
@@ -74,7 +94,6 @@ const OnboardingChecklist: React.FC<Props> = ({
                 done ? "bg-green-50" : "bg-blue-50"
               }`}
             >
-              {/* Left */}
               <div className="flex items-center gap-3">
                 {done ? (
                   <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
@@ -87,9 +106,7 @@ const OnboardingChecklist: React.FC<Props> = ({
                 <div>
                   <p
                     className={`text-sm font-medium ${
-                      done
-                        ? "text-green-700 line-through"
-                        : "text-gray-800"
+                      done ? "text-green-700 line-through" : "text-gray-800"
                     }`}
                   >
                     {step.label}
@@ -103,13 +120,12 @@ const OnboardingChecklist: React.FC<Props> = ({
                 </div>
               </div>
 
-              {/* Action */}
               {!done && step.onAction && (
                 <Button
                   onClick={step.onAction}
                   className="px-3 py-1 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 shrink-0"
                 >
-                  {step.actionLabel || "Use"}
+                  {step.actionLabel || t.onboarding.location.action}
                 </Button>
               )}
             </div>

@@ -383,6 +383,25 @@
   "changePassword": "Change Password",
   "deleteAccount": "Delete Account"
 },
+"onboarding": {
+    "title": "Complete setup",
+    "completedTitle": "You're all set! 🎉",
+    "completedSubtitle": "Setup complete, closing shortly…",
+    "progressLabel": "Setup Progress",
+    "stepCount": "{{done}} of {{total}} steps done",
+    "location": {
+      "label": "Set your location",
+      "description": "Required for nearby services",
+      "action": "Use current location"
+    },
+
+    "notifications": {
+      "label": "Enable notifications",
+      "description": "Get updates about bookings and messages",
+      "action": "Check"
+    },
+    "close": "Close"
+  },
 "changepasswordpage": {
   "title": "Change Password",
   "description": "Update your password to keep your account secure. Make sure your new password is strong and different from previous passwords.",

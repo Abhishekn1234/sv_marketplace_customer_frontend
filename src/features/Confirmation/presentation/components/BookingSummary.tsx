@@ -17,22 +17,21 @@ interface BookingSummaryProps {
 export default function BookingSummary({ data, placeName, tierName }: BookingSummaryProps) {
   const {t}=useLanguage();
   const duration = formatBookingDurationWithTranslation(data, t);
-
+//  console.log(data);
    const { services } = useServices();
 
-const serviceObject = services?.find(
-  (s: any) =>
-    String(s._id) ===
-    String(data.service || data.serviceId)
-);
+const serviceId =
+  typeof data.serviceId === "string"
+    ? data.serviceId
+    : data.serviceId?._id;
 
 const serviceName =
-  serviceObject?.name ||
+  services?.find((s: any) => String(s._id) === String(serviceId))?.name ||
+  (typeof data.serviceId === "object" ? data.serviceId?.name : null) ||
   data.serviceName ||
   "N/A";
-
-// console.log("Service Object:", serviceObject);
-// console.log("Service Name:", serviceName);
+//  console.log("Service Object:", serviceObject);
+//  console.log("Service Name:", serviceName);
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden mb-8 shadow-lg text-left">
       <div className="px-6 py-5 bg-gray-50 border-b-2 border-gray-200">
