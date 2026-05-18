@@ -254,7 +254,7 @@ export default function JobTrackingWorkerDetails({
             className="w-full border py-2 rounded-lg"
             onClick={() =>
               navigate(
-                `/message/${worker._id}/${booking?._id}`
+                `/message/${booking?._id}`
               )
             }
           >

@@ -1,31 +1,28 @@
 "use client";
 
-import { useMemo, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useParams } from "react-router-dom";
 
 import WorkerChatPageContent from "./components/WorkerChatPageContent";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
-import { toast } from "react-toastify";
 import { Splash } from "./components/Splash";
 
 export default function WorkerChatPage() {
-  const { workerId, bookingId } =
-    useParams<{ workerId: string; bookingId: string }>();
-
-  const navigate = useNavigate();
+  const { bookingId } =
+    useParams<{ bookingId: string }>();
 
   const token = useAuthStore((state) => state.accessToken);
   const currentUserId = useAuthStore((state) => state.user?._id);
 
   const { bookings = [], loading } = useBookings();
 
-  // =========================
-  // MUST BE BEFORE RETURNS
-  // =========================
+  const isValidRoute =
+    bookingId && bookingId !== "undefined";
+
   const workerData = useMemo(() => {
-    if (!bookingId || !workerId || !bookings.length) return null;
+    if (!isValidRoute || !bookings.length) return null;
 
     const booking = bookings.find(
       (b: any) => String(b._id) === String(bookingId)
@@ -33,50 +30,26 @@ export default function WorkerChatPage() {
 
     if (!booking) return null;
 
-    const assigned = booking.assignedWorkers?.find((aw: any) => {
-      const assignedWorkerId =
-        aw?.worker?._id || aw?.workerId?._id || aw?.workerId;
-
-      return (
-        assignedWorkerId &&
-        String(assignedWorkerId) === String(workerId)
-      );
-    });
+    const assigned =
+      booking.assignedWorkers?.[0] || null;
 
     if (!assigned) return null;
 
+    const worker = assigned.worker || assigned.workerId;
+    const profile = assigned.workerProfile;
+
     return {
-      worker: assigned.worker || assigned.workerId,
-      profile: assigned.workerProfile,
+      worker,
+      profile,
       bookingId: booking._id,
     };
-  }, [bookings, bookingId, workerId]);
+  }, [bookings, bookingId, isValidRoute]);
 
-  // =========================
-  // EFFECT MUST ALSO BE BEFORE RETURNS
-  // =========================
-  useEffect(() => {
-    if (!loading && !workerData) {
-      toast.error(
-        "Worker or booking not found. Booking may be completed."
-      );
-
-      const timer = setTimeout(() => {
-        navigate("/bookings", { replace: true });
-      }, 1200);
-
-      return () => clearTimeout(timer);
-    }
-  }, [loading, workerData, navigate]);
-
-  // =========================
-  // SAFE CONDITIONS AFTER HOOKS
-  // =========================
   if (!token || !currentUserId || loading) {
     return <CommonSpinner />;
   }
 
-  if (!workerId || !bookingId) {
+  if (!isValidRoute) {
     return (
       <Splash>
         <p>Invalid chat route</p>
@@ -92,8 +65,7 @@ export default function WorkerChatPage() {
 
   return (
     <WorkerChatPageContent
-     
-      bookingId={bookingId}
+      bookingId={bookingId!}
       token={token}
       currentUserId={currentUserId}
       worker={{

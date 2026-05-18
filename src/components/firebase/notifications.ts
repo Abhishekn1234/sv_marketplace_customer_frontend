@@ -6,7 +6,6 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 // =========================
 // TOKEN
 // =========================
-
 export async function requestAndGetToken() {
   try {
     const messaging = await getFirebaseMessaging();
@@ -22,7 +21,7 @@ export async function requestAndGetToken() {
       serviceWorkerRegistration: registration,
     });
 
-    // console.log("🔥 FCM Token:", token);
+    console.log("🔥 FCM TOKEN:", token);
     return token;
   } catch (err) {
     console.error("FCM token error:", err);
@@ -31,61 +30,49 @@ export async function requestAndGetToken() {
 }
 
 // =========================
-// FOREGROUND LISTENER
+// FOREGROUND LISTENER (FIXED)
 // =========================
-
-export async function initOnMessage(
-  setNotifications?: React.Dispatch<React.SetStateAction<any[]>>
-) {
+export async function initOnMessage(setNotifications?: any) {
   const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
   onMessage(messaging, (payload) => {
-    // console.log("📩 Foreground FCM:", payload);
-
     const data = payload.data || {};
+    console.log("📩 FCM Message received:", payload);
+    const bookingId = data.bookingId;
 
     const notification = {
-      id:
-        data.notificationId ||
-        payload.messageId ||
-        Date.now().toString(),
-
-      title:
-        payload.notification?.title ||
-        data.title ||
-        "Notification",
-
-      message:
-        payload.notification?.body ||
-        data.body ||
-        "You have a new update",
-
-      type: data.type || "GENERAL",
-
-      bookingId: data.bookingId || null,
-
+      id: data.notificationId || Date.now().toString(),
+      title: payload.notification?.title || "Notification",
+      message: payload.notification?.body || "New message",
+      type: data.type,
+      bookingId,
       raw: data,
     };
 
-    // console.log("✅ Parsed Notification:", notification);
+    setNotifications?.((prev: any) => [notification, ...prev]);
 
-    // =========================
-    // UPDATE STATE SAFELY
-    // =========================
-    setNotifications?.((prev: any[] = []) => {
-      return [notification, ...prev];
+  if (Notification.permission === "granted") {
+  const url = `/message/${bookingId}`;
+
+  const n = new Notification(notification.title, {
+    body: notification.message,
+    icon: "/logo.png",
+  });
+
+  n.onclick = () => {
+    n.close();
+
+    const channel = new BroadcastChannel("fcm_channel");
+
+    channel.postMessage({
+      type: "NAVIGATE",
+      url,
+      payload: notification,
     });
 
-    // =========================
-    // OPTIONAL: system notification in foreground
-    // =========================
-    // if (Notification.permission === "granted") {
-    //   new Notification(notification.title, {
-    //     body: notification.message,
-    //     icon: "/logo.png",
-    //     data: notification,
-    //   });
-    // }
+    channel.close();
+  };
+}
   });
 }

@@ -50,7 +50,7 @@ export default function ChatHeader({ worker,bookingId }: { worker: Worker,bookin
   };
 
   return (
-    <div className="relative z-50 flex items-center gap-3 border-b border-gray-200 bg-white/95 px-3 py-3 shadow-sm backdrop-blur sm:px-4">
+    <div className=" flex items-center gap-3">
       <Tooltip text="Go back" position="bottom">
         <Button
           onClick={() => navigate(`/jobtracking/${bookingId}`)}

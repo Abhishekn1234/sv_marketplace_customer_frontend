@@ -1,76 +1,32 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function NotificationNavigation() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const channel =
-      new BroadcastChannel(
-        "fcm_channel"
-      );
+    const channel = new BroadcastChannel("fcm_channel");
 
-    // ✅ Broadcast channel
-    const channelHandler = (
-      event: MessageEvent
-    ) => {
+    const handler = (event: MessageEvent) => {
       const data = event.data;
 
-      console.log(
-        "📡 Broadcast:",
-        data
-      );
+      console.log("📡 Navigation event:", data);
 
-      if (
-        data?.type ===
-          "NAVIGATE" &&
-        data.url
-      ) {
-        navigate(data.url);
-      }
+      if (!data) return;
+      if (data.type !== "NAVIGATE") return;
+      if (!data.url) return;
+
+      navigate(data.url, {
+        state: data.payload,
+      });
     };
 
-    // ✅ SW direct message
-    const swHandler = (
-      event: MessageEvent
-    ) => {
-      const data = event.data;
-
-      console.log(
-        "📨 SW Message:",
-        data
-      );
-
-      if (
-        data?.type ===
-          "NAVIGATE" &&
-        data.url
-      ) {
-        navigate(data.url);
-      }
-    };
-
-    channel.addEventListener(
-      "message",
-      channelHandler
-    );
-
-    navigator.serviceWorker?.addEventListener(
-      "message",
-      swHandler
-    );
+    channel.addEventListener("message", handler);
 
     return () => {
-      channel.removeEventListener(
-        "message",
-        channelHandler
-      );
-
-      navigator.serviceWorker?.removeEventListener(
-        "message",
-        swHandler
-      );
-
+      channel.removeEventListener("message", handler);
       channel.close();
     };
   }, [navigate]);

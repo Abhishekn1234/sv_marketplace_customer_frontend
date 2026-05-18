@@ -67,7 +67,7 @@ export default function ProviderWorkingCard({ booking }: any) {
         </Link>
 
             <Link
-        to={`/message/${worker._id}/${booking._id}`}
+        to={`/message/${booking._id}`}
         className="flex-1 h-11 bg-white border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition active:scale-95 flex items-center justify-center"
       >
         {t.jobprogresspage.message}

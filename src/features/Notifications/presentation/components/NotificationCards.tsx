@@ -12,6 +12,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useRegisterDeviceToken } from "@/features/Notifications/presentation/hooks/useRegisterDeviceToken";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
+import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 
 import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
@@ -20,7 +21,6 @@ import { getNotificationTarget } from "../utils/notificationNavigation";
 import Select from "@/components/input/Select";
 import Button from "@/components/input/Button";
 import { toast } from "react-toastify";
-import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -31,42 +31,61 @@ export default function NotificationCards() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const filters = useMemo(() => ({ page, limit, type }), [page, limit, type]);
+  const filters = useMemo(
+    () => ({ page, limit, type }),
+    [page, limit, type]
+  );
 
-  const {
-    data: apiNotifications = [],
-  isLoading: loading,
-  } = useNotifications(filters);
+  const { data: apiNotifications = [], isLoading: loading } =
+    useNotifications(filters);
 
   const { fcmNotifications = [] } = useRegisterDeviceToken();
 
-  // ✅ LOCAL STATE (MAIN FIX)
-  const [localNotifications, setLocalNotifications] = useState<any[]>([]);
+  // =========================
+  // 🔥 FIX: USE MAP INSTEAD OF ARRAY
+  // =========================
+  const [notificationMap, setNotificationMap] = useState<Record<string, any>>({});
 
-  // sync API → local only when API changes
+  // merge API + FCM safely (NO OVERWRITE)
   useEffect(() => {
-    const normalizedAPI = apiNotifications.map((n: any) => ({
-      ...n,
-      id: String(n._id),
-      source: "api",
-    }));
+    setNotificationMap((prev) => {
+      const updated = { ...prev };
 
-    const normalizedFCM =
-      page === 1
-        ? fcmNotifications.map((msg: any) => ({
-            id: msg._id || msg.id,
+      // API notifications
+      apiNotifications.forEach((n: any) => {
+        updated[n._id] = {
+          ...n,
+          id: String(n._id),
+          source: "api",
+        };
+      });
+
+      // FCM only on first page
+      if (page === 1) {
+        fcmNotifications.forEach((msg: any) => {
+          const id = msg._id || msg.id;
+          updated[id] = {
+            id,
             title: msg.title,
             message: msg.message,
             isRead: false,
             createdAt: msg.createdAt,
             source: "fcm",
-          }))
-        : [];
+          };
+        });
+      }
 
-    setLocalNotifications([...normalizedFCM, ...normalizedAPI]);
+      return updated;
+    });
   }, [apiNotifications, fcmNotifications, page]);
 
-  // ✅ UNREAD COUNT (FROM LOCAL STATE)
+  // convert map → array
+  const localNotifications = useMemo(
+    () => Object.values(notificationMap),
+    [notificationMap]
+  );
+
+  // unread
   const unreadNotifications = useMemo(
     () => localNotifications.filter((n) => !n.isRead),
     [localNotifications]
@@ -78,7 +97,7 @@ export default function NotificationCards() {
   // SELECT SINGLE
   // ========================
   const toggleSelect = (id: string) => {
-    const target = localNotifications.find((n) => n.id === id);
+    const target = notificationMap[id];
     if (!target || target.isRead) return;
 
     setSelected((prev) =>
@@ -108,7 +127,7 @@ export default function NotificationCards() {
   };
 
   // ========================
-  // MARK SELECTED AS READ (OPTIMISTIC)
+  // MARK SELECTED AS READ
   // ========================
   const markSelectedAsRead = async () => {
     try {
@@ -116,13 +135,17 @@ export default function NotificationCards() {
 
       await Promise.all(selected.map((id) => markAsRead(id)));
 
-      setLocalNotifications((prev) =>
-        prev.map((n) =>
-          selected.includes(n.id)
-            ? { ...n, isRead: true }
-            : n
-        )
-      );
+      setNotificationMap((prev) => {
+        const updated = { ...prev };
+
+        selected.forEach((id) => {
+          if (updated[id]) {
+            updated[id] = { ...updated[id], isRead: true };
+          }
+        });
+
+        return updated;
+      });
 
       setSelected([]);
     } catch (err) {
@@ -133,25 +156,27 @@ export default function NotificationCards() {
   // ========================
   // MARK ALL AS READ
   // ========================
-    const { markAllAsRead } = useMarkAllAsRead();
+  const { markAllAsRead } = useMarkAllAsRead();
 
-    const handleMarkAllAsRead = async () => {
-      try {
-        await markAllAsRead();
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
 
-        // optimistic update
-        setLocalNotifications((prev) =>
-          prev.map((n) => ({
-            ...n,
-            isRead: true,
-          }))
-        );
+      setNotificationMap((prev) => {
+        const updated = { ...prev };
 
-        setSelected([]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+        Object.keys(updated).forEach((id) => {
+          updated[id] = { ...updated[id], isRead: true };
+        });
+
+        return updated;
+      });
+
+      setSelected([]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // ========================
   // NAVIGATION
@@ -164,14 +189,13 @@ export default function NotificationCards() {
       return;
     }
 
-    // 🔥 instantly mark as read
-    setLocalNotifications((prev) =>
-      prev.map((n) =>
-        n.id === notification.id
-          ? { ...n, isRead: true }
-          : n
-      )
-    );
+    setNotificationMap((prev) => ({
+      ...prev,
+      [notification.id]: {
+        ...prev[notification.id],
+        isRead: true,
+      },
+    }));
 
     navigate(url);
   };
@@ -184,51 +208,48 @@ export default function NotificationCards() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
-              <Bell className="text-white w-6 h-6" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {t.notificationpage.title}
-            </h1>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-blue-600 rounded-xl">
+            <Bell className="text-white" />
           </div>
+          <h1 className="text-xl font-bold">
+            {t.notificationpage.title}
+          </h1>
         </div>
 
         <CommonCard className="min-h-[600px] p-0">
 
           {/* FILTER */}
-          <div className="px-4 py-4 flex justify-between gap-4">
+          <div className="p-4 flex justify-between">
             <Select
               options={[
-                { label: "5 per page", value: "5" },
-                { label: "10 per page", value: "10" },
-                { label: "20 per page", value: "20" },
-                { label: "50 per page", value: "50" },
+                { label: "5", value: "5" },
+                { label: "10", value: "10" },
+                { label: "20", value: "20" },
+                { label: "50", value: "50" },
               ]}
               value={limit.toString()}
               onChange={(val) => setLimit(Number(val))}
-              className="w-[160px]"
             />
 
             <div className="flex gap-2">
               {[
-                { label: t.notificationpage.filters.All, value: undefined },
-                { label: t.notificationpage.filters.Requested, value: "BOOKING_REQUEST" },
-                { label: t.notificationpage.filters.Updates, value: "BOOKING_UPDATE" },
-                { label: t.notificationpage.filters.Admin, value: "ADMIN_MESSAGE" },
+                { label: "All", value: undefined },
+                { label: "Requested", value: "BOOKING_REQUEST" },
+                { label: "Updates", value: "BOOKING_UPDATE" },
+                { label: "Admin", value: "ADMIN_MESSAGE" },
               ].map((f) => (
                 <Button
                   key={f.label}
                   onClick={() => setType(f.value)}
-                  className={`px-4 py-1 rounded-full ${
+                  className={
                     type === f.value
                       ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600"
-                  }`}
+                      : "bg-gray-100"
+                  }
                 >
                   {f.label}
                 </Button>
@@ -243,7 +264,6 @@ export default function NotificationCards() {
             total={unreadNotifications.length}
             markAllAsRead={handleMarkAllAsRead}
             markSelectedAsRead={markSelectedAsRead}
-          
           />
 
           {/* LIST */}

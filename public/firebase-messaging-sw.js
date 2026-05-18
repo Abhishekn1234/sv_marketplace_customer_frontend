@@ -14,16 +14,16 @@ firebase.initializeApp({
   messagingSenderId: "118069674424",
   appId: "1:118069674424:web:c21a0a1edbb9e808a94f4d",
 });
-
 const messaging = firebase.messaging();
 
 function buildRoute(data) {
-  const bookingId = data.bookingId;
-  const workerId = data.workerId;
+  const bookingId = data?.bookingId;
 
-  switch (data.type) {
+  if (!bookingId) return "/notifications";
+
+  switch (data?.type) {
     case "CHAT_MESSAGE":
-      return `/message/${workerId}/${bookingId}`;
+      return `/message/${bookingId}`;
 
     case "BOOKING_UPDATE":
       return `/jobtracking/${bookingId}`;
@@ -37,83 +37,46 @@ function buildRoute(data) {
 }
 
 messaging.onBackgroundMessage((payload) => {
-  console.log("📩 Background:", payload);
-
   const data = payload.data || {};
-
   const url = buildRoute(data);
 
-  self.registration.showNotification(
-    data.title || "Notification",
-    {
-      body: data.message || data.body,
-      icon: "/logo.png",
-      badge: "/logo.png",
-
-      data: {
-        ...data,
-        url,
-      },
-
-      requireInteraction: true,
-
-      actions: [
-        {
-          action: "open",
-          title: "Open",
-        },
-      ],
-    }
-  );
+  self.registration.showNotification(data.title || "Notification", {
+    body: data.body || data.message,
+    icon: "/logo.png",
+    data: {
+      ...data,
+      url,
+    },
+    requireInteraction: true,
+  });
 });
 
-self.addEventListener(
-  "notificationclick",
-  async (event) => {
-    event.notification.close();
+self.addEventListener("notificationclick", async (event) => {
+  event.notification.close();
 
-    const data =
-      event.notification.data || {};
+  const data = event.notification.data || {};
+  const url = data.url || "/notifications";
 
-    const url =
-      data.url || "/notifications";
+  const clientsList = await clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
 
-    const allClients =
-      await clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      });
+  // existing tab
+  if (clientsList.length > 0) {
+    const client = clientsList[0];
 
-    // existing tab
-    for (const client of allClients) {
-      const clientUrl = new URL(
-        client.url
-      );
+    client.focus();
 
-      const targetUrl = new URL(
-        url,
-        self.location.origin
-      );
+    client.postMessage({
+      type: "NAVIGATE",
+      url,
+      payload: data,
+    });
 
-      // same origin
-      if (
-        clientUrl.origin ===
-        targetUrl.origin
-      ) {
-        // send live data without reload
-        client.postMessage({
-          type: "PUSH_NAVIGATION",
-          url,
-          payload: data,
-        });
-
-        client.focus();
-
-        return;
-      }
-    }
-
-    // no existing tab
-    clients.openWindow(url);
+    return;
   }
-);
+
+  // no tab open
+  await clients.openWindow(url);
+});

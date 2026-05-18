@@ -22,7 +22,9 @@ type NotificationLike = {
 const getFirstString = (...values: unknown[]) =>
   values.find((value): value is string => typeof value === "string" && value.trim().length > 0);
 
-export function getNotificationTarget(notification: NotificationLike): string | null {
+export function getNotificationTarget(
+  notification: NotificationLike
+): string {
   const data =
     notification.data ||
     notification.payload ||
@@ -37,65 +39,60 @@ export function getNotificationTarget(notification: NotificationLike): string | 
     data.booking?._id
   );
 
-  const workerId = getFirstString(
-    notification.workerId,
-    data.workerId,
-    data.worker?._id,
+  // const workerId = getFirstString(
+  //   notification.workerId,
+  //   data.workerId,
+  //   data.worker?._id
+  // );
+
+  const senderId = getFirstString(
     notification.senderId,
     data.senderId
   );
 
-  // 💬 CHAT
-  if (type === "CHAT_MESSAGE" || type === "NEW_MESSAGE" || data?.chatId) {
-    if (workerId && bookingId) {
-      return `/message/${workerId}/${bookingId}`;
+  // =========================
+  // 💬 CHAT ROUTE
+  // =========================
+  if (type === "CHAT_MESSAGE" || type === "NEW_MESSAGE") {
+    if (bookingId) {
+      return `/message/${bookingId}`;
     }
+
+    // fallback safe route
+    if (bookingId) return `/jobtracking/${bookingId}`;
+
     return "/messages";
   }
 
-  // 📦 BOOKING
-  if (type === "BOOKING_REQUEST" || type === "BOOKING_UPDATE") {
+  // =========================
+  // 📦 BOOKING UPDATE
+  // =========================
+  if (
+    type === "BOOKING_REQUEST" ||
+    type === "BOOKING_UPDATE" ||
+    type === "WORK_ASSIGNED"
+  ) {
     if (bookingId) {
       return `/jobtracking/${bookingId}`;
     }
+
     return "/bookings";
   }
 
-  if (bookingId && workerId) {
-    return `/message/${workerId}/${bookingId}`;
+  // =========================
+  // DEFAULT CHAT FALLBACK
+  // (ONLY if clearly chat-related data exists)
+  // =========================
+  if (bookingId && senderId) {
+    return `/message/${bookingId}`;
   }
 
   if (bookingId) {
     return `/jobtracking/${bookingId}`;
   }
 
-  return null;
+  // =========================
+  // FINAL FALLBACK (NEVER NULL)
+  // =========================
+  return "/notifications";
 }
-// function withMessageParams(
-//   url: string,
-//   notification: NotificationLike,
-//   data: Record<string, any>
-// ) {
-//   const text = getFirstString(
-//     notification.text,
-//     notification.message,
-//     notification.body,
-//     data.text,
-//     data.message,
-//     data.body
-//   );
-
-//   if (!text) return url;
-
-//   const target = new URL(url, window.location.origin);
-//   const messageId = getFirstString(notification.messageId, data.messageId, notification.id, data.id);
-//   const senderId = getFirstString(notification.senderId, data.senderId);
-//   const timestamp = getFirstString(notification.timestamp, data.timestamp, notification.createdAt, data.createdAt);
-
-//   target.searchParams.set("text", text);
-//   if (messageId) target.searchParams.set("messageId", messageId);
-//   if (senderId) target.searchParams.set("senderId", senderId);
-//   if (timestamp) target.searchParams.set("timestamp", timestamp);
-
-//   return `${target.pathname}${target.search}`;
-// }

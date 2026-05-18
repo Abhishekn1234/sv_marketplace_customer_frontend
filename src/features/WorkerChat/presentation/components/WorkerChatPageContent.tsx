@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useEffect,
   useMemo,
@@ -19,9 +21,15 @@ import ChatInput from "./ChatInput";
 
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 
+// 👇 SOCKET (you already created this)
+import { useChatSocket } from "../hooks/usechatsocket";
+
+import { useNavigate } from "react-router-dom";
+
 export default function WorkerChatPageContent({
   worker,
   bookingId,
+  token,
   currentUserId,
 }: {
   worker: Worker;
@@ -32,178 +40,108 @@ export default function WorkerChatPageContent({
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
 
-  const containerRef =
-    useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
 
   const LIMIT = 30;
 
   // =========================
-  // API
+  // SOCKET (REALTIME)
   // =========================
+  useChatSocket(token, bookingId, currentUserId, worker.fullName, (url) => {
+    navigate(url);
+  });
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useGetChatMessages(
+  // =========================
+  // API (INITIAL LOAD ONLY)
+  // =========================
+  const { data, isLoading, isFetching } = useGetChatMessages(
     bookingId,
     page,
     LIMIT
   );
 
-  const { mutate: sendMessage, isPending } =
-    useSendChatMessage();
+  const { mutate: sendMessage, isPending } = useSendChatMessage();
 
   // =========================
-  // POLLING
+  // PAGINATION (KEEP ONLY LOAD MORE)
   // =========================
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 10000); // 10 sec
-
-    return () => clearInterval(interval);
-  }, [refetch]);
-
-  // =========================
-  // PAGINATION
-  // =========================
-
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
-
     if (!el || isFetching) return;
 
-    const hasMore =
-      (data?.data?.length ?? 0) >=
-      page * LIMIT;
+    const hasMore = (data?.data?.length ?? 0) >= page * LIMIT;
 
     if (el.scrollTop < 100 && hasMore) {
       setPage((prev) => prev + 1);
     }
-  }, [
-    isFetching,
-    data,
-    page,
-    LIMIT,
-  ]);
+  }, [isFetching, data, page]);
 
   useEffect(() => {
     const el = containerRef.current;
-
     if (!el) return;
 
-    el.addEventListener(
-      "scroll",
-      handleScroll
-    );
+    el.addEventListener("scroll", handleScroll);
 
-    return () => {
-      el.removeEventListener(
-        "scroll",
-        handleScroll
-      );
-    };
+    return () => el.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   // =========================
   // NORMALIZE MESSAGES
   // =========================
-
   const messages: Message[] = useMemo(() => {
-    const rawMessages =
-      Array.isArray(data?.data)
-        ? data.data
-        : [];
+    const rawMessages = Array.isArray(data?.data) ? data.data : [];
 
-    const normalized = rawMessages.map(
-      (msg: any): Message => {
-        const senderId =
-          typeof msg.senderId === "string"
-            ? msg.senderId
-            : msg.senderId?._id || "";
+    const normalized = rawMessages.map((msg: any): Message => {
+      const senderId =
+        typeof msg.senderId === "string"
+          ? msg.senderId
+          : msg.senderId?._id || "";
 
-        return {
-          _id:
-            msg._id ||
-            crypto.randomUUID(),
+      return {
+        _id: msg._id || crypto.randomUUID(),
+        text: msg.message || msg.text || "",
+        senderId,
+        self: senderId === currentUserId,
+        status: msg.status || "delivered",
+        timestamp:
+          msg.timestamp ||
+          msg.createdAt ||
+          new Date().toISOString(),
+      };
+    });
 
-         
-
-          text:
-            msg.message ||
-            msg.text ||
-            "",
-
-          senderId,
-
-          self:
-            senderId === currentUserId,
-
-          status:
-            msg.status || "delivered",
-
-          // IMPORTANT
-          timestamp:
-            msg.timestamp ||
-            msg.createdAt ||
-            new Date().toISOString(),
-        };
-      }
-    );
-
-    // REMOVE DUPLICATES
     const unique = Array.from(
-      new Map(
-        normalized.map((m) => [
-          m._id,
-          m,
-        ])
-      ).values()
+      new Map(normalized.map((m) => [m._id, m])).values()
     );
 
-    // SAFE SORT
-    return [...unique].sort(
+    return unique.sort(
       (a, b) =>
-        new Date(
-          a.timestamp || 0
-        ).getTime() -
-        new Date(
-          b.timestamp || 0
-        ).getTime()
+        new Date(a.timestamp || 0).getTime() -
+        new Date(b.timestamp || 0).getTime()
     );
   }, [data, currentUserId]);
 
   // =========================
   // SEND MESSAGE
   // =========================
-
   const handleSend = () => {
     const trimmed = input.trim();
-
     if (!trimmed || isPending) return;
 
-    sendMessage(
-      {
-        bookingId,
-        message: trimmed,
-      },
-      {
-        onSuccess: () => {
-          refetch();
-        },
-      }
-    );
+    sendMessage({
+      bookingId,
+      message: trimmed,
+    });
 
+    // ❌ NO refetch (socket already updates UI)
     setInput("");
   };
 
   // =========================
   // LOADING
   // =========================
-
   if (isLoading && page === 1) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -215,25 +153,16 @@ export default function WorkerChatPageContent({
   // =========================
   // UI
   // =========================
-
   return (
-    <main className="h-full min-h-0 bg-[#F1EFE8] px-0 sm:px-4 sm:py-4 lg:px-6">
-      <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden bg-white shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
+    <main className="h-full min-h-0  px-0 sm:px-4 sm:py-4 lg:px-6">
+      <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden  shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
 
-        <ChatHeader
-          worker={worker}
-          bookingId={bookingId}
-        />
+        <ChatHeader worker={worker} bookingId={bookingId} />
 
         <div
           ref={containerRef}
           className="flex-1 overflow-y-auto bg-[#f7f4ed]"
         >
-          {isFetching &&
-            page > 1 && (
-              <CommonSpinner />
-            )}
-
           <MessageList
             messages={messages}
             worker={worker}
