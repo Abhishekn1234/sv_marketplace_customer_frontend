@@ -3,4 +3,5 @@ export interface ServiceRatingReview{
     serviceRating:number;
     workerRating:number;
     feedback:string;
+    tags?:string[];
 }

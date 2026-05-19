@@ -5,8 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useLanguage } from "@/features/context/LanguageContext";
-import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
+import {
+  notificationKeys,
+  useNotifications,
+} from "@/features/Notifications/presentation/hooks/useNotifications";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
+
+import { useAuthStore } from "@/features/core/store/auth";
 
 import Button from "../input/Button";
 import { BellIcon } from "../icons/BellIcon";
@@ -26,54 +31,93 @@ export default function CommonNotificationFloater({
   const { t } = useLanguage();
 
   // -----------------------------
-  // FIXED FILTER
+  // FILTER
   // -----------------------------
   const notificationFilters = useMemo(
     () => ({
-      page: 10,
+      page: 1,
       limit: 100,
       unreadOnly: false,
     }),
     []
   );
 
-  const { data: notifications = [] } =
-    useNotifications(notificationFilters);
+  // -----------------------------
+  // FETCH API
+  // -----------------------------
+  const { data } = useNotifications(notificationFilters);
 
   // -----------------------------
-  // DERIVED UNREAD COUNT (SOURCE OF TRUTH = API)
+  // ZUSTAND
   // -----------------------------
-  const unreadCount = useMemo(() => {
-    return notifications.filter((n: any) => !n.isRead).length;
-  }, [notifications]);
+  const notifications = useAuthStore(
+    (state) => state.notifications.list
+  );
+
+  const unreadCount = useAuthStore(
+    (state) => state.notifications.unreadCount
+  );
+
+  const setNotificationsList = useAuthStore(
+    (state) => state.setNotificationsList
+  );
 
   // -----------------------------
-  // CLICK HANDLER (OPTIMISTIC UPDATE)
+  // HYDRATE ZUSTAND FROM API
+  // -----------------------------
+  useEffect(() => {
+    if (data?.data && Array.isArray(data.data)) {
+      setNotificationsList(data.data);
+    }
+  }, [data, setNotificationsList]);
+
+  // -----------------------------
+  // COUNTS
+  // -----------------------------
+  const totalCount = notifications.length;
+
+  const displayTotalCount =
+    totalCount > 30 ? "30+" : totalCount;
+
+  const displayUnreadCount =
+    unreadCount > 30 ? "30+" : unreadCount;
+
+  // -----------------------------
+  // CLICK HANDLER
   // -----------------------------
   const handleNotificationClick = (item: any) => {
     const target = getNotificationTarget(item);
+
     if (!target) return;
 
-    // optimistic update → instant UI change
+    // ✅ Optimistic React Query update
     queryClient.setQueryData(
-      ["notifications", notificationFilters],
-      (old: any[] = []) =>
-        old.map((n) =>
-          n.id === item.id || n._id === item._id
-            ? { ...n, isRead: true }
-            : n
-        )
+      notificationKeys.list(notificationFilters),
+      (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          data: old.data.map((n: any) =>
+            n.id === item.id || n._id === item._id
+              ? { ...n, isRead: true }
+              : n
+          ),
+        };
+      }
     );
 
-    // optional API call (fire and forget or await if needed)
-    // markAsRead(item.id);
+    // ✅ Zustand update
+    useAuthStore
+      .getState()
+      .markNotificationRead(item.id || item._id);
 
     navigate(target);
     setOpen(false);
   };
 
   // -----------------------------
-  // OUTSIDE CLICK CLOSE
+  // OUTSIDE CLICK
   // -----------------------------
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,7 +132,10 @@ export default function CommonNotificationFloater({
     document.addEventListener("mousedown", handleClickOutside);
 
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   // -----------------------------
@@ -102,9 +149,10 @@ export default function CommonNotificationFloater({
       >
         <BellIcon />
 
+        {/* BADGE */}
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white">
-            {unreadCount}
+            {displayUnreadCount}
           </span>
         )}
       </Button>
@@ -120,7 +168,8 @@ export default function CommonNotificationFloater({
           {/* HEADER */}
           <div className="px-4 py-3 border-b flex justify-between">
             <h3 className="font-semibold text-sm">
-              {t.notificationpage.title} ({notifications.length})
+              {t.notificationpage.title} (
+              {displayTotalCount})
             </h3>
 
             <Button
@@ -147,11 +196,16 @@ export default function CommonNotificationFloater({
                   onClick={() =>
                     handleNotificationClick(item)
                   }
-                  className="px-4 py-3 cursor-pointer hover:bg-blue-50"
+                  className={`px-4 py-3 cursor-pointer hover:bg-blue-50 border-b last:border-b-0 ${
+                    !item.isRead
+                      ? "bg-blue-50/40"
+                      : "bg-white"
+                  }`}
                 >
                   <p className="text-sm font-semibold">
                     {item.title}
                   </p>
+
                   <p className="text-xs text-gray-500 truncate">
                     {item.message}
                   </p>

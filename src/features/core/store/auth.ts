@@ -14,7 +14,15 @@ interface SearchState {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
-
+type NotificationItem = {
+  _id?:string;
+  id?: string;
+  title: string;
+  message: string;
+  type?: string;
+  bookingId?: string;
+  isRead: boolean;
+};
 /* ---------------- AUTH STATE ---------------- */
 export interface AuthState {
   accessToken: string | null;
@@ -30,16 +38,22 @@ export interface AuthState {
   setMobileForVerification: (phone: string) => void;
 
   /* ---------------- NOTIFICATIONS ---------------- */
-  notifications: {
+ notifications: {
     searchTerm: string;
     unreadCount: number;
+    list: NotificationItem[];
   };
+
 
   setSearchTerm: (term: string) => void;
   setUnreadCount: (count: number) => void;
   incrementUnread: () => void;
   decrementUnread: () => void;
   resetUnread: () => void;
+   setNotificationsList: (list: NotificationItem[]) => void;
+  pushNotification: (notification: NotificationItem) => void;
+  markNotificationRead: (id: string) => void;
+  clearNotifications: () => void;
 
   /* ---------------- AUTH ACTIONS ---------------- */
   setTokens: (accessToken: string, refreshToken: string) => void;
@@ -78,10 +92,12 @@ const initialState = {
   current_location: { addresses: [] },
   last_location: undefined,
 
-  notifications: {
+   notifications: {
     searchTerm: "",
     unreadCount: 0,
+    list: [],
   },
+
 };
 
 /* ---------------- STORE ---------------- */
@@ -191,7 +207,8 @@ export const useAuthStore = create<AuthState>()(
       setMobileForVerification: (phone: string) =>
         set({ mobileForVerification: phone }),
 
-      /* ---------------- NOTIFICATIONS (FIXED) ---------------- */
+          /* ---------------- NOTIFICATIONS ---------------- */
+
       setSearchTerm: (term) =>
         set((state) => ({
           notifications: {
@@ -231,6 +248,59 @@ export const useAuthStore = create<AuthState>()(
         set((state) => ({
           notifications: {
             ...state.notifications,
+            unreadCount: 0,
+          },
+        })),
+
+      setNotificationsList: (list: NotificationItem[]) =>
+        set((state) => ({
+          notifications: {
+            ...state.notifications,
+            list: Array.isArray(list) ? list : [],
+            unreadCount: Array.isArray(list)
+              ? list.filter((n) => !n.isRead).length
+              : 0,
+          },
+        })),
+
+      pushNotification: (notification: NotificationItem) =>
+        set((state) => ({
+          notifications: {
+            ...state.notifications,
+            list: [
+              notification,
+              ...(state.notifications?.list || []),
+            ],
+            unreadCount:
+              state.notifications.unreadCount +
+              (notification.isRead ? 0 : 1),
+          },
+        })),
+
+      markNotificationRead: (id: string) =>
+  set((state) => {
+    const currentList = state.notifications?.list || [];
+
+    const updated = currentList.map((n: NotificationItem) =>
+      n.id === id || n._id === id
+        ? { ...n, isRead: true }
+        : n
+    );
+
+    return {
+      notifications: {
+        ...state.notifications,
+        list: updated,
+        unreadCount: updated.filter((n) => !n.isRead).length,
+      },
+    };
+  }),
+
+      clearNotifications: () =>
+        set((state) => ({
+          notifications: {
+            ...state.notifications,
+            list: [],
             unreadCount: 0,
           },
         })),

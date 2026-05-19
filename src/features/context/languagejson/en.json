@@ -402,6 +402,16 @@
     },
     "close": "Close"
   },
+  "workerchatpage": {
+    "title": "Chat with Your Provider",
+    "subtitle": "Communicate directly with your service provider for updates, questions, or special instructions.",
+    "inputPlaceholder": "Type your message here...",
+    "send": "Send",
+    "typing": "Typing...",
+    "lastSeen": "Last seen {{time}}",
+    "noMessages": "No messages yet. Start the conversation!",
+    "description": "You haven’t chatted with  yet."
+  },
 "changepasswordpage": {
   "title": "Change Password",
   "description": "Update your password to keep your account secure. Make sure your new password is strong and different from previous passwords.",

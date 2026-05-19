@@ -3,26 +3,39 @@ import { NotificationRepositoryImpl } from "../../data/repositories/Notification
 import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
 import type { GetNotificationsParams } from "../../domain/entities/notificationgetparams";
 
-
 const repo = new NotificationRepositoryImpl();
 const useCase = new GetNotificationsUseCase(repo);
 
+export const notificationKeys = {
+  all: ["notifications"] as const,
+  list: (filters?: GetNotificationsParams) =>
+    ["notifications", filters] as const,
+};
+
 export const useNotifications = (filters?: GetNotificationsParams) => {
   return useQuery({
-    queryKey: ["notifications", filters],
+    queryKey: notificationKeys.list(filters),
 
     queryFn: async () => {
       const safeFilters = {
         page: filters?.page ?? 1,
-        limit: filters?.limit ?? 1000,
+        limit: filters?.limit ?? 100,
         type: filters?.type,
         unreadOnly: filters?.unreadOnly,
       };
 
       const res = await useCase.execute(safeFilters);
-      return Array.isArray(res?.data) ? res.data : [];
+
+      return {
+        data: res?.data ?? [],
+        pagination: res?.pagination ?? { totalItems: 0 },
+      };
     },
 
-    staleTime: 0, // 🔥 IMPORTANT
+    staleTime: 0,
+    gcTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 };

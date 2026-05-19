@@ -1,10 +1,5 @@
-importScripts(
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"
-);
-
-importScripts(
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"
-);
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
 firebase.initializeApp({
   apiKey: "AIzaSyChCuX9ZrzrZUmeSc7WO-3Nalq8t84Yjyo",
@@ -14,69 +9,71 @@ firebase.initializeApp({
   messagingSenderId: "118069674424",
   appId: "1:118069674424:web:c21a0a1edbb9e808a94f4d",
 });
+
 const messaging = firebase.messaging();
 
-function buildRoute(data) {
-  const bookingId = data?.bookingId;
+const shown = new Set();
 
-  if (!bookingId) return "/notifications";
-
-  switch (data?.type) {
-    case "CHAT_MESSAGE":
-      return `/message/${bookingId}`;
-
-    case "BOOKING_UPDATE":
-      return `/jobtracking/${bookingId}`;
-
-    case "WORK_ASSIGNED":
-      return `/jobprogress/${bookingId}`;
-
-    default:
-      return "/notifications";
-  }
-}
-
+// =========================
+// BACKGROUND MESSAGE
+// =========================
 messaging.onBackgroundMessage((payload) => {
   const data = payload.data || {};
-  const url = buildRoute(data);
+
+  const bookingId = data.bookingId;
+
+  let url = "/notifications";
+
+  if (data.type === "CHAT_MESSAGE") {
+    url = `/message/${bookingId}`;
+  } else if (data.type === "BOOKING_UPDATE") {
+    url = `/jobtracking/${bookingId}`;
+  }
+
+  const id = data.notificationId;
+  if (id && shown.has(id)) return;
+  if (id) shown.add(id);
 
   self.registration.showNotification(data.title || "Notification", {
     body: data.body || data.message,
     icon: "/logo.png",
-    data: {
-      ...data,
-      url,
-    },
-    requireInteraction: true,
+    badge: "/logo.png",
+
+    actions: [
+      { action: "open", title: "Open" },
+      { action: "close", title: "Close" },
+    ],
+
+    data: { url },
   });
 });
 
-self.addEventListener("notificationclick", async (event) => {
+// =========================
+// CLICK HANDLER
+// =========================
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const data = event.notification.data || {};
-  const url = data.url || "/notifications";
+  const url = event.notification.data?.url || "/notifications";
 
-  const clientsList = await clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
+  event.waitUntil((async () => {
+    if (event.action === "close") return;
 
-  // existing tab
-  if (clientsList.length > 0) {
-    const client = clientsList[0];
-
-    client.focus();
-
-    client.postMessage({
-      type: "NAVIGATE",
-      url,
-      payload: data,
+    const clientsList = await clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
     });
 
-    return;
-  }
+    // send navigation message to React
+    for (const client of clientsList) {
+      client.postMessage({
+        type: "NAVIGATE",
+        url,
+      });
+      return;
+    }
 
-  // no tab open
-  await clients.openWindow(url);
+    // fallback
+    await clients.openWindow(url);
+  })());
 });

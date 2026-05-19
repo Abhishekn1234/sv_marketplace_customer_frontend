@@ -50,6 +50,7 @@ import AIChatPage from "./features/JobTracking/presentation/components/AIChatWin
 import ScrollToTop from "./ScrollToTop";
 import NotificationNavigation from "./NavigationNotification";
 
+
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
 
@@ -57,25 +58,25 @@ function App() {
   // =========================
   // FCM SETUP
   // =========================
-  useEffect(() => {
-    const setupNotifications = async () => {
-      try {
-        if (!("serviceWorker" in navigator)) return;
+const pushNotification = useAuthStore(
+  (state) => state.pushNotification
+);
+// console.log(pushNotification, "PUSH NOTIFICATION FROM ZUSTAND");
 
-        await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+useEffect(() => {
+  const setup = async () => {
+    if (!("serviceWorker" in navigator)) return;
 
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
+    await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
-        await initOnMessage(() => {});
-      } catch (err) {
-        console.error("Notification setup error:", err);
-      }
-    };
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
 
-    setupNotifications();
-  }, []);
+    await initOnMessage(pushNotification);
+  };
 
+  setup();
+}, [pushNotification]);
   
 
   // =========================

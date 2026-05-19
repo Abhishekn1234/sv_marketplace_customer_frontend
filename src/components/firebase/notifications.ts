@@ -9,9 +9,11 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 export async function requestAndGetToken() {
   try {
     const messaging = await getFirebaseMessaging();
+
     if (!messaging) return null;
 
     const permission = await Notification.requestPermission();
+
     if (permission !== "granted") return null;
 
     const registration = await navigator.serviceWorker.ready;
@@ -22,6 +24,7 @@ export async function requestAndGetToken() {
     });
 
     console.log("🔥 FCM TOKEN:", token);
+
     return token;
   } catch (err) {
     console.error("FCM token error:", err);
@@ -30,49 +33,102 @@ export async function requestAndGetToken() {
 }
 
 // =========================
-// FOREGROUND LISTENER (FIXED)
+// FOREGROUND LISTENER
 // =========================
-export async function initOnMessage(setNotifications?: any) {
+export async function initOnMessage(
+  pushNotification?: (notification: any) => void
+) {
   const messaging = await getFirebaseMessaging();
+
   if (!messaging) return;
 
-  onMessage(messaging, (payload) => {
+  onMessage(messaging, async (payload) => {
+    console.log("📩 FOREGROUND:", payload);
+
     const data = payload.data || {};
-    console.log("📩 FCM Message received:", payload);
+
     const bookingId = data.bookingId;
 
+    // =========================
+    // NAVIGATION URL
+    // =========================
+    let url = "/notifications";
+
+    if (data.type === "CHAT_MESSAGE") {
+      url = `/message/${bookingId}`;
+    } else if (data.type === "BOOKING_UPDATE") {
+      url = `/jobtracking/${bookingId}`;
+    }
+
+    // =========================
+    // NOTIFICATION OBJECT
+    // =========================
     const notification = {
-      id: data.notificationId || Date.now().toString(),
-      title: payload.notification?.title || "Notification",
-      message: payload.notification?.body || "New message",
+      id: data.notificationId || crypto.randomUUID(),
+
+      title:
+        payload.notification?.title ||
+        data.title ||
+        "Notification",
+
+      message:
+        payload.notification?.body ||
+        data.body ||
+        data.message ||
+        "New message",
+
       type: data.type,
+
       bookingId,
-      raw: data,
+
+      isRead: false,
+
+      createdAt: new Date().toISOString(),
     };
 
-    setNotifications?.((prev: any) => [notification, ...prev]);
+    // =========================
+    // UPDATE ZUSTAND
+    // =========================
+    pushNotification?.(notification);
 
-  if (Notification.permission === "granted") {
-  const url = `/message/${bookingId}`;
+    // =========================
+    // SHOW SYSTEM NOTIFICATION
+    // =========================
+    const registration =
+      await navigator.serviceWorker.ready;
 
-  const n = new Notification(notification.title, {
-    body: notification.message,
-    icon: "/logo.png",
-  });
+    await registration.showNotification(
+      notification.title,
+      {
+        body: notification.message,
 
-  n.onclick = () => {
-    n.close();
+        icon: "/logo.png",
 
-    const channel = new BroadcastChannel("fcm_channel");
+        badge: "/logo.png",
 
-    channel.postMessage({
-      type: "NAVIGATE",
-      url,
-      payload: notification,
-    });
+        tag: notification.id,
 
-    channel.close();
-  };
-}
+        renotify: true,
+
+        requireInteraction: false,
+
+        actions: [
+          {
+            action: "open",
+            title: "Open",
+          },
+          {
+            action: "close",
+            title: "Close",
+          },
+        ],
+
+        data: {
+          url,
+          bookingId,
+          notificationId: notification.id,
+        },
+      } as NotificationOptions
+    );
   });
 }

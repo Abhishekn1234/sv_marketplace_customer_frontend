@@ -24,7 +24,6 @@ import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 // 👇 SOCKET (you already created this)
 import { useChatSocket } from "../hooks/usechatsocket";
 
-import { useNavigate } from "react-router-dom";
 
 export default function WorkerChatPageContent({
   worker,
@@ -42,16 +41,14 @@ export default function WorkerChatPageContent({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const navigate = useNavigate();
+ 
 
   const LIMIT = 30;
 
   // =========================
   // SOCKET (REALTIME)
   // =========================
-  useChatSocket(token, bookingId, currentUserId, worker.fullName, (url) => {
-    navigate(url);
-  });
+  useChatSocket(token, bookingId, currentUserId, worker.fullName);
 
   // =========================
   // API (INITIAL LOAD ONLY)

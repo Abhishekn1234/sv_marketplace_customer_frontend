@@ -1,23 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 import type { ServiceRatingReview } from "../../domain/entities/serviceratingreview";
 import { ServiceReviewRepositoryImpl } from "../../data/repositories/ServiceRatingReviewImpl";
 import { SubmitServiceReviewUseCase } from "../../domain/usecase/ServiceRatingReviewUsecase";
-import { useNavigate } from "react-router-dom";
+
 const repository = new ServiceReviewRepositoryImpl();
 const submitReviewUseCase = new SubmitServiceReviewUseCase(repository);
 
 export const useSubmitServiceReview = () => {
-    const navigate=useNavigate();
-  return useMutation<void, unknown, ServiceRatingReview>({
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, ServiceRatingReview>({
     mutationFn: (review) => submitReviewUseCase.execute(review),
-    onSuccess: () => {
+
+    onSuccess: (_, variables) => {
       toast.success("Review submitted successfully!");
-      navigate('/');
-      
+
+      // update cache (optional)
+      queryClient.invalidateQueries({
+        queryKey: ["booking-review", variables.bookingId],
+      });
+
+      navigate("/");
     },
-    onError: () => {
-      toast.error("Failed to submit review. Please try again.");
+
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to submit review");
     },
   });
 };

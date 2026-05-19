@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import NotificationHeader from "./NotificationHeader";
@@ -31,27 +31,29 @@ export default function NotificationCards() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
   const filters = useMemo(
     () => ({ page, limit, type }),
     [page, limit, type]
   );
 
-  const { data: apiNotifications = [], isLoading: loading } =
-    useNotifications(filters);
+  const { data, isLoading, isFetching } =
+  useNotifications(filters);
+
+const apiNotifications = data?.data ?? [];
 
   const { fcmNotifications = [] } = useRegisterDeviceToken();
 
-  // =========================
-  // 🔥 FIX: USE MAP INSTEAD OF ARRAY
-  // =========================
   const [notificationMap, setNotificationMap] = useState<Record<string, any>>({});
 
-  // merge API + FCM safely (NO OVERWRITE)
+  // =========================
+  // MERGE DATA
+  // =========================
   useEffect(() => {
     setNotificationMap((prev) => {
       const updated = { ...prev };
 
-      // API notifications
       apiNotifications.forEach((n: any) => {
         updated[n._id] = {
           ...n,
@@ -60,7 +62,6 @@ export default function NotificationCards() {
         };
       });
 
-      // FCM only on first page
       if (page === 1) {
         fcmNotifications.forEach((msg: any) => {
           const id = msg._id || msg.id;
@@ -79,23 +80,22 @@ export default function NotificationCards() {
     });
   }, [apiNotifications, fcmNotifications, page]);
 
-  // convert map → array
   const localNotifications = useMemo(
     () => Object.values(notificationMap),
     [notificationMap]
   );
 
-  // unread
   const unreadNotifications = useMemo(
     () => localNotifications.filter((n) => !n.isRead),
     [localNotifications]
   );
 
   const { markAsRead } = useMarkNotificationRead();
+  const { markAllAsRead } = useMarkAllAsRead();
 
-  // ========================
-  // SELECT SINGLE
-  // ========================
+  // =========================
+  // SELECT
+  // =========================
   const toggleSelect = (id: string) => {
     const target = notificationMap[id];
     if (!target || target.isRead) return;
@@ -107,9 +107,6 @@ export default function NotificationCards() {
     );
   };
 
-  // ========================
-  // SELECT ALL
-  // ========================
   const toggleSelectAll = () => {
     const unreadIds = unreadNotifications.map((n) => n.id);
 
@@ -126,66 +123,44 @@ export default function NotificationCards() {
     }
   };
 
-  // ========================
-  // MARK SELECTED AS READ
-  // ========================
+  // =========================
+  // MARK AS READ
+  // =========================
   const markSelectedAsRead = async () => {
-    try {
-      if (selected.length === 0) return;
+    if (!selected.length) return;
 
-      await Promise.all(selected.map((id) => markAsRead(id)));
+    await Promise.all(selected.map(markAsRead));
 
-      setNotificationMap((prev) => {
-        const updated = { ...prev };
-
-        selected.forEach((id) => {
-          if (updated[id]) {
-            updated[id] = { ...updated[id], isRead: true };
-          }
-        });
-
-        return updated;
+    setNotificationMap((prev) => {
+      const updated = { ...prev };
+      selected.forEach((id) => {
+        if (updated[id]) updated[id].isRead = true;
       });
+      return updated;
+    });
 
-      setSelected([]);
-    } catch (err) {
-      console.error(err);
-    }
+    setSelected([]);
   };
-
-  // ========================
-  // MARK ALL AS READ
-  // ========================
-  const { markAllAsRead } = useMarkAllAsRead();
 
   const handleMarkAllAsRead = async () => {
-    try {
-      await markAllAsRead();
+    await markAllAsRead();
 
-      setNotificationMap((prev) => {
-        const updated = { ...prev };
-
-        Object.keys(updated).forEach((id) => {
-          updated[id] = { ...updated[id], isRead: true };
-        });
-
-        return updated;
+    setNotificationMap((prev) => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach((id) => {
+        updated[id].isRead = true;
       });
+      return updated;
+    });
 
-      setSelected([]);
-    } catch (err) {
-      console.error(err);
-    }
+    setSelected([]);
   };
 
-  // ========================
-  // NAVIGATION
-  // ========================
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);
 
     if (typeof url !== "string") {
-      toast.error("Booking not found or already finished");
+      toast.error("Booking not found");
       return;
     }
 
@@ -200,11 +175,27 @@ export default function NotificationCards() {
     navigate(url);
   };
 
-  // ========================
-  // PAGINATION
-  // ========================
-  const hasNextPage = apiNotifications.length === limit;
-  const hasPrevPage = page > 1;
+  // =========================
+  // AUTO LOAD MORE (SCROLL)
+  // =========================
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+
+        if (target.isIntersecting && apiNotifications.length === limit) {
+          setPage((p) => p + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [apiNotifications, limit]);
 
   return (
     <div className="min-h-screen">
@@ -232,7 +223,11 @@ export default function NotificationCards() {
                 { label: "50", value: "50" },
               ]}
               value={limit.toString()}
-              onChange={(val) => setLimit(Number(val))}
+              onChange={(val) => {
+                setLimit(Number(val));
+                setPage(1);
+                setNotificationMap({});
+              }}
             />
 
             <div className="flex gap-2">
@@ -244,7 +239,11 @@ export default function NotificationCards() {
               ].map((f) => (
                 <Button
                   key={f.label}
-                  onClick={() => setType(f.value)}
+                  onClick={() => {
+                    setType(f.value);
+                    setPage(1);
+                    setNotificationMap({});
+                  }}
                   className={
                     type === f.value
                       ? "bg-blue-600 text-white"
@@ -268,7 +267,8 @@ export default function NotificationCards() {
 
           {/* LIST */}
           <div className="overflow-y-auto">
-            {loading ? (
+
+            {isLoading ? (
               <div className="h-64 flex items-center justify-center">
                 <CommonSpinner />
               </div>
@@ -281,26 +281,11 @@ export default function NotificationCards() {
               />
             )}
 
-            {/* PAGINATION */}
-            <div className="flex justify-between p-4 border-t">
-              <span>Page {page}</span>
-
-              <div className="flex gap-2">
-                <Button
-                  disabled={!hasPrevPage}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  Previous
-                </Button>
-
-                <Button
-                  disabled={!hasNextPage}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+            {/* 👇 AUTO TRIGGER LOADER */}
+            <div ref={loaderRef} className="flex justify-center py-4">
+              {isFetching && <CommonSpinner />}
             </div>
+
           </div>
 
         </CommonCard>

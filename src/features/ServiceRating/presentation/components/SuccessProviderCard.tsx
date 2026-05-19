@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import ServiceRatingSection from "./ServiceRatingsection";
 import SuccessTagSection from "./SuccessTagSection";
 import ServiceReviewSection from "./ServiceReviewSection";
-import { useParams } from "react-router-dom";
+
 import { useBookingHistory } from "@/features/Bookings/presentation/hooks/useBookingHistory";
 import { useSubmitServiceReview } from "../hooks/useServiceRatingReview";
+import { useBookingReview } from "../hooks/useGetRating";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Image } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
@@ -17,62 +21,98 @@ export default function SuccessProviderCard() {
   const { data, isLoading } = useBookingHistory();
   const { t } = useLanguage();
 
-  const [serviceRating, setServiceRating] = useState(4);
-  const [workerRating, setWorkerRating] = useState(4);
+  const { data: review, isLoading: reviewLoading } =
+    useBookingReview(bookingId);
 
-  const [tags, setTags] = useState(
-    [
+  const { mutate: submitReview } = useSubmitServiceReview();
+
+  // ---------------- STATE
+  const [serviceRating, setServiceRating] = useState(0);
+  const [workerRating, setWorkerRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+
+  const [tags, setTags] = useState<{ label: string; selected: boolean }[]>(
+    []
+  );
+
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // ---------------- BOOKING
+  const bookings = data?.pages?.flatMap((page) => page.data || []) || [];
+  const booking = bookings.find((b) => b._id === bookingId);
+
+  // ---------------- INIT TAGS
+  useEffect(() => {
+    const baseTags = [
       t.serviceratingpage.tags.professional,
       t.serviceratingpage.tags.onTime,
       t.serviceratingpage.tags.qualityWork,
       t.serviceratingpage.tags.friendly,
       t.serviceratingpage.tags.goodCommunication,
       t.serviceratingpage.tags.clean,
-    ].map((label) => ({ label, selected: false }))
-  );
+    ];
 
-  const [feedback, setFeedback] = useState("");
+    setTags(baseTags.map((label) => ({ label, selected: false })));
+  }, [t]);
 
-  const { mutate: submitReview } = useSubmitServiceReview();
+  // ---------------- LOAD REVIEW (EDIT MODE)
+  useEffect(() => {
+    if (review) {
+      setServiceRating(review.serviceRating ?? 0);
+      setWorkerRating(review.workerRating ?? 0);
+      setFeedback(review.feedback ?? "");
+      setIsEditMode(true);
 
-  const bookings = data?.pages?.flatMap((page) => page.data || []) || [];
-  const booking = bookings.find((b) => b._id === bookingId);
+      // restore tags if backend provides them
+      if (review.tags) {
+        setTags((prev) =>
+          prev.map((t) => ({
+            ...t,
+            selected: review.tags?.includes(t.label) || false,
+          }))
+        );
+      }
+    } else {
+      setServiceRating(0);
+      setWorkerRating(0);
+      setFeedback("");
+      setIsEditMode(false);
+    }
+  }, [review]);
 
-  if (isLoading) return <CommonSpinner />;
-  if (!booking) return <div>{t.serviceratingpage.bookingNotFound}</div>;
+  // ---------------- LOADING
+  if (isLoading || reviewLoading) return <CommonSpinner />;
+  if (!booking)
+    return <div>{t.serviceratingpage.bookingNotFound}</div>;
 
+  // ---------------- SUBMIT
   const handleSubmit = () => {
     submitReview({
       bookingId: bookingId || "",
       serviceRating,
       workerRating,
       feedback,
+      // tags: tags.filter((t) => t.selected).map((t) => t.label),
     });
   };
 
   return (
     <CommonCard className="max-w-xl mx-auto">
-      
-      {/* Provider Section */}
+      {/* HEADER */}
       <div className="text-center mb-8 px-4 sm:px-6">
         <Image
           src={
-            booking.assignedWorkers?.[0]?.worker.profilePictureUrl ||
+            booking.assignedWorkers?.[0]?.worker?.profilePictureUrl ||
             "https://via.placeholder.com/150"
           }
           alt={
-            booking.assignedWorkers?.[0]?.worker.fullName ||
-            "Provider"
+            booking.assignedWorkers?.[0]?.worker?.fullName || "Provider"
           }
-          className="
-            w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36
-            rounded-2xl border-4 border-gray-100 object-cover
-            mx-auto mb-4
-          "
+          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
         />
 
         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 truncate">
-          {booking.assignedWorkers?.[0]?.worker.fullName ||
+          {booking.assignedWorkers?.[0]?.worker?.fullName ||
             "Provider Name"}
         </h2>
 
@@ -81,7 +121,12 @@ export default function SuccessProviderCard() {
         </p>
       </div>
 
-      {/* Rating Section */}
+      {/* MODE */}
+      <div className="text-center mb-4 text-sm text-gray-500">
+        {isEditMode ? "Update your review" : "Rate your experience"}
+      </div>
+
+      {/* RATINGS */}
       <ServiceRatingSection
         serviceRating={serviceRating}
         setServiceRating={setServiceRating}
@@ -89,10 +134,10 @@ export default function SuccessProviderCard() {
         setWorkerRating={setWorkerRating}
       />
 
-      {/* Tag Section */}
+      {/* TAGS */}
       <SuccessTagSection tags={tags} setTags={setTags} />
 
-      {/* Review Section */}
+      {/* REVIEW */}
       <ServiceReviewSection
         feedback={feedback}
         setFeedback={setFeedback}
@@ -101,8 +146,3 @@ export default function SuccessProviderCard() {
     </CommonCard>
   );
 }
-
-
-
-
-

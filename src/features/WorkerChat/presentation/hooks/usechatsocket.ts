@@ -11,9 +11,7 @@ import { unpackMessages } from "../utils/unpackmessages";
 import { normalizeMessage } from "../utils/normalizemessages";
 import { playNotificationSound } from "@/components/firebase/sound";
 import { getMessageKey } from "../utils/getMessageKey";
-
 import { CHAT_MESSAGES_KEY } from "./useGetChatMessages";
-// import { navigateTo } from "@/navigationservice";
 
 const SOCKET_URL = `${apiUrl}/chat`;
 
@@ -25,8 +23,7 @@ export function useChatSocket(
   token: string,
   bookingId: string,
   myUserId?: string,
-  workerName?: string,
-  onNavigate?: (url: string) => void
+  workerName?: string
 ) {
   const socketRef = useRef<Socket | null>(null);
   const notifiedIds = useRef<Set<string>>(new Set());
@@ -35,10 +32,8 @@ export function useChatSocket(
   useEffect(() => {
     if (!token || !bookingId) return;
 
-    // reset notification cache per booking
     notifiedIds.current = new Set();
 
-    // cleanup old socket
     if (socketRef.current) {
       socketRef.current.removeAllListeners();
       socketRef.current.disconnect();
@@ -51,9 +46,6 @@ export function useChatSocket(
 
     socketRef.current = socket;
 
-    // =========================
-    // MESSAGE HANDLER
-    // =========================
     const handleMessages = (payload: any, notify = false) => {
       const normalized = unpackMessages(payload)
         .map((msg) => normalizeMessage(msg, myUserId))
@@ -62,7 +54,7 @@ export function useChatSocket(
       if (!normalized.length) return;
 
       // =========================
-      // UPDATE CACHE (NO REFETCH)
+      // CACHE UPDATE
       // =========================
       queryClient.setQueryData(
         [CHAT_MESSAGES_KEY, bookingId],
@@ -72,8 +64,7 @@ export function useChatSocket(
           const map = new Map<string, Message>();
 
           const add = (m: Message) => {
-            const key = getMessageKey(m);
-            map.set(key, m);
+            map.set(getMessageKey(m), m);
           };
 
           oldMessages.forEach(add);
@@ -86,7 +77,7 @@ export function useChatSocket(
       );
 
       // =========================
-      // NOTIFICATIONS
+      // SOUND ONLY (NO NOTIFICATIONS HERE)
       // =========================
       if (!notify) return;
 
@@ -97,39 +88,17 @@ export function useChatSocket(
 
           if (notifiedIds.current.has(key)) return;
 
-          const set = notifiedIds.current;
-          set.add(key);
-          
-          // prevent memory leak (keep last 200)
-          if (set.size > 200) {
-            const first = set.values().next().value;
-            if(!first) return;
-            set.delete(first);
+          notifiedIds.current.add(key);
+
+          if (notifiedIds.current.size > 200) {
+            const first = notifiedIds.current.values().next().value;
+            if (first) notifiedIds.current.delete(first);
           }
 
           playNotificationSound();
-
-          if (Notification.permission !== "granted") return;
-
-          const notification = new Notification(
-            `New message from ${workerName || "Worker"}`,
-            {
-              body: msg.text,
-              icon: "/logo.png",
-              tag: key,
-            }
-          );
-
-            notification.onclick = () => {
-  window.focus();
-  window.location.href = `/message/${bookingId}`;
-};
         });
     };
 
-    // =========================
-    // SOCKET EVENTS
-    // =========================
     socket.on("connect", () => {
       socket.emit("booking.chat.join", { bookingId });
     });
@@ -142,26 +111,12 @@ export function useChatSocket(
       handleMessages(payload, false);
     });
 
-    socket.on("disconnect", () => {
-      console.log("socket disconnected");
-    });
-
-    // =========================
-    // CLEANUP
-    // =========================
     return () => {
       socket.emit("booking.chat.leave", { bookingId });
-      socket.removeAllListeners();
       socket.disconnect();
-
-      socketRef.current = null;
-      notifiedIds.current.clear();
     };
-  }, [token, bookingId, myUserId, workerName, queryClient, onNavigate]);
+  }, [token, bookingId, myUserId, workerName, queryClient]);
 
-  // =========================
-  // SEND MESSAGE
-  // =========================
   const sendMessage = useCallback(
     (text: string) => {
       if (!socketRef.current || !text.trim()) return;
@@ -179,10 +134,7 @@ export function useChatSocket(
         [CHAT_MESSAGES_KEY, bookingId],
         (old: ChatCache | undefined) => {
           const oldMessages = Array.isArray(old?.data) ? old.data : [];
-
-          return {
-            data: [...oldMessages, tempMessage],
-          };
+          return { data: [...oldMessages, tempMessage] };
         }
       );
 
