@@ -30,8 +30,8 @@ export default function CommonNotificationFloater({
   // -----------------------------
   const notificationFilters = useMemo(
     () => ({
-      page: 1,
-      limit: 500,
+      page: 10,
+      limit: 100,
       unreadOnly: false,
     }),
     []
