@@ -88,10 +88,11 @@ const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const hasLocation =
-    current_location?.lat != null &&
+ const hasLocation = Boolean(
+  current_location?.lat != null &&
     current_location?.lng != null &&
-    currentLocation?.trim() !== "";
+    currentLocation?.trim()
+);
 
   // Derive per-step completion from real state
 const hasNotificationsEnabled = true; // replace with real API/state
@@ -109,10 +110,13 @@ const stepCompletion = {
   useEffect(() => {
   const dismissed = localStorage.getItem("location-onboarding-seen");
 
-  if (!hasLocation && !dismissed) {
+  // show onboarding when placeholder "Select location" is visible
+  if (!currentLocation && !dismissed) {
     setShowOnboarding(true);
+  } else {
+    setShowOnboarding(false);
   }
-}, [hasLocation]);
+}, [currentLocation]);
 
   // Auto-dismiss once every step is complete
   useEffect(() => {
@@ -205,7 +209,10 @@ const stepCompletion = {
               serviceRatingPage ||
               jobProgressPage ||
               jobTrackingPage) && (
-              <div ref={dropdownRef} className="ml-3 relative flex flex-col">
+             <div
+  ref={dropdownRef}
+  className="ml-3 relative flex flex-col items-start"
+>
                 {/* LOCATION INPUT */}
                 <Input
                   variant="unstyled"
