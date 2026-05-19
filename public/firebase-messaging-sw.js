@@ -56,24 +56,26 @@ self.addEventListener("notificationclick", (event) => {
 
   const url = event.notification.data?.url || "/notifications";
 
-  event.waitUntil((async () => {
-    if (event.action === "close") return;
+  event.waitUntil(
+    (async () => {
+      if (event.action === "close") return;
 
-    const clientsList = await clients.matchAll({
-      type: "window",
-      includeUncontrolled: true,
-    });
-
-    // send navigation message to React
-    for (const client of clientsList) {
-      client.postMessage({
-        type: "NAVIGATE",
-        url,
+      const allClients = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
       });
-      return;
-    }
 
-    // fallback
-    await clients.openWindow(url);
-  })());
+      // ✅ TRY TO SEND MESSAGE ONLY (NO focus)
+      for (const client of allClients) {
+        client.postMessage({
+          type: "NAVIGATE",
+          url,
+        });
+        return;
+      }
+
+      // fallback
+      await clients.openWindow(url);
+    })()
+  );
 });

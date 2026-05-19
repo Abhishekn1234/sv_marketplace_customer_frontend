@@ -29,93 +29,88 @@ export function useChatSocket(
   const notifiedIds = useRef<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!token || !bookingId) return;
+ useEffect(() => {
+  if (!token || !bookingId) return;
 
-    notifiedIds.current = new Set();
+  console.log("🚀 INIT CHAT SOCKET", {
+    token,
+    bookingId,
+    myUserId,
+  });
 
-    if (socketRef.current) {
-      socketRef.current.removeAllListeners();
-      socketRef.current.disconnect();
-    }
+  notifiedIds.current = new Set();
 
-    const socket = io(SOCKET_URL, {
-      auth: { token },
-      transports: ["websocket"],
-    });
+  if (socketRef.current) {
+    socketRef.current.removeAllListeners();
+    socketRef.current.disconnect();
+  }
 
-    socketRef.current = socket;
+  const socket = io(SOCKET_URL, {
+    auth: { token },
+    transports: ["websocket"],
+  });
 
-    const handleMessages = (payload: any, notify = false) => {
-      const normalized = unpackMessages(payload)
-        .map((msg) => normalizeMessage(msg, myUserId))
-        .filter((m) => m.text?.trim() || (m as any).type || (m as any).attachment);
+  socketRef.current = socket;
 
-      if (!normalized.length) return;
+  const handleMessages = (payload: any, notify = false) => {
+    const normalized = unpackMessages(payload)
+      .map((msg) => normalizeMessage(msg, myUserId))
+      .filter((m) => m.text?.trim() || m.senderType || m.self);
 
-      // =========================
-      // CACHE UPDATE
-      // =========================
-      queryClient.setQueryData(
-        [CHAT_MESSAGES_KEY, bookingId],
-        (old: ChatCache | undefined) => {
-          const oldMessages = Array.isArray(old?.data) ? old.data : [];
+    if (!normalized.length) return;
 
-          const map = new Map<string, Message>();
+    queryClient.setQueryData(
+      [CHAT_MESSAGES_KEY, bookingId],
+      (old: ChatCache | undefined) => {
+        const oldMessages = old?.data ?? [];
 
-          const add = (m: Message) => {
-            map.set(getMessageKey(m), m);
-          };
+        const map = new Map<string, Message>();
 
-          oldMessages.forEach(add);
-          normalized.forEach(add);
+        oldMessages.forEach((m) => map.set(getMessageKey(m), m));
+        normalized.forEach((m) => map.set(getMessageKey(m), m));
 
-          return {
-            data: Array.from(map.values()),
-          };
-        }
-      );
+        return { data: Array.from(map.values()) };
+      }
+    );
 
-      // =========================
-      // SOUND ONLY (NO NOTIFICATIONS HERE)
-      // =========================
-      if (!notify) return;
+    if (!notify) return;
 
-      normalized
-        .filter((m) => m.senderId && m.senderId !== myUserId)
-        .forEach((msg) => {
-          const key = getMessageKey(msg);
+    normalized
+      .filter((m) => m.senderId && m.senderId !== myUserId)
+      .forEach((msg) => {
+        const key = getMessageKey(msg);
 
-          if (notifiedIds.current.has(key)) return;
+        if (notifiedIds.current.has(key)) return;
+        notifiedIds.current.add(key);
 
-          notifiedIds.current.add(key);
+        playNotificationSound();
+      });
+  };
 
-          if (notifiedIds.current.size > 200) {
-            const first = notifiedIds.current.values().next().value;
-            if (first) notifiedIds.current.delete(first);
-          }
+  socket.on("connect", () => {
+    console.log("🟢 CONNECTED:", socket.id);
+    socket.emit("booking.chat.join", { bookingId });
+  });
 
-          playNotificationSound();
-        });
-    };
+  socket.on("booking.chat.message", (payload) => {
+    console.log("📨 LIVE MESSAGE:", payload);
+    handleMessages(payload, true);
+  });
 
-    socket.on("connect", () => {
-      socket.emit("booking.chat.join", { bookingId });
-    });
+  socket.on("booking.chat.history", (payload) => {
+    console.log("📜 HISTORY:", payload);
+    handleMessages(payload, false);
+  });
 
-    socket.on("booking.chat.message", (payload) => {
-      handleMessages(payload, true);
-    });
+  return () => {
+    console.log("🧹 SOCKET CLEANUP");
 
-    socket.on("booking.chat.history", (payload) => {
-      handleMessages(payload, false);
-    });
+    socket.emit("booking.chat.leave", { bookingId });
+    socket.disconnect();
 
-    return () => {
-      socket.emit("booking.chat.leave", { bookingId });
-      socket.disconnect();
-    };
-  }, [token, bookingId, myUserId, workerName, queryClient]);
+    notifiedIds.current.clear(); // ✅ FIX
+  };
+}, [token, bookingId, myUserId, workerName, queryClient]);
 
   const sendMessage = useCallback(
     (text: string) => {
