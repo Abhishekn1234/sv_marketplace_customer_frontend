@@ -210,9 +210,9 @@ const stepCompletion = {
               jobProgressPage ||
               jobTrackingPage) && (
              <div
-  ref={dropdownRef}
-  className="ml-3 relative flex flex-col items-start"
->
+                      ref={dropdownRef}
+                      className="ml-3 relative flex flex-col items-start"
+                    >
                 {/* LOCATION INPUT */}
                 <Input
                   variant="unstyled"
