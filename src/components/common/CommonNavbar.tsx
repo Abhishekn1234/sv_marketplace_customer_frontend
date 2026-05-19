@@ -107,17 +107,11 @@ const stepCompletion = {
   );
 
   // Show onboarding if any step is incomplete and the user hasn't dismissed it
-  useEffect(() => {
-  const dismissed = localStorage.getItem("location-onboarding-seen");
+ useEffect(() => {
+  const isLocationEmpty = !currentLocation?.trim();
 
-  // show onboarding when placeholder "Select location" is visible
-  if (!currentLocation && !dismissed) {
-    setShowOnboarding(true);
-  } else {
-    setShowOnboarding(false);
-  }
+  setShowOnboarding(isLocationEmpty);
 }, [currentLocation]);
-
   // Auto-dismiss once every step is complete
   useEffect(() => {
     if (allStepsDone && showOnboarding) {
