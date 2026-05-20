@@ -17,10 +17,12 @@ import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 import { getNotificationTarget } from "../utils/notificationNavigation";
-import Select from "@/components/input/Select";
-import Button from "@/components/input/Button";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
+// =========================
+// HELPERS
+// =========================
 const getFirstString = (...values: unknown[]) =>
   values.find(
     (value): value is string =>
@@ -104,6 +106,9 @@ const formatNotificationForPanel = (notification: any) => {
   };
 };
 
+// =========================
+// COMPONENT
+// =========================
 export default function NotificationCards() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -111,23 +116,26 @@ export default function NotificationCards() {
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
+  // =========================
+  // API FILTERS
+  // =========================
   const filters = useMemo(
-    () => ({ page, limit, type }),
-    [page, limit, type]
+    () => ({ page, type }),
+    [page, type]
   );
 
   const { data, isLoading, isFetching } =
-  useNotifications(filters);
+    useNotifications(filters);
 
-const apiNotifications = data?.data ?? [];
-
+  const apiNotifications = data?.data ?? [];
   const fcmNotifications: any[] = [];
 
-  const [notificationMap, setNotificationMap] = useState<Record<string, any>>({});
+  const [notificationMap, setNotificationMap] = useState<
+    Record<string, any>
+  >({});
 
   // =========================
   // MERGE DATA
@@ -149,6 +157,7 @@ const apiNotifications = data?.data ?? [];
       if (page === 1) {
         fcmNotifications.forEach((msg: any) => {
           const id = msg._id || msg.id;
+
           updated[id] = {
             id,
             title: msg.title,
@@ -260,14 +269,17 @@ const apiNotifications = data?.data ?? [];
   };
 
   // =========================
-  // AUTO LOAD MORE (SCROLL)
+  // INFINITE SCROLL
   // =========================
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
 
-        if (target.isIntersecting && apiNotifications.length === limit) {
+        if (
+          target.isIntersecting &&
+          apiNotifications.length > 0
+        ) {
           setPage((p) => p + 1);
         }
       },
@@ -279,7 +291,7 @@ const apiNotifications = data?.data ?? [];
     }
 
     return () => observer.disconnect();
-  }, [apiNotifications, limit]);
+  }, [apiNotifications]);
 
   return (
     <div className="min-h-screen">
@@ -299,20 +311,6 @@ const apiNotifications = data?.data ?? [];
 
           {/* FILTER */}
           <div className="p-4 flex justify-between">
-            <Select
-              options={[
-                { label: "5", value: "5" },
-                { label: "10", value: "10" },
-                { label: "20", value: "20" },
-                { label: "50", value: "50" },
-              ]}
-              value={limit.toString()}
-              onChange={(val) => {
-                setLimit(Number(val));
-                setPage(1);
-                setNotificationMap({});
-              }}
-            />
 
             <div className="flex gap-2">
               {[
@@ -330,8 +328,8 @@ const apiNotifications = data?.data ?? [];
                   }}
                   className={
                     type === f.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100"
+                      ? "bg-blue-600 text-white hover:bg-red-600 cursor-pointer"
+                      : ""
                   }
                 >
                   {f.label}
@@ -365,8 +363,11 @@ const apiNotifications = data?.data ?? [];
               />
             )}
 
-            {/* 👇 AUTO TRIGGER LOADER */}
-            <div ref={loaderRef} className="flex justify-center py-4">
+            {/* LOADER */}
+            <div
+              ref={loaderRef}
+              className="flex justify-center py-4"
+            >
               {isFetching && <CommonSpinner />}
             </div>
 

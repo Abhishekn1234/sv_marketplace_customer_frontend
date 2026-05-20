@@ -35,21 +35,23 @@ export default function NotificationNavigation() {
       if (chatMatch?.[1]) {
         const bookingId = decodeURIComponent(chatMatch[1]);
 
+        // Keep invalidation minimal to avoid multiple refetches.
         queryClient.invalidateQueries({
           queryKey: [CHAT_MESSAGES_KEY, bookingId],
         });
 
-        queryClient.invalidateQueries({
-          queryKey: ["bookings"],
-        });
+        // Do NOT invalidate generic bookings list here; it can trigger extra network calls.
       }
+
+      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (currentPath === path) return;
 
       navigate(path, { replace: false });
 
       setTimeout(() => {
-        const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const currentPathAfterNav = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
-        if (currentPath !== path) {
+        if (currentPathAfterNav !== path) {
           window.history.pushState(null, "", path);
           window.dispatchEvent(new PopStateEvent("popstate"));
         }
