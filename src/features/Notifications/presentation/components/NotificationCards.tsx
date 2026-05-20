@@ -10,7 +10,6 @@ import { Bell } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
-import { useRegisterDeviceToken } from "@/features/Notifications/presentation/hooks/useRegisterDeviceToken";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 
@@ -21,6 +20,89 @@ import { getNotificationTarget } from "../utils/notificationNavigation";
 import Select from "@/components/input/Select";
 import Button from "@/components/input/Button";
 import { toast } from "react-toastify";
+
+const getFirstString = (...values: unknown[]) =>
+  values.find(
+    (value): value is string =>
+      typeof value === "string" && value.trim().length > 0
+  );
+
+const isChatNotification = (notification: any) => {
+  const data =
+    notification.data ||
+    notification.payload ||
+    notification.metadata ||
+    {};
+
+  const senderType =
+    notification.senderType ||
+    notification.sender ||
+    data.senderType ||
+    data.sender;
+
+  return (
+    notification.type === "CHAT_MESSAGE" ||
+    notification.type === "NEW_MESSAGE" ||
+    senderType === "WORKER" ||
+    senderType === "worker"
+  );
+};
+
+const getWorkerName = (notification: any) => {
+  const data =
+    notification.data ||
+    notification.payload ||
+    notification.metadata ||
+    {};
+
+  return getFirstString(
+    notification.workerName,
+    notification.senderName,
+    notification.senderFullName,
+    notification.workerFullName,
+    notification.fullName,
+    data.workerName,
+    data.senderName,
+    data.senderFullName,
+    data.workerFullName,
+    data.fullName
+  );
+};
+
+const getMessageText = (notification: any) => {
+  const data =
+    notification.data ||
+    notification.payload ||
+    notification.metadata ||
+    {};
+
+  return (
+    getFirstString(
+      notification.body,
+      notification.message,
+      notification.text,
+      notification.content,
+      data.body,
+      data.message,
+      data.text,
+      data.content
+    ) || "New message"
+  );
+};
+
+const formatNotificationForPanel = (notification: any) => {
+  if (!isChatNotification(notification)) return notification;
+
+  const workerName = getWorkerName(notification);
+
+  return {
+    ...notification,
+    title: workerName
+      ? `New chat message from ${workerName}`
+      : "New chat message from worker",
+    message: getMessageText(notification),
+  };
+};
 
 export default function NotificationCards() {
   const { t } = useLanguage();
@@ -43,7 +125,7 @@ export default function NotificationCards() {
 
 const apiNotifications = data?.data ?? [];
 
-  const { fcmNotifications = [] } = useRegisterDeviceToken();
+  const fcmNotifications: any[] = [];
 
   const [notificationMap, setNotificationMap] = useState<Record<string, any>>({});
 
@@ -55,8 +137,10 @@ const apiNotifications = data?.data ?? [];
       const updated = { ...prev };
 
       apiNotifications.forEach((n: any) => {
+        const formatted = formatNotificationForPanel(n);
+
         updated[n._id] = {
-          ...n,
+          ...formatted,
           id: String(n._id),
           source: "api",
         };

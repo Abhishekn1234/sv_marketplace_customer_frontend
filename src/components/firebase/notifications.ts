@@ -1,19 +1,65 @@
 import { getToken, onMessage } from "firebase/messaging";
+import type { Dispatch, SetStateAction } from "react";
 import { getFirebaseMessaging } from "./messaging";
+import buildRoute from "./buildNotificationUrl";
+import { getTitleByType } from "./getTitleByType";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
-// =========================
-// TOKEN
-// =========================
+type NotificationPayload = {
+  title?: string;
+  body?: string;
+};
+
+const isChatNotification = (data: any) => {
+  const senderType = data.senderType || data.sender;
+
+  return (
+    data.type === "CHAT_MESSAGE" ||
+    senderType === "WORKER" ||
+    senderType === "worker"
+  );
+};
+
+const getMessageText = (data: any, fallback?: string) =>
+  data.body ||
+  data.message ||
+  data.text ||
+  data.content ||
+  fallback ||
+  "New message";
+
+const getWorkerName = (data: any) =>
+  data.workerName ||
+  data.senderName ||
+  data.senderFullName ||
+  data.workerFullName ||
+  data.fullName ||
+  "Worker";
+
+const buildNotificationDisplay = (
+  data: any,
+  notification?: NotificationPayload
+) => {
+  if (isChatNotification(data)) {
+    return {
+      title: getWorkerName(data),
+      body: getMessageText(data, notification?.body),
+    };
+  }
+
+  return {
+    title: notification?.title || data.title || getTitleByType(data.type),
+    body: getMessageText(data, notification?.body),
+  };
+};
+
 export async function requestAndGetToken() {
   try {
     const messaging = await getFirebaseMessaging();
-
     if (!messaging) return null;
 
     const permission = await Notification.requestPermission();
-
     if (permission !== "granted") return null;
 
     const registration = await navigator.serviceWorker.ready;
@@ -23,8 +69,7 @@ export async function requestAndGetToken() {
       serviceWorkerRegistration: registration,
     });
 
-    console.log("🔥 FCM TOKEN:", token);
-
+    console.log("FCM TOKEN:", token);
     return token;
   } catch (err) {
     console.error("FCM token error:", err);
@@ -32,103 +77,61 @@ export async function requestAndGetToken() {
   }
 }
 
-// =========================
-// FOREGROUND LISTENER
-// =========================
 export async function initOnMessage(
-  pushNotification?: (notification: any) => void
+  setNotifications?: Dispatch<SetStateAction<any[]>>
 ) {
   const messaging = await getFirebaseMessaging();
-
-  if (!messaging) return;
+  if (!messaging) {
+    console.error("Messaging not initialized");
+    return;
+  }
 
   onMessage(messaging, async (payload) => {
-    console.log("📩 FOREGROUND:", payload);
+    console.log("FOREGROUND:", payload);
 
     const data = payload.data || {};
 
+    setNotifications?.((prev) => [payload, ...prev]);
+
     const bookingId = data.bookingId;
+    const senderType = data.senderType;
 
-    // =========================
-    // NAVIGATION URL
-    // =========================
-    let url = "/notifications";
+    const url =
+      (senderType === "WORKER" || senderType === "worker") && bookingId
+        ? `/message/${bookingId}`
+        : buildRoute(data);
 
-    if (data.type === "CHAT_MESSAGE") {
-      url = `/message/${bookingId}`;
-    } else if (data.type === "BOOKING_UPDATE") {
-      url = `/jobtracking/${bookingId}`;
-    }
+    const display = buildNotificationDisplay(data, payload.notification);
 
-    // =========================
-    // NOTIFICATION OBJECT
-    // =========================
-    const notification = {
-      id: data.notificationId || crypto.randomUUID(),
+    const notificationId =
+      data.notificationId ||
+      data.messageId ||
+      data._id ||
+      crypto?.randomUUID?.() ||
+      `${Date.now()}-${Math.random()}`;
 
-      title:
-        payload.notification?.title ||
-        data.title ||
-        "Notification",
+    const alreadyShown = sessionStorage.getItem(`notif_${notificationId}`);
+    if (alreadyShown) return;
 
-      message:
-        payload.notification?.body ||
-        data.body ||
-        data.message ||
-        "New message",
+    sessionStorage.setItem(`notif_${notificationId}`, "1");
 
-      type: data.type,
+    try {
+      const registration = await navigator.serviceWorker.ready;
 
-      bookingId,
-
-      isRead: false,
-
-      createdAt: new Date().toISOString(),
-    };
-
-    // =========================
-    // UPDATE ZUSTAND
-    // =========================
-    pushNotification?.(notification);
-
-    // =========================
-    // SHOW SYSTEM NOTIFICATION
-    // =========================
-    const registration =
-      await navigator.serviceWorker.ready;
-
-    await registration.showNotification(
-      notification.title,
-      {
-        body: notification.message,
-
+      await registration.showNotification(display.title, {
+        body: display.body,
         icon: "/logo.png",
-
         badge: "/logo.png",
-
-        tag: notification.id,
-
-        renotify: true,
-
-        requireInteraction: false,
-
-        actions: [
-          {
-            action: "open",
-            title: "Open",
-          },
-          {
-            action: "close",
-            title: "Close",
-          },
-        ],
-
+        tag: notificationId,
+        actions: [{ action: "open", title: "Open" }],
         data: {
           url,
           bookingId,
-          notificationId: notification.id,
+          senderType,
         },
-      } as NotificationOptions
-    );
+      } as NotificationOptions);
+    } catch (err) {
+      console.error("showNotification failed:", err);
+    }
   });
 }

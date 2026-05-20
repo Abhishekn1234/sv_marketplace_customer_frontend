@@ -1,22 +1,26 @@
-import { getMessaging, isSupported } from "firebase/messaging";
+import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
 import { app } from "./firebase";
 
-let messagingInstance: any = null;
+let messagingInstance: Messaging | null = null;
 
-export const getFirebaseMessaging = async () => {
+export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
   try {
     if (typeof window === "undefined") return null;
 
     const supported = await isSupported();
-    // console.log("🔥 Firebase Messaging supported:", supported);
 
-    if (!supported) return null;
+    if (!supported) {
+      console.warn("⚠️ Firebase Messaging NOT supported in this browser");
+      return null;
+    }
 
     if (messagingInstance) return messagingInstance;
 
-    messagingInstance = getMessaging(app);
+    const messaging = getMessaging(app);
 
-    // console.log("🔥 Messaging initialized:", messagingInstance);
+    messagingInstance = messaging;
+
+    console.log("🔥 Firebase Messaging initialized");
 
     return messagingInstance;
   } catch (err) {

@@ -11,71 +11,218 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-
 const shown = new Set();
 
-// =========================
-// BACKGROUND MESSAGE
-// =========================
-messaging.onBackgroundMessage((payload) => {
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+const toClientUrl = (url) => {
+  try {
+    return new URL(url || "/notifications", self.location.origin).href;
+  } catch (_) {
+    return new URL("/notifications", self.location.origin).href;
+  }
+};
+
+const getId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return value._id || value.id || "";
+};
+
+const buildNotificationRoute = (data) => {
+  if (data.url) return data.url;
+
+  const bookingId =
+    getId(data.bookingId) ||
+    getId(data.booking) ||
+    getId(data.booking_id);
+
+  const senderType = data.senderType || data.sender;
+
+  if (
+    (senderType === "WORKER" ||
+      senderType === "worker" ||
+      data.type === "CHAT_MESSAGE") &&
+    bookingId
+    
+  ) {
+    return `/message/${bookingId}`;
+  }
+
+  if ((data.type === "BOOKING_UPDATE" || data.type === "JOB_TRACKING") && bookingId) {
+    return `/jobtracking/${bookingId}`;
+  }
+
+  if (data.type === "JOB_PROGRESS" && bookingId) {
+    return `/jobprogress/${bookingId}`;
+  }
+
+  if (data.type === "BOOKING_CREATED" && data.serviceId && data.serviceTierId) {
+    return `/bookingdetail/${data.serviceId}/${data.serviceTierId}`;
+  }
+
+  if (data.type === "VIDEO_CALL" && data.senderId) {
+    return `/video-call/${data.senderId}`;
+  }
+
+  return "/notifications";
+};
+
+const isChatNotification = (data) => {
+  const senderType = data.senderType || data.sender;
+
+  return (
+    data.type === "CHAT_MESSAGE" ||
+    senderType === "WORKER" ||
+    senderType === "worker"
+  );
+};
+
+const getMessageText = (data) =>
+  data.body ||
+  data.message ||
+  data.text ||
+  data.content ||
+  "New message";
+
+const getWorkerName = (data) =>
+  data.workerName ||
+  data.senderName ||
+  data.senderFullName ||
+  data.workerFullName ||
+  data.fullName ||
+  "Worker";
+
+const getTitleByType = (type) => {
+  switch (type) {
+    case "BOOKING_CREATED":
+    case "BOOKING_REQUEST":
+      return "Booking Request";
+
+    case "BOOKING_UPDATE":
+    case "JOB_TRACKING":
+      return "Booking Update";
+
+    case "JOB_PROGRESS":
+      return "Progress Update";
+
+    case "BOOKING_CANCELLED":
+      return "Booking Cancelled";
+
+    case "BOOKING_COMPLETED":
+      return "Booking Completed";
+
+    case "VIDEO_CALL":
+      return "Incoming Call";
+
+    default:
+      return "Notification";
+  }
+};
+
+const buildNotificationDisplay = (data) => {
+  if (isChatNotification(data)) {
+    return {
+      title: getWorkerName(data),
+      body: getMessageText(data),
+    };
+  }
+
+  return {
+    title: data.title || getTitleByType(data.type),
+    body: getMessageText(data),
+  };
+};
+
+const getNotificationTag = (data) =>
+  data.notificationId ||
+  data.messageId ||
+  data._id ||
+  `${buildNotificationRoute(data)}-${getMessageText(data)}`;
+
+const closeAutoFirebaseNotifications = async (payload, display, tag) => {
+  const autoTitle = payload.notification?.title;
+  const autoBody = payload.notification?.body;
+
+  if (!autoTitle && !autoBody) return;
+
+  const notifications = await self.registration.getNotifications();
+
+  notifications.forEach((notification) => {
+    const isWantedNotification =
+      notification.tag === tag ||
+      (notification.title === display.title &&
+        notification.body === display.body);
+
+    const isAutoFirebaseNotification =
+      (autoTitle && notification.title === autoTitle) ||
+      (autoBody && notification.body === autoBody);
+
+    if (!isWantedNotification && isAutoFirebaseNotification) {
+      notification.close();
+    }
+  });
+};
+
+messaging.onBackgroundMessage(async (payload) => {
   const data = payload.data || {};
 
   const bookingId = data.bookingId;
+  const senderType = data.senderType;
+  const url = buildNotificationRoute(data);
+  const display = buildNotificationDisplay(data);
+  const tag = getNotificationTag(data);
 
-  let url = "/notifications";
+  const id = tag;
 
-  if (data.type === "CHAT_MESSAGE") {
-    url = `/message/${bookingId}`;
-  } else if (data.type === "BOOKING_UPDATE") {
-    url = `/jobtracking/${bookingId}`;
-  }
-
-  const id = data.notificationId;
   if (id && shown.has(id)) return;
   if (id) shown.add(id);
 
-  self.registration.showNotification(data.title || "Notification", {
-    body: data.body || data.message,
+  await self.registration.showNotification(display.title, {
+    body: display.body,
     icon: "/logo.png",
     badge: "/logo.png",
-
-    actions: [
-      { action: "open", title: "Open" },
-      { action: "close", title: "Close" },
-    ],
-
-    data: { url },
+    tag,
+    renotify: true,
+    actions: [{ action: "open", title: "Open" }],
+    data: {
+      url,
+      bookingId,
+      senderType,
+    },
   });
+
+  await closeAutoFirebaseNotifications(payload, display, tag);
 });
 
-// =========================
-// CLICK HANDLER
-// =========================
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const url = event.notification.data?.url || "/notifications";
+  const targetUrl = toClientUrl(url);
 
   event.waitUntil(
     (async () => {
-      if (event.action === "close") return;
+      if (event.action && event.action !== "open") return;
 
-      const allClients = await clients.matchAll({
+      const clientsList = await clients.matchAll({
         type: "window",
         includeUncontrolled: true,
       });
 
-      // ✅ TRY TO SEND MESSAGE ONLY (NO focus)
-      for (const client of allClients) {
-        client.postMessage({
-          type: "NAVIGATE",
-          url,
-        });
+      for (const client of clientsList) {
+        client.postMessage({ type: "NAVIGATE", url });
+        await client.focus();
         return;
       }
 
-      // fallback
-      await clients.openWindow(url);
+      await clients.openWindow(targetUrl);
     })()
   );
 });

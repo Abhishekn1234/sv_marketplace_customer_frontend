@@ -6,7 +6,6 @@ let socket: Socket | null = null;
 export const initializeSocket = (token: string): Socket => {
   const baseURL = apiClient.defaults.baseURL;
 
-  // ✅ Reconnect safely if needed
   if (socket) {
     if (socket.connected) return socket;
 
@@ -23,34 +22,22 @@ export const initializeSocket = (token: string): Socket => {
   });
 
   socket.on("connect", () => {
-    // console.log("✅ Socket connected:", socket?.id);
+    // Customer socket connected.
   });
-  socket.onAny((event, _data) => {
-  if (!event.startsWith("booking") && !event.startsWith("customer")) return;
 
-  // console.log("📡 [CUSTOMER SOCKET]", {
-  //   event,
-  //   data,
-  // });
-});
-
-  socket.on("disconnect", (_reason) => {
-    // console.log("❌ Socket disconnected:", reason);
+  socket.on("disconnect", () => {
+    // Customer socket disconnected.
   });
 
   socket.on("connect_error", (err) => {
-    console.log("🔥 Socket error:", err.message);
-  });
-
-  // 🔍 Debug all events
-  socket.onAny((_event, _data) => {
-    // console.log("📡 Event:", event, data);
+    console.log("Socket error:", err.message);
   });
 
   return socket;
 };
 
 export const getSocket = (): Socket | null => socket;
+
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();

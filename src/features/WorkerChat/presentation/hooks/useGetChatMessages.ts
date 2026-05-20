@@ -29,13 +29,11 @@ export function useGetChatMessages(
     },
 
     enabled: !!bookingId,
-
-    staleTime: Infinity, // 🔥 IMPORTANT (no auto refetch)
+    staleTime: 0,
     gcTime: 1000 * 60 * 30,
-
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
+    refetchOnReconnect: true,
+    refetchOnMount: "always",
     refetchInterval: false,
   });
 }

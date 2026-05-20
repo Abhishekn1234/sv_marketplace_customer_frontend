@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -29,88 +29,95 @@ export function useChatSocket(
   const notifiedIds = useRef<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
- useEffect(() => {
-  if (!token || !bookingId) return;
+  useEffect(() => {
+    if (!token || !bookingId) return;
 
-  console.log("🚀 INIT CHAT SOCKET", {
-    token,
-    bookingId,
-    myUserId,
-  });
+    // console.log("INIT CHAT SOCKET", {
+    //   token,
+    //   bookingId,
+    //   myUserId,
+    // });
 
-  notifiedIds.current = new Set();
+    notifiedIds.current = new Set();
 
-  if (socketRef.current) {
-    socketRef.current.removeAllListeners();
-    socketRef.current.disconnect();
-  }
+    if (socketRef.current) {
+      socketRef.current.removeAllListeners();
+      socketRef.current.disconnect();
+    }
 
-  const socket = io(SOCKET_URL, {
-    auth: { token },
-    transports: ["websocket"],
-  });
+    const socket = io(SOCKET_URL, {
+      auth: { token },
+      transports: ["websocket"],
+    });
 
-  socketRef.current = socket;
+    socketRef.current = socket;
 
-  const handleMessages = (payload: any, notify = false) => {
-    const normalized = unpackMessages(payload)
-      .map((msg) => normalizeMessage(msg, myUserId))
-      .filter((m) => m.text?.trim() || m.senderType || m.self);
+    const getNormalizedMessages = (payload: any) =>
+      unpackMessages(payload)
+        .map((msg) => normalizeMessage(msg, myUserId))
+        .filter((msg) => msg.text?.trim() || msg.senderType || msg.self);
 
-    if (!normalized.length) return;
+    const handleMessages = (payload: any, notify = false) => {
+      const normalized = getNormalizedMessages(payload);
 
-    queryClient.setQueryData(
-      [CHAT_MESSAGES_KEY, bookingId],
-      (old: ChatCache | undefined) => {
-        const oldMessages = old?.data ?? [];
+      if (!normalized.length) return;
 
-        const map = new Map<string, Message>();
+      queryClient.setQueryData(
+        [CHAT_MESSAGES_KEY, bookingId],
+        (old: ChatCache | undefined) => {
+          const oldMessages = old?.data ?? [];
+          const map = new Map<string, Message>();
 
-        oldMessages.forEach((m) => map.set(getMessageKey(m), m));
-        normalized.forEach((m) => map.set(getMessageKey(m), m));
+          oldMessages.forEach((message) =>
+            map.set(getMessageKey(message), message)
+          );
+          normalized.forEach((message) =>
+            map.set(getMessageKey(message), message)
+          );
 
-        return { data: Array.from(map.values()) };
-      }
-    );
+          return { data: Array.from(map.values()) };
+        }
+      );
 
-    if (!notify) return;
+      if (!notify) return;
 
-    normalized
-      .filter((m) => m.senderId && m.senderId !== myUserId)
-      .forEach((msg) => {
-        const key = getMessageKey(msg);
+      normalized
+        .filter((message) => !message.self && message.senderId !== myUserId)
+        .forEach((message) => {
+          const key = getMessageKey(message);
 
-        if (notifiedIds.current.has(key)) return;
-        notifiedIds.current.add(key);
+          if (notifiedIds.current.has(key)) return;
+          notifiedIds.current.add(key);
 
-        playNotificationSound();
-      });
-  };
+          playNotificationSound();
+        });
+    };
 
-  socket.on("connect", () => {
-    console.log("🟢 CONNECTED:", socket.id);
-    socket.emit("booking.chat.join", { bookingId });
-  });
+    socket.on("connect", () => {
+      // console.log("CONNECTED:", socket.id);
+      socket.emit("booking.chat.join", { bookingId });
+    });
 
-  socket.on("booking.chat.message", (payload) => {
-    console.log("📨 LIVE MESSAGE:", payload);
-    handleMessages(payload, true);
-  });
+    socket.on("booking.chat.message", (payload) => {
+      // console.log("LIVE MESSAGE:", payload);
 
-  socket.on("booking.chat.history", (payload) => {
-    console.log("📜 HISTORY:", payload);
-    handleMessages(payload, false);
-  });
+      handleMessages(payload, true);
+    });
 
-  return () => {
-    console.log("🧹 SOCKET CLEANUP");
+    socket.on("booking.chat.history", (payload) => {
+      // console.log("HISTORY:", payload);
+      handleMessages(payload, false);
+    });
 
-    socket.emit("booking.chat.leave", { bookingId });
-    socket.disconnect();
+    return () => {
+      // console.log("SOCKET CLEANUP");
 
-    notifiedIds.current.clear(); // ✅ FIX
-  };
-}, [token, bookingId, myUserId, workerName, queryClient]);
+      socket.emit("booking.chat.leave", { bookingId });
+      socket.disconnect();
+
+      notifiedIds.current.clear();
+    };
+  }, [token, bookingId, myUserId, workerName, queryClient]);
 
   const sendMessage = useCallback(
     (text: string) => {
