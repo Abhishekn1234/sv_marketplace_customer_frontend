@@ -70,6 +70,9 @@ const buildNotificationRoute = (data) => {
   if (data.type === "VIDEO_CALL" && data.senderId) {
     return `/video-call/${data.senderId}`;
   }
+  if(data.type==="ADMIN_MESSAGE"){
+    return '/notifications';
+  }
 
   return "/notifications";
 };
@@ -177,6 +180,7 @@ messaging.onBackgroundMessage(async (payload) => {
   const senderType = data.senderType;
   const url = buildNotificationRoute(data);
   const display = buildNotificationDisplay(data);
+  
   const tag = getNotificationTag(data);
 
   const id = tag;

@@ -15,6 +15,8 @@ export default function buildRoute(data: any) {
   switch (data.type) {
     case "CHAT_MESSAGE":
       return bookingId ? `/message/${bookingId}` : "/notifications";
+    case "ADMIN_MESSAGE":
+    return "/notifications";
 
     case "BOOKING_CREATED":
       return data.serviceId && data.serviceTierId

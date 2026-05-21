@@ -5,7 +5,8 @@ export function getTitleByType(type:any) {
 
     case "BOOKING_CREATED":
       return "New Booking Request";
-
+     case "ADMIN_MESSAGE":
+      return "Admin Message";
     case "JOB_TRACKING":
       return "Job Update";
    case "BOOKING_CANCELLED":

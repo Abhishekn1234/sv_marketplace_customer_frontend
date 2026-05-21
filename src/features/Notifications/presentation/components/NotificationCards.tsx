@@ -140,24 +140,36 @@ export default function NotificationCards() {
   // =========================
   // MERGE DATA
   // =========================
-  useEffect(() => {
-    setNotificationMap((prev) => {
-      const updated = { ...prev };
+useEffect(() => {
+  let changed = false;
 
-      apiNotifications.forEach((n: any) => {
-        const formatted = formatNotificationForPanel(n);
+  setNotificationMap((prev) => {
+    const updated = { ...prev };
 
-        updated[n._id] = {
+    apiNotifications.forEach((n: any) => {
+      const id = n._id;
+
+      const formatted = formatNotificationForPanel(n);
+
+      const existing = updated[id];
+
+      // 🔥 ONLY update if changed
+      if (!existing || existing.updatedAt !== n.updatedAt) {
+        updated[id] = {
           ...formatted,
-          id: String(n._id),
+          id: String(id),
           source: "api",
         };
-      });
 
-      if (page === 1) {
-        fcmNotifications.forEach((msg: any) => {
-          const id = msg._id || msg.id;
+        changed = true;
+      }
+    });
 
+    if (page === 1 && fcmNotifications.length > 0) {
+      fcmNotifications.forEach((msg: any) => {
+        const id = msg._id || msg.id;
+
+        if (!updated[id]) {
           updated[id] = {
             id,
             title: msg.title,
@@ -166,12 +178,15 @@ export default function NotificationCards() {
             createdAt: msg.createdAt,
             source: "fcm",
           };
-        });
-      }
 
-      return updated;
-    });
-  }, [apiNotifications, fcmNotifications, page]);
+          changed = true;
+        }
+      });
+    }
+
+    return changed ? updated : prev;
+  });
+}, [apiNotifications, page]);
 
   const localNotifications = useMemo(
     () => Object.values(notificationMap),

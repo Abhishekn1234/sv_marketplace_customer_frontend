@@ -17,14 +17,12 @@ export const useNotifications = (filters?: GetNotificationsParams) => {
     queryKey: notificationKeys.list(filters),
 
     queryFn: async () => {
-      const safeFilters = {
+      const res = await useCase.execute({
         page: filters?.page ?? 1,
         limit: filters?.limit ?? 100,
         type: filters?.type,
         unreadOnly: filters?.unreadOnly,
-      };
-
-      const res = await useCase.execute(safeFilters);
+      });
 
       return {
         data: res?.data ?? [],

@@ -41,6 +41,9 @@ const buildNotificationDisplay = (
   data: any,
   notification?: NotificationPayload
 ) => {
+  const type = data.type;
+
+  // CHAT
   if (isChatNotification(data)) {
     return {
       title: getWorkerName(data),
@@ -48,8 +51,17 @@ const buildNotificationDisplay = (
     };
   }
 
+  // ADMIN MESSAGE
+  if (type === "ADMIN_MESSAGE") {
+    return {
+      title: data.title || notification?.title || "Admin Message",
+      body: getMessageText(data, notification?.body),
+    };
+  }
+
+  // DEFAULT
   return {
-    title: notification?.title || data.title || getTitleByType(data.type),
+    title: notification?.title || data.title || getTitleByType(type),
     body: getMessageText(data, notification?.body),
   };
 };
@@ -81,6 +93,7 @@ export async function initOnMessage(
   setNotifications?: Dispatch<SetStateAction<any[]>>
 ) {
   const messaging = await getFirebaseMessaging();
+
   if (!messaging) {
     console.error("Messaging not initialized");
     return;
@@ -90,19 +103,21 @@ export async function initOnMessage(
     console.log("FOREGROUND:", payload);
 
     const data = payload.data || {};
-
-    setNotifications?.((prev) => [payload, ...prev]);
+    const type = data.type;
 
     const bookingId = data.bookingId;
     const senderType = data.senderType;
 
+    // ROUTE
     const url =
       (senderType === "WORKER" || senderType === "worker") && bookingId
         ? `/message/${bookingId}`
         : buildRoute(data);
 
+    // DISPLAY
     const display = buildNotificationDisplay(data, payload.notification);
 
+    // SAFE NOTIFICATION ID
     const notificationId =
       data.notificationId ||
       data.messageId ||
@@ -110,10 +125,22 @@ export async function initOnMessage(
       crypto?.randomUUID?.() ||
       `${Date.now()}-${Math.random()}`;
 
+    // DUPLICATE PREVENTION (session)
     const alreadyShown = sessionStorage.getItem(`notif_${notificationId}`);
     if (alreadyShown) return;
 
     sessionStorage.setItem(`notif_${notificationId}`, "1");
+
+    // ✅ FIXED STATE UPDATE (IMPORTANT)
+    setNotifications?.((prev) => [
+      {
+        ...data,
+        title: display.title,
+        body: display.body,
+        id: notificationId,
+      },
+      ...prev,
+    ]);
 
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -123,11 +150,13 @@ export async function initOnMessage(
         icon: "/logo.png",
         badge: "/logo.png",
         tag: notificationId,
+        renotify: true,
         actions: [{ action: "open", title: "Open" }],
         data: {
           url,
           bookingId,
           senderType,
+          type,
         },
       } as NotificationOptions);
     } catch (err) {
