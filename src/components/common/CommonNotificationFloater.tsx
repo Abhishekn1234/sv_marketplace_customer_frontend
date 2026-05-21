@@ -185,7 +185,7 @@ export default function CommonNotificationFloater({
 
           {/* LIST */}
           <div className="max-h-72 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {notifications?.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">
                 {t.notificationpage.noNotifications}
               </p>

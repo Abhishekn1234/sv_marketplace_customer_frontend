@@ -86,7 +86,7 @@ export default function CommonTable<T>({
 
           {/* Body */}
           <tbody>
-            {data.length === 0 ? (
+            {data?.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
