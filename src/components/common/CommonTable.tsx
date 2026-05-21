@@ -141,7 +141,7 @@ export default function CommonTable<T>({
     </div>
 
     {/* Pagination */}
-    {data.length > pageSize && (
+    {data?.length > pageSize && (
       <div
         className="
           mt-5

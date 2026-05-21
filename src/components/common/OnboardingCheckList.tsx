@@ -34,7 +34,7 @@ const OnboardingChecklist: React.FC<Props> = ({
 
   const doneCount = steps.filter((s) => completion[s.id]).length;
   const progress =
-    steps.length > 0 ? (doneCount / steps.length) * 100 : 0;
+    steps?.length > 0 ? (doneCount / steps.length) * 100 : 0;
 
   const rect = anchorRef?.current?.getBoundingClientRect();
 

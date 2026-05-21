@@ -76,7 +76,7 @@ const ProgressStepper = () => {
               </div>
 
            
-              {index < steps.length - 1 && (
+              {index < steps?.length - 1 && (
                 <>
                   {/* Mobile vertical connector */}
                   <div className="sm:hidden ml-4 w-px h-6 bg-gray-200" />
