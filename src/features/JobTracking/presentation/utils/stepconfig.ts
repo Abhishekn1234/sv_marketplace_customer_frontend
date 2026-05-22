@@ -9,5 +9,9 @@
     { key: "INVOICE_GENERATED", title: "Invoice Generated" },
     { key: "PAYMENT_PENDING", title: "Payment Pending" },
     { key: "PAID", title: "Payment Done" },
-    {key:"COMPLETED",title:"Completed"}
+    {key:"COMPLETED",title:"Completed"},
+  {key:"WORKER_CANCELLED",title:"Cancelled by Professional"},
+  {key:"CUSTOMER_CANCELLED",title:"Cancelled by You"},
+  {key:"EXPIRED",title:"Expired"},
+
   ];

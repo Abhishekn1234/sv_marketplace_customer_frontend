@@ -306,72 +306,76 @@ messaging.onBackgroundMessage(
 // =========================
 // NOTIFICATION CLICK
 // =========================
-self.addEventListener(
-  "notificationclick",
-  (event) => {
-    event.notification.close();
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
 
-    const data =
-      event.notification?.data || {};
+  const data = event.notification?.data || {};
+  const url = data.url || "/notifications";
+  const absoluteUrl = toAbsoluteUrl(url);
 
-    const url =
-      data.url || "/notifications";
+  event.waitUntil(
+    (async () => {
+      try {
+        if (event.action && event.action !== "open") return;
 
-    const absoluteUrl =
-      toAbsoluteUrl(url);
+        const windowClients = await clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
 
-    event.waitUntil(
-      (async () => {
-        try {
-          // Ignore unknown actions
-          if (
-            event.action &&
-            event.action !== "open"
-          ) {
-            return;
-          }
+        const targetPath = new URL(
+          absoluteUrl,
+          self.location.origin
+        ).pathname;
 
-          const windowClients =
-            await clients.matchAll({
-              type: "window",
-              includeUncontrolled: true,
+        // =========================
+        // CHECK EXISTING TABS
+        // =========================
+        for (const client of windowClients) {
+          const clientUrl = new URL(client.url, self.location.origin);
+          const clientPath = clientUrl.pathname;
+
+          const isSamePage = clientPath === targetPath;
+
+          if (isSamePage) {
+            // 👉 already on same page → just focus, no navigation
+            await client.focus();
+
+            client.postMessage({
+              type: "NOTIFICATION_ALREADY_ON_PAGE",
+              url,
             });
 
-          // =========================
-          // APP ALREADY OPEN
-          // =========================
-          for (const client of windowClients) {
-            const isSameOrigin =
-              client.url.includes(
-                self.location.origin
-              );
-
-            if (isSameOrigin) {
-              await client.focus();
-
-              // Notify React app
-              client.postMessage({
-                type: "NAVIGATE",
-                url,
-              });
-
-              return;
-            }
+            return;
           }
-
-          // =========================
-          // OPEN NEW TAB
-          // =========================
-          await clients.openWindow(
-            absoluteUrl
-          );
-        } catch (error) {
-          console.error(
-            "Notification click error:",
-            error
-          );
         }
-      })()
-    );
-  }
-);
+
+        // =========================
+        // IF SAME ORIGIN TAB EXISTS → FOCUS + NAVIGATE
+        // =========================
+        for (const client of windowClients) {
+          const isSameOrigin =
+            client.url.startsWith(self.location.origin);
+
+          if (isSameOrigin) {
+            await client.focus();
+
+            client.postMessage({
+              type: "NAVIGATE",
+              url,
+            });
+
+            return;
+          }
+        }
+
+        // =========================
+        // NO TAB → OPEN NEW
+        // =========================
+        await clients.openWindow(absoluteUrl);
+      } catch (error) {
+        console.error("Notification click error:", error);
+      }
+    })()
+  );
+});

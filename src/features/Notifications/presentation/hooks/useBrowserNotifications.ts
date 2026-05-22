@@ -25,6 +25,14 @@ const getBody = (n: any) => {
   return n.message || n.body || n.text || "New notification";
 };
 
+const normalizePath = (path: string) => {
+  try {
+    return new URL(path, window.location.origin).pathname;
+  } catch {
+    return path;
+  }
+};
+
 export const useBrowserNotifications = () => {
   const notifications = useAuthStore((state) => state.notifications.list);
 
@@ -35,7 +43,7 @@ export const useBrowserNotifications = () => {
     if (!("Notification" in window)) return;
     if (Notification.permission !== "granted") return;
 
-    const currentPath = window.location.pathname;
+    const currentPath = normalizePath(window.location.pathname);
 
     navigator.serviceWorker.ready.then((reg) => {
       notifications.forEach((n: any) => {
@@ -46,13 +54,21 @@ export const useBrowserNotifications = () => {
         if (seenIds.current.has(id)) return;
         seenIds.current.add(id);
 
-        // ✅ ONLY ADMIN MESSAGE
+        // ✅ only ADMIN messages
         if (n.type !== "ADMIN_MESSAGE") return;
 
         const url = buildRoute(n);
+        const targetPath = normalizePath(url);
 
-        // ✅ DON'T SHOW if already on notifications page
-        if (currentPath === "/notifications") return;
+        // ❌ don't notify if user already on same page
+        const isSamePage = currentPath === targetPath;
+
+        // ❌ don't notify if user already inside same booking context
+        const isInsideBooking =
+          currentPath.startsWith("/bookings/") &&
+          targetPath.startsWith("/bookings/");
+
+        if (isSamePage || isInsideBooking) return;
 
         const title = getTitle(n);
         const body = getBody(n);

@@ -43,7 +43,6 @@ const buildNotificationDisplay = (
 ) => {
   const type = data.type;
 
-  // CHAT
   if (isChatNotification(data)) {
     return {
       title: getWorkerName(data),
@@ -51,7 +50,6 @@ const buildNotificationDisplay = (
     };
   }
 
-  // ADMIN MESSAGE
   if (type === "ADMIN_MESSAGE") {
     return {
       title: data.title || notification?.title || "Admin Message",
@@ -59,11 +57,18 @@ const buildNotificationDisplay = (
     };
   }
 
-  // DEFAULT
   return {
     title: notification?.title || data.title || getTitleByType(type),
     body: getMessageText(data, notification?.body),
   };
+};
+
+const normalizePath = (path: string) => {
+  try {
+    return new URL(path, window.location.origin).pathname;
+  } catch {
+    return path;
+  }
 };
 
 export async function requestAndGetToken() {
@@ -114,6 +119,22 @@ export async function initOnMessage(
         ? `/message/${bookingId}`
         : buildRoute(data);
 
+    const currentPath = normalizePath(window.location.pathname);
+    const targetPath = normalizePath(url);
+
+    // ❌ SKIP if user already on same page
+    const isSamePage = currentPath === targetPath;
+
+    // ❌ SKIP if user already inside same booking context
+    const isInsideBooking =
+      currentPath.startsWith("/message/") &&
+      targetPath.startsWith("/message/");
+
+    if (isSamePage || isInsideBooking) {
+      console.log("Notification skipped (user already on page)");
+      return;
+    }
+
     // DISPLAY
     const display = buildNotificationDisplay(data, payload.notification);
 
@@ -131,7 +152,7 @@ export async function initOnMessage(
 
     sessionStorage.setItem(`notif_${notificationId}`, "1");
 
-    // ✅ FIXED STATE UPDATE (IMPORTANT)
+    // STATE UPDATE
     setNotifications?.((prev) => [
       {
         ...data,
