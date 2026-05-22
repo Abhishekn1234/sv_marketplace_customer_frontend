@@ -30,32 +30,20 @@ export default function NotificationNavigation() {
       if (event.data?.type !== "NAVIGATE") return;
 
       const path = normalizeNavigationPath(event.data.url);
+
       const chatMatch = path.match(/^\/message\/([^/?#]+)/);
 
       if (chatMatch?.[1]) {
         const bookingId = decodeURIComponent(chatMatch[1]);
 
-        // Keep invalidation minimal to avoid multiple refetches.
-        queryClient.invalidateQueries({
-          queryKey: [CHAT_MESSAGES_KEY, bookingId],
+        queueMicrotask(() => {
+          queryClient.invalidateQueries({
+            queryKey: [CHAT_MESSAGES_KEY, bookingId],
+          });
         });
-
-        // Do NOT invalidate generic bookings list here; it can trigger extra network calls.
       }
 
-      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      if (currentPath === path) return;
-
-      navigate(path, { replace: false });
-
-      setTimeout(() => {
-        const currentPathAfterNav = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-
-        if (currentPathAfterNav !== path) {
-          window.history.pushState(null, "", path);
-          window.dispatchEvent(new PopStateEvent("popstate"));
-        }
-      }, 100);
+      navigate(path);
     };
 
     navigator.serviceWorker.addEventListener("message", handler);

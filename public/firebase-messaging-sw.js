@@ -1,6 +1,9 @@
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
+// =========================
+// FIREBASE INIT
+// =========================
 firebase.initializeApp({
   apiKey: "AIzaSyChCuX9ZrzrZUmeSc7WO-3Nalq8t84Yjyo",
   authDomain: "sv-marketplace-46503.firebaseapp.com",
@@ -11,8 +14,10 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-const shown = new Set();
 
+// =========================
+// SW LIFECYCLE
+// =========================
 self.addEventListener("install", () => {
   self.skipWaiting();
 });
@@ -21,21 +26,36 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-const toClientUrl = (url) => {
-  try {
-    return new URL(url || "/notifications", self.location.origin).href;
-  } catch (_) {
-    return new URL("/notifications", self.location.origin).href;
-  }
-};
-
+// =========================
+// HELPERS
+// =========================
 const getId = (value) => {
   if (!value) return "";
+
   if (typeof value === "string") return value;
+
   return value._id || value.id || "";
 };
 
-const buildNotificationRoute = (data) => {
+const toAbsoluteUrl = (url) => {
+  try {
+    return new URL(
+      url || "/notifications",
+      self.location.origin
+    ).href;
+  } catch (_) {
+    return new URL(
+      "/notifications",
+      self.location.origin
+    ).href;
+  }
+};
+
+// =========================
+// ROUTE BUILDER
+// =========================
+const buildNotificationRoute = (data = {}) => {
+  // Highest priority
   if (data.url) return data.url;
 
   const bookingId =
@@ -43,42 +63,82 @@ const buildNotificationRoute = (data) => {
     getId(data.booking) ||
     getId(data.booking_id);
 
-  const senderType = data.senderType || data.sender;
+  const senderType =
+    data.senderType || data.sender;
 
+  // =========================
+  // CHAT
+  // =========================
   if (
-    (senderType === "WORKER" ||
-      senderType === "worker" ||
-      data.type === "CHAT_MESSAGE") &&
+    (data.type === "CHAT_MESSAGE" ||
+      senderType === "WORKER" ||
+      senderType === "worker") &&
     bookingId
-    
   ) {
     return `/message/${bookingId}`;
   }
 
-  if ((data.type === "BOOKING_UPDATE" || data.type === "JOB_TRACKING") && bookingId) {
+  // =========================
+  // TRACKING
+  // =========================
+  if (
+    (data.type === "BOOKING_UPDATE" ||
+      data.type === "JOB_TRACKING") &&
+    bookingId
+  ) {
     return `/jobtracking/${bookingId}`;
   }
 
-  if (data.type === "JOB_PROGRESS" && bookingId) {
+  // =========================
+  // JOB PROGRESS
+  // =========================
+  if (
+    data.type === "JOB_PROGRESS" &&
+    bookingId
+  ) {
     return `/jobprogress/${bookingId}`;
   }
 
-  if (data.type === "BOOKING_CREATED" && data.serviceId && data.serviceTierId) {
+  // =========================
+  // BOOKING DETAIL
+  // =========================
+  if (
+    data.type === "BOOKING_CREATED" &&
+    data.serviceId &&
+    data.serviceTierId
+  ) {
     return `/bookingdetail/${data.serviceId}/${data.serviceTierId}`;
   }
 
-  if (data.type === "VIDEO_CALL" && data.senderId) {
+  // =========================
+  // VIDEO CALL
+  // =========================
+  if (
+    data.type === "VIDEO_CALL" &&
+    data.senderId
+  ) {
     return `/video-call/${data.senderId}`;
   }
-  if(data.type==="ADMIN_MESSAGE"){
-    return '/notifications';
+
+  // =========================
+  // ADMIN
+  // =========================
+  if (data.type === "ADMIN_MESSAGE") {
+    return "/notifications";
   }
 
+  // =========================
+  // FALLBACK
+  // =========================
   return "/notifications";
 };
 
-const isChatNotification = (data) => {
-  const senderType = data.senderType || data.sender;
+// =========================
+// DISPLAY HELPERS
+// =========================
+const isChatNotification = (data = {}) => {
+  const senderType =
+    data.senderType || data.sender;
 
   return (
     data.type === "CHAT_MESSAGE" ||
@@ -87,20 +147,26 @@ const isChatNotification = (data) => {
   );
 };
 
-const getMessageText = (data) =>
-  data.body ||
-  data.message ||
-  data.text ||
-  data.content ||
-  "New message";
+const getMessageText = (data = {}) => {
+  return (
+    data.body ||
+    data.message ||
+    data.text ||
+    data.content ||
+    "New notification"
+  );
+};
 
-const getWorkerName = (data) =>
-  data.workerName ||
-  data.senderName ||
-  data.senderFullName ||
-  data.workerFullName ||
-  data.fullName ||
-  "Worker";
+const getWorkerName = (data = {}) => {
+  return (
+    data.workerName ||
+    data.senderName ||
+    data.senderFullName ||
+    data.workerFullName ||
+    data.fullName ||
+    "Worker"
+  );
+};
 
 const getTitleByType = (type) => {
   switch (type) {
@@ -122,111 +188,190 @@ const getTitleByType = (type) => {
       return "Booking Completed";
 
     case "VIDEO_CALL":
-      return "Incoming Call";
+      return "Incoming Video Call";
+
+    case "ADMIN_MESSAGE":
+      return "Admin Message";
 
     default:
       return "Notification";
   }
 };
 
-const buildNotificationDisplay = (data) => {
+const buildNotificationDisplay = (
+  payload,
+  data = {}
+) => {
+  // CHAT STYLE
   if (isChatNotification(data)) {
     return {
-      title: getWorkerName(data),
-      body: getMessageText(data),
+      title:
+        payload.notification?.title ||
+        getWorkerName(data),
+
+      body:
+        payload.notification?.body ||
+        getMessageText(data),
     };
   }
 
+  // NORMAL STYLE
   return {
-    title: data.title || getTitleByType(data.type),
-    body: getMessageText(data),
+    title:
+      payload.notification?.title ||
+      data.title ||
+      getTitleByType(data.type),
+
+    body:
+      payload.notification?.body ||
+      getMessageText(data),
   };
 };
 
-const getNotificationTag = (data) =>
-  data.notificationId ||
-  data.messageId ||
-  data._id ||
-  `${buildNotificationRoute(data)}-${getMessageText(data)}`;
-
-const closeAutoFirebaseNotifications = async (payload, display, tag) => {
-  const autoTitle = payload.notification?.title;
-  const autoBody = payload.notification?.body;
-
-  if (!autoTitle && !autoBody) return;
-
-  const notifications = await self.registration.getNotifications();
-
-  notifications.forEach((notification) => {
-    const isWantedNotification =
-      notification.tag === tag ||
-      (notification.title === display.title &&
-        notification.body === display.body);
-
-    const isAutoFirebaseNotification =
-      (autoTitle && notification.title === autoTitle) ||
-      (autoBody && notification.body === autoBody);
-
-    if (!isWantedNotification && isAutoFirebaseNotification) {
-      notification.close();
-    }
-  });
+// =========================
+// NOTIFICATION TAG
+// =========================
+const getNotificationTag = (data = {}) => {
+  return (
+    data.notificationId ||
+    data.messageId ||
+    data._id ||
+    `${buildNotificationRoute(data)}-${getMessageText(data)}`
+  );
 };
 
-messaging.onBackgroundMessage(async (payload) => {
-  const data = payload.data || {};
+// =========================
+// BACKGROUND MESSAGE
+// =========================
+messaging.onBackgroundMessage(
+  async (payload) => {
+    console.log(
+      "[firebase-messaging-sw.js] BG Message",
+      payload
+    );
 
-  const bookingId = data.bookingId;
-  const senderType = data.senderType;
-  const url = buildNotificationRoute(data);
-  const display = buildNotificationDisplay(data);
-  
-  const tag = getNotificationTag(data);
+    try {
+      const data = payload.data || {};
 
-  const id = tag;
+      const url =
+        buildNotificationRoute(data);
 
-  if (id && shown.has(id)) return;
-  if (id) shown.add(id);
+      const display =
+        buildNotificationDisplay(
+          payload,
+          data
+        );
 
-  await self.registration.showNotification(display.title, {
-    body: display.body,
-    icon: "/logo.png",
-    badge: "/logo.png",
-    tag,
-    renotify: true,
-    actions: [{ action: "open", title: "Open" }],
-    data: {
-      url,
-      bookingId,
-      senderType,
-    },
-  });
+      const tag =
+        getNotificationTag(data);
 
-  await closeAutoFirebaseNotifications(payload, display, tag);
-});
+      await self.registration.showNotification(
+        display.title,
+        {
+          body: display.body,
 
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
+          icon: "/logo.png",
+          badge: "/logo.png",
 
-  const url = event.notification.data?.url || "/notifications";
-  const targetUrl = toClientUrl(url);
+          tag,
+          renotify: true,
 
-  event.waitUntil(
-    (async () => {
-      if (event.action && event.action !== "open") return;
+          requireInteraction: false,
 
-      const clientsList = await clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      });
+          data: {
+            url,
+            type: data.type,
+            bookingId: data.bookingId,
+            senderType:
+              data.senderType,
+          },
 
-      for (const client of clientsList) {
-        client.postMessage({ type: "NAVIGATE", url });
-        await client.focus();
-        return;
-      }
+          actions: [
+            {
+              action: "open",
+              title: "Open",
+            },
+          ],
+        }
+      );
+    } catch (error) {
+      console.error(
+        "Background notification error:",
+        error
+      );
+    }
+  }
+);
 
-      await clients.openWindow(targetUrl);
-    })()
-  );
-});
+// =========================
+// NOTIFICATION CLICK
+// =========================
+self.addEventListener(
+  "notificationclick",
+  (event) => {
+    event.notification.close();
+
+    const data =
+      event.notification?.data || {};
+
+    const url =
+      data.url || "/notifications";
+
+    const absoluteUrl =
+      toAbsoluteUrl(url);
+
+    event.waitUntil(
+      (async () => {
+        try {
+          // Ignore unknown actions
+          if (
+            event.action &&
+            event.action !== "open"
+          ) {
+            return;
+          }
+
+          const windowClients =
+            await clients.matchAll({
+              type: "window",
+              includeUncontrolled: true,
+            });
+
+          // =========================
+          // APP ALREADY OPEN
+          // =========================
+          for (const client of windowClients) {
+            const isSameOrigin =
+              client.url.includes(
+                self.location.origin
+              );
+
+            if (isSameOrigin) {
+              await client.focus();
+
+              // Notify React app
+              client.postMessage({
+                type: "NAVIGATE",
+                url,
+              });
+
+              return;
+            }
+          }
+
+          // =========================
+          // OPEN NEW TAB
+          // =========================
+          await clients.openWindow(
+            absoluteUrl
+          );
+        } catch (error) {
+          console.error(
+            "Notification click error:",
+            error
+          );
+        }
+      })()
+    );
+  }
+);

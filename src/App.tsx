@@ -49,12 +49,14 @@ import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCa
 import AIChatPage from "./features/JobTracking/presentation/components/AIChatWindow";
 import ScrollToTop from "./ScrollToTop";
 import NotificationNavigation from "./NavigationNotification";
-import { useFCMNavigation } from "./features/Notifications/presentation/hooks/useFCMNavigation";
+import { useBrowserNotifications } from "./features/Notifications/presentation/hooks/useBrowserNotifications";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
   useRegisterDeviceToken(Boolean(isLoggedIn && accessToken));
- useFCMNavigation();
+
+
+ useBrowserNotifications();
   // =========================
   // SOCKET INIT
   // =========================

@@ -13,7 +13,9 @@ export default function NotificationHeader({
 
   const hasSelection = selected.length > 0;
 
-  const allSelected = total > 0 && selected.length === total;
+ const allSelected =
+  total > 0 &&
+  selected.length === total;
 
   // ✅ Detect select-all mode
   const isSelectAllMode = allSelected;

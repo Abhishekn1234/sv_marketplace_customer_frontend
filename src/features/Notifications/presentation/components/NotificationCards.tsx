@@ -15,10 +15,13 @@ import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 
 import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { Button } from "@/components/ui/button";
 
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import { toast } from "react-toastify";
-import { Button } from "@/components/ui/button";
+
+// ✅ ZUSTAND STORE
+import { useAuthStore } from "@/features/core/store/auth";
 
 // =========================
 // HELPERS
@@ -120,7 +123,7 @@ export default function NotificationCards() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   // =========================
-  // API FILTERS
+  // API FETCH (only for hydration)
   // =========================
   const filters = useMemo(
     () => ({ page, type }),
@@ -130,67 +133,46 @@ export default function NotificationCards() {
   const { data, isLoading, isFetching } =
     useNotifications(filters);
 
-  const apiNotifications = data?.data ?? [];
-  const fcmNotifications: any[] = [];
+  // =========================
+  // ZUSTAND STATE (SOURCE OF TRUTH)
+  // =========================
+  const notifications = useAuthStore(
+    (state) => state.notifications.list
+  );
 
-  const [notificationMap, setNotificationMap] = useState<
-    Record<string, any>
-  >({});
+  const setNotificationsList = useAuthStore(
+    (state) => state.setNotificationsList
+  );
+
+  const markNotificationRead = useAuthStore(
+    (state) => state.markNotificationRead
+  );
+
+  const { markAsRead } = useMarkNotificationRead();
+  const { markAllAsRead } = useMarkAllAsRead();
 
   // =========================
-  // MERGE DATA
+  // HYDRATE ZUSTAND FROM API
   // =========================
-useEffect(() => {
-  let changed = false;
-
-  setNotificationMap((prev) => {
-    const updated = { ...prev };
-
-    apiNotifications.forEach((n: any) => {
-      const id = n._id;
-
-      const formatted = formatNotificationForPanel(n);
-
-      const existing = updated[id];
-
-      // 🔥 ONLY update if changed
-      if (!existing || existing.updatedAt !== n.updatedAt) {
-        updated[id] = {
-          ...formatted,
-          id: String(id),
-          source: "api",
-        };
-
-        changed = true;
-      }
-    });
-
-    if (page === 1 && fcmNotifications.length > 0) {
-      fcmNotifications.forEach((msg: any) => {
-        const id = msg._id || msg.id;
-
-        if (!updated[id]) {
-          updated[id] = {
-            id,
-            title: msg.title,
-            message: msg.message,
-            isRead: false,
-            createdAt: msg.createdAt,
-            source: "fcm",
-          };
-
-          changed = true;
-        }
-      });
+  useEffect(() => {
+    if (data?.data && Array.isArray(data.data)) {
+     setNotificationsList(
+  data.data.map((n: any) => ({
+    ...formatNotificationForPanel(n),
+    id: n._id || n.id || n.messageId, // ✅ FIX
+    isRead: !!n.isRead,
+    source: "api",
+  }))
+);
     }
+  }, [data, setNotificationsList]);
 
-    return changed ? updated : prev;
-  });
-}, [apiNotifications, page]);
-
+  // =========================
+  // DERIVED DATA
+  // =========================
   const localNotifications = useMemo(
-    () => Object.values(notificationMap),
-    [notificationMap]
+    () => notifications,
+    [notifications]
   );
 
   const unreadNotifications = useMemo(
@@ -198,38 +180,40 @@ useEffect(() => {
     [localNotifications]
   );
 
-  const { markAsRead } = useMarkNotificationRead();
-  const { markAllAsRead } = useMarkAllAsRead();
-
   // =========================
   // SELECT
   // =========================
-  const toggleSelect = (id: string) => {
-    const target = notificationMap[id];
-    if (!target || target.isRead) return;
+ const toggleSelect = (id: string) => {
+  if (!id) return;
 
-    setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
-    );
-  };
+  const target = localNotifications.find((n) => n.id === id);
+  if (!target || target.isRead) return;
+
+  setSelected((prev) =>
+    prev.includes(id)
+      ? prev.filter((x) => x !== id)
+      : [...prev, id]
+  );
+};
 
   const toggleSelectAll = () => {
-    const unreadIds = unreadNotifications.map((n) => n.id);
+  const unreadIds = localNotifications
+    .filter((n) => !n.isRead)
+    .map((n) => n.id)
+    .filter((id): id is string => typeof id === "string"); // ✅ FIX TYPE GUARD
 
-    const allSelected =
-      unreadIds.length > 0 &&
-      unreadIds.every((id) => selected.includes(id));
+  const allSelected =
+    unreadIds.length > 0 &&
+    unreadIds.every((id) => selected.includes(id));
 
-    if (allSelected) {
-      setSelected((prev) =>
-        prev.filter((id) => !unreadIds.includes(id))
-      );
-    } else {
-      setSelected(unreadIds);
-    }
-  };
+  if (allSelected) {
+    setSelected((prev) =>
+      prev.filter((id) => !unreadIds.includes(id))
+    );
+  } else {
+    setSelected(unreadIds);
+  }
+};
 
   // =========================
   // MARK AS READ
@@ -239,31 +223,28 @@ useEffect(() => {
 
     await Promise.all(selected.map(markAsRead));
 
-    setNotificationMap((prev) => {
-      const updated = { ...prev };
-      selected.forEach((id) => {
-        if (updated[id]) updated[id].isRead = true;
-      });
-      return updated;
+    selected.forEach((id) => {
+      markNotificationRead(id);
     });
 
     setSelected([]);
   };
 
-  const handleMarkAllAsRead = async () => {
-    await markAllAsRead();
+ const handleMarkAllAsRead = async () => {
+  await markAllAsRead();
 
-    setNotificationMap((prev) => {
-      const updated = { ...prev };
-      Object.keys(updated).forEach((id) => {
-        updated[id].isRead = true;
-      });
-      return updated;
-    });
+  notifications.forEach((n) => {
+    if (typeof n.id === "string") {
+      markNotificationRead(n.id);
+    }
+  });
 
-    setSelected([]);
-  };
+  setSelected([]);
+};
 
+  // =========================
+  // CLICK HANDLER
+  // =========================
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);
 
@@ -272,13 +253,7 @@ useEffect(() => {
       return;
     }
 
-    setNotificationMap((prev) => ({
-      ...prev,
-      [notification.id]: {
-        ...prev[notification.id],
-        isRead: true,
-      },
-    }));
+    markNotificationRead(notification.id);
 
     navigate(url);
   };
@@ -291,10 +266,7 @@ useEffect(() => {
       (entries) => {
         const target = entries[0];
 
-        if (
-          target.isIntersecting &&
-          apiNotifications.length > 0
-        ) {
+        if (target.isIntersecting && (data?.data?.length ?? 0) > 0) {
           setPage((p) => p + 1);
         }
       },
@@ -306,8 +278,11 @@ useEffect(() => {
     }
 
     return () => observer.disconnect();
-  }, [apiNotifications]);
+  }, [data]);
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -326,7 +301,6 @@ useEffect(() => {
 
           {/* FILTER */}
           <div className="p-4 flex justify-between">
-
             <div className="flex gap-2">
               {[
                 { label: "All", value: undefined },
@@ -339,11 +313,10 @@ useEffect(() => {
                   onClick={() => {
                     setType(f.value);
                     setPage(1);
-                    setNotificationMap({});
                   }}
                   className={
                     type === f.value
-                      ? "bg-blue-600 text-white hover:bg-red-600 cursor-pointer"
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
                       : ""
                   }
                 >
@@ -355,16 +328,15 @@ useEffect(() => {
 
           {/* HEADER ACTIONS */}
           <NotificationHeader
-            toggleSelectAll={toggleSelectAll}
-            selected={selected}
-            total={unreadNotifications.length}
+             toggleSelectAll={toggleSelectAll}
+              selected={selected}
+              total={unreadNotifications.length}
             markAllAsRead={handleMarkAllAsRead}
             markSelectedAsRead={markSelectedAsRead}
           />
 
           {/* LIST */}
           <div className="overflow-y-auto">
-
             {isLoading ? (
               <div className="h-64 flex items-center justify-center">
                 <CommonSpinner />
@@ -379,13 +351,9 @@ useEffect(() => {
             )}
 
             {/* LOADER */}
-            <div
-              ref={loaderRef}
-              className="flex justify-center py-4"
-            >
+            <div ref={loaderRef} className="flex justify-center py-4">
               {isFetching && <CommonSpinner />}
             </div>
-
           </div>
 
         </CommonCard>

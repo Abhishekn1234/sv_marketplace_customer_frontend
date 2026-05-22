@@ -263,25 +263,20 @@ export const useAuthStore = create<AuthState>()(
           },
         })),
 
-      pushNotification: (notification: NotificationItem) =>
-        set((state) => ({
-          notifications: {
-            ...state.notifications,
-            list: [
-              notification,
-              ...(state.notifications?.list || []),
-            ],
-            unreadCount:
-              state.notifications.unreadCount +
-              (notification.isRead ? 0 : 1),
-          },
-        })),
+   pushNotification: (notification: NotificationItem) =>
+  set((state) => ({
+    notifications: {
+      ...state.notifications,
+      list: [notification, ...(state.notifications.list || [])],
+      unreadCount: [...state.notifications.list, notification].filter(
+        (n) => !n.isRead
+      ).length,
+    },
+  })),
 
-      markNotificationRead: (id: string) =>
+     markNotificationRead: (id: string) =>
   set((state) => {
-    const currentList = state.notifications?.list || [];
-
-    const updated = currentList.map((n: NotificationItem) =>
+    const updated = state.notifications.list.map((n) =>
       n.id === id || n._id === id
         ? { ...n, isRead: true }
         : n

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/features/core/store/auth";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
 import type { GetNotificationsParams } from "../../domain/entities/notificationgetparams";
@@ -13,6 +14,8 @@ export const notificationKeys = {
 };
 
 export const useNotifications = (filters?: GetNotificationsParams) => {
+  const setNotifications = useAuthStore((s) => s.setNotificationsList);
+
   return useQuery({
     queryKey: notificationKeys.list(filters),
 
@@ -24,14 +27,20 @@ export const useNotifications = (filters?: GetNotificationsParams) => {
         unreadOnly: filters?.unreadOnly,
       });
 
-      return {
+      const formatted = {
         data: res?.data ?? [],
         pagination: res?.pagination ?? { totalItems: 0 },
       };
+
+      // ✅ IMPORTANT: sync API → Zustand store
+      setNotifications(formatted.data);
+
+      return formatted;
     },
 
     staleTime: 0,
     gcTime: 1000 * 60 * 5,
+
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
