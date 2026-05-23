@@ -310,8 +310,10 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const data = event.notification?.data || {};
-  const url = data.url || "/notifications";
-  const absoluteUrl = toAbsoluteUrl(url);
+  
+  // If URL is missing (e.g. browser-shown notification), build it now
+  const targetUrl = data.url || buildNotificationRoute(data);
+  const absoluteUrl = toAbsoluteUrl(targetUrl);
 
   event.waitUntil(
     (async () => {
@@ -340,10 +342,10 @@ self.addEventListener("notificationclick", (event) => {
           if (isSamePage) {
             // 👉 already on same page → just focus, no navigation
             await client.focus();
-
+            
             client.postMessage({
               type: "NOTIFICATION_ALREADY_ON_PAGE",
-              url,
+              url: targetUrl,
             });
 
             return;
@@ -362,7 +364,7 @@ self.addEventListener("notificationclick", (event) => {
 
             client.postMessage({
               type: "NAVIGATE",
-              url,
+              url: targetUrl,
             });
 
             return;

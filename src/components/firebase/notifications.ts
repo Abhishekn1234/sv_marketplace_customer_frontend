@@ -6,6 +6,32 @@ import { getTitleByType } from "./getTitleByType";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
+// Register service worker for background notifications
+const ensureServiceWorkerRegistered = async () => {
+  try {
+    if ("serviceWorker" in navigator) {
+      const registration = await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js",
+        { scope: "/" }
+      );
+      console.log(
+        "✅ Service Worker registered:",
+        registration.scope
+      );
+    }
+  } catch (err) {
+    console.error(
+      "❌ Service Worker registration error:",
+      err
+    );
+  }
+};
+
+// Register on module load
+if (typeof window !== "undefined") {
+  ensureServiceWorkerRegistered();
+}
+
 type NotificationPayload = {
   title?: string;
   body?: string;
@@ -119,19 +145,22 @@ export async function initOnMessage(
         ? `/message/${bookingId}`
         : buildRoute(data);
 
+    console.debug("notification route computed", { type: data.type, bookingId, senderType, url });
+
     const currentPath = normalizePath(window.location.pathname);
     const targetPath = normalizePath(url);
 
     // ❌ SKIP if user already on same page
     const isSamePage = currentPath === targetPath;
 
-    // ❌ SKIP if user already inside same booking context
+    // ❌ SKIP only if user is already looking at this specific chat
+    const isChatType = type === "CHAT_MESSAGE" || senderType === "WORKER" || senderType === "worker";
     const isInsideBooking =
-      currentPath.startsWith("/message/") &&
-      targetPath.startsWith("/message/");
-
+      isChatType && 
+      currentPath === `/message/${bookingId}`;
+      
     if (isSamePage || isInsideBooking) {
-      console.log("Notification skipped (user already on page)");
+      console.log("Notification skipped (user already on page)", { currentPath, targetPath, type, bookingId });
       return;
     }
 
@@ -179,6 +208,7 @@ export async function initOnMessage(
           senderType,
           type,
         },
+          requireInteraction: true, // Added to enhance notification options
       } as NotificationOptions);
     } catch (err) {
       console.error("showNotification failed:", err);

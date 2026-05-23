@@ -31,7 +31,7 @@ export function getNotificationTarget(
     notification.metadata ||
     {};
 
-  const type = notification.type;
+  const type = (notification.type || "").toString().toUpperCase();
 
   const bookingId = getFirstString(
     notification.bookingId,
@@ -69,7 +69,9 @@ export function getNotificationTarget(
   // =========================
   if (
     type === "BOOKING_REQUEST" ||
+    type === "BOOKING_REQUESTED" ||
     type === "BOOKING_UPDATE" ||
+    type === "BOOKING_UPDATED" ||
     type === "WORK_ASSIGNED"
   ) {
     if (bookingId) {

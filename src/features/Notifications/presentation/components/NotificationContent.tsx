@@ -78,13 +78,26 @@ export default function NotificationContent({
                   </h3>
                 </div>
 
-                <span className="text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1 whitespace-nowrap font-semibold bg-slate-100 px-2 py-0.5 rounded-md">
-                  <Clock className="w-3 h-3" />
-                  {new Date(n.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1 whitespace-nowrap font-semibold bg-slate-100 px-2 py-0.5 rounded-md">
+                    <Clock className="w-3 h-3" />
+                    {new Date(n.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNotificationClick?.(n);
+                    }}
+                    className="text-xs text-blue-600"
+                    variant="ghost"
+                  >
+                    Open
+                  </Button>
+                </div>
               </div>
 
               <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 font-medium ${isUnread ? "text-slate-600" : "text-slate-400"}`}>

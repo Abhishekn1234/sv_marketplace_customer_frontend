@@ -187,20 +187,34 @@ export default function CommonNotificationFloater({
               notifications.map((item: any) => (
                 <div
                   key={item.id || item._id}
-                  onClick={() => handleNotificationClick(item)}
-                  className={`px-4 py-3 cursor-pointer hover:bg-blue-50 border-b last:border-b-0 ${
-                    !item.isRead
-                      ? "bg-blue-50/40"
-                      : "bg-white"
+                  className={`px-4 py-3 border-b last:border-b-0 ${
+                    !item.isRead ? "bg-blue-50/40" : "bg-white"
                   }`}
                 >
-                  <p className="text-sm font-semibold">
-                    {item.title}
-                  </p>
+                  <div
+                    onClick={() => handleNotificationClick(item)}
+                    className="cursor-pointer"
+                  >
+                    <p className="text-sm font-semibold">
+                      {item.title}
+                    </p>
 
-                  <p className="text-xs text-gray-500 truncate">
-                    {item.message}
-                  </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {item.message}
+                    </p>
+                  </div>
+
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNotificationClick(item);
+                      }}
+                      className="text-xs text-blue-600"
+                    >
+                      Open
+                    </Button>
+                  </div>
                 </div>
               ))
             )}

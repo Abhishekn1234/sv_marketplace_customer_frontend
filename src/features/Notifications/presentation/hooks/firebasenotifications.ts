@@ -20,7 +20,7 @@ export async function requestNotificationPermissions() {
 
   // 🔥 REGISTER SERVICE WORKER FIRST
   const registration = await navigator.serviceWorker.register(
-    "/firebase-message-sw.js"
+     "/firebase-messaging-sw.js"
   );
   console.log("Service Worker registered with scope:", registration.scope);
 

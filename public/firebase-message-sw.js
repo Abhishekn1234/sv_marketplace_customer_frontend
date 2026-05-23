@@ -20,7 +20,6 @@ messaging.onBackgroundMessage((payload) => {
 
   const data = payload.data || {};
   const notification = payload.notification || {};
-
   const title =
     data.title ||
     notification.title ||
@@ -31,6 +30,74 @@ messaging.onBackgroundMessage((payload) => {
     notification.body ||
     "You have a new update";
 
+  // Helper to pick id-like values
+  const getId = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value._id || value.id || "";
+  };
+
+  // Build a safe route similar to client-side buildNotificationUrl
+  const buildRoute = (d) => {
+    if (!d) return "/notifications";
+
+    if (d.url) return d.url;
+
+    const bookingId =
+      getId(d.bookingId) || getId(d.booking) || getId(d.booking_id);
+
+    switch (d.type) {
+      case "CHAT_MESSAGE":
+        return bookingId ? `/message/${bookingId}` : "/notifications";
+      case "ADMIN_MESSAGE":
+        return "/notifications";
+      case "BOOKING_CREATED":
+        return d.serviceId && d.serviceTierId
+          ? `/bookingdetail/${d.serviceId}/${d.serviceTierId}`
+          : "/notifications";
+      case "BOOKING_REQUEST":
+        return bookingId ? `/jobtracking/${bookingId}` : "/notifications";
+      case "JOB_TRACKING":
+      case "BOOKING_UPDATE":
+        return bookingId ? `/jobtracking/${bookingId}` : "/notifications";
+      case "JOB_PROGRESS":
+        return bookingId ? `/jobprogress/${bookingId}` : "/notifications";
+      case "VIDEO_CALL":
+        return d.senderId ? `/video-call/${d.senderId}` : "/notifications";
+      default:
+        return "/notifications";
+    }
+  };
+
+  const url = buildRoute(data);
+
+  // If any open client is already at the target path, skip showing notification
+  try {
+    const clientsList = await clients.matchAll({ type: "window", includeUncontrolled: true });
+
+    const targetPath = new URL(url, self.location.origin).pathname;
+
+    console.log("SW: targetPath computed", targetPath, "clients:", clientsList.map(c => c.url));
+
+    const hasClientAtTarget = clientsList.some((c) => {
+      try {
+        const p = new URL(c.url).pathname;
+        return p === targetPath;
+      } catch (e) {
+        return false;
+      }
+    });
+
+    if (hasClientAtTarget) {
+      // User is already on the target page — avoid noisy notification
+      console.log("SW: skipping notification because a client is at target", targetPath);
+      return;
+    }
+  } catch (err) {
+    // If clients API fails for any reason, fall back to showing notification
+    console.error("SW client check failed:", err);
+  }
+
   self.registration.showNotification(title, {
     body,
     icon: "/logo.png",
@@ -38,7 +105,7 @@ messaging.onBackgroundMessage((payload) => {
     requireInteraction: true,
 
     data: {
-      url: "/notifications",
+      url,
     },
   });
 });

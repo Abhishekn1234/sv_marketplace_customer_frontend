@@ -5,16 +5,18 @@ export function getTitleByType(type:any) {
 
     case "BOOKING_CREATED":
       return "New Booking Request";
-     case "ADMIN_MESSAGE":
+    case "BOOKING_REQUEST":
+      return "Booking Requested";
+    case "BOOKING_UPDATE":
+      return "Booking Update";
+    case "ADMIN_MESSAGE":
       return "Admin Message";
     case "JOB_TRACKING":
       return "Job Update";
-   case "BOOKING_CANCELLED":
+    case "BOOKING_CANCELLED":
       return "Booking Cancelled";
-      case "BOOKING_COMPLETED":
+    case "BOOKING_COMPLETED":
       return "Booking Completed";
-      case "BOOKING_REQUEST":
-      return "Booking Requested";
     case "JOB_PROGRESS":
       return "Progress Update";
 

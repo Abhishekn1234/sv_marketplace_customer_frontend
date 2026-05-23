@@ -5,6 +5,7 @@ type AppNotificationParams = {
   bookingId?: string;
   senderType?: string;
   notificationId?: string;
+  type?: string;
 };
 
 export const showAppNotification = async ({
@@ -14,6 +15,7 @@ export const showAppNotification = async ({
   bookingId,
   senderType = "WORKER",
   notificationId,
+  type = "CHAT_MESSAGE",
 }: AppNotificationParams) => {
   if (!("Notification" in window) || !("serviceWorker" in navigator)) {
     console.warn("Notifications are not supported in this browser");
@@ -47,7 +49,7 @@ export const showAppNotification = async ({
         url,
         bookingId,
         senderType,
-        type: "CHAT_MESSAGE",
+        type,
         notificationId: tag,
       },
     } as NotificationOptions);
