@@ -15,7 +15,7 @@ const messaging = firebase.messaging();
 /* =========================
    BACKGROUND PUSH HANDLER
 ========================= */
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage(async (payload) => {
   console.log("🔥 Background message FULL:", payload);
 
   const data = payload.data || {};
@@ -46,7 +46,8 @@ messaging.onBackgroundMessage((payload) => {
     const bookingId =
       getId(d.bookingId) || getId(d.booking) || getId(d.booking_id);
 
-    switch (d.type) {
+    const type = (d.type || "").toUpperCase();
+    switch (type) {
       case "CHAT_MESSAGE":
         return bookingId ? `/message/${bookingId}` : "/notifications";
       case "ADMIN_MESSAGE":
@@ -76,8 +77,7 @@ messaging.onBackgroundMessage((payload) => {
     const clientsList = await clients.matchAll({ type: "window", includeUncontrolled: true });
 
     const targetPath = new URL(url, self.location.origin).pathname;
-
-    console.log("SW: targetPath computed", targetPath, "clients:", clientsList.map(c => c.url));
+    const type = (data.type || "").toUpperCase();
 
     const hasClientAtTarget = clientsList.some((c) => {
       try {
@@ -88,9 +88,11 @@ messaging.onBackgroundMessage((payload) => {
       }
     });
 
-    if (hasClientAtTarget) {
-      // User is already on the target page — avoid noisy notification
-      console.log("SW: skipping notification because a client is at target", targetPath);
+    // Only skip if it's NOT an admin message and the client is focused/active
+    // For ADMIN_MESSAGE, we always want to show it if the app is closed or backgrounded.
+    const isChatOrAdmin = type === "CHAT_MESSAGE" || type === "ADMIN_MESSAGE";
+    if (hasClientAtTarget && !isChatOrAdmin) {
+      console.log("SW: skipping non-critical notification because client is at target", targetPath);
       return;
     }
   } catch (err) {
@@ -98,12 +100,13 @@ messaging.onBackgroundMessage((payload) => {
     console.error("SW client check failed:", err);
   }
 
-  self.registration.showNotification(title, {
+  await self.registration.showNotification(title, {
     body,
     icon: "/logo.png",
     badge: "/logo.png",
-    requireInteraction: true,
-
+    requireInteraction: (data.type || "").toUpperCase() === "ADMIN_MESSAGE",
+    tag: data.messageId || data._id || `admin-${Date.now()}`,
+    renotify: true,
     data: {
       url,
     },

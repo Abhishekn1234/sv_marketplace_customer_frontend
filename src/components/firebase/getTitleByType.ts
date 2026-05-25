@@ -1,5 +1,6 @@
 export function getTitleByType(type:any) {
-  switch (type) {
+  const normalizedType = (type || "").toString().toUpperCase();
+  switch (normalizedType) {
     case "CHAT_MESSAGE":
       return "New Message";
 

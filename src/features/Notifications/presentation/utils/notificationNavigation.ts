@@ -65,7 +65,14 @@ export function getNotificationTarget(
   }
 
   // =========================
-  // 📦 BOOKING UPDATE
+  // 🛡️ ADMIN ROUTE
+  // =========================
+  if (type === "ADMIN_MESSAGE") {
+    return "/notifications";
+  }
+
+  // =========================
+  // � BOOKING UPDATE
   // =========================
   if (
     type === "BOOKING_REQUEST" ||

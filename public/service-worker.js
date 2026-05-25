@@ -100,18 +100,21 @@ firebase.initializeApp({
 });
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
+messaging.onBackgroundMessage(async function (payload) {
   const title = payload.notification?.title || "Notification";
+  const data = payload.data || {};
+  const type = (data.type || "").toUpperCase();
 
   const options = {
     body: payload.notification?.body || "",
     icon: "/logo.png",
     badge: "/logo.png",
+    requireInteraction: type === "ADMIN_MESSAGE",
     data: {
-      url: payload.data?.url || "/",
-      bookingId: payload.data?.bookingId || null,
+      url: type === "ADMIN_MESSAGE" ? "/notifications" : (data.url || "/"),
+      bookingId: data.bookingId || null,
     },
   };
 
-  self.registration.showNotification(title, options);
+  await self.registration.showNotification(title, options);
 });

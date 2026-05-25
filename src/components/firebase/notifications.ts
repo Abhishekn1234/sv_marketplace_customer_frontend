@@ -7,30 +7,24 @@ import { getTitleByType } from "./getTitleByType";
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 // Register service worker for background notifications
-const ensureServiceWorkerRegistered = async () => {
+export const registerFirebaseMessagingSW = async () => {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    return null;
+  }
+
   try {
-    if ("serviceWorker" in navigator) {
-      const registration = await navigator.serviceWorker.register(
-        "/firebase-messaging-sw.js",
-        { scope: "/" }
-      );
-      console.log(
-        "✅ Service Worker registered:",
-        registration.scope
-      );
-    }
-  } catch (err) {
-    console.error(
-      "❌ Service Worker registration error:",
-      err
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js",
+      { scope: "/" }
     );
+
+    console.log("✅ Firebase SW registered:", registration.scope);
+    return registration;
+  } catch (err) {
+    console.error("❌ Firebase SW registration error:", err);
+    return null;
   }
 };
-
-// Register on module load
-if (typeof window !== "undefined") {
-  ensureServiceWorkerRegistered();
-}
 
 type NotificationPayload = {
   title?: string;
@@ -38,12 +32,11 @@ type NotificationPayload = {
 };
 
 const isChatNotification = (data: any) => {
-  const senderType = data.senderType || data.sender;
+  const senderType = (data.senderType || data.sender || "").toString().toUpperCase();
+  const type = (data.type || "").toString().toUpperCase();
 
   return (
-    data.type === "CHAT_MESSAGE" ||
-    senderType === "WORKER" ||
-    senderType === "worker"
+    type === "CHAT_MESSAGE" || senderType === "WORKER"
   );
 };
 
@@ -67,7 +60,7 @@ const buildNotificationDisplay = (
   data: any,
   notification?: NotificationPayload
 ) => {
-  const type = data.type;
+  const type = (data.type || "").toString().toUpperCase();
 
   if (isChatNotification(data)) {
     return {
@@ -105,7 +98,18 @@ export async function requestAndGetToken() {
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return null;
 
-    const registration = await navigator.serviceWorker.ready;
+    const registration =
+      await navigator.serviceWorker.ready.catch(() => null);
+
+    if (!registration) {
+      console.warn("Firebase SW is not ready, registering now...");
+      const swRegistration = await registerFirebaseMessagingSW();
+      if (!swRegistration) return null;
+      return await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: swRegistration,
+      });
+    }
 
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
@@ -134,14 +138,14 @@ export async function initOnMessage(
     console.log("FOREGROUND:", payload);
 
     const data = payload.data || {};
-    const type = data.type;
+    const type = (data.type || "").toString().toUpperCase();
 
     const bookingId = data.bookingId;
-    const senderType = data.senderType;
+    const senderType = (data.senderType || "").toString().toUpperCase();
 
     // ROUTE
     const url =
-      (senderType === "WORKER" || senderType === "worker") && bookingId
+      senderType === "WORKER" && bookingId
         ? `/message/${bookingId}`
         : buildRoute(data);
 
@@ -154,7 +158,7 @@ export async function initOnMessage(
     const isSamePage = currentPath === targetPath;
 
     // ❌ SKIP only if user is already looking at this specific chat
-    const isChatType = type === "CHAT_MESSAGE" || senderType === "WORKER" || senderType === "worker";
+    const isChatType = type === "CHAT_MESSAGE" || senderType === "WORKER";
     const isInsideBooking =
       isChatType && 
       currentPath === `/message/${bookingId}`;

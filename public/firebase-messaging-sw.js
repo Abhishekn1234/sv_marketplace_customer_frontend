@@ -51,10 +51,42 @@ const toAbsoluteUrl = (url) => {
   }
 };
 
+const getType = (data = {}, payload = {}) => {
+  return (
+    data.type ||
+    data.notificationType ||
+    data.eventType ||
+    payload.notification?.type ||
+    ""
+  )
+    .toString()
+    .toUpperCase();
+};
+
+const isAdminNotification = (data = {}, payload = {}) => {
+  const type = getType(data, payload);
+  const title = (
+    data.title ||
+    payload.notification?.title ||
+    ""
+  )
+    .toString()
+    .toUpperCase();
+
+  return type === "ADMIN_MESSAGE" || title.includes("ADMIN");
+};
+
 // =========================
 // ROUTE BUILDER
 // =========================
-const buildNotificationRoute = (data = {}) => {
+const buildNotificationRoute = (data = {}, payload = {}) => {
+  const type = getType(data, payload);
+
+  // Admin messages should always land in the notifications center.
+  if (isAdminNotification(data, payload)) {
+    return "/notifications";
+  }
+
   // Highest priority
   if (data.url) return data.url;
 
@@ -70,7 +102,7 @@ const buildNotificationRoute = (data = {}) => {
   // CHAT
   // =========================
   if (
-    (data.type === "CHAT_MESSAGE" ||
+    (type === "CHAT_MESSAGE" ||
       senderType === "WORKER" ||
       senderType === "worker") &&
     bookingId
@@ -82,8 +114,8 @@ const buildNotificationRoute = (data = {}) => {
   // TRACKING
   // =========================
   if (
-    (data.type === "BOOKING_UPDATE" ||
-      data.type === "JOB_TRACKING") &&
+    (type === "BOOKING_UPDATE" ||
+      type === "JOB_TRACKING") &&
     bookingId
   ) {
     return `/jobtracking/${bookingId}`;
@@ -93,7 +125,7 @@ const buildNotificationRoute = (data = {}) => {
   // JOB PROGRESS
   // =========================
   if (
-    data.type === "JOB_PROGRESS" &&
+    type === "JOB_PROGRESS" &&
     bookingId
   ) {
     return `/jobprogress/${bookingId}`;
@@ -103,7 +135,7 @@ const buildNotificationRoute = (data = {}) => {
   // BOOKING DETAIL
   // =========================
   if (
-    data.type === "BOOKING_CREATED" &&
+    type === "BOOKING_CREATED" &&
     data.serviceId &&
     data.serviceTierId
   ) {
@@ -114,7 +146,7 @@ const buildNotificationRoute = (data = {}) => {
   // VIDEO CALL
   // =========================
   if (
-    data.type === "VIDEO_CALL" &&
+    type === "VIDEO_CALL" &&
     data.senderId
   ) {
     return `/video-call/${data.senderId}`;
@@ -123,10 +155,6 @@ const buildNotificationRoute = (data = {}) => {
   // =========================
   // ADMIN
   // =========================
-  if (data.type === "ADMIN_MESSAGE") {
-    return "/notifications";
-  }
-
   // =========================
   // FALLBACK
   // =========================
@@ -140,8 +168,9 @@ const isChatNotification = (data = {}) => {
   const senderType =
     data.senderType || data.sender;
 
+  const type = getType(data);
   return (
-    data.type === "CHAT_MESSAGE" ||
+    type === "CHAT_MESSAGE" ||
     senderType === "WORKER" ||
     senderType === "worker"
   );
@@ -151,6 +180,7 @@ const getMessageText = (data = {}) => {
   return (
     data.body ||
     data.message ||
+    data.description ||
     data.text ||
     data.content ||
     "New notification"
@@ -169,7 +199,8 @@ const getWorkerName = (data = {}) => {
 };
 
 const getTitleByType = (type) => {
-  switch (type) {
+  const t = (type || "").toUpperCase();
+  switch (t) {
     case "BOOKING_CREATED":
     case "BOOKING_REQUEST":
       return "Booking Request";
@@ -224,6 +255,7 @@ const buildNotificationDisplay = (
 
     body:
       payload.notification?.body ||
+      data.body ||
       getMessageText(data),
   };
 };
@@ -232,11 +264,13 @@ const buildNotificationDisplay = (
 // NOTIFICATION TAG
 // =========================
 const getNotificationTag = (data = {}) => {
+  const id = data.notificationId || data.messageId || data._id || data.id;
+  if (id) return id;
+
   return (
-    data.notificationId ||
-    data.messageId ||
-    data._id ||
     `${buildNotificationRoute(data)}-${getMessageText(data)}`
+    // Add timestamp to ensure uniqueness if no ID is provided, preventing overwrite
+    + `-${Date.now()}`
   );
 };
 
@@ -253,8 +287,11 @@ messaging.onBackgroundMessage(
     try {
       const data = payload.data || {};
 
+      const type = getType(data, payload);
+      const isAdmin = isAdminNotification(data, payload);
+
       const url =
-        buildNotificationRoute(data);
+        buildNotificationRoute(data, payload);
 
       const display =
         buildNotificationDisplay(
@@ -276,7 +313,7 @@ messaging.onBackgroundMessage(
           tag,
           renotify: true,
 
-          requireInteraction: false,
+          requireInteraction: isAdmin,
 
           data: {
             url,
@@ -302,6 +339,51 @@ messaging.onBackgroundMessage(
     }
   }
 );
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    return;
+  }
+
+  // Let Firebase handle data-only messages.
+  if (payload?.data && Object.keys(payload.data).length > 0) {
+    return;
+  }
+
+  const title =
+    payload.notification?.title ||
+    payload.title ||
+    "Notification";
+
+  const body =
+    payload.notification?.body ||
+    payload.message ||
+    payload.body ||
+    "You have a new notification";
+
+  const url =
+    payload.notification?.click_action ||
+    payload.url ||
+    "/notifications";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/logo.png",
+      badge: "/logo.png",
+      data: {
+        url,
+        type: payload.data?.type || payload.type,
+        bookingId: payload.data?.bookingId || payload.bookingId,
+      },
+    })
+  );
+});
 
 // =========================
 // NOTIFICATION CLICK

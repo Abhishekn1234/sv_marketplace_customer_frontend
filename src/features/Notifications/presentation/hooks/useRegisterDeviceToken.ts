@@ -3,6 +3,7 @@ import { NotificationRepositoryImpl } from "../../data/repositories/Notification
 import { RegisterDeviceTokenUseCase } from "../../domain/usecases/RegisterDeveiceTokenUsecase";
 import {
   initOnMessage,
+  registerFirebaseMessagingSW,
   requestAndGetToken,
 } from "@/components/firebase/notifications";
 import { useAuthStore } from "@/features/core/store/auth";
@@ -37,7 +38,12 @@ export const useRegisterDeviceToken = (enabled = true) => {
           return;
         }
 
-        await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        const registration = await registerFirebaseMessagingSW();
+        if (!registration) {
+          console.warn("Firebase SW registration failed");
+          return;
+        }
+
         await initOnMessage(setFcmNotifications);
 
         const newToken = await requestAndGetToken();
@@ -52,22 +58,11 @@ export const useRegisterDeviceToken = (enabled = true) => {
         const roleId = user?.role?._id;
         if (!roleId) return;
 
-        if (!fcmToken) {
-          await useCase.execute({
-            token: newToken,
-            platform: "WEB",
-            roleId,
-            deviceId: currentDeviceId,
-            appId: "sv-marketplace-web",
-          });
-
-          if (isMounted) setFcmToken(newToken);
-          console.log("FCM token registered");
-          return;
-        }
-
         if (fcmToken !== newToken) {
-          await unregisterToken();
+          if (fcmToken) {
+            await unregisterToken();
+            setDeviceId(currentDeviceId);
+          }
 
           await useCase.execute({
             token: newToken,
@@ -79,7 +74,19 @@ export const useRegisterDeviceToken = (enabled = true) => {
 
           if (isMounted) setFcmToken(newToken);
           console.log("FCM token updated");
+          return;
         }
+
+        await useCase.execute({
+          token: newToken,
+          platform: "WEB",
+          roleId,
+          deviceId: currentDeviceId,
+          appId: "sv-marketplace-web",
+        });
+
+        if (isMounted) setFcmToken(newToken);
+        console.log("FCM token registered");
       } catch (err) {
         console.error("Notification setup failed:", err);
       }
