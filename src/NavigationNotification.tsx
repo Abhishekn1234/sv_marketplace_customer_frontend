@@ -24,12 +24,12 @@ export default function NotificationNavigation() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-
     const handler = (event: MessageEvent) => {
-      if (event.data?.type !== "NAVIGATE") return;
+      const data = event.data;
 
-      const path = normalizeNavigationPath(event.data.url);
+      if (data?.type !== "NAVIGATE") return;
+
+      const path = normalizeNavigationPath(data.url);
 
       const chatMatch = path.match(/^\/message\/([^/?#]+)/);
 
@@ -46,10 +46,13 @@ export default function NotificationNavigation() {
       navigate(path);
     };
 
-    navigator.serviceWorker.addEventListener("message", handler);
+    // ✅ IMPORTANT: BOTH LISTENERS (FIX MOBILE ISSUE)
+    navigator.serviceWorker?.addEventListener("message", handler);
+    window.addEventListener("message", handler);
 
     return () => {
-      navigator.serviceWorker.removeEventListener("message", handler);
+      navigator.serviceWorker?.removeEventListener("message", handler);
+      window.removeEventListener("message", handler);
     };
   }, [navigate, queryClient]);
 
