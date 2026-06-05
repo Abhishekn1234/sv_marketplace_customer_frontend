@@ -48,7 +48,7 @@ export default function WorkerChatPageContent({
   // =========================
   // SOCKET (REALTIME)
   // =========================
-  useChatSocket(token, bookingId, currentUserId, worker.fullName);
+  useChatSocket(token, bookingId, currentUserId);
 
   // =========================
   // API (INITIAL LOAD ONLY)
