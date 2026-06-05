@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { Message } from "../../domain/entities/messages";
 import { apiUrl } from "@/features/api/apiConfig";
 
-import { unpackMessages } from "../utils/unpackmessages";
 import { normalizeMessage } from "../utils/normalizemessages";
 import { playNotificationSound } from "@/components/firebase/sound";
 import { getMessageKey } from "../utils/getMessageKey";
@@ -22,23 +21,15 @@ type ChatCache = {
 export function useChatSocket(
   token: string,
   bookingId: string,
-  myUserId?: string,
-  workerName?: string
+  myUserId?: string
 ) {
   const socketRef = useRef<Socket | null>(null);
-  const notifiedIds = useRef<Set<string>>(new Set());
+  const notifiedIds = useRef(new Set<string>());
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!token || !bookingId) return;
-
-    // console.log("INIT CHAT SOCKET", {
-    //   token,
-    //   bookingId,
-    //   myUserId,
-    // });
-
-    notifiedIds.current = new Set();
 
     if (socketRef.current) {
       socketRef.current.removeAllListeners();
@@ -48,105 +39,122 @@ export function useChatSocket(
     const socket = io(SOCKET_URL, {
       auth: { token },
       transports: ["websocket"],
+      forceNew: true,
     });
 
     socketRef.current = socket;
 
-    const getNormalizedMessages = (payload: any) =>
-      unpackMessages(payload)
-        .map((msg) => normalizeMessage(msg, myUserId))
-        .filter((msg) => msg.text?.trim() || msg.senderType || msg.self);
-
-    const handleMessages = (payload: any, notify = false) => {
-      const normalized = getNormalizedMessages(payload);
-
-      if (!normalized.length) return;
-
-      queryClient.setQueryData(
-        [CHAT_MESSAGES_KEY, bookingId],
-        (old: ChatCache | undefined) => {
-          const oldMessages = old?.data ?? [];
-          const map = new Map<string, Message>();
-
-          oldMessages.forEach((message) =>
-            map.set(getMessageKey(message), message)
-          );
-          normalized.forEach((message) =>
-            map.set(getMessageKey(message), message)
-          );
-
-          return { data: Array.from(map.values()) };
-        }
-      );
-
-      if (!notify) return;
-
-      normalized
-        .filter((message) => !message.self && message.senderId !== myUserId)
-        .forEach((message) => {
-          const key = getMessageKey(message);
-
-          if (notifiedIds.current.has(key)) return;
-          notifiedIds.current.add(key);
-
-          playNotificationSound();
-        });
-    };
-
     socket.on("connect", () => {
-      // console.log("CONNECTED:", socket.id);
-      socket.emit("booking.chat.join", { bookingId });
+      console.log("Connected:", socket.id);
+
+      socket.emit("booking.chat.join", {
+        bookingId,
+      });
     });
 
-    socket.on("booking.chat.message", (payload) => {
-      // console.log("LIVE MESSAGE:", payload);
-
-      handleMessages(payload, true);
+    socket.on("disconnect", (reason) => {
+      console.log("Disconnected:", reason);
     });
 
-    socket.on("booking.chat.history", (payload) => {
-      // console.log("HISTORY:", payload);
-      handleMessages(payload, false);
+    socket.on("connect_error", (error) => {
+      console.error("Socket Error:", error);
     });
 
+   socket.on("booking.chat-message", (payload) => {
+  console.log("booking.chat-message", payload);
+
+  const rawMessage =
+    payload?.chatMessage ??
+    payload?.payload?.chatMessage;
+
+  if (!rawMessage) {
+    console.error(
+      "chatMessage not found",
+      payload
+    );
+    return;
+  }
+
+  const message = normalizeMessage(
+    rawMessage,
+    myUserId
+  );
+
+  console.log("normalized message", message);
+
+  queryClient.setQueryData(
+    [CHAT_MESSAGES_KEY, bookingId],
+    (old: ChatCache | undefined) => {
+      const currentMessages =
+        old?.data ?? [];
+
+      const exists =
+        currentMessages.some(
+          (msg) =>
+            getMessageKey(msg) ===
+            getMessageKey(message)
+        );
+
+      if (exists) {
+        return old;
+      }
+
+      return {
+        data: [
+          ...currentMessages,
+          message,
+        ].sort(
+          (a, b) =>
+            new Date(
+              a.createdAt || 0
+            ).getTime() -
+            new Date(
+              b.createdAt || 0
+            ).getTime()
+        ),
+      };
+    }
+  );
+
+  if (
+    !message.self &&
+    message.senderId !== myUserId
+  ) {
+    const key =
+      getMessageKey(message);
+
+    if (
+      !notifiedIds.current.has(key)
+    ) {
+      notifiedIds.current.add(key);
+
+      playNotificationSound();
+    }
+  }
+});
     return () => {
-      // console.log("SOCKET CLEANUP");
+      socket.emit("booking.chat.leave", {
+        bookingId,
+      });
 
-      socket.emit("booking.chat.leave", { bookingId });
+      socket.off("booking.chat-message");
+
+      socket.removeAllListeners();
+
       socket.disconnect();
+
+      socketRef.current = null;
 
       notifiedIds.current.clear();
     };
-  }, [token, bookingId, myUserId, workerName, queryClient]);
+  }, [
+    token,
+    bookingId,
+    myUserId,
+    queryClient,
+  ]);
 
-  const sendMessage = useCallback(
-    (text: string) => {
-      if (!socketRef.current || !text.trim()) return;
-
-      const tempMessage: Message = {
-        _id: `temp-${crypto.randomUUID()}`,
-        text,
-        senderId: myUserId || "",
-        createdAt: new Date().toISOString(),
-        self: true,
-        status: "sent",
-      };
-
-      queryClient.setQueryData(
-        [CHAT_MESSAGES_KEY, bookingId],
-        (old: ChatCache | undefined) => {
-          const oldMessages = Array.isArray(old?.data) ? old.data : [];
-          return { data: [...oldMessages, tempMessage] };
-        }
-      );
-
-      socketRef.current.emit("booking.chat.send", {
-        bookingId,
-        text,
-      });
-    },
-    [bookingId, myUserId, queryClient]
-  );
-
-  return { sendMessage };
+  return {
+    socket: socketRef.current,
+  };
 }

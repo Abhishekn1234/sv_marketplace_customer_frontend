@@ -16,12 +16,54 @@ export function buildJobTrackingSteps({
 
   const currentStatus = localBooking.status;
 
+  const hiddenSteps = [
+    "WORKER_CANCELLED",
+    "CUSTOMER_CANCELLED",
+    "EXPIRED",
+  ];
+
+  const filteredSteps = STEP_CONFIG.filter(
+    (step) => !hiddenSteps.includes(step.key)
+  );
+
+  const singleStepOnly = hiddenSteps;
+
+  // ❗ SHOW ONLY SINGLE STEP FOR TERMINAL STATUSES
+  if (singleStepOnly.includes(currentStatus)) {
+    const step = STEP_CONFIG.find((s) => s.key === currentStatus);
+    if (!step) return [];
+
+    const activity = activityMap?.[step.key];
+
+    const time =
+      activity?.createdAt
+        ? formatDates(activity.createdAt)
+        : localBooking.createdAt
+        ? formatDates(localBooking.createdAt)
+        : "Pending";
+
+    return [
+      {
+        key: step.key,
+        title: step.title,
+        time,
+        status: "active",
+        showStartOtpButton: false,
+        showCompleteOtpButton: false,
+        showPaymentButton: false,
+        showVerifyButton: false,
+        showServiceRatingButton: false,
+      },
+    ];
+  }
+
+  // NORMAL FLOW (WITHOUT CANCELLED/EXPIRED STEPS)
   const currentStepIndex = Math.max(
-    STEP_CONFIG.findIndex((s) => s.key === currentStatus),
+    filteredSteps.findIndex((s) => s.key === currentStatus),
     0
   );
 
-  return STEP_CONFIG.map((step, idx) => {
+  return filteredSteps.map((step, idx) => {
     const activity = activityMap?.[step.key];
 
     const time =
@@ -47,27 +89,22 @@ export function buildJobTrackingSteps({
         step.key === "WORKER_ACCEPTED" &&
         localBooking.status === "WORKER_ACCEPTED",
 
-     showCompleteOtpButton:
-  step.key === "WORK_COMPLETED_PENDING" &&
-  [
-    "WORK_COMPLETED_PENDING",
-    "WORK_COMPLETED_BY_WORKER",
-  ].includes(localBooking.status),
+      showCompleteOtpButton:
+        step.key === "WORK_COMPLETED_PENDING" &&
+        [
+          "WORK_COMPLETED_PENDING",
+          "WORK_COMPLETED_BY_WORKER",
+        ].includes(localBooking.status),
 
       showPaymentButton:
         step.key === "INVOICE_GENERATED" &&
-        [
-             "INVOICE_GENERATED",
-             "COMPLETED",
-        ].includes(localBooking.status),
-       
+        ["INVOICE_GENERATED", "COMPLETED"].includes(localBooking.status),
 
-     showVerifyButton:
-  step.key === "PAYMENT_INITIATED" &&
-  localBooking.status === "PAYMENT_PENDING",
+      showVerifyButton:
+        step.key === "PAYMENT_PENDING" &&
+        localBooking.status === "PAYMENT_PENDING",
 
-      showServiceRatingButton:
-        localBooking.status === "PAID",
+      showServiceRatingButton: localBooking.status === "PAID",
     };
   });
 }
