@@ -31,11 +31,10 @@ export default function JobTrackingWorkerDetails({
   // CHAT MESSAGES
   // =========================
   const { data: messagesData } =
-    useGetChatMessages(
-      booking?._id || "",
-      1,
-      100
-    );
+  useGetChatMessages(
+    booking?._id || "",
+    100
+  );
     // console.log(messagesData);
 
   // =========================
