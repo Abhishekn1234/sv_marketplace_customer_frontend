@@ -21,20 +21,20 @@ export function useNotificationManager() {
   // 1. Browser Notification
   // -------------------------------
   const showBrowserNotification = useCallback(
-    (n: NotificationItem) => {
+    (_n: NotificationItem) => {
       if (!("Notification" in window)) return;
 
       if (Notification.permission !== "granted") return;
 
-      const notif = new Notification(n.title, {
-        body: n.message,
-        icon: "/icon.png",
-      });
+      // const notif = new Notification(n.title, {
+      //   body: n.message,
+      //   icon: "/icon.png",
+      // });
 
-      notif.onclick = () => {
-        window.focus();
-        navigate("/notifications");
-      };
+      // notif.onclick = () => {
+      //   window.focus();
+      //   navigate("/notifications");
+      // };
     },
     [navigate]
   );

@@ -14,27 +14,27 @@ const buildRoute = (n: any) => {
   return "/notifications";
 };
 
-const getTitle = (n: any) => {
-  if (n.type === "ADMIN_MESSAGE") return "Admin Message";
+// const getTitle = (n: any) => {
+//   if (n.type === "ADMIN_MESSAGE") return "Admin Message";
 
-  return n.title || "Notification";
-};
+//   return n.title || "Notification";
+// };
 
-const getBody = (n: any) => {
-  if (n.type === "ADMIN_MESSAGE") {
-    return n.message || n.body || "You received a new admin message";
-  }
+// const getBody = (n: any) => {
+//   if (n.type === "ADMIN_MESSAGE") {
+//     return n.message || n.body || "You received a new admin message";
+//   }
 
-  return n.message || n.body || n.text || "New notification";
-};
+//   return n.message || n.body || n.text || "New notification";
+// };
 
-const normalizePath = (path: string) => {
-  try {
-    return new URL(path, window.location.origin).pathname;
-  } catch {
-    return path;
-  }
-};
+// const normalizePath = (path: string) => {
+//   try {
+//     return new URL(path, window.location.origin).pathname;
+//   } catch {
+//     return path;
+//   }
+// };
 
 export const useBrowserNotifications = () => {
   const notifications = useAuthStore(
@@ -49,12 +49,11 @@ export const useBrowserNotifications = () => {
     if (!("Notification" in window)) return;
     if (Notification.permission !== "granted") return;
 
-    const currentPath = normalizePath(location.pathname);
+    const currentPath = location.pathname;
 
-    navigator.serviceWorker.ready.then((reg) => {
+    navigator.serviceWorker.ready.then(() => {
       notifications.forEach((n: any) => {
         const id = getId(n);
-
         if (!id) return;
 
         // Skip duplicates
@@ -65,32 +64,37 @@ export const useBrowserNotifications = () => {
         if (n.type !== "ADMIN_MESSAGE") return;
 
         const url = buildRoute(n);
-        const targetPath = normalizePath(url);
+        const targetPath = new URL(url, window.location.origin).pathname;
 
-        // User already on destination page
+        // user already on page
         if (currentPath === targetPath) return;
 
-        // User currently viewing the app/tab
+        // user active → skip
         if (document.visibilityState === "visible") return;
 
-        reg.showNotification(getTitle(n), {
-          body: getBody(n),
-          icon: "/logo.png",
-          badge: "/logo.png",
-          tag: String(id),
-          renotify: false,
-          data: {
-            url,
-            type: n.type,
-            bookingId: n.bookingId,
-          },
-          actions: [
-            {
-              action: "open",
-              title: "Open",
+        // ❌ DISABLED: browser notification removed
+        /*
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.showNotification(getTitle(n), {
+            body: getBody(n),
+            icon: "/logo.png",
+            badge: "/logo.png",
+            tag: String(id),
+            renotify: false,
+            data: {
+              url,
+              type: n.type,
+              bookingId: n.bookingId,
             },
-          ],
-        } as any);
+            actions: [
+              {
+                action: "open",
+                title: "Open",
+              },
+            ],
+          } as any);
+        });
+        */
       });
     });
   }, [notifications, location.pathname]);

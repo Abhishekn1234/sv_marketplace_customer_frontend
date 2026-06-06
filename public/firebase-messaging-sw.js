@@ -302,35 +302,35 @@ messaging.onBackgroundMessage(
       const tag =
         getNotificationTag(data);
 
-      await self.registration.showNotification(
-        display.title,
-        {
-          body: display.body,
+      // await self.registration.showNotification(
+      //   display.title,
+      //   {
+      //     body: display.body,
 
-          icon: "/logo.png",
-          badge: "/logo.png",
+      //     icon: "/logo.png",
+      //     badge: "/logo.png",
 
-          tag,
-          renotify: true,
+      //     tag,
+      //     renotify: true,
 
-          requireInteraction: isAdmin,
+      //     requireInteraction: isAdmin,
 
-          data: {
-            url,
-            type: data.type,
-            bookingId: data.bookingId,
-            senderType:
-              data.senderType,
-          },
+      //     data: {
+      //       url,
+      //       type: data.type,
+      //       bookingId: data.bookingId,
+      //       senderType:
+      //         data.senderType,
+      //     },
 
-          actions: [
-            {
-              action: "open",
-              title: "Open",
-            },
-          ],
-        }
-      );
+      //     actions: [
+      //       {
+      //         action: "open",
+      //         title: "Open",
+      //       },
+      //     ],
+      //   }
+      // );
     } catch (error) {
       console.error(
         "Background notification error:",

@@ -25,7 +25,9 @@ export function useChatSocket(
   const notifiedIds = useRef(new Set<string>());
 
   const queryClient = useQueryClient();
-
+const isUserInSameChat =
+  location.pathname.startsWith("/chat") &&
+  location.pathname.includes(bookingId);
   useEffect(() => {
     if (!token || !bookingId) return;
 
@@ -115,22 +117,18 @@ export function useChatSocket(
     };
   }
 );
+if (
+  !message.self &&
+  message.senderId !== myUserId &&
+  !isUserInSameChat
+) {
+  const key = getMessageKey(message);
 
-  if (
-    !message.self &&
-    message.senderId !== myUserId
-  ) {
-    const key =
-      getMessageKey(message);
-
-    if (
-      !notifiedIds.current.has(key)
-    ) {
-      notifiedIds.current.add(key);
-
-      playNotificationSound();
-    }
+  if (!notifiedIds.current.has(key)) {
+    notifiedIds.current.add(key);
+    playNotificationSound();
   }
+}
 });
     return () => {
       socket.emit("booking.chat.leave", {

@@ -196,26 +196,26 @@ export async function initOnMessage(
       ...prev,
     ]);
 
-    try {
-      const registration = await navigator.serviceWorker.ready;
+    // try {
+    //   const registration = await navigator.serviceWorker.ready;
 
-      await registration.showNotification(display.title, {
-        body: display.body,
-        icon: "/logo.png",
-        badge: "/logo.png",
-        tag: notificationId,
-        renotify: true,
-        actions: [{ action: "open", title: "Open" }],
-        data: {
-          url,
-          bookingId,
-          senderType,
-          type,
-        },
-          requireInteraction: true, // Added to enhance notification options
-      } as NotificationOptions);
-    } catch (err) {
-      console.error("showNotification failed:", err);
-    }
+    //   await registration.showNotification(display.title, {
+    //     body: display.body,
+    //     icon: "/logo.png",
+    //     badge: "/logo.png",
+    //     tag: notificationId,
+    //     renotify: true,
+    //     actions: [{ action: "open", title: "Open" }],
+    //     data: {
+    //       url,
+    //       bookingId,
+    //       senderType,
+    //       type,
+    //     },
+    //       requireInteraction: true, // Added to enhance notification options
+    //   } as NotificationOptions);
+    // } catch (err) {
+    //   console.error("showNotification failed:", err);
+    // }
   });
 }
