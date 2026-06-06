@@ -7,7 +7,7 @@ import type { QueryClient } from "@tanstack/react-query";
 
 
 import { getFirebaseMessaging } from "@/components/firebase/messaging";
-import { showWebPushNotification } from "../utils/notificationwebpush";
+// import { showWebPushNotification } from "../utils/notificationwebpush";
 import { syncNotificationToCache } from "../utils/syncnotification";
 
 
@@ -65,11 +65,11 @@ export async function initOnMessages(queryClient: QueryClient) {
     //   notificationEventBus.emit(notificationItem);
 
     // 🔥 Browser Push Notification
-    showWebPushNotification({
-      title: data.title || "New Notification",
-      body: data.body || "",
-      route: "/notifications",
-      icon: "/logo.png",
-    });
+    // showWebPushNotification({
+    //   title: data.title || "New Notification",
+    //   body: data.body || "",
+    //   route: "/notifications",
+    //   icon: "/logo.png",
+    // });
   });
 }
