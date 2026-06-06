@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/features/core/store/auth";
 
 const getId = (n: any) => n?._id || n?.id || n?.messageId;
@@ -7,6 +8,7 @@ const buildRoute = (n: any) => {
   if (n.url) return n.url;
 
   if (n.type === "ADMIN_MESSAGE") return "/notifications";
+
   if (n.bookingId) return `/bookings/${n.bookingId}`;
 
   return "/notifications";
@@ -14,6 +16,7 @@ const buildRoute = (n: any) => {
 
 const getTitle = (n: any) => {
   if (n.type === "ADMIN_MESSAGE") return "Admin Message";
+
   return n.title || "Notification";
 };
 
@@ -34,8 +37,11 @@ const normalizePath = (path: string) => {
 };
 
 export const useBrowserNotifications = () => {
-  const notifications = useAuthStore((state) => state.notifications.list);
+  const notifications = useAuthStore(
+    (state) => state.notifications.list
+  );
 
+  const location = useLocation();
   const seenIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -43,49 +49,49 @@ export const useBrowserNotifications = () => {
     if (!("Notification" in window)) return;
     if (Notification.permission !== "granted") return;
 
-    const currentPath = normalizePath(window.location.pathname);
+    const currentPath = normalizePath(location.pathname);
 
     navigator.serviceWorker.ready.then((reg) => {
       notifications.forEach((n: any) => {
         const id = getId(n);
+
         if (!id) return;
 
-        // ❌ skip duplicates
+        // Skip duplicates
         if (seenIds.current.has(id)) return;
         seenIds.current.add(id);
 
-        // ✅ only ADMIN messages
+        // Only admin notifications
         if (n.type !== "ADMIN_MESSAGE") return;
 
         const url = buildRoute(n);
         const targetPath = normalizePath(url);
 
-        // ❌ don't notify if user already on same page
-        const isSamePage = currentPath === targetPath;
+        // User already on destination page
+        if (currentPath === targetPath) return;
 
-        // ❌ don't notify if user already inside same booking context
-        const isInsideBooking =
-          currentPath.startsWith("/bookings/") &&
-          targetPath.startsWith("/bookings/");
+        // User currently viewing the app/tab
+        if (document.visibilityState === "visible") return;
 
-        if (isSamePage || isInsideBooking) return;
-
-        const title = getTitle(n);
-        const body = getBody(n);
-
-        reg.showNotification(title, {
-          body,
+        reg.showNotification(getTitle(n), {
+          body: getBody(n),
           icon: "/logo.png",
           badge: "/logo.png",
-          tag: id,
+          tag: String(id),
+          renotify: false,
           data: {
             url,
             type: n.type,
             bookingId: n.bookingId,
           },
-          actions: [{ action: "open", title: "Open" }],
-        } as NotificationOptions);
+          actions: [
+            {
+              action: "open",
+              title: "Open",
+            },
+          ],
+        } as any);
       });
     });
-  }, [notifications]);
+  }, [notifications, location.pathname]);
 };

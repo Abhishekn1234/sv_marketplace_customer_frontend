@@ -20,18 +20,29 @@ export function useSendChatMessage() {
       // toast.success("Message sent");
 
       // 🔥 CRITICAL: update UI instantly
-      queryClient.setQueryData(
-        [CHAT_MESSAGES_KEY, variables.bookingId],
-        (old: any) => {
-          const oldMessages = Array.isArray(old?.data)
-            ? old.data
-            : [];
+     queryClient.setQueryData(
+  [CHAT_MESSAGES_KEY, variables.bookingId],
+  (old: any) => {
+    if (!old?.pages) return old;
 
-          return {
-            data: [...oldMessages, response],
-          };
-        }
-      );
+    const pages = [...old.pages];
+
+    const lastPageIndex = pages.length - 1;
+
+    pages[lastPageIndex] = {
+      ...pages[lastPageIndex],
+      data: [
+        ...(pages[lastPageIndex].data || []),
+        response,
+      ],
+    };
+
+    return {
+      ...old,
+      pages,
+    };
+  }
+);
     },
 
     onError: (error: any) => {

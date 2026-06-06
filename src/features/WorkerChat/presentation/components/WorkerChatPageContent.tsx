@@ -92,58 +92,41 @@ export default function WorkerChatPageContent({
   ]);
 
   const messages: Message[] = useMemo(() => {
-    const rawMessages =
-      data?.pages.flatMap(
-        (page) => page?.data ?? []
-      ) ?? [];
+  const pages = data?.pages ?? [];
 
-    const normalized = rawMessages.map(
-      (msg: any): Message => {
-        const senderId =
-          typeof msg.senderId === "string"
-            ? msg.senderId
-            : msg.senderId?._id || "";
+  const rawMessages = pages.flatMap(
+    (page: any) => page?.data ?? []
+  );
 
-        return {
-          _id:
-            msg._id ||
-            crypto.randomUUID(),
-          text:
-            msg.message ||
-            msg.text ||
-            "",
-          senderId,
-          self:
-            senderId === currentUserId,
-          status:
-            msg.status || "delivered",
-          timestamp:
-            msg.timestamp ||
-            msg.createdAt ||
-            new Date().toISOString(),
-        };
-      }
-    );
+  const normalized = rawMessages.map((msg: any): Message => {
+    const senderId =
+      typeof msg?.senderId === "string"
+        ? msg.senderId
+        : msg?.senderId?._id || "";
 
-    const unique = Array.from(
-      new Map(
-        normalized.map((m) => [
-          m._id,
-          m,
-        ])
-      ).values()
-    );
+    return {
+      _id: msg?._id || crypto.randomUUID(),
+      text: msg?.message || msg?.text || "",
+      senderId,
+      self: senderId === currentUserId,
+      status: msg?.status || "delivered",
+      timestamp:
+        msg?.timestamp ||
+        msg?.createdAt ||
+        new Date().toISOString(),
+    };
+  });
 
-    return unique.sort(
-      (a, b) =>
-        new Date(
-          a.timestamp || 0
-        ).getTime() -
-        new Date(
-          b.timestamp || 0
-        ).getTime()
-    );
-  }, [data, currentUserId]);
+  const unique = Array.from(
+    new Map(normalized.map((m) => [m._id, m])).values()
+  );
+
+  return unique.sort(
+    (a, b) =>
+      new Date(a.timestamp || 0).getTime() -
+      new Date(b.timestamp || 0).getTime()
+  );
+}, [data, currentUserId]);
 
   // First load -> scroll to bottom
   useEffect(() => {

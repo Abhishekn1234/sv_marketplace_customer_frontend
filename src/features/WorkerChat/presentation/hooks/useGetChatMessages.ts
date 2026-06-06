@@ -17,26 +17,43 @@ export function useGetChatMessages(
   return useInfiniteQuery({
     queryKey: [CHAT_MESSAGES_KEY, bookingId],
 
-   queryFn: async ({ pageParam = 1 }) => {
-  console.log("PAGE PARAM:", pageParam);
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await usecase.execute({
+        bookingId,
+        page: pageParam,
+        limit,
+      });
 
-  return await usecase.execute({
-    bookingId,
-    page: pageParam,
-    limit,
-  });
-},
+      // console.log("📦 API RAW RESPONSE:", res);
+
+      const safeData = Array.isArray(res?.data)
+        ? res.data
+        : [];
+
+      // console.log("📦 SAFE DATA LENGTH:", safeData.length);
+
+      return {
+        ...res,
+        data: safeData,
+      };
+    },
 
     initialPageParam: 1,
 
     getNextPageParam: (lastPage, allPages) => {
-      const messages = lastPage?.data ?? [];
-      // console.log(messages);
-      // No more pages
+      const messages = Array.isArray(lastPage?.data)
+        ? lastPage.data
+        : [];
+
+      // console.log("➡️ lastPage.data:", lastPage?.data);
+      // console.log("➡️ messages length:", messages.length);
+
       if (messages.length < limit) {
+        // console.log("🛑 No more pages");
         return undefined;
       }
 
+      // console.log("➡️ Next page:", allPages.length + 1);
       return allPages.length + 1;
     },
 

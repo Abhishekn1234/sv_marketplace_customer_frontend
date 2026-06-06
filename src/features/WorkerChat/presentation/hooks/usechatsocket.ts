@@ -14,9 +14,7 @@ import { CHAT_MESSAGES_KEY } from "./useGetChatMessages";
 
 const SOCKET_URL = `${apiUrl}/chat`;
 
-type ChatCache = {
-  data: Message[];
-};
+
 
 export function useChatSocket(
   token: string,
@@ -45,7 +43,7 @@ export function useChatSocket(
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("Connected:", socket.id);
+      // console.log("Connected:", socket.id);
 
       socket.emit("booking.chat.join", {
         bookingId,
@@ -80,41 +78,43 @@ export function useChatSocket(
     myUserId
   );
 
-  console.log("normalized message", message);
+  // console.log("normalized message", message);
 
   queryClient.setQueryData(
-    [CHAT_MESSAGES_KEY, bookingId],
-    (old: ChatCache | undefined) => {
-      const currentMessages =
-        old?.data ?? [];
+  [CHAT_MESSAGES_KEY, bookingId],
+  (old: any) => {
+    // console.log("🧠 OLD CACHE:", old);
 
-      const exists =
-        currentMessages.some(
-          (msg) =>
-            getMessageKey(msg) ===
-            getMessageKey(message)
-        );
+    if (!old?.pages) return old;
 
-      if (exists) {
-        return old;
+    const pages = old.pages.map((page: any, index: number) => {
+      const safeData = Array.isArray(page?.data)
+        ? page.data
+        : [];
+
+      if (index !== old.pages.length - 1) {
+        return page;
       }
 
+      const exists = safeData.some(
+        (msg: Message) =>
+          getMessageKey(msg) === getMessageKey(message)
+      );
+
+      if (exists) return page;
+
       return {
-        data: [
-          ...currentMessages,
-          message,
-        ].sort(
-          (a, b) =>
-            new Date(
-              a.createdAt || 0
-            ).getTime() -
-            new Date(
-              b.createdAt || 0
-            ).getTime()
-        ),
+        ...page,
+        data: [...safeData, message],
       };
-    }
-  );
+    });
+
+    return {
+      ...old,
+      pages,
+    };
+  }
+);
 
   if (
     !message.self &&
