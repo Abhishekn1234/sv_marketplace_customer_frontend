@@ -21,9 +21,7 @@ import ChatInput from "./ChatInput";
 
 import type { Worker } from "@/features/Bookings/domain/entities/worker.types";
 
-// 👇 SOCKET (you already created this)
 import { useChatSocket } from "../hooks/usechatsocket";
-
 
 export default function WorkerChatPageContent({
   worker,
@@ -37,109 +35,176 @@ export default function WorkerChatPageContent({
   currentUserId: string;
 }) {
   const [input, setInput] = useState("");
-  const [page, setPage] = useState(1);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
- 
+  const previousScrollHeightRef = useRef(0);
+  const restoringRef = useRef(false);
+  const fetchingRef = useRef(false);
+  const initialLoadDone = useRef(false);
 
   const LIMIT = 30;
 
-  // =========================
-  // SOCKET (REALTIME)
-  // =========================
   useChatSocket(token, bookingId, currentUserId);
 
-  // =========================
-  // API (INITIAL LOAD ONLY)
-  // =========================
-  const { data, isLoading, isFetching } = useGetChatMessages(
-    bookingId,
-    page,
-    LIMIT
-  );
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetChatMessages(bookingId, LIMIT);
 
-  const { mutate: sendMessage, isPending } = useSendChatMessage();
+  const { mutate: sendMessage, isPending } =
+    useSendChatMessage();
 
-  // =========================
-  // PAGINATION (KEEP ONLY LOAD MORE)
-  // =========================
-  const handleScroll = useCallback(() => {
+  const handleScroll = useCallback(async () => {
     const el = containerRef.current;
-    if (!el || isFetching) return;
 
-    const hasMore = (data?.data?.length ?? 0) >= page * LIMIT;
-
-    if (el.scrollTop < 100 && hasMore) {
-      setPage((prev) => prev + 1);
+    if (
+      !el ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      restoringRef.current ||
+      fetchingRef.current
+    ) {
+      return;
     }
-  }, [isFetching, data, page]);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    if (el.scrollTop <= 20) {
+      fetchingRef.current = true;
 
-    el.addEventListener("scroll", handleScroll);
+      previousScrollHeightRef.current =
+        el.scrollHeight;
 
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+      restoringRef.current = true;
 
-  // =========================
-  // NORMALIZE MESSAGES
-  // =========================
+      try {
+        await fetchNextPage();
+      } finally {
+        fetchingRef.current = false;
+      }
+    }
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  ]);
+
   const messages: Message[] = useMemo(() => {
-    const rawMessages = Array.isArray(data?.data) ? data.data : [];
+    const rawMessages =
+      data?.pages.flatMap(
+        (page) => page?.data ?? []
+      ) ?? [];
 
-    const normalized = rawMessages.map((msg: any): Message => {
-      const senderId =
-        typeof msg.senderId === "string"
-          ? msg.senderId
-          : msg.senderId?._id || "";
+    const normalized = rawMessages.map(
+      (msg: any): Message => {
+        const senderId =
+          typeof msg.senderId === "string"
+            ? msg.senderId
+            : msg.senderId?._id || "";
 
-      return {
-        _id: msg._id || crypto.randomUUID(),
-        text: msg.message || msg.text || "",
-        senderId,
-        self: senderId === currentUserId,
-        status: msg.status || "delivered",
-        timestamp:
-          msg.timestamp ||
-          msg.createdAt ||
-          new Date().toISOString(),
-      };
-    });
+        return {
+          _id:
+            msg._id ||
+            crypto.randomUUID(),
+          text:
+            msg.message ||
+            msg.text ||
+            "",
+          senderId,
+          self:
+            senderId === currentUserId,
+          status:
+            msg.status || "delivered",
+          timestamp:
+            msg.timestamp ||
+            msg.createdAt ||
+            new Date().toISOString(),
+        };
+      }
+    );
 
     const unique = Array.from(
-      new Map(normalized.map((m) => [m._id, m])).values()
+      new Map(
+        normalized.map((m) => [
+          m._id,
+          m,
+        ])
+      ).values()
     );
 
     return unique.sort(
       (a, b) =>
-        new Date(a.timestamp || 0).getTime() -
-        new Date(b.timestamp || 0).getTime()
+        new Date(
+          a.timestamp || 0
+        ).getTime() -
+        new Date(
+          b.timestamp || 0
+        ).getTime()
     );
   }, [data, currentUserId]);
 
-  // =========================
-  // SEND MESSAGE
-  // =========================
+  // First load -> scroll to bottom
+  useEffect(() => {
+    const el = containerRef.current;
+
+    if (
+      !el ||
+      initialLoadDone.current ||
+      !messages.length
+    ) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+      initialLoadDone.current = true;
+    });
+  }, [messages.length]);
+
+  // Restore position after older messages load
+  useEffect(() => {
+    const el = containerRef.current;
+
+    if (
+      !el ||
+      !restoringRef.current ||
+      isFetchingNextPage
+    ) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const newScrollHeight =
+        el.scrollHeight;
+
+      const diff =
+        newScrollHeight -
+        previousScrollHeightRef.current;
+
+      el.scrollTop = diff;
+
+      restoringRef.current = false;
+    });
+  }, [messages, isFetchingNextPage]);
+
   const handleSend = () => {
     const trimmed = input.trim();
-    if (!trimmed || isPending) return;
+
+    if (!trimmed || isPending) {
+      return;
+    }
 
     sendMessage({
       bookingId,
       message: trimmed,
     });
 
-    // ❌ NO refetch (socket already updates UI)
     setInput("");
   };
 
-  // =========================
-  // LOADING
-  // =========================
-  if (isLoading && page === 1) {
+  if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
         <CommonSpinner />
@@ -147,19 +212,25 @@ export default function WorkerChatPageContent({
     );
   }
 
-  // =========================
-  // UI
-  // =========================
   return (
-    <main className="h-full min-h-0  px-0 sm:px-4 sm:py-4 lg:px-6">
-      <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden  shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
-
-        <ChatHeader worker={worker} bookingId={bookingId} />
+    <main className="h-screen px-0 sm:px-4 sm:py-4 lg:px-6">
+      <div className="mx-auto flex h-full max-w-5xl flex-col overflow-hidden shadow-none sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-xl">
+        <ChatHeader
+          worker={worker}
+          bookingId={bookingId}
+        />
 
         <div
           ref={containerRef}
-          className="flex-1 overflow-y-auto bg-[#f7f4ed]"
+          className="min-h-0 flex-1 overflow-y-auto bg-[#f7f4ed]"
+          onScroll={handleScroll}
         >
+          {isFetchingNextPage && (
+            <div className="py-4">
+              <CommonSpinner />
+            </div>
+          )}
+
           <MessageList
             messages={messages}
             worker={worker}

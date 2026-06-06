@@ -107,7 +107,7 @@ export default function MessageList({
   );
 }
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-[#f7f4ed] px-3 py-4 sm:px-5">
+   <div className="flex flex-col bg-[#f7f4ed] px-3 py-4 sm:px-5">
       <div className="flex-1" />
 
       <div className="mx-auto w-full max-w-4xl">

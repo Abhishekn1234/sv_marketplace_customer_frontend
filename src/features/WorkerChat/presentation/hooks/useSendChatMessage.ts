@@ -17,7 +17,7 @@ export function useSendChatMessage() {
     mutationFn: (payload) => usecase.execute(payload),
 
     onSuccess: (response, variables) => {
-      toast.success("Message sent");
+      // toast.success("Message sent");
 
       // 🔥 CRITICAL: update UI instantly
       queryClient.setQueryData(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { ChatRepositoryImpl } from "../../data/repositories/ChatRepositoryImpl";
 import { GetChatMessagesUsecase } from "../../domain/usecase/GetChatMessageUsecase";
@@ -12,28 +12,34 @@ export const CHAT_MESSAGES_KEY = "CHAT_MESSAGES_KEY";
 
 export function useGetChatMessages(
   bookingId: string,
-  page = 1,
   limit = 30
 ) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [CHAT_MESSAGES_KEY, bookingId],
 
-    queryFn: async () => {
-      const res = await usecase.execute({
-        bookingId,
-        page,
-        limit,
-      });
+   queryFn: async ({ pageParam = 1 }) => {
+  console.log("PAGE PARAM:", pageParam);
 
-      return res ?? { data: [], page: 1, total: 0 };
+  return await usecase.execute({
+    bookingId,
+    page: pageParam,
+    limit,
+  });
+},
+
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage, allPages) => {
+      const messages = lastPage?.data ?? [];
+      // console.log(messages);
+      // No more pages
+      if (messages.length < limit) {
+        return undefined;
+      }
+
+      return allPages.length + 1;
     },
 
     enabled: !!bookingId,
-    staleTime: 0,
-    gcTime: 1000 * 60 * 30,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true,
-    refetchOnMount: "always",
-    refetchInterval: false,
   });
 }
