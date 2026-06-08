@@ -230,7 +230,7 @@
   },
   "bookingSummary": {
   "title": "बुकिंग सारांश",
-
+   "workers":"कर्मचारी",
   "service": "सेवा",
   "tier": "स्तर",
   "timeAndDate": "समय और तिथि",

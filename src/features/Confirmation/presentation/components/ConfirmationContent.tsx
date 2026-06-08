@@ -29,9 +29,7 @@ export default function ConfirmationContent() {
 
   const { serviceTiers } = useServices();
 
-  // -----------------------------
-  // LOCATION FORMAT
-  // -----------------------------
+ 
   useEffect(() => {
     if (!data?.location?.coordinates?.length) return;
 
@@ -117,7 +115,7 @@ export default function ConfirmationContent() {
             {t.confirmationpage.referenceId}
           </span>
           <span className="text-sm font-bold text-gray-900">
-            {data._id}
+            {data.bookingCode}
           </span>
         </div>
 

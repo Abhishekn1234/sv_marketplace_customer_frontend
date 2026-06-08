@@ -47,6 +47,7 @@ const serviceName =
         <SummaryItem label={t.confirmationpage.bookingSummary.timeAndDate} value={formatSmartDate(data?.schedule?.startDateTime)} />
         <SummaryItem label={t.confirmationpage.bookingSummary.location} value={placeName} />
         <SummaryItem label={t.confirmationpage.bookingSummary.duration} value={duration} />
+        <SummaryItem label={t.confirmationpage.bookingSummary.workers} value={data?.numberOfWorkers} />
         <SummaryItem label={t.confirmationpage.bookingSummary.totalPaid} value={<span className="text-blue-600">{data?.currency} {data?.totalCost}</span>} />
                 </div>
 

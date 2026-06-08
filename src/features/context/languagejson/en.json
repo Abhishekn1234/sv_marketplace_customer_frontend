@@ -204,7 +204,7 @@
   },
   "bookingSummary": {
   "title": "Booking Summary",
-
+   "workers":"Workers",
   "service": "Service",
   "tier": "Tier",
   "timeAndDate": "Time & Date",

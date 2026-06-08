@@ -30,7 +30,7 @@ export function JobProgressInfo({ booking }: any) {
   const pricingMode = booking?.pricingMode;
   const estimatedHours = booking?.schedule?.estimatedHours ?? 0;
   const estimatedDays = booking?.actualWorkDays ?? 0;
-
+  console.log(booking);
   let basePrice = 0;
   if (pricingMode === "HOURLY") {
     basePrice = estimatedHours ? total / estimatedHours : total;
@@ -78,42 +78,69 @@ export function JobProgressInfo({ booking }: any) {
     <div className="flex flex-col gap-5 sticky top-6">
       
       {/* ================= SERVICE SUMMARY ================= */}
-      <CommonCard>
-        <h3 className="text-[16px] font-bold text-gray-900 mb-5">
-          {t.jobprogresspage.serviceSummary}
-        </h3>
+    <CommonCard className="p-6 rounded-2xl shadow-sm">
+  <h3 className="text-lg font-bold text-gray-900 mb-5">
+    {t.jobprogresspage.serviceSummary}
+  </h3>
 
-        {[
-          [t.jobprogresspage.serviceType, serviceName],
-          [t.jobprogresspage.serviceTier, serviceTierName],
-          [
-            t.jobprogresspage.basePrice,
-            `${currency} ${basePrice.toFixed(2)}`,
-          ],
-        ].map(([label, value], i) => (
-          <div
-            key={i}
-            className="flex justify-between py-2 border-b border-gray-100"
-          >
-            <span className="text-sm text-gray-500 font-medium">
-              {label}
-            </span>
-            <span className="text-sm font-semibold text-gray-900">
-              {value}
-            </span>
-          </div>
-        ))}
+  {/* Service Details */}
+  {[
+    [t.jobprogresspage.serviceType, serviceName],
+    [t.jobprogresspage.serviceTier, serviceTierName],
+    [
+      t.jobprogresspage.basePrice,
+      `${currency} ${basePrice.toFixed(2)}`,
+    ],
+  ].map(([label, value], i) => (
+    <div
+      key={i}
+      className="flex items-center justify-between py-3 border-b border-gray-100"
+    >
+      <span className="text-sm text-gray-500 font-medium">
+        {label}
+      </span>
 
-        <div className="flex justify-between pt-4 mt-2 border-t-2 border-gray-200">
-          <span className="text-sm text-gray-500 font-medium">
-            {t.jobprogresspage.total}
-          </span>
-          <span className="text-[18px] font-bold text-blue-600">
-            {currency} {total}
-          </span>
-        </div>
-      </CommonCard>
+      <span className="text-sm font-semibold text-gray-900 text-right">
+        {value}
+      </span>
+    </div>
+  ))}
 
+  {/* Pricing Summary */}
+  <div className="mt-4 space-y-3">
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-gray-500">
+        {t.jobtrackingpage.serviceDetails.vatRate}
+      </span>
+
+      <span className="font-medium text-gray-800">
+        {currency} {booking?.vatAmount ?? 0}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-gray-500">
+        {t.jobtrackingpage.serviceDetails.basePrice}
+      </span>
+
+      <span className="font-medium text-gray-800">
+        {currency} {total}
+      </span>
+    </div>
+
+    <div className="border-t border-dashed border-gray-200 pt-4">
+      <div className="flex items-center justify-between">
+        <span className="text-base font-semibold text-gray-900">
+          {t.jobtrackingpage.serviceDetails.totalPrice}
+        </span>
+
+        <span className="text-xl font-bold text-blue-600">
+          {currency} {booking?.totalCost ?? total}
+        </span>
+      </div>
+    </div>
+  </div>
+</CommonCard>
       {/* ================= SERVICE INFO ================= */}
       <CommonCard>
         <h3 className="text-[16px] font-bold text-gray-900 mb-4">

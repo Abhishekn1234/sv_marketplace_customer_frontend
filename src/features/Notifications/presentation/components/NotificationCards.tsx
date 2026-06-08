@@ -20,98 +20,11 @@ import { Button } from "@/components/ui/button";
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import { toast } from "react-toastify";
 
-// ✅ ZUSTAND STORE
+
 import { useAuthStore } from "@/features/core/store/auth";
+import { formatNotificationForPanel } from "../utils/notificationcardshelpers";
+import { useNotificationFilters } from "../utils/notificationfilterskeylanguages";
 
-// =========================
-// HELPERS
-// =========================
-const getFirstString = (...values: unknown[]) =>
-  values.find(
-    (value): value is string =>
-      typeof value === "string" && value.trim().length > 0
-  );
-
-const isChatNotification = (notification: any) => {
-  const data =
-    notification.data ||
-    notification.payload ||
-    notification.metadata ||
-    {};
-
-  const senderType =
-    notification.senderType ||
-    notification.sender ||
-    data.senderType ||
-    data.sender;
-
-  return (
-    notification.type === "CHAT_MESSAGE" ||
-    notification.type === "NEW_MESSAGE" ||
-    senderType === "WORKER" ||
-    senderType === "worker"
-  );
-};
-
-const getWorkerName = (notification: any) => {
-  const data =
-    notification.data ||
-    notification.payload ||
-    notification.metadata ||
-    {};
-
-  return getFirstString(
-    notification.workerName,
-    notification.senderName,
-    notification.senderFullName,
-    notification.workerFullName,
-    notification.fullName,
-    data.workerName,
-    data.senderName,
-    data.senderFullName,
-    data.workerFullName,
-    data.fullName
-  );
-};
-
-const getMessageText = (notification: any) => {
-  const data =
-    notification.data ||
-    notification.payload ||
-    notification.metadata ||
-    {};
-
-  return (
-    getFirstString(
-      notification.body,
-      notification.message,
-      notification.text,
-      notification.content,
-      data.body,
-      data.message,
-      data.text,
-      data.content
-    ) || "New message"
-  );
-};
-
-const formatNotificationForPanel = (notification: any) => {
-  if (!isChatNotification(notification)) return notification;
-
-  const workerName = getWorkerName(notification);
-
-  return {
-    ...notification,
-    title: workerName
-      ? `New chat message from ${workerName}`
-      : "New chat message from worker",
-    message: getMessageText(notification),
-  };
-};
-
-// =========================
-// COMPONENT
-// =========================
 export default function NotificationCards() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -122,242 +35,178 @@ export default function NotificationCards() {
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  // =========================
-  // API FETCH (only for hydration)
-  // =========================
-  const filters = useMemo(
-    () => ({ page, type }),
-    [page, type]
-  );
+  const filters = useMemo(() => ({ page, type }), [page, type]);
+ const FILTERS=useNotificationFilters();
+  const { data, isLoading, isFetching } = useNotifications(filters);
 
-  const { data, isLoading, isFetching } =
-    useNotifications(filters);
-
-  // =========================
-  // ZUSTAND STATE (SOURCE OF TRUTH)
-  // =========================
-  const notifications = useAuthStore(
-    (state) => state.notifications.list
-  );
-
-  const setNotificationsList = useAuthStore(
-    (state) => state.setNotificationsList
-  );
-
-  const markNotificationRead = useAuthStore(
-    (state) => state.markNotificationRead
-  );
+  const notifications = useAuthStore((state) => state.notifications.list);
+  const setNotificationsList = useAuthStore((state) => state.setNotificationsList);
+  const markNotificationRead = useAuthStore((state) => state.markNotificationRead);
 
   const { markAsRead } = useMarkNotificationRead();
   const { markAllAsRead } = useMarkAllAsRead();
 
-  // =========================
-  // HYDRATE ZUSTAND FROM API
-  // =========================
   useEffect(() => {
     if (data?.data && Array.isArray(data.data)) {
-     setNotificationsList(
-  data.data.map((n: any) => ({
-    ...formatNotificationForPanel(n),
-    id: n._id || n.id || n.messageId, // ✅ FIX
-    isRead: !!n.isRead,
-    source: "api",
-  }))
-);
+      setNotificationsList(
+        data.data.map((n: any) => ({
+          ...formatNotificationForPanel(n),
+          id: n._id || n.id || n.messageId,
+          isRead: !!n.isRead,
+          source: "api",
+        }))
+      );
     }
   }, [data, setNotificationsList]);
 
-  // =========================
-  // DERIVED DATA
-  // =========================
-  const localNotifications = useMemo(
-    () => notifications,
-    [notifications]
-  );
-
+  const localNotifications = useMemo(() => notifications, [notifications]);
   const unreadNotifications = useMemo(
     () => localNotifications.filter((n) => !n.isRead),
     [localNotifications]
   );
 
-  // =========================
-  // SELECT
-  // =========================
- const toggleSelect = (id: string) => {
-  if (!id) return;
-
-  const target = localNotifications.find((n) => n.id === id);
-  if (!target || target.isRead) return;
-
-  setSelected((prev) =>
-    prev.includes(id)
-      ? prev.filter((x) => x !== id)
-      : [...prev, id]
-  );
-};
+  const toggleSelect = (id: string) => {
+    if (!id) return;
+    const target = localNotifications.find((n) => n.id === id);
+    if (!target || target.isRead) return;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
 
   const toggleSelectAll = () => {
-  const unreadIds = localNotifications
-    .filter((n) => !n.isRead)
-    .map((n) => n.id)
-    .filter((id): id is string => typeof id === "string"); // ✅ FIX TYPE GUARD
+    const unreadIds = localNotifications
+      .filter((n) => !n.isRead)
+      .map((n) => n.id)
+      .filter((id): id is string => typeof id === "string");
 
-  const allSelected =
-    unreadIds.length > 0 &&
-    unreadIds.every((id) => selected.includes(id));
+    const allSelected =
+      unreadIds.length > 0 && unreadIds.every((id) => selected.includes(id));
 
-  if (allSelected) {
-    setSelected((prev) =>
-      prev.filter((id) => !unreadIds.includes(id))
-    );
-  } else {
-    setSelected(unreadIds);
-  }
-};
+    if (allSelected) {
+      setSelected((prev) => prev.filter((id) => !unreadIds.includes(id)));
+    } else {
+      setSelected(unreadIds);
+    }
+  };
 
-  // =========================
-  // MARK AS READ
-  // =========================
   const markSelectedAsRead = async () => {
     if (!selected.length) return;
-
     await Promise.all(selected.map(markAsRead));
-
-    selected.forEach((id) => {
-      markNotificationRead(id);
-    });
-
+    selected.forEach((id) => markNotificationRead(id));
     setSelected([]);
   };
 
- const handleMarkAllAsRead = async () => {
-  await markAllAsRead();
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    notifications.forEach((n) => {
+      if (typeof n.id === "string") markNotificationRead(n.id);
+    });
+    setSelected([]);
+  };
 
-  notifications.forEach((n) => {
-    if (typeof n.id === "string") {
-      markNotificationRead(n.id);
-    }
-  });
-
-  setSelected([]);
-};
-
-  // =========================
-  // CLICK HANDLER
-  // =========================
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);
-
     if (typeof url !== "string") {
       toast.error("Booking not found");
       return;
     }
-
     markNotificationRead(notification.id);
-
     navigate(url);
   };
 
-  // =========================
-  // INFINITE SCROLL
-  // =========================
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const target = entries[0];
-
-        if (target.isIntersecting && (data?.data?.length ?? 0) > 0) {
+        if (entries[0].isIntersecting && (data?.data?.length ?? 0) > 0) {
           setPage((p) => p + 1);
         }
       },
       { threshold: 1 }
     );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
+    if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
   }, [data]);
 
-  // =========================
-  // UI
-  // =========================
+
   return (
-    <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 py-8">
-
-        {/* HEADER */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-blue-600 rounded-xl">
-            <Bell className="text-white" />
-          </div>
-          <h1 className="text-xl font-bold">
-            {t.notificationpage.title}
-          </h1>
+    <div className="w-full">
+      {/* Page header */}
+      <div className="flex items-center gap-3 mb-5 sm:mb-6">
+        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm shadow-blue-200">
+          <Bell className="text-white w-4.5 h-4.5" />
         </div>
+        <h1 className="text-[17px] sm:text-lg font-semibold text-gray-800">
+          {t.notificationpage.title}
+        </h1>
+        {unreadNotifications.length > 0 && (
+          <span className="text-[11px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+            {unreadNotifications.length}
+          </span>
+        )}
+      </div>
 
-        <CommonCard className="min-h-[600px] p-0">
+      {/* Card */}
+      <CommonCard className="p-0 overflow-hidden rounded-2xl border border-gray-200/80 shadow-sm">
 
-          {/* FILTER */}
-          <div className="p-4 flex justify-between">
-            <div className="flex gap-2">
-              {[
-                { label: "All", value: undefined },
-                { label: "Requested", value: "BOOKING_REQUEST" },
-                { label: "Updates", value: "BOOKING_UPDATE" },
-                { label: "Admin", value: "ADMIN_MESSAGE" },
-              ].map((f) => (
+        {/* Filter bar */}
+        <div className="px-4 sm:px-5 py-3 border-b border-gray-100/80 bg-gray-50/60">
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+            {FILTERS.map((f) => {
+              const isActive = type === f.value;
+              return (
                 <Button
                   key={f.label}
                   onClick={() => {
                     setType(f.value);
                     setPage(1);
                   }}
-                  className={
-                    type === f.value
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : ""
-                  }
+                  variant={isActive ? "default" : "ghost"}
+                  className={`
+                    px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all
+                    ${isActive
+                      ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-white hover:shadow-sm"}
+                  `}
                 >
                   {f.label}
                 </Button>
-              ))}
-            </div>
+              );
+            })}
           </div>
+        </div>
 
-          {/* HEADER ACTIONS */}
-          <NotificationHeader
-             toggleSelectAll={toggleSelectAll}
+        {/* Sticky actions header */}
+        <NotificationHeader
+          toggleSelectAll={toggleSelectAll}
+          selected={selected}
+          total={unreadNotifications.length}
+          markAllAsRead={handleMarkAllAsRead}
+          markSelectedAsRead={markSelectedAsRead}
+        />
+
+        {/* Scrollable list */}
+        <div className="h-[calc(100dvh-18.5rem)] sm:h-[calc(100dvh-20rem)] overflow-y-auto bg-white">
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <CommonSpinner />
+            </div>
+          ) : (
+            <NotificationContent
+              notifications={localNotifications}
               selected={selected}
-              total={unreadNotifications.length}
-            markAllAsRead={handleMarkAllAsRead}
-            markSelectedAsRead={markSelectedAsRead}
-          />
+              toggleSelect={toggleSelect}
+              onNotificationClick={handleNotificationClick}
+            />
+          )}
 
-          {/* LIST */}
-          <div className="overflow-y-auto">
-            {isLoading ? (
-              <div className="h-64 flex items-center justify-center">
-                <CommonSpinner />
-              </div>
-            ) : (
-              <NotificationContent
-                notifications={localNotifications}
-                selected={selected}
-                toggleSelect={toggleSelect}
-                onNotificationClick={handleNotificationClick}
-              />
-            )}
-
-            {/* LOADER */}
-            <div ref={loaderRef} className="flex justify-center py-4">
-              {isFetching && <CommonSpinner />}
-            </div>
+          {/* Infinite scroll sentinel */}
+          <div ref={loaderRef} className="flex justify-center py-5">
+            {isFetching && <CommonSpinner />}
           </div>
+        </div>
 
-        </CommonCard>
-      </div>
+      </CommonCard>
     </div>
   );
 }
