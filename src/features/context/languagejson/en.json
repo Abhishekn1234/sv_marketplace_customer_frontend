@@ -152,6 +152,7 @@
   },
    "bookingdetailpage":{
     "backToServices": "Back to Services",
+    "number of Workers needed":"Number Of Workers Needed",
     "title": "Booking Details",
     "vatRate": "VAT Rate",
     "serviceSummary": "Service Summary",
@@ -276,7 +277,9 @@
     "location": "Location",
     "totalPrice": "Total Price",
     "bookingConfirmed": "Booking Confirmed",
-    "todayTime": "Today • 11:50 AM"
+    "todayTime": "Today • 11:50 AM",
+    "basePrice":"Base Price",
+    "vatRate":"VAT Rate"
   },
 
   "status": {

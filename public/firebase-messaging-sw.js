@@ -82,13 +82,9 @@ const isAdminNotification = (data = {}, payload = {}) => {
 const buildNotificationRoute = (data = {}, payload = {}) => {
   const type = getType(data, payload);
 
-  // Admin messages should always land in the notifications center.
   if (isAdminNotification(data, payload)) {
     return "/notifications";
   }
-
-  // Highest priority
-  if (data.url) return data.url;
 
   const bookingId =
     getId(data.bookingId) ||
@@ -98,9 +94,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
   const senderType =
     data.senderType || data.sender;
 
-  // =========================
-  // CHAT
-  // =========================
   if (
     (type === "CHAT_MESSAGE" ||
       senderType === "WORKER" ||
@@ -110,9 +103,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
     return `/message/${bookingId}`;
   }
 
-  // =========================
-  // TRACKING
-  // =========================
   if (
     (type === "BOOKING_UPDATE" ||
       type === "JOB_TRACKING") &&
@@ -121,9 +111,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
     return `/jobtracking/${bookingId}`;
   }
 
-  // =========================
-  // JOB PROGRESS
-  // =========================
   if (
     type === "JOB_PROGRESS" &&
     bookingId
@@ -131,9 +118,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
     return `/jobprogress/${bookingId}`;
   }
 
-  // =========================
-  // BOOKING DETAIL
-  // =========================
   if (
     type === "BOOKING_CREATED" &&
     data.serviceId &&
@@ -142,9 +126,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
     return `/bookingdetail/${data.serviceId}/${data.serviceTierId}`;
   }
 
-  // =========================
-  // VIDEO CALL
-  // =========================
   if (
     type === "VIDEO_CALL" &&
     data.senderId
@@ -152,12 +133,6 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
     return `/video-call/${data.senderId}`;
   }
 
-  // =========================
-  // ADMIN
-  // =========================
-  // =========================
-  // FALLBACK
-  // =========================
   return "/notifications";
 };
 
@@ -277,81 +252,67 @@ const getNotificationTag = (data = {}) => {
 // =========================
 // BACKGROUND MESSAGE
 // =========================
-messaging.onBackgroundMessage(
-  async (payload) => {
-    console.log(
-      "[firebase-messaging-sw.js] BG Message",
-      payload
+messaging.onBackgroundMessage(async (payload) => {
+  try {
+    const data = payload.data || {};
+
+    const display = buildNotificationDisplay(
+      payload,
+      data
     );
 
-    try {
-      const data = payload.data || {};
+    const tag = getNotificationTag(data);
 
-      const type = getType(data, payload);
-      const isAdmin = isAdminNotification(data, payload);
+    await self.registration.showNotification(
+      display.title,
+      {
+        body: display.body,
 
-      const url =
-        buildNotificationRoute(data, payload);
+        icon: "/logo.png",
+        badge: "/logo.png",
 
-      const display =
-        buildNotificationDisplay(
-          payload,
-          data
-        );
+        tag,
+        renotify: true,
 
-      const tag =
-        getNotificationTag(data);
+        requireInteraction:
+          isAdminNotification(data, payload),
 
-      // await self.registration.showNotification(
-      //   display.title,
-      //   {
-      //     body: display.body,
+        data: {
+          ...data,
+        },
 
-      //     icon: "/logo.png",
-      //     badge: "/logo.png",
-
-      //     tag,
-      //     renotify: true,
-
-      //     requireInteraction: isAdmin,
-
-      //     data: {
-      //       url,
-      //       type: data.type,
-      //       bookingId: data.bookingId,
-      //       senderType:
-      //         data.senderType,
-      //     },
-
-      //     actions: [
-      //       {
-      //         action: "open",
-      //         title: "Open",
-      //       },
-      //     ],
-      //   }
-      // );
-    } catch (error) {
-      console.error(
-        "Background notification error:",
-        error
-      );
-    }
+        actions: [
+          {
+            action: "open",
+            title: "Open",
+          },
+        ],
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Background notification error:",
+      error
+    );
   }
-);
+});
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
   let payload;
+
   try {
     payload = event.data.json();
   } catch {
     return;
   }
 
-  // Let Firebase handle data-only messages.
-  if (payload?.data && Object.keys(payload.data).length > 0) {
+  const data = payload.data || {};
+
+  // Ignore Firebase data-only messages.
+  // They are handled by onBackgroundMessage.
+  if (Object.keys(data).length > 0) {
     return;
   }
 
@@ -366,21 +327,24 @@ self.addEventListener("push", (event) => {
     payload.body ||
     "You have a new notification";
 
-  const url =
-    payload.notification?.click_action ||
-    payload.url ||
-    "/notifications";
-
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
       icon: "/logo.png",
       badge: "/logo.png",
+
       data: {
-        url,
-        type: payload.data?.type || payload.type,
-        bookingId: payload.data?.bookingId || payload.bookingId,
+        type: payload.type,
       },
+
+      actions: [
+        {
+          action: "open",
+          title: "Open",
+        },
+      ],
+
+      requireInteraction: true,
     })
   );
 });
@@ -394,7 +358,7 @@ self.addEventListener("notificationclick", (event) => {
   const data = event.notification?.data || {};
   
   // If URL is missing (e.g. browser-shown notification), build it now
-  const targetUrl = data.url || buildNotificationRoute(data);
+  const targetUrl = buildNotificationRoute(data);
   const absoluteUrl = toAbsoluteUrl(targetUrl);
 
   event.waitUntil(

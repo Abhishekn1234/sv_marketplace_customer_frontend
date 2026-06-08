@@ -76,33 +76,47 @@ export default function JobTrackingServiceDetails({
       </CommonCard>
     );
   }
+  const baseAmount = Number(booking.amount || 0);
+const vatAmount = Number(booking.vatAmount || 0);
+const finalAmount = Number(booking.totalCost || 0);
 
-  const serviceDetails = [
-    {
-      label: t.jobtrackingpage.serviceDetails.serviceType,
-      value: serviceName,
-    },
-    {
-      label: t.jobtrackingpage.serviceDetails.serviceTier,
-      value: tierName,
-    },
-    {
-      label: t.jobtrackingpage.serviceDetails.dateTime,
-      value: booking.schedule?.startDateTime
-        ? formatDates(booking.schedule.startDateTime)
-        : "—",
-    },
-    {
-      label: t.jobtrackingpage.serviceDetails.location,
-      value: coordinates,
-      isSmall: true,
-    },
-    {
-      label: t.jobtrackingpage.serviceDetails.totalPrice,
-      value: `${booking.currency} ${booking.totalCost}`,
-      isPrice: true,
-    },
-  ];
+ const serviceDetails = [
+  {
+    label: t.jobtrackingpage.serviceDetails.serviceType,
+    value: serviceName,
+  },
+  {
+    label: t.jobtrackingpage.serviceDetails.serviceTier,
+    value: tierName,
+  },
+  {
+    label: t.jobtrackingpage.serviceDetails.dateTime,
+    value: booking.schedule?.startDateTime
+      ? formatDates(booking.schedule.startDateTime)
+      : "—",
+  },
+  {
+    label: t.jobtrackingpage.serviceDetails.location,
+    value: coordinates,
+    isSmall: true,
+  },
+
+  // PRICE BREAKDOWN
+  {
+    label: t.jobtrackingpage.serviceDetails.basePrice,
+    value: `${booking.currency} ${baseAmount.toFixed(2)}`,
+  },
+  {
+    label: t.jobtrackingpage.serviceDetails.vatRate,
+    value: `${booking.currency} ${vatAmount.toFixed(2)}`,
+    isVat: true,
+  },
+  {
+    label: t.jobtrackingpage.serviceDetails.totalPrice,
+    value: `${booking.currency} ${finalAmount.toFixed(2)}`,
+    isPrice: true,
+  },
+];
 
   return (
     <CommonCard

@@ -49,10 +49,15 @@ export default function InvoiceModal({
             booking?.actualWorkHours ??
             0
         )
-      : `${invoiceData?.actualWorkDays ?? booking?.actualWorkDays ?? 0} days`;
+      : `${
+          invoiceData?.actualWorkDays ??
+          booking?.actualWorkDays ??
+          0
+        } days`;
 
-  const rate = booking.amount;
-  const finalAmount = booking?.totalCost;
+  const rate = Number(booking?.amount || 0);
+  const vatAmount = Number(booking?.vatAmount || 0);
+  const finalAmount = Number(booking?.totalCost || 0);
 
   const currency =
     invoiceData?.currency ?? booking?.currency ?? "SAR";
@@ -66,6 +71,7 @@ export default function InvoiceModal({
         serviceTierName,
         workedDuration,
         rate,
+        vatAmount,
         finalAmount,
         currency,
       },
@@ -98,14 +104,16 @@ export default function InvoiceModal({
         </div>
       }
     >
-      {/* BOOKING INFO */}
+      {/* INVOICE INFO */}
       <div className="space-y-2 text-sm">
         <p>
-          <b>{t.common.invoiceNo}:</b> {invoice?.invoiceNumber}
+          <b>{t.common.invoiceNo}:</b>{" "}
+          {invoice?.invoiceNumber || "-"}
         </p>
 
         <p>
-          <b>{t.common.status}:</b> {invoice?.status}
+          <b>{t.common.status}:</b>{" "}
+          {invoice?.status || "-"}
         </p>
 
         <p>
@@ -113,36 +121,73 @@ export default function InvoiceModal({
         </p>
 
         <p>
-          <b>{t.common.serviceTier}:</b> {serviceTierName}
+          <b>{t.common.serviceTier}:</b>{" "}
+          {serviceTierName}
         </p>
       </div>
 
       {/* WORK DETAILS */}
-      <div className="border rounded-lg p-3 space-y-1 text-sm mt-4">
-        <p>
-          <b>{t.common.workers}:</b> {booking?.numberOfWorkers}
-        </p>
+      <div className="border rounded-lg p-4 mt-4">
+        <h4 className="font-semibold mb-3">
+          Work Details
+        </h4>
 
-        <p>
-          <b>{t.common.pricingMode}:</b> {booking?.pricingMode}
-        </p>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span>{t.common.workers}</span>
+            <span>{booking?.numberOfWorkers}</span>
+          </div>
 
-        <p>
-          <b>{t.common.rate}:</b> {rate} {currency}{" "}
-          {booking?.pricingMode === "HOURLY" ? "/hour" : "/day"}
-        </p>
+          <div className="flex justify-between">
+            <span>{t.common.pricingMode}</span>
+            <span>{booking?.pricingMode}</span>
+          </div>
 
-        <p>
-          <b>{t.common.workedDuration}:</b> {workedDuration}
-        </p>
+          <div className="flex justify-between">
+            <span>{t.common.rate}</span>
+            <span>
+              {rate.toFixed(2)} {currency}
+              {booking?.pricingMode === "HOURLY"
+                ? "/hour"
+                : "/day"}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>{t.common.workedDuration}</span>
+            <span>{workedDuration}</span>
+          </div>
+        </div>
       </div>
 
-      {/* PAYMENT */}
-      <div className="border rounded-lg p-3 space-y-1 text-sm mt-4">
-        <p className="font-semibold text-base">
-          {t.common.finalAmount}:{" "}
-          {Number(finalAmount).toFixed(2)} {currency}
-        </p>
+      {/* PAYMENT SUMMARY */}
+      <div className="border rounded-lg p-4 mt-4 bg-gray-50">
+        <h4 className="font-semibold mb-3">
+         {t.common.payment}
+        </h4>
+
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm">
+            <span>{t.bookingdetailpage.basePrice}</span>
+            <span>
+              {rate.toFixed(2)} {currency}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>+ {t.bookingdetailpage.vatRate}</span>
+            <span>
+              {vatAmount.toFixed(2)} {currency}
+            </span>
+          </div>
+
+          <div className="border-t pt-3 flex justify-between font-bold text-lg">
+            <span>{t.bookingdetailpage.total}</span>
+            <span className="text-primary">
+              {finalAmount.toFixed(2)} {currency}
+            </span>
+          </div>
+        </div>
       </div>
     </CommonModal>
   );

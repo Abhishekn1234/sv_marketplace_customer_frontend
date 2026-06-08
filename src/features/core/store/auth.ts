@@ -117,10 +117,15 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user, isLoggedIn: true }),
 
-      clearAuth: () => {
-        disconnectSocket();
-        set(initialState);
-      },
+            clearAuth: () => {
+          disconnectSocket();
+
+          set((state) => ({
+            ...initialState,
+            language: state.language,
+            theme: state.theme,
+          }));
+        },
 
       /* ---------------- THEME ---------------- */
       toggleTheme: () =>

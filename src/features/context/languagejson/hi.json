@@ -180,6 +180,7 @@
      "backToServices": "सेवाओं पर वापस जाएं",
       "title": "बुकिंग विवरण",
       "vatRate": "वैट दर",
+      "number of Workers needed": "आवश्यक श्रमिकों की संख्या",
     "serviceSummary": "सेवा सारांश",
     "serviceType": "सेवा प्रकार",
     "serviceProfessional": "सेवा विशेषज्ञ",
@@ -303,7 +304,9 @@
     "location": "स्थान",
     "totalPrice": "कुल कीमत",
     "bookingConfirmed": "बुकिंग की पुष्टि हुई",
-    "todayTime": "आज • 11:50 AM"
+    "todayTime": "आज • 11:50 AM",
+    "basePrice":"मूल कीमत",
+    "vatRate":"वैट दर"
   },
 
   "status": {

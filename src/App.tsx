@@ -60,6 +60,11 @@ function App() {
   // =========================
   // SOCKET INIT
   // =========================
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+  regs.forEach((r) => {
+    console.log(r.scope);
+  });
+});
   useEffect(() => {
     if (isLoggedIn && accessToken) {
       initializeSocket(accessToken);

@@ -8,7 +8,7 @@ import { getCurrentLocation} from "@/features/utils/reverse";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
-import { Textarea } from "@/components/input";
+import { Input, Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
@@ -28,6 +28,7 @@ const selectedService = services?.find(
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [duration, setDuration] = useState(1);
+  const[numberOfWorkers,setNumberOfWorkers]=useState(1);
   const [notes, setNotes] = useState("");
  const [loading, setLoading] = useState(false);
  const allDates = useMemo(() => {
@@ -135,7 +136,7 @@ const selectedService = services?.find(
       serviceId: serviceId!,
       serviceTierId: serviceTierId!,
       pricingMode,
-      numberOfWorkers: 1,
+      numberOfWorkers: Number(numberOfWorkers),
       bookingType,
       startDateTime: selectedDateObj.toISOString(),
       estimatedHours,
@@ -283,7 +284,20 @@ const selectedService = services?.find(
       </Button>
     </div>
   </div>
+  <div className="mt-6">
+    <h2 className="mb-4 text-sm font-bold text-gray-900">
+      {t.bookingdetailpage["number of Workers needed"]}
+    </h2>
 
+    <div className="">
+      <Input 
+        type="number" 
+        min={1}
+        value={numberOfWorkers}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumberOfWorkers(Number(e.target.value))}
+      />
+    </div>
+  </div>
   {/* Notes */}
   <div className="mt-6">
     <h2 className="mb-2 text-sm font-bold text-gray-900">

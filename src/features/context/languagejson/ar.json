@@ -190,6 +190,7 @@
   "change": "تغيير",
   "home": "المنزل",
   "entryInstructions": "تعليمات الدخول",
+  "number of Workers needed": "عدد العمال المطلوبين",
    "selectDate": "اختر التاريخ",
   "estimatedDuration": "المدة المقدرة",
   "selectTime": "اختر الوقت",
@@ -305,7 +306,9 @@
     "location": "الموقع",
     "totalPrice": "السعر الإجمالي",
     "bookingConfirmed": "تم تأكيد الحجز",
-    "todayTime": "اليوم • 11:50 ص"
+    "todayTime": "اليوم • 11:50 ص",
+    "basePrice":"السعر الأساسي",
+    "vatRate":"ضريبة القيمة المضافة"
   },
 
   "status": {
