@@ -1,21 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import { BellIcon } from "lucide-react";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
+import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
 
-import { useAuthStore } from "@/features/core/store/auth";
-import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 
-import Button from "../input/Button";
-import { BellIcon } from "../icons/BellIcon";
 
-interface Props {
+type Props = {
   direction?: "up" | "down";
-}
+};
 
 export default function CommonNotificationFloater({
   direction = "down",
@@ -40,74 +40,44 @@ export default function CommonNotificationFloater({
   );
 
   // -----------------------------
-  // API FETCH
+  // API FETCH (SOURCE OF TRUTH)
   // -----------------------------
   const { data } = useNotifications(notificationFilters);
 
-  // -----------------------------
-  // ZUSTAND STATE
-  // -----------------------------
-  const notifications = useAuthStore(
-    (state) => state.notifications.list
-  );
-
-  const unreadCount = useAuthStore(
-    (state) => state.notifications.unreadCount
-  );
-
-  const setNotificationsList = useAuthStore(
-    (state) => state.setNotificationsList
-  );
-
-  const markNotificationRead = useAuthStore(
-    (state) => state.markNotificationRead
-  );
-
-  const { markAsRead } = useMarkNotificationRead();
+  const notifications = data?.pages.flatMap((p) => p.data)?? [];
 
   // -----------------------------
-  // HYDRATE STORE (IMPORTANT FIX)
+  // MARK AS READ API
   // -----------------------------
-  useEffect(() => {
-    if (data?.data && Array.isArray(data.data)) {
-      setNotificationsList(
-        data.data.map((n: any) => ({
-          ...n,
-          isRead: !!n.isRead, // normalize boolean
-        }))
-      );
-    }
-  }, [data, setNotificationsList]);
+  const { mutateAsync: markAsRead } = useMarkNotificationRead();
 
   // -----------------------------
-  // COUNTS (NOW ALWAYS CORRECT)
+  // UNREAD COUNT (FIXED)
   // -----------------------------
-  // const totalCount = notifications.length;
+  const unreadCount = useMemo(() => {
+    return notifications.filter((n: any) => !n.isRead).length;
+  }, [notifications]);
 
-  // const displayTotalCount =totalCount;
-
-  const displayUnreadCount = unreadCount;
   // -----------------------------
-  // CLICK HANDLER (FIXED FLOW)
+  // CLICK HANDLER (OPTIMISTIC SAFE)
   // -----------------------------
   const handleNotificationClick = async (item: any) => {
     const target = getNotificationTarget(item);
-
     if (!target) return;
 
-    try {
-      const id = item.id || item._id;
+    const id = item.id || item._id;
 
-      // 1. API + Zustand update
+    try {
+      // 1. optimistic UI update
+      item.isRead = true;
+
+      // 2. API sync
       await markAsRead(id);
 
-      // 2. ALSO ensure local list sync (instant UI safety)
-      markNotificationRead(id);
-
-      // 3. Navigate
+      // 3. navigate
       navigate(target);
 
-      // 4. Close dropdown
+      // 4. close dropdown
       setOpen(false);
     } catch (err) {
       console.error("Failed to mark notification as read", err);
@@ -115,7 +85,7 @@ export default function CommonNotificationFloater({
   };
 
   // -----------------------------
-  // OUTSIDE CLICK
+  // OUTSIDE CLICK CLOSE
   // -----------------------------
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -128,7 +98,6 @@ export default function CommonNotificationFloater({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -138,6 +107,7 @@ export default function CommonNotificationFloater({
   // -----------------------------
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* BUTTON */}
       <Button
         onClick={() => setOpen((prev) => !prev)}
         className="relative p-2 text-gray-400 hover:text-blue-600"
@@ -147,11 +117,12 @@ export default function CommonNotificationFloater({
         {/* BADGE */}
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white">
-            {displayUnreadCount}
+            {unreadCount}
           </span>
         )}
       </Button>
 
+      {/* DROPDOWN */}
       {open && (
         <div
           className={`absolute z-50 bg-white rounded-2xl shadow-xl border w-72 sm:w-80 right-0 ${
@@ -163,7 +134,7 @@ export default function CommonNotificationFloater({
           {/* HEADER */}
           <div className="px-4 py-3 border-b flex justify-between">
             <h3 className="font-semibold text-sm">
-              {t.notificationpage.title} ({displayUnreadCount})
+              {t.notificationpage.title} ({unreadCount})
             </h3>
 
             <Button
@@ -179,7 +150,7 @@ export default function CommonNotificationFloater({
 
           {/* LIST */}
           <div className="max-h-72 overflow-y-auto">
-            {notifications?.length === 0 ? (
+            {notifications.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">
                 {t.notificationpage.noNotifications}
               </p>
