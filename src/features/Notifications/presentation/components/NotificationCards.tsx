@@ -3,85 +3,81 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-import NotificationHeader from "./NotificationHeader";
-import NotificationContent from "./NotificationContent";
-
 import { Bell } from "lucide-react";
+import { toast } from "react-toastify";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 
-import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
-import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
-import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
+
+import NotificationHeader from "./NotificationHeader";
+import NotificationContent from "./NotificationContent";
 
 import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 
+import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
+import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
+import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
+
 import { getNotificationTarget } from "../utils/notificationNavigation";
-import { toast } from "react-toastify";
-
-
-import { useAuthStore } from "@/features/core/store/auth";
-import { formatNotificationForPanel } from "../utils/notificationcardshelpers";
 import { useNotificationFilters } from "../utils/notificationfilterskeylanguages";
+import { useTheme } from "@/features/context/themeContext";
 
 export default function NotificationCards() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const filters = useMemo(() => ({ page, type }), [page, type]);
- const FILTERS=useNotificationFilters();
-  const { data, isLoading, isFetching } = useNotifications(filters);
+  const filters = useMemo(() => ({ type, limit: 20 }), [type]);
 
-  const notifications = useAuthStore((state) => state.notifications.list);
-  const setNotificationsList = useAuthStore((state) => state.setNotificationsList);
-  const markNotificationRead = useAuthStore((state) => state.markNotificationRead);
+  const FILTERS = useNotificationFilters();
 
-  const { markAsRead } = useMarkNotificationRead();
-  const { markAllAsRead } = useMarkAllAsRead();
+  // ✅ INFINITE QUERY
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useNotifications(filters);
 
-  useEffect(() => {
-    if (data?.data && Array.isArray(data.data)) {
-      setNotificationsList(
-        data.data.map((n: any) => ({
-          ...formatNotificationForPanel(n),
-          id: n._id || n.id || n.messageId,
-          isRead: !!n.isRead,
-          source: "api",
-        }))
-      );
-    }
-  }, [data, setNotificationsList]);
+  // ✅ FLATTEN DATA (ONLY SOURCE OF TRUTH)
+  const notifications = useMemo(() => {
+    return data?.pages.flatMap((p) => p.data) ?? [];
+  }, [data]);
 
-  const localNotifications = useMemo(() => notifications, [notifications]);
   const unreadNotifications = useMemo(
-    () => localNotifications.filter((n) => !n.isRead),
-    [localNotifications]
+    () => notifications.filter((n: any) => !n.isRead),
+    [notifications]
   );
 
+const { mutateAsync: markAsRead } = useMarkNotificationRead();
+  const { markAllAsRead } = useMarkAllAsRead();
+
+  // =========================
+  // SELECT LOGIC
+  // =========================
   const toggleSelect = (id: string) => {
-    if (!id) return;
-    const target = localNotifications.find((n) => n.id === id);
+    const target = notifications.find((n: any) => n.id === id);
     if (!target || target.isRead) return;
+
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
   const toggleSelectAll = () => {
-    const unreadIds = localNotifications
-      .filter((n) => !n.isRead)
-      .map((n) => n.id)
-      .filter((id): id is string => typeof id === "string");
+    const unreadIds = unreadNotifications.map((n: any) => n.id);
 
     const allSelected =
-      unreadIds.length > 0 && unreadIds.every((id) => selected.includes(id));
+      unreadIds.length > 0 &&
+      unreadIds.every((id) => selected.includes(id));
 
     if (allSelected) {
       setSelected((prev) => prev.filter((id) => !unreadIds.includes(id)));
@@ -90,84 +86,97 @@ export default function NotificationCards() {
     }
   };
 
+  // =========================
+  // MARK SELECTED
+  // =========================
   const markSelectedAsRead = async () => {
     if (!selected.length) return;
-    await Promise.all(selected.map(markAsRead));
-    selected.forEach((id) => markNotificationRead(id));
+
+await Promise.all(selected.map((id) => markAsRead(id)));
     setSelected([]);
   };
 
+  // =========================
+  // MARK ALL
+  // =========================
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
-    notifications.forEach((n) => {
-      if (typeof n.id === "string") markNotificationRead(n.id);
-    });
     setSelected([]);
   };
 
+  // =========================
+  // CLICK NAVIGATION
+  // =========================
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);
+
     if (typeof url !== "string") {
       toast.error("Booking not found");
       return;
     }
-    markNotificationRead(notification.id);
+
+    markAsRead(notification.id);
     navigate(url);
   };
 
+  // =========================
+  // INFINITE SCROLL
+  // =========================
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && (data?.data?.length ?? 0) > 0) {
-          setPage((p) => p + 1);
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
         }
       },
-      { threshold: 1 }
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0,
+      }
     );
+
     if (loaderRef.current) observer.observe(loaderRef.current);
+
     return () => observer.disconnect();
-  }, [data]);
+  }, [fetchNextPage, hasNextPage]);
 
-
+  // =========================
+  // UI
+  // =========================
   return (
-    <div className="w-full">
-      {/* Page header */}
-      <div className="flex items-center gap-3 mb-5 sm:mb-6">
-        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm shadow-blue-200">
-          <Bell className="text-white w-4.5 h-4.5" />
+    <div className={`w-full ${theme === "dark" ? "bg-black" : "bg-white"}`}>
+      {/* HEADER */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+          <Bell className="text-white w-4 h-4" />
         </div>
-        <h1 className="text-[17px] sm:text-lg font-semibold text-gray-800">
+
+        <h1 className="text-lg font-semibold">
           {t.notificationpage.title}
         </h1>
+
         {unreadNotifications.length > 0 && (
-          <span className="text-[11px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
             {unreadNotifications.length}
           </span>
         )}
       </div>
 
-      {/* Card */}
-      <CommonCard className="p-0 overflow-hidden rounded-2xl border border-gray-200/80 shadow-sm">
-
-        {/* Filter bar */}
-        <div className="px-4 sm:px-5 py-3 border-b border-gray-100/80 bg-gray-50/60">
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+      <CommonCard className="p-0 overflow-hidden">
+        {/* FILTERS */}
+        <div className="px-4 py-3 border-b">
+          <div className="flex gap-2 overflow-x-auto">
             {FILTERS.map((f) => {
               const isActive = type === f.value;
+
               return (
                 <Button
                   key={f.label}
                   onClick={() => {
                     setType(f.value);
-                    setPage(1);
                   }}
                   variant={isActive ? "default" : "ghost"}
-                  className={`
-                    px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all
-                    ${isActive
-                      ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-white hover:shadow-sm"}
-                  `}
                 >
                   {f.label}
                 </Button>
@@ -176,7 +185,7 @@ export default function NotificationCards() {
           </div>
         </div>
 
-        {/* Sticky actions header */}
+        {/* ACTIONS */}
         <NotificationHeader
           toggleSelectAll={toggleSelectAll}
           selected={selected}
@@ -185,27 +194,26 @@ export default function NotificationCards() {
           markSelectedAsRead={markSelectedAsRead}
         />
 
-        {/* Scrollable list */}
-        <div className="h-[calc(100dvh-18.5rem)] sm:h-[calc(100dvh-20rem)] overflow-y-auto bg-white">
+        {/* LIST */}
+        <div className="h-[70vh] overflow-y-auto bg-white">
           {isLoading ? (
             <div className="h-64 flex items-center justify-center">
               <CommonSpinner />
             </div>
           ) : (
             <NotificationContent
-              notifications={localNotifications}
+              notifications={notifications}
               selected={selected}
               toggleSelect={toggleSelect}
               onNotificationClick={handleNotificationClick}
             />
           )}
 
-          {/* Infinite scroll sentinel */}
+          {/* SENTINEL */}
           <div ref={loaderRef} className="flex justify-center py-5">
-            {isFetching && <CommonSpinner />}
+            {isFetchingNextPage && <CommonSpinner />}
           </div>
         </div>
-
       </CommonCard>
     </div>
   );

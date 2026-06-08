@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/core/store/auth";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
-import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
+
 import type { GetNotificationsParams } from "../../domain/entities/notificationgetparams";
+import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
 
 const repo = new NotificationRepositoryImpl();
 const useCase = new GetNotificationsUseCase(repo);
@@ -16,33 +17,40 @@ export const notificationKeys = {
 export const useNotifications = (filters?: GetNotificationsParams) => {
   const setNotifications = useAuthStore((s) => s.setNotificationsList);
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: notificationKeys.list(filters),
 
-    queryFn: async () => {
+    initialPageParam: 1,
+
+    queryFn: async ({ pageParam = 1 }) => {
       const res = await useCase.execute({
-        page: filters?.page ?? 1,
-        limit: filters?.limit ?? 100,
+        page: pageParam,
+        limit: filters?.limit ?? 20,
         type: filters?.type,
         unreadOnly: filters?.unreadOnly,
       });
 
       const formatted = {
         data: res?.data ?? [],
-        pagination: res?.pagination ?? { totalItems: 0 },
+        pagination: res?.pagination ?? {
+          totalItems: 0,
+          currentPage: pageParam,
+          hasNextPage: false,
+        },
       };
 
-      // ✅ IMPORTANT: sync API → Zustand store
+      // optional zustand sync
       setNotifications(formatted.data);
 
       return formatted;
     },
 
-    staleTime: 0,
-    gcTime: 1000 * 60 * 5,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.pagination?.hasNextPage
+        ? lastPage.pagination.currentPage + 1
+        : undefined;
+    },
 
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
   });
 };

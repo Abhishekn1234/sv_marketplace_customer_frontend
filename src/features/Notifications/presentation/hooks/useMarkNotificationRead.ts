@@ -1,27 +1,58 @@
-import { useCallback, useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkNotificationReadUseCase } from "../../domain/usecases/MarkNotificationReadUseCase";
 import { toast } from "react-toastify";
-import { useAuthStore } from "@/features/core/store/auth";
 
+
+const repo = new NotificationRepositoryImpl();
+const useCase = new MarkNotificationReadUseCase(repo);
 
 export const useMarkNotificationRead = () => {
-  const repo = useMemo(() => new NotificationRepositoryImpl(), []);
-  const useCase = useMemo(() => new MarkNotificationReadUseCase(repo), [repo]);
+  const queryClient = useQueryClient();
 
-  const markAsRead = useCallback(async (notificationId: string) => {
-    try {
-      await useCase.execute(notificationId);
+  return useMutation({
+    mutationFn: (id: string) => useCase.execute(id),
 
-      // ✅ ZUSTAND UPDATE
-      useAuthStore.getState().markNotificationRead(notificationId);
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
 
-      toast.success("Notification marked as read");
-    } catch (err: any) {
-      toast.error(err?.message || "Something went wrong");
-      throw err;
-    }
-  }, [useCase]);
+      const previous = queryClient.getQueriesData({
+        queryKey: ["notifications"],
+      });
 
-  return { markAsRead };
+      queryClient.setQueriesData(
+        { queryKey: ["notifications"] },
+        (old: any) => {
+          if (!old?.pages) return old;
+
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((n: any) =>
+                n._id === id ? { ...n, isRead: true } : n
+              ),
+            })),
+          };
+        }
+      );
+
+      return { previous };
+    },
+
+    onError: (_err, _id, context) => {
+      toast.error("Failed");
+
+      if (context?.previous) {
+        queryClient.setQueriesData(
+          { queryKey: ["notifications"] },
+          context.previous
+        );
+      }
+    },
+
+    onSuccess: () => {
+      toast.success("Marked as read");
+    },
+  });
 };
