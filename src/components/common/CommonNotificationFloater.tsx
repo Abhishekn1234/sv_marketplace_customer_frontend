@@ -110,7 +110,8 @@ export default function CommonNotificationFloater({
       {/* BUTTON */}
       <Button
         onClick={() => setOpen((prev) => !prev)}
-        className="relative p-2 text-gray-400 hover:text-blue-600"
+        variant="ghost"
+        className="relative p-2  hover:text-blue-600"
       >
         <BellIcon />
 
