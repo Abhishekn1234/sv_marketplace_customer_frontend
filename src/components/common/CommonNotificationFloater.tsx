@@ -4,12 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { BellIcon } from "lucide-react";
+
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
+import { BellIcon } from "../icons/BellIcon";
+
+import clsx from "clsx";
+import { iconBase } from "./iconbase";
 
 
 
@@ -108,21 +112,21 @@ export default function CommonNotificationFloater({
   return (
     <div className="relative" ref={dropdownRef}>
       {/* BUTTON */}
-      <Button
-      size={"lg"}
-        onClick={() => setOpen((prev) => !prev)}
-        variant="ghost"
-        className="relative p-2   hover:text-blue-600"
-      >
-        <BellIcon />
+     <Button
+  onClick={() => setOpen((prev) => !prev)}
+  variant="ghost"
+  size="lg"
+  className="relative flex items-center justify-center
+            "
+>
+  <BellIcon className={clsx(iconBase)} />
 
-        {/* BADGE */}
-        {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white">
-            {unreadCount}
-          </span>
-        )}
-      </Button>
+  {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-yellow-300">
+      {unreadCount}
+    </span>
+  )}
+</Button>
 
       {/* DROPDOWN */}
       {open && (
