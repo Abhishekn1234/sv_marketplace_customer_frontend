@@ -1,7 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -22,12 +26,22 @@ const getBookings = new GetBookingsUseCase(repo);
 const createBooking = new CreateBookingUseCase(repo);
 const cancelBooking = new CancelBookingUseCase(repo);
 
+// statuses that should NEVER stay in active list
+const CANCELLED_STATUSES = [
+  "WORKER_CANCELLED",
+  "CUSTOMER_CANCELLED",
+];
+
 export const useBookings = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   // ================= FETCH BOOKINGS =================
-  const { data = [], isLoading, isError } = useQuery<Booking[]>({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery<Booking[]>({
     queryKey: bookingKeys.all,
     queryFn: async () => {
       const res = await getBookings.execute();
@@ -63,16 +77,22 @@ export const useBookings = () => {
         status: data.status || booking?.status,
       };
 
-      // 🔥 LIST CACHE (SOURCE OF TRUTH)
-      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
-        old.map((b) =>
-          String(b._id) === String(bookingId)
-            ? { ...b, ...updatedBooking }
-            : b
-        )
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) => {
+          const updatedList = old.map((b) =>
+            String(b._id) === String(bookingId)
+              ? { ...b, ...updatedBooking }
+              : b
+          );
+
+          // 🚨 IMPORTANT: remove cancelled bookings immediately
+          return updatedList.filter(
+            (b) => !CANCELLED_STATUSES.includes(b.status)
+          );
+        }
       );
 
-      // 🔥 DETAIL CACHE
       queryClient.setQueryData(
         bookingKeys.detail(bookingId),
         (old: Booking | undefined) =>
@@ -89,16 +109,16 @@ export const useBookings = () => {
     };
   }, [queryClient]);
 
-  // ================= CREATE =================
+  // ================= CREATE BOOKING =================
   const create = useMutation({
     mutationFn: (payload: BookingPayload) =>
       createBooking.execute(payload),
 
     onSuccess: (newBooking) => {
-      queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) => [
-        newBooking,
-        ...old,
-      ]);
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) => [newBooking, ...old]
+      );
 
       queryClient.setQueryData(
         bookingKeys.detail(newBooking._id),
@@ -110,31 +130,55 @@ export const useBookings = () => {
     },
   });
 
-  // ================= CANCEL =================
+  // ================= CANCEL BOOKING (FIXED) =================
   const cancel = useMutation({
     mutationFn: (req: CancelBookingRequest) =>
       cancelBooking.execute(req),
 
+    // ✅ OPTIMISTIC UPDATE (NO INVALIDATE)
+    onMutate: async (req) => {
+      await queryClient.cancelQueries({
+        queryKey: bookingKeys.all,
+      });
+
+      const previous = queryClient.getQueryData<Booking[]>(
+        bookingKeys.all
+      );
+
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) =>
+          old.map((b) =>
+            String(b._id) === String(req.bookingId)
+              ? {
+                  ...b,
+                  status: "CUSTOMER_CANCELLED",
+                }
+              : b
+          )
+      );
+
+      return { previous };
+    },
+
+    onError: (_err, _req, context: any) => {
+      // rollback if fail
+      if (context?.previous) {
+        queryClient.setQueryData(
+          bookingKeys.all,
+          context.previous
+        );
+      }
+    },
+
     onSuccess: (updated) => {
-  queryClient.setQueryData<Booking[]>(bookingKeys.all, (old = []) =>
-    old.map((b) =>
-      String(b._id) === String(updated._id)
-        ? { ...b, ...updated }
-        : b
-    )
-  );
+      queryClient.setQueryData(
+        bookingKeys.detail(updated._id),
+        updated
+      );
 
-  queryClient.setQueryData(
-    bookingKeys.detail(updated._id),
-    updated
-  );
-
-  queryClient.invalidateQueries({
-    queryKey: bookingKeys.all,
-  });
-
-  // toast.success("Booking cancelled");
-}
+      toast.success("Booking cancelled");
+    },
   });
 
   return {

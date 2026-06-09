@@ -169,9 +169,7 @@ navigate(url);
         {t.notificationpage.title}
       </h1>
 
-      <p className="text-sm text-slate-500">
-        Manage your notifications
-      </p>
+     
     </div>
   </div>
 

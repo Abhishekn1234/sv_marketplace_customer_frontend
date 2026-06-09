@@ -122,7 +122,7 @@ export default function CommonNotificationFloater({
   <BellIcon className={clsx(iconBase)} />
 
   {unreadCount > 0 && (
-    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-yellow-300">
+    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
       {unreadCount}
     </span>
   )}
