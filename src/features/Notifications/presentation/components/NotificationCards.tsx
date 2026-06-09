@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 
-
 import NotificationHeader from "./NotificationHeader";
 import NotificationContent from "./NotificationContent";
 
@@ -35,10 +34,8 @@ export default function NotificationCards() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const filters = useMemo(() => ({ type, limit: 20 }), [type]);
-
   const FILTERS = useNotificationFilters();
 
-  // ✅ INFINITE QUERY
   const {
     data,
     fetchNextPage,
@@ -47,7 +44,6 @@ export default function NotificationCards() {
     isLoading,
   } = useNotifications(filters);
 
-  // ✅ FLATTEN DATA (ONLY SOURCE OF TRUTH)
   const notifications = useMemo(() => {
     return data?.pages.flatMap((p) => p.data) ?? [];
   }, [data]);
@@ -57,12 +53,9 @@ export default function NotificationCards() {
     [notifications]
   );
 
-const { mutateAsync: markAsRead } = useMarkNotificationRead();
+  const { mutateAsync: markAsRead } = useMarkNotificationRead();
   const { markAllAsRead } = useMarkAllAsRead();
 
-  // =========================
-  // SELECT LOGIC
-  // =========================
   const toggleSelect = (id: string) => {
     const target = notifications.find((n: any) => n.id === id);
     if (!target || target.isRead) return;
@@ -86,27 +79,18 @@ const { mutateAsync: markAsRead } = useMarkNotificationRead();
     }
   };
 
-  // =========================
-  // MARK SELECTED
-  // =========================
   const markSelectedAsRead = async () => {
     if (!selected.length) return;
 
-await Promise.all(selected.map((id) => markAsRead(id)));
+    await Promise.all(selected.map((id) => markAsRead(id)));
     setSelected([]);
   };
 
-  // =========================
-  // MARK ALL
-  // =========================
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
     setSelected([]);
   };
 
-  // =========================
-  // CLICK NAVIGATION
-  // =========================
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);
 
@@ -115,18 +99,15 @@ await Promise.all(selected.map((id) => markAsRead(id)));
       return;
     }
 
-  const notificationId = notification.id || notification._id;
+    const notificationId = notification.id || notification._id;
 
-if (notificationId) {
-  markAsRead(notificationId);
-}
+    if (notificationId) {
+      markAsRead(notificationId);
+    }
 
-navigate(url);
+    navigate(url);
   };
 
-  // =========================
-  // INFINITE SCROLL
-  // =========================
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -146,79 +127,74 @@ navigate(url);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage]);
 
-  // =========================
-  // UI
-  // =========================
   return (
-<div
-  className={`min-h-screen px-3 sm:px-5 lg:px-8 py-4 sm:py-6 ${
-    theme === "dark"
-      ? "bg-zinc-950"
-      : "bg-[#f5f7fb]"
+   <div
+  className={`min-h-screen w-full ${
+    theme === "dark" ? "bg-zinc-950" : ""
   }`}
 >
       {/* HEADER */}
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
- <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
-      <Bell className="w-5 h-5 text-white" />
-    </div>
+    <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
+            <Bell className="w-5 h-5 text-white" />
+          </div>
 
-    <div>
-      <h1 className="text-2xl font-bold text-slate-900">
-        {t.notificationpage.title}
-      </h1>
-
-     
-    </div>
-  </div>
-
-  {unreadNotifications.length > 0 && (
-    <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-      {unreadNotifications.length} unread
-    </div>
-  )}
-</div>
-
-     <CommonCard
-  className="
-    p-0
-    overflow-hidden
-    rounded-3xl
-    border border-slate-200
-    shadow-xl
-    bg-white
-  "
->
-        {/* FILTERS */}
-      <div className="px-6 py-5 border-b border-slate-100 bg-slate-50">
-          <div className="flex gap-2 overflow-x-auto">
-            {FILTERS.map((f) => {
-              const isActive = type === f.value;
-
-              return (
-              <Button
-  key={f.label}
-  onClick={() => setType(f.value)}
-  className={`
-    rounded-xl
-    px-5
-    py-2.5
-    font-medium
-    transition-all
-    ${
-      isActive
-        ? "bg-blue-600 text-white shadow-md"
-        : "bg-white text-slate-600 border border-slate-200 hover:border-blue-200 hover:bg-blue-50"
-    }
-  `}
->
-  {f.label}
-</Button>
-              );
-            })}
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {t.notificationpage.title}
+            </h1>
           </div>
         </div>
+
+        {unreadNotifications.length > 0 && (
+          <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+            {unreadNotifications.length} unread
+          </div>
+        )}
+      </div>
+
+      {/* CARD CONTAINER */}
+    <CommonCard
+  type="none"
+  className="w-full max-w-full p-0 overflow-hidden rounded-3xl border-0"
+>
+        {/* FILTERS */}
+       <div className="px-3 sm:px-6 py-4">
+  <div className="flex gap-2 overflow-x-auto sm:overflow-visible sm:flex-wrap">
+    
+    {FILTERS.map((f) => {
+      const isActive = type === f.value;
+
+      return (
+        <Button
+          key={f.label}
+          onClick={() => setType(f.value)}
+          className={`
+            flex-shrink-0
+            whitespace-nowrap
+
+            rounded-xl
+            px-4 sm:px-5
+            py-2.5
+
+            text-sm font-medium
+            transition-all
+
+            ${
+              isActive
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-transparent text-slate-600 border border-slate-200 hover:border-blue-200 hover:bg-blue-50"
+            }
+          `}
+        >
+          {f.label}
+        </Button>
+      );
+    })}
+
+  </div>
+</div>
 
         {/* ACTIONS */}
         <NotificationHeader
@@ -230,13 +206,7 @@ navigate(url);
         />
 
         {/* LIST */}
-       <div
-  className="
-    h-[72vh]
-    overflow-y-auto
-    bg-[#fafbfc]
-  "
->
+        <div className="">
           {isLoading ? (
             <div className="h-64 flex items-center justify-center">
               <CommonSpinner />
