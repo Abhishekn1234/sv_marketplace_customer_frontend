@@ -1,30 +1,36 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getSocket } from "@/features/core/Websocket/socket";
 
 export function useSocketJobProgressActivities({
   bookingId,
   setLocalBooking,
 }: any) {
+  const lastEventId = useRef<string | null>(null);
+
   useEffect(() => {
     const socket = getSocket();
     if (!socket || !bookingId) return;
 
     const handler = (data: any) => {
-      console.log("📡 Socket Event:", data);
-
       const eventBookingId = String(
         data?.bookingId || data?.booking?._id
       );
 
       if (eventBookingId !== String(bookingId)) return;
 
-      const booking = data.booking || {};
-      const newActivity = data.activity;
+      // 🚫 prevent duplicate processing (same event replay)
+      const eventId =
+        data?.payload?._id ||
+        data?.activity?._id ||
+        data?.occurredAt;
 
-      const mappedStatus =
-        data.status || booking?.status;
+      if (eventId && lastEventId.current === eventId) return;
+      lastEventId.current = eventId;
+
+      const booking = data.booking || {};
+      const mappedStatus = data.status || booking?.status;
 
       setLocalBooking((prev: any) => {
         if (!prev) {
@@ -34,22 +40,18 @@ export function useSocketJobProgressActivities({
           };
         }
 
+        // ✅ IMPORTANT: trust server booking.activities fully
+        const mergedActivities =
+          booking.activities ?? prev.activities ?? [];
+
         return {
           ...prev,
+          ...booking, // snapshot wins
 
-          // ✅ only update status if changed
           status: mappedStatus ?? prev.status,
 
-          // ✅ merge booking fields safely
-          ...booking,
-
-          // ✅ CRITICAL FIX: merge activities instead of overwrite
-          activities: newActivity
-            ? [
-                ...(prev.activities || []),
-                newActivity,
-              ]
-            : prev.activities || [],
+          // 🚫 DO NOT append manually
+          activities: mergedActivities,
         };
       });
     };
