@@ -22,7 +22,7 @@ export function Toggle({
         relative inline-flex h-6 w-11 items-center
         rounded-full transition-all duration-300 ease-in-out
 
-        ${enabled ? "bg-green-500" : "bg-gray-300"}
+        ${enabled ? "bg-blue-500" : "bg-gray-300"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
 
         shadow-inner focus:outline-none
