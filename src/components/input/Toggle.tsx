@@ -1,26 +1,43 @@
 import Button from "./Button";
 
-
 interface ToggleProps {
   enabled: boolean;
   setEnabled: (v: boolean) => void;
   className?: string;
+  disabled?: boolean;
 }
 
-export function Toggle({ enabled, setEnabled, className }: ToggleProps) {
+export function Toggle({
+  enabled,
+  setEnabled,
+  className,
+  disabled = false,
+}: ToggleProps) {
   return (
     <Button
       type="button"
-      onClick={() => setEnabled(!enabled)}
-      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-        enabled ? 'bg-blue-600' : 'bg-gray-200'
-      } ${className}`}
+      disabled={disabled}
+      onClick={() => !disabled && setEnabled(!enabled)}
+      className={`
+        relative inline-flex h-6 w-11 items-center
+        rounded-full transition-all duration-300 ease-in-out
+
+        ${enabled ? "bg-green-500" : "bg-gray-300"}
+        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+
+        shadow-inner focus:outline-none
+        ${className}
+      `}
     >
+      {/* Knob */}
       <span
-        aria-hidden="true"
-        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-          enabled ? 'translate-x-5' : 'translate-x-0'
-        }`}
+        className={`
+          absolute top-0.5 left-0.5
+          h-5 w-5 rounded-full bg-white
+          shadow-md transition-transform duration-300 ease-in-out
+
+          ${enabled ? "translate-x-5" : "translate-x-0"}
+        `}
       />
     </Button>
   );

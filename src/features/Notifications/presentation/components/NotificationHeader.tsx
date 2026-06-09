@@ -16,71 +16,137 @@ export default function NotificationHeader({
   const isSelectAllMode = allSelected;
 
   return (
-    <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-md px-4 sm:px-5 py-3.5 border-b border-gray-100/80">
-      <div className="flex justify-between items-center gap-3">
+ <div
+  className="
+    sticky
+    top-0
+    z-20
+    bg-white/95
+    backdrop-blur-md
+    border-b
+    border-slate-100
+    px-4
+    sm:px-6
+    py-3
+    sm:py-4
+  "
+>
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    
+    {/* SELECT ALL */}
+    <Button
+      onClick={toggleSelectAll}
+      variant="ghost"
+      disabled={total === 0}
+      className={`
+        w-fit
+        p-0
+        h-auto
+        flex items-center gap-2
+        text-sm font-semibold
+        transition-colors
 
-        {/* SELECT ALL */}
-        <Button
-          onClick={toggleSelectAll}
-          variant="ghost"
-          disabled={total === 0}
-          className={`
-            flex items-center gap-2 text-[13px] font-semibold p-0 h-auto transition-colors
-            ${total === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-500 hover:text-blue-600"}
-          `}
+        ${
+          total === 0
+            ? "text-slate-300 cursor-not-allowed"
+            : "text-slate-600 hover:text-blue-600"
+        }
+      `}
+    >
+      {allSelected ? (
+        <CheckSquare className="w-5 h-5 text-blue-600" />
+      ) : (
+        <Square className="w-5 h-5 text-slate-300" />
+      )}
+
+      <span className="whitespace-nowrap">
+        {allSelected
+          ? t.notificationpage.unselect
+          : t.notificationpage.selectAll}
+      </span>
+
+      {total > 0 && (
+        <span
+          className="
+            min-w-[22px]
+            h-[22px]
+            px-1.5
+            rounded-full
+            flex items-center justify-center
+            bg-slate-100
+            text-slate-600
+            text-xs
+            font-bold
+          "
         >
-          {allSelected ? (
-            <CheckSquare className="w-[18px] h-[18px] text-blue-600" />
-          ) : (
-            <Square className="w-[18px] h-[18px] text-gray-300" />
-          )}
-          <span>
-            {allSelected
-              ? t.notificationpage.unselect
-              : t.notificationpage.selectAll}
-          </span>
-          {total > 0 && (
-            <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
-              {total}
-            </span>
-          )}
+          {total}
+        </span>
+      )}
+    </Button>
+
+    {/* ACTIONS */}
+    <div className="flex flex-wrap gap-2 sm:justify-end">
+      {isSelectAllMode && (
+        <Button
+          onClick={markAllAsRead}
+          className="
+            h-10
+            px-4
+            rounded-xl
+            bg-emerald-500
+            hover:bg-emerald-600
+            text-white
+            text-sm
+            font-semibold
+            shadow-sm
+            whitespace-nowrap
+            flex items-center gap-2
+          "
+        >
+          <BellRing className="w-4 h-4" />
+          <span>{t.notificationpage.markAllRead}</span>
         </Button>
+      )}
 
-        {/* ACTIONS */}
-        <div className="flex gap-2">
-          {isSelectAllMode && (
-            <Button
-              onClick={markAllAsRead}
-              className="
-                flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold
-                bg-emerald-500 hover:bg-emerald-600 text-white
-                transition-all active:scale-95 shadow-sm shadow-emerald-200
-              "
-              leftIcon={<BellRing className="w-3.5 h-3.5" />}
-            >
-              {t.notificationpage.markAllRead}
-            </Button>
-          )}
+      {hasSelection && !isSelectAllMode && (
+        <Button
+          onClick={markSelectedAsRead}
+          className="
+            h-10
+            px-4
+            rounded-xl
+            bg-blue-600
+            hover:bg-blue-700
+            text-white
+            text-sm
+            font-semibold
+            shadow-sm
+            whitespace-nowrap
+            flex items-center gap-2
+          "
+        >
+          <BellRing className="w-4 h-4" />
 
-          {hasSelection && !isSelectAllMode && (
-            <Button
-              onClick={markSelectedAsRead}
-              className="
-                flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold
-                bg-blue-600 hover:bg-blue-700 text-white
-                transition-all active:scale-95 shadow-sm shadow-blue-200
-              "
-              leftIcon={<BellRing className="w-3.5 h-3.5" />}
-            >
-              {t.notificationpage.read}
-              <span className="bg-blue-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">
-                {selected.length}
-              </span>
-            </Button>
-          )}
-        </div>
+          <span>{t.notificationpage.read}</span>
 
-      </div>
+          <span
+            className="
+              min-w-[20px]
+              h-[20px]
+              rounded-full
+              bg-white/20
+              text-white
+              text-[11px]
+              font-bold
+              flex items-center justify-center
+            "
+          >
+            {selected.length}
+          </span>
+        </Button>
+      )}
     </div>
+  </div>
+</div>
   );
 }

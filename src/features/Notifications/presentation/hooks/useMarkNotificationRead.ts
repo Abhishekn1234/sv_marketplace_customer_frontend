@@ -3,7 +3,6 @@ import { NotificationRepositoryImpl } from "../../data/repositories/Notification
 import { MarkNotificationReadUseCase } from "../../domain/usecases/MarkNotificationReadUseCase";
 import { toast } from "react-toastify";
 
-
 const repo = new NotificationRepositoryImpl();
 const useCase = new MarkNotificationReadUseCase(repo);
 
@@ -14,9 +13,11 @@ export const useMarkNotificationRead = () => {
     mutationFn: (id: string) => useCase.execute(id),
 
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      await queryClient.cancelQueries({
+        queryKey: ["notifications"],
+      });
 
-      const previous = queryClient.getQueriesData({
+      const previousQueries = queryClient.getQueriesData({
         queryKey: ["notifications"],
       });
 
@@ -30,29 +31,36 @@ export const useMarkNotificationRead = () => {
             pages: old.pages.map((page: any) => ({
               ...page,
               data: page.data.map((n: any) =>
-                n._id === id ? { ...n, isRead: true } : n
+                (n._id === id || n.id === id)
+                  ? { ...n, isRead: true }
+                  : n
               ),
             })),
           };
         }
       );
 
-      return { previous };
+      return { previousQueries };
     },
 
     onError: (_err, _id, context) => {
       toast.error("Failed");
 
-      if (context?.previous) {
-        queryClient.setQueriesData(
-          { queryKey: ["notifications"] },
-          context.previous
-        );
-      }
+      context?.previousQueries?.forEach(
+        ([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        }
+      );
     },
 
     onSuccess: () => {
       toast.success("Marked as read");
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
     },
   });
 };

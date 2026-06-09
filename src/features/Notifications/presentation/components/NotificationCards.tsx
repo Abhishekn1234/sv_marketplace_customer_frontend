@@ -115,8 +115,13 @@ await Promise.all(selected.map((id) => markAsRead(id)));
       return;
     }
 
-    markAsRead(notification.id);
-    navigate(url);
+  const notificationId = notification.id || notification._id;
+
+if (notificationId) {
+  markAsRead(notificationId);
+}
+
+navigate(url);
   };
 
   // =========================
@@ -145,41 +150,73 @@ await Promise.all(selected.map((id) => markAsRead(id)));
   // UI
   // =========================
   return (
-    <div className={`w-full ${theme === "dark" ? "bg-black" : "bg-white"}`}>
+<div
+  className={`min-h-screen px-3 sm:px-5 lg:px-8 py-4 sm:py-6 ${
+    theme === "dark"
+      ? "bg-zinc-950"
+      : "bg-[#f5f7fb]"
+  }`}
+>
       {/* HEADER */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-          <Bell className="text-white w-4 h-4" />
-        </div>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+ <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
+      <Bell className="w-5 h-5 text-white" />
+    </div>
 
-        <h1 className="text-lg font-semibold">
-          {t.notificationpage.title}
-        </h1>
+    <div>
+      <h1 className="text-2xl font-bold text-slate-900">
+        {t.notificationpage.title}
+      </h1>
 
-        {unreadNotifications.length > 0 && (
-          <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-            {unreadNotifications.length}
-          </span>
-        )}
-      </div>
+      <p className="text-sm text-slate-500">
+        Manage your notifications
+      </p>
+    </div>
+  </div>
 
-      <CommonCard className="p-0 overflow-hidden">
+  {unreadNotifications.length > 0 && (
+    <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+      {unreadNotifications.length} unread
+    </div>
+  )}
+</div>
+
+     <CommonCard
+  className="
+    p-0
+    overflow-hidden
+    rounded-3xl
+    border border-slate-200
+    shadow-xl
+    bg-white
+  "
+>
         {/* FILTERS */}
-        <div className="px-4 py-3 border-b">
+      <div className="px-6 py-5 border-b border-slate-100 bg-slate-50">
           <div className="flex gap-2 overflow-x-auto">
             {FILTERS.map((f) => {
               const isActive = type === f.value;
 
               return (
-                <Button
-                  key={f.label}
-                  onClick={() => {
-                    setType(f.value);
-                  }}
-                  variant={isActive ? "default" : "ghost"}
-                >
-                  {f.label}
-                </Button>
+              <Button
+  key={f.label}
+  onClick={() => setType(f.value)}
+  className={`
+    rounded-xl
+    px-5
+    py-2.5
+    font-medium
+    transition-all
+    ${
+      isActive
+        ? "bg-blue-600 text-white shadow-md"
+        : "bg-white text-slate-600 border border-slate-200 hover:border-blue-200 hover:bg-blue-50"
+    }
+  `}
+>
+  {f.label}
+</Button>
               );
             })}
           </div>
@@ -195,7 +232,13 @@ await Promise.all(selected.map((id) => markAsRead(id)));
         />
 
         {/* LIST */}
-        <div className="h-[70vh] overflow-y-auto bg-white">
+       <div
+  className="
+    h-[72vh]
+    overflow-y-auto
+    bg-[#fafbfc]
+  "
+>
           {isLoading ? (
             <div className="h-64 flex items-center justify-center">
               <CommonSpinner />

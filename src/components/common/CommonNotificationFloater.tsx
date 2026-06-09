@@ -109,15 +109,16 @@ export default function CommonNotificationFloater({
     <div className="relative" ref={dropdownRef}>
       {/* BUTTON */}
       <Button
+      size={"lg"}
         onClick={() => setOpen((prev) => !prev)}
         variant="ghost"
-        className="relative p-2  hover:text-blue-600"
+        className="relative p-2   hover:text-blue-600"
       >
         <BellIcon />
 
         {/* BADGE */}
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white">
+          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white">
             {unreadCount}
           </span>
         )}
@@ -143,7 +144,8 @@ export default function CommonNotificationFloater({
                 navigate("/notifications");
                 setOpen(false);
               }}
-              className="text-xs text-blue-600"
+              variant="ghost"
+              className="text-xs"
             >
               {t.navbar["Show All"]}
             </Button>
@@ -182,7 +184,8 @@ export default function CommonNotificationFloater({
                         e.stopPropagation();
                         handleNotificationClick(item);
                       }}
-                      className="text-xs text-blue-600"
+                      variant="ghost"
+                      className="text-xs"
                     >
                       Open
                     </Button>

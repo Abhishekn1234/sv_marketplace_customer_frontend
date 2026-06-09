@@ -3,24 +3,6 @@
 import { useEffect } from "react";
 import { getSocket } from "@/features/core/Websocket/socket";
 
-// function mapEventToActivityType(eventName: string) {
-//   const map: Record<string, string> = {
-//     "booking.created": "CREATED",
-//     "booking:update": "UPDATED",
-//     "booking.worker.accepted": "WORKER_ACCEPTED",
-//     "booking.work-start-otp.generated": "WORK_START_OTP_GENERATED",
-//     "booking.work.started": "WORK_STARTED",
-//     "booking.work.completed-by-worker": "WORK_COMPLETED_BY_WORKER",
-//     "booking.completion-otp.generated": "COMPLETION_OTP_GENERATED",
-//     "booking.completion.confirmed": "COMPLETED",
-//     "booking.invoice.generated": "INVOICE_GENERATED",
-//     "booking.cancelled.worker": "WORKER_CANCELLED",
-//     "booking.customer.cancelled": "CUSTOMER_CANCELLED",
-//   };
-
-//   return map[eventName] || eventName;
-// }
-
 export function useSocketJobProgressActivities({
   bookingId,
   setLocalBooking,
@@ -38,32 +20,40 @@ export function useSocketJobProgressActivities({
 
       if (eventBookingId !== String(bookingId)) return;
 
-      const booking = data.booking;
+      const booking = data.booking || {};
+      const newActivity = data.activity;
 
       const mappedStatus =
         data.status || booking?.status;
 
-      const updatedBooking = {
-        ...booking,
-        status: mappedStatus,
-        activities:
-          booking?.activities || [],
-      };
-
-      // 🔥 ALWAYS FULL REPLACE (NO PATCH LOGIC)
       setLocalBooking((prev: any) => {
-        if (!prev) return updatedBooking;
+        if (!prev) {
+          return {
+            ...booking,
+            status: mappedStatus,
+          };
+        }
 
         return {
           ...prev,
-          ...updatedBooking,
-          status: updatedBooking.status,
-          activities: updatedBooking.activities,
+
+          // ✅ only update status if changed
+          status: mappedStatus ?? prev.status,
+
+          // ✅ merge booking fields safely
+          ...booking,
+
+          // ✅ CRITICAL FIX: merge activities instead of overwrite
+          activities: newActivity
+            ? [
+                ...(prev.activities || []),
+                newActivity,
+              ]
+            : prev.activities || [],
         };
       });
     };
 
-    // ⚡ ONLY ONE SOURCE EVENT (IMPORTANT FIX)
     socket.on("bookingUpdated", handler);
 
     return () => {

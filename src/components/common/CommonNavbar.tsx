@@ -247,18 +247,38 @@ const stepCompletion = {
           {/* DROPDOWN */}
           {showDropdown && (
             <div
-              className={`absolute top-full mt-2 w-52 sm:w-56 bg-white border border-gray-300 rounded-xl shadow-2xl z-[9999] ${
-                isBookingPage || serviceRatingPage
-                  ? "left-1/2 -translate-x-1/2"
-                  : "left-0"
-              }`}
-            >
-              <Button
-                onClick={handleUseCurrentLocation}
-                className="w-full text-left px-4 py-3 hover:bg-blue-50 text-sm font-medium text-gray-700 rounded-lg"
-              >
-                {t.navbar["Use current location"]}
-              </Button>
+  className={`
+    absolute top-full mt-2
+    w-[90vw] sm:w-72 md:w-80
+    max-w-[220px]
+    bg-white border border-gray-200
+    rounded-xl shadow-xl
+    z-[9999]
+
+    overflow-hidden
+    animate-fadeIn
+
+    ${isBookingPage || serviceRatingPage
+      ? "left-1/2 -translate-x-1/2"
+      : "left-0 sm:left-0"
+    }
+
+    sm:left-0
+  `}
+>
+             <Button
+  onClick={handleUseCurrentLocation}
+  className="
+    w-full flex items-center
+    px-4 py-3
+    text-sm font-medium text-gray-700
+    hover:bg-blue-50 active:bg-blue-100
+    transition-colors
+    rounded-none
+  "
+>
+  {t.navbar["Use current location"]}
+</Button>
             </div>
           )}
         </div>

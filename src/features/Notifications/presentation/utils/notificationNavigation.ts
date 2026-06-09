@@ -30,6 +30,7 @@ export function getNotificationTarget(
     notification.payload ||
     notification.metadata ||
     {};
+    console.log(data);
 
   const type = (notification.type || "").toString().toUpperCase();
 
@@ -56,6 +57,9 @@ export function getNotificationTarget(
   if (type === "CHAT_MESSAGE" || type === "NEW_MESSAGE") {
     if (bookingId) {
       return `/message/${bookingId}`;
+    }
+    if(data.status==="PAID"){
+      return "/bookings";
     }
 
     // fallback safe route

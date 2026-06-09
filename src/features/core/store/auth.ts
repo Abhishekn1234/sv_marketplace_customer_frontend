@@ -33,6 +33,10 @@ export interface AuthState {
   last_location?: LastLocations;
   current_location: LastLocations;
   language: string;
+  prev_location: {
+  lat: number;
+  lng: number;
+} | null;
 
   mobileForVerification?: string;
   setMobileForVerification: (phone: string) => void;
@@ -65,6 +69,8 @@ export interface AuthState {
   setLanguage: (lang: string) => void;
 
   updateUserLocation: (location: LastLocations) => void;
+  setPrevLocation: (loc: { lat: number; lng: number }) => void;
+
 
   addAddress: (
     type: "home" | "office" | "inputValue" | "other",
@@ -89,6 +95,7 @@ const initialState = {
   isLoggedIn: false,
   theme: "light" as Theme,
   language: "en",
+  prev_location: null,
   current_location: { addresses: [] },
   last_location: undefined,
 
@@ -114,6 +121,10 @@ export const useAuthStore = create<AuthState>()(
           initializeSocket(accessToken);
         }
       },
+      setPrevLocation: (loc: { lat: number; lng: number }) =>
+  set({
+    prev_location: loc,
+  }),
 
       setUser: (user) => set({ user, isLoggedIn: true }),
 
@@ -268,17 +279,20 @@ export const useAuthStore = create<AuthState>()(
           },
         })),
 
-   pushNotification: (notification: NotificationItem) =>
-  set((state) => ({
-    notifications: {
-      ...state.notifications,
-      list: [notification, ...(state.notifications.list || [])],
-      unreadCount: [...state.notifications.list, notification].filter(
-        (n) => !n.isRead
-      ).length,
-    },
-  })),
+  pushNotification: (notification: NotificationItem) =>
+  set((state) => {
+    const currentList = state.notifications?.list ?? [];
 
+    return {
+      notifications: {
+        ...state.notifications,
+        list: [notification, ...currentList],
+        unreadCount: [notification, ...currentList].filter(
+          (n) => !n.isRead
+        ).length,
+      },
+    };
+  }),
      markNotificationRead: (id: string) =>
   set((state) => {
     const updated = state.notifications.list.map((n) =>

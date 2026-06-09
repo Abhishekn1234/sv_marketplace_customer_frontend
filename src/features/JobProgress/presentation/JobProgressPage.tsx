@@ -14,65 +14,80 @@ export default function JobProgressPage() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
 
-  // ✅ Use optimized hook for instant UI without refetching
-  const {
-    booking: baseBooking,
-    loading: isLoading,
-  } = useBookingDetail(bookingId);
+  // ✅ API base data
+  const { booking: baseBooking, loading: isLoading } =
+    useBookingDetail(bookingId);
 
+  // ✅ local state for socket merging
   const [localBooking, setLocalBooking] = useState<any>(null);
 
   const booking = localBooking ?? baseBooking;
 
-  // ✅ Redirect if not found
-  useEffect(() => {
-    if (!isLoading && !booking) {
-      navigate("/"); // change route
-    }
-  }, [isLoading, booking, navigate]);
-
-  // sync API → local (socket merge) - only merge activities
-  useEffect(() => {
-    if (baseBooking) {
-      setLocalBooking((prev: any) => {
-        if (!prev) return baseBooking;
-
-        return {
-          ...baseBooking,
-          activities:
-            prev.activities?.length > 0
-              ? prev.activities
-              : baseBooking.activities,
-        };
-      });
-    }
-  }, [baseBooking]);
-
-  // socket - for real-time activity updates
+  // =========================
+  // SOCKET (REAL TIME)
+  // =========================
   useSocketJobProgressActivities({
     bookingId,
     setLocalBooking,
   });
 
-  // ✅ Loader (better UX)
+  // =========================
+  // SYNC API → LOCAL (SAFE MERGE)
+  // IMPORTANT: NEVER overwrite socket updates
+  // =========================
+  useEffect(() => {
+    if (!baseBooking) return;
+
+    setLocalBooking((prev: any) => {
+      if (!prev) return baseBooking;
+
+      return {
+        ...prev, // 👈 keep socket updates
+        ...baseBooking, // 👈 update API fields safely
+        activities:
+          prev.activities?.length > 0
+            ? prev.activities
+            : baseBooking.activities,
+      };
+    });
+  }, [baseBooking]);
+
+  // =========================
+  // REDIRECT IF NOT FOUND
+  // =========================
+  useEffect(() => {
+    if (!isLoading && baseBooking === null) {
+      navigate("/bookings", { replace: true });
+    }
+  }, [isLoading, baseBooking, navigate]);
+
+  // =========================
+  // LOADING UI
+  // =========================
   if (isLoading) {
     return (
       <PageContainer>
         <div className="flex justify-center items-center py-20">
-          <CommonSpinner/>
+          <CommonSpinner />
         </div>
       </PageContainer>
     );
   }
 
-  // ✅ Prevent flicker before redirect
+  // prevent flicker before redirect
   if (!booking) return null;
 
-return (
+  // =========================
+  // UI
+  // =========================
+  return (
     <PageContainer>
       <JobProgressHeader />
-      {/* Pass false to prevent reloading of content after initial load */}
-      <JobProgressContents booking={booking} loading={false} />
+
+      <JobProgressContents
+        booking={booking}
+        loading={false}
+      />
     </PageContainer>
   );
 }

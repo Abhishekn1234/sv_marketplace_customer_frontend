@@ -83,7 +83,7 @@ export default function PrefeneceandNotifications() {
             </div>
 
             {/* Toggle */}
-            <div className="self-end sm:self-auto">
+            <div className="">
               <Toggle
                 enabled={item.state}
                 setEnabled={item.setState}
