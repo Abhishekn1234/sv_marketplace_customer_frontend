@@ -8,7 +8,7 @@ import { getCurrentLocation} from "@/features/utils/reverse";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
-import { Input, Textarea } from "@/components/input";
+import { Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
@@ -28,7 +28,8 @@ const selectedService = services?.find(
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [duration, setDuration] = useState(1);
-  const[numberOfWorkers,setNumberOfWorkers]=useState(1);
+  const[numberOfWorkers]=useState(1);
+  // setNumberOfWorkers
   const [notes, setNotes] = useState("");
  const [loading, setLoading] = useState(false);
  const allDates = useMemo(() => {
@@ -289,14 +290,14 @@ const selectedService = services?.find(
       {t.bookingdetailpage["number of Workers needed"]}
     </h2>
 
-    <div className="">
+    {/* <div className="">
       <Input 
         type="number" 
         min={1}
         value={numberOfWorkers}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumberOfWorkers(Number(e.target.value))}
       />
-    </div>
+    </div> */}
   </div>
   {/* Notes */}
   <div className="mt-6">
