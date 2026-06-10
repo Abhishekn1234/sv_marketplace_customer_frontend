@@ -104,7 +104,7 @@ export function buildJobTrackingSteps({
         step.key === "PAYMENT_PENDING" &&
         localBooking.status === "PAYMENT_PENDING",
 
-      showServiceRatingButton: localBooking.status === "PAID",
+      showServiceRatingButton:  step.key==="PAID" && localBooking.status === "PAID",
     };
   });
 }
