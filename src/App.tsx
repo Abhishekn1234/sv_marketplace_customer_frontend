@@ -58,11 +58,29 @@ function App() {
   // =========================
   // SOCKET INIT
   // =========================
-  navigator.serviceWorker.getRegistrations().then((regs) => {
-  regs.forEach((r) => {
-    console.log(r.scope);
-  });
-});
+ useEffect(() => {
+  navigator.serviceWorker.getRegistrations().then(regs =>
+  console.log(
+    regs.map(r => ({
+      scope: r.scope,
+      script: r.active?.scriptURL
+    }))
+  )
+);
+}, []);
+(async () => {
+  const regs = await navigator.serviceWorker.getRegistrations();
+
+  for (const reg of regs) {
+    console.log("Removing:", reg.scope);
+    await reg.unregister();
+  }
+
+  const keys = await caches.keys();
+  await Promise.all(keys.map(k => caches.delete(k)));
+
+  console.log("DONE");
+})();
   useEffect(() => {
     if (isLoggedIn && accessToken) {
       initializeSocket(accessToken);
