@@ -286,9 +286,9 @@ const selectedService = services?.find(
     </div>
   </div>
   <div className="mt-6">
-    <h2 className="mb-4 text-sm font-bold text-gray-900">
+    {/* <h2 className="mb-4 text-sm font-bold text-gray-900">
       {t.bookingdetailpage["number of Workers needed"]}
-    </h2>
+    </h2> */}
 
     {/* <div className="">
       <Input 
