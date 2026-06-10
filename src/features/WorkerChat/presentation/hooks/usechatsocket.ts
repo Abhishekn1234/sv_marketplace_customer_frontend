@@ -61,7 +61,7 @@ const isUserInSameChat =
     });
 
    socket.on("booking.chat-message", (payload) => {
-  console.log("booking.chat-message", payload);
+  // console.log("booking.chat-message", payload);
 
   const rawMessage =
     payload?.chatMessage ??
