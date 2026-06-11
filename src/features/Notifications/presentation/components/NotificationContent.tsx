@@ -43,7 +43,10 @@ export default function NotificationContent({
   return (
     <div className="flex flex-col px-1 sm:px-2 py-2 sm:py-3">
       {notifications.map((n: any,index:number) => {
-        const isSelected = selected.includes(n.id);
+        // console.log(notifications);
+       const notificationId = n._id || n.id;
+     
+const isSelected = selected.includes(notificationId);
         const isUnread = !n.isRead;
 
         const createdAt = new Date(n.createdAt);
@@ -104,7 +107,7 @@ export default function NotificationContent({
                 onClick={(e) => {
                   e.stopPropagation();
                   if (n.isRead) return;
-                  toggleSelect(n.id);
+                 toggleSelect(notificationId);
                 }}
                 className="p-0 h-fit hover:bg-transparent shrink-0 mt-1"
               >

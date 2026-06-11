@@ -62,50 +62,67 @@ export default function NotificationHeader({
         </Button>
 
         {/* ACTIONS */}
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+  {isSelectAllMode && (
+    <Button
+      onClick={markAllAsRead}
+      className="
+        h-11 sm:h-10
+        min-w-[140px]
+        px-4
+        rounded-xl
+        bg-emerald-500 hover:bg-emerald-600
+        text-white text-sm font-semibold
+        shadow-sm
+        inline-flex items-center justify-center
+        gap-2 whitespace-nowrap
+      "
+    >
+      <BellRing className="w-4 h-4 shrink-0" />
+      <span>{t.notificationpage.markAllRead}</span>
+    </Button>
+  )}
 
-          {isSelectAllMode && (
-            <Button
-              onClick={markAllAsRead}
-              className="
-                w-full sm:w-auto
-                h-10 px-4 rounded-xl
-                bg-emerald-500 hover:bg-emerald-600
-                text-white text-sm font-semibold
-                shadow-sm
-                flex items-center justify-center gap-2
-              "
-            >
-              <BellRing className="w-4 h-4 shrink-0" />
-              <span>{t.notificationpage.markAllRead}</span>
-            </Button>
-          )}
+  {hasSelection && !isSelectAllMode && (
+   <Button
+  onClick={markSelectedAsRead}
+  className="
+    relative
+    h-11 sm:h-10
+    min-w-[120px]
+    px-4
+    rounded-xl
+    bg-blue-600 hover:bg-blue-700
+    text-white text-sm font-semibold
+    shadow-sm
+    inline-flex items-center justify-center
+    gap-2
+  "
+>
+  <BellRing className="w-4 h-4 shrink-0" />
 
-          {hasSelection && !isSelectAllMode && (
-            <Button
-              onClick={markSelectedAsRead}
-              className="
-                w-full sm:w-auto
-                h-10 px-4 rounded-xl
-                bg-blue-600 hover:bg-blue-700
-                text-white text-sm font-semibold
-                shadow-sm
-                flex items-center justify-center gap-2
-              "
-            >
-              <BellRing className="w-4 h-4 shrink-0" />
+  <span>{t.notificationpage.read}</span>
 
-              <span>
-                {t.notificationpage.read}
-              </span>
-
-              <span className="min-w-[20px] h-[20px] rounded-full bg-white/20 text-white text-[11px] font-bold flex items-center justify-center">
-                {selected.length}
-              </span>
-            </Button>
-          )}
-
-        </div>
+  <span
+    className="
+      absolute
+      -top-2
+      -right-2
+      w-5 h-5
+      rounded-full
+      bg-white
+      text-blue-600
+      text-[11px]
+      font-bold
+      flex items-center justify-center
+      shadow
+    "
+  >
+    {selected.length}
+  </span>
+</Button>
+  )}
+</div>
       </div>
     </div>
   );

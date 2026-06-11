@@ -56,29 +56,36 @@ export default function NotificationCards() {
   const { mutateAsync: markAsRead } = useMarkNotificationRead();
   const { markAllAsRead } = useMarkAllAsRead();
 
-  const toggleSelect = (id: string) => {
-    const target = notifications.find((n: any) => n.id === id);
-    if (!target || target.isRead) return;
+ const toggleSelect = (id: string) => {
+  const target = notifications.find(
+    (n: any) => (n._id || n.id) === id
+  );
 
+  if (!target || target.isRead) return;
+
+  setSelected((prev) =>
+    prev.includes(id)
+      ? prev.filter((x) => x !== id)
+      : [...prev, id]
+  );
+};
+ const toggleSelectAll = () => {
+  const unreadIds = unreadNotifications.map(
+    (n: any) => n._id || n.id
+  );
+
+  const allSelected =
+    unreadIds.length > 0 &&
+    unreadIds.every((id) => selected.includes(id));
+
+  if (allSelected) {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.filter((id) => !unreadIds.includes(id))
     );
-  };
-
-  const toggleSelectAll = () => {
-    const unreadIds = unreadNotifications.map((n: any) => n.id);
-
-    const allSelected =
-      unreadIds.length > 0 &&
-      unreadIds.every((id) => selected.includes(id));
-
-    if (allSelected) {
-      setSelected((prev) => prev.filter((id) => !unreadIds.includes(id)));
-    } else {
-      setSelected(unreadIds);
-    }
-  };
-
+  } else {
+    setSelected(unreadIds);
+  }
+};
   const markSelectedAsRead = async () => {
     if (!selected.length) return;
 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 
 
 import { useLanguage } from "@/features/context/LanguageContext";
+
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
@@ -48,45 +49,32 @@ export default function CommonNotificationFloater({
   // -----------------------------
   const { data } = useNotifications(notificationFilters);
 
-  const notifications = data?.pages.flatMap((p) => p.data)?? [];
+ const notifications =
+  data?.pages.flatMap((p) => p.data) ?? [];
 
-  // -----------------------------
-  // MARK AS READ API
-  // -----------------------------
-  const { mutateAsync: markAsRead } = useMarkNotificationRead();
-
-  // -----------------------------
-  // UNREAD COUNT (FIXED)
-  // -----------------------------
-  const unreadCount = useMemo(() => {
-    return notifications.filter((n: any) => !n.isRead).length;
-  }, [notifications]);
+const unreadCount = notifications.filter(
+  (n) => !n.isRead
+).length;
+const {mutateAsync:markAsRead}=useMarkNotificationRead();
 
   // -----------------------------
   // CLICK HANDLER (OPTIMISTIC SAFE)
   // -----------------------------
   const handleNotificationClick = async (item: any) => {
-    const target = getNotificationTarget(item);
-    if (!target) return;
+  const target = getNotificationTarget(item);
+  if (!target) return;
 
-    const id = item.id || item._id;
+  const id = item._id || item.id;
 
-    try {
-      // 1. optimistic UI update
-      item.isRead = true;
+  try {
+    await markAsRead(id); // React Query updates cache + unread count
 
-      // 2. API sync
-      await markAsRead(id);
-
-      // 3. navigate
-      navigate(target);
-
-      // 4. close dropdown
-      setOpen(false);
-    } catch (err) {
-      console.error("Failed to mark notification as read", err);
-    }
-  };
+    navigate(target);
+    setOpen(false);
+  } catch (err) {
+    console.error("Failed to mark notification as read", err);
+  }
+};
 
   // -----------------------------
   // OUTSIDE CLICK CLOSE

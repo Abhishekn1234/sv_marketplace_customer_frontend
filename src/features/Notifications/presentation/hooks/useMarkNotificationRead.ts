@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkNotificationReadUseCase } from "../../domain/usecases/MarkNotificationReadUseCase";
-import { toast } from "react-toastify";
 
 const repo = new NotificationRepositoryImpl();
 const useCase = new MarkNotificationReadUseCase(repo);
@@ -21,6 +20,10 @@ export const useMarkNotificationRead = () => {
         queryKey: ["notifications"],
       });
 
+      const previousUnreadCount =
+        queryClient.getQueryData<number>(["unread-count"]);
+
+      // Update notification cache
       queryClient.setQueriesData(
         { queryKey: ["notifications"] },
         (old: any) => {
@@ -31,7 +34,7 @@ export const useMarkNotificationRead = () => {
             pages: old.pages.map((page: any) => ({
               ...page,
               data: page.data.map((n: any) =>
-                (n._id === id || n.id === id)
+                n._id === id || n.id === id
                   ? { ...n, isRead: true }
                   : n
               ),
@@ -40,27 +43,27 @@ export const useMarkNotificationRead = () => {
         }
       );
 
-      return { previousQueries };
+      // Update badge instantly
+      queryClient.setQueryData(
+        ["unread-count"],
+        (old: number = 0) => Math.max(0, old - 1)
+      );
+
+      return {
+        previousQueries,
+        previousUnreadCount,
+      };
     },
 
     onError: (_err, _id, context) => {
-      toast.error("Failed");
-
-      context?.previousQueries?.forEach(
-        ([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        }
-      );
-    },
-
-    onSuccess: () => {
-      toast.success("Marked as read");
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notifications"],
+      context?.previousQueries?.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
       });
+
+      queryClient.setQueryData(
+        ["unread-count"],
+        context?.previousUnreadCount
+      );
     },
   });
 };

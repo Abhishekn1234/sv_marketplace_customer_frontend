@@ -4,12 +4,15 @@ import { toast } from "react-toastify";
 
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkAllNotificationsReadUseCase } from "../../domain/usecases/MarkAllNotificationsReadUseCase";
-// import { useAuthStore } from "@/features/core/store/auth";
 
 export const useMarkAllAsRead = () => {
   const queryClient = useQueryClient();
 
-  const repo = useMemo(() => new NotificationRepositoryImpl(), []);
+  const repo = useMemo(
+    () => new NotificationRepositoryImpl(),
+    []
+  );
+
   const useCase = useMemo(
     () => new MarkAllNotificationsReadUseCase(repo),
     [repo]
@@ -19,13 +22,11 @@ export const useMarkAllAsRead = () => {
     try {
       await useCase.execute();
 
-      // =========================
-      // 1. UPDATE REACT QUERY (IMPORTANT)
-      // =========================
+      // Update notification list
       queryClient.setQueriesData(
         { queryKey: ["notifications"] },
         (old: any) => {
-          if (!old) return old;
+          if (!old?.pages) return old;
 
           return {
             ...old,
@@ -40,14 +41,11 @@ export const useMarkAllAsRead = () => {
         }
       );
 
-      // =========================
-      // 2. OPTIONAL ZUSTAND SYNC
-      // =========================
-      // const { setNotificationsList } = useAuthStore.getState();
-
-      // setNotificationsList((prev: any[]) =>
-      //   prev.map((n) => ({ ...n, isRead: true }))
-      // );
+      // Update badge instantly
+      queryClient.setQueryData(
+        ["unread-count"],
+        0
+      );
 
       toast.success("All notifications marked as read");
     } catch (err: any) {

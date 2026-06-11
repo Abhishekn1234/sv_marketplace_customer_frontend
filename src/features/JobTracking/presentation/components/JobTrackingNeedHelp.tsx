@@ -101,10 +101,14 @@ const queryClient = useQueryClient();
     // ✅ 4. Navigate immediately (NO setTimeout)
     navigate("/");
 
-  } catch (err) {
-    toast.error("Failed to cancel booking ❌");
-    setShowCancelModal(false);
-  }
+  } catch (err: any) {
+  toast.error(
+    err?.response?.data?.message ||
+    "Failed to cancel booking ❌"
+  );
+
+  setShowCancelModal(false);
+}
 };
 
   // -----------------------

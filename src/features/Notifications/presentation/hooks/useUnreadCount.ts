@@ -1,43 +1,23 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { GetUnreadCountUseCase } from "../../domain/usecases/GetUnreadCountUseCase";
-import { useAuthStore } from "@/features/core/store/auth";
+
+const repo = new NotificationRepositoryImpl();
+const useCase = new GetUnreadCountUseCase(repo);
 
 export const useUnreadCount = () => {
-  const count = useAuthStore(
-    (state) => state.notifications.unreadCount
-  );
+  const query = useQuery({
+    queryKey: ["unread-count"],
+    queryFn: () => useCase.execute(),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
-  const setCount = useAuthStore(
-    (state) => state.setUnreadCount
-  );
-
-  const [loading, setLoading] = useState(false);
-
-  const fetchUnreadCount = async () => {
-    setLoading(true);
-    try {
-      const repo = new NotificationRepositoryImpl();
-      const useCase = new GetUnreadCountUseCase(repo);
-
-      const res = await useCase.execute();
-      // console.log("Unread count:", res);
-
-      setCount(res); // ✅ now updates Zustand store
-    } catch (err) {
-      console.error("Unread count fetch failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUnreadCount();
-  }, []);
+  console.log("Unread Count Query:", query.data);
 
   return {
-    count,
-    loading,
-    refetch: fetchUnreadCount,
+    count: query.data ?? 0,
+    loading: query.isLoading,
+    refetch: query.refetch,
   };
 };

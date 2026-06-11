@@ -1,8 +1,6 @@
-export const getKey = (n: any, index: number) => {
+export const getKey = (n: any, _index: number) => {
   return (
-    n?.id ||
-    n?._id ||
-    n?.createdAt + "-" + n?.title ||
-    `fallback-${index}`
+   
+    n?._id
   );
 };
