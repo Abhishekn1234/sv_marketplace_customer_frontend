@@ -68,19 +68,19 @@ function App() {
   )
 );
 }, []);
-(async () => {
-  const regs = await navigator.serviceWorker.getRegistrations();
+// (async () => {
+//   const regs = await navigator.serviceWorker.getRegistrations();
 
-  for (const reg of regs) {
-    console.log("Removing:", reg.scope);
-    await reg.unregister();
-  }
+//   for (const reg of regs) {
+//     console.log("Removing:", reg.scope);
+//     await reg.unregister();
+//   }
 
-  const keys = await caches.keys();
-  await Promise.all(keys.map(k => caches.delete(k)));
+//   const keys = await caches.keys();
+//   await Promise.all(keys.map(k => caches.delete(k)));
 
-  console.log("DONE");
-})();
+//   console.log("DONE");
+// })();
   useEffect(() => {
     if (isLoggedIn && accessToken) {
       initializeSocket(accessToken);
