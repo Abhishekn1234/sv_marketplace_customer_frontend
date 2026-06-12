@@ -5,12 +5,21 @@ import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-import { Input, Checkbox, PhoneInput as CustomPhoneInput } from "@/components/input";
+import { Input, Checkbox } from "@/components/input";
 import Button from "@/components/input/Button";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 const RegistrationCard = () => {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
+  const { setMobileForVerification, setTokens, setUser } = useAuthStore();
+
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,209 +28,175 @@ const RegistrationCard = () => {
     password: "",
     agreeToTerms: false,
   });
-  const {t}=useLanguage();
-  const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
- const { setMobileForVerification,setTokens,setUser } = useAuthStore();
-  const { register } = useAuth();
-  const navigate=useNavigate();
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-   setLoading(true);
+  /* ---------------- VALUE-BASED HANDLER ---------------- */
 
-  try {
-    const payload = {
-      fullName: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
+  const handleFieldChange =
+    (field: keyof typeof formData) => (value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     };
 
-    const response = await register(payload);
+  /* ---------------- SUBMIT ---------------- */
 
-    // Save full response in auth store
-    setTokens(response.accessToken, response.refreshToken); // access & refresh
-    setUser(response.user); // user object
-    setMobileForVerification(formData.phone); // for OTP verification
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-    // toast.success(response.message || "Registration successful");
-    navigate("/verification");
-    setLoading(false); // navigate to OTP verification
-  } catch (err: any) {
-    toast.error(err?.message?.[0] || err.message || "Registration failed");
-    setLoading(false);
-  }
-};
+    try {
+      const payload = {
+        fullName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      };
+      console.log(payload);
 
+
+      const response = await register(payload);
+
+      setTokens(response.accessToken, response.refreshToken);
+      setUser(response.user);
+
+      setMobileForVerification(formData.phone);
+
+      navigate("/verification");
+    } catch (err: any) {
+      toast.error(err?.message?.[0] || err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 font-inter px-4">
-      <div className="relative w-full max-w-[520px] bg-white border border-gray-200 rounded-[32px] p-12 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div className="relative w-full max-w-[520px] bg-white border border-gray-200 rounded-[32px] p-12 shadow overflow-hidden">
 
-        {/* Top Accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-yellow-500" />
 
-        {/* Premium Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-full shadow-sm mb-6">
-          <span className="w-2 h-2 bg-yellow-500 rounded-full" />
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-           {t.register.badge}
-          </span>
-        </div>
-
-        {/* Header */}
+        {/* HEADER */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {t.register.title}
           </h1>
-          <p className="text-gray-500 font-medium">
-            {t.register.subtitle}
-          </p>
+          <p className="text-gray-500">{t.register.subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Names */}
+          {/* FIRST + LAST NAME */}
           <div className="grid grid-cols-2 gap-4 mb-4">
-            {["firstName", "lastName"].map((field, i) => (
-              <div key={field}>
-                <Input
-                  label={i === 0 ? t.register.firstName : t.register.lastName}
-                  labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
-                  name={field}
-                  value={(formData as any)[field]}
-                  onChange={handleChange}
-                  required
-                  placeholder={i === 0 ? t.register.firstNamePlaceholder: t.register.lastNamePlaceholder}
-                />
-              </div>
-            ))}
+            <Input
+              label={t.register.firstName}
+              value={formData.firstName}
+              onChange={handleFieldChange("firstName")}
+              placeholder={t.register.firstNamePlaceholder}
+            />
+
+            <Input
+              label={t.register.lastName}
+              value={formData.lastName}
+              onChange={handleFieldChange("lastName")}
+              placeholder={t.register.lastNamePlaceholder}
+            />
           </div>
 
-          {/* Email */}
+          {/* EMAIL */}
           <div className="mb-4">
             <Input
-              label={t.register.email}
-              labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
               type="email"
-              name="email"
+              label={t.register.email}
               value={formData.email}
-              onChange={handleChange}
-              required
+              onChange={handleFieldChange("email")}
               placeholder={t.register.emailPlaceholder}
             />
           </div>
 
-          {/* Phone */}
-         <div className="mb-4">
-          <CustomPhoneInput
-            label={t.register.phone}
-            labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
-            value={formData.phone}
-            onChange={(phone) => setFormData({ ...formData, phone })}
-            country="in"
-          />
-        </div>
-
-          {/* Password */}
-             <div className="mb-6">
+          {/* PHONE */}
+   <div className="mb-4">
   <Input
-    label={t.register.password}
-    labelClassName="block text-xs font-semibold uppercase tracking-wider text-gray-900 mb-2"
-    type={showPassword ? "text" : "password"}
-    name="password"
-    value={formData.password}
-    onChange={handleChange}
-    required
-    minLength={8}
-    placeholder={t.register.passwordPlaceholder}
-    rightElement={
-      <Button
-        type="button"
-        onClick={() => setShowPassword((prev) => !prev)}
-        className="text-gray-500 hover:text-gray-700"
-      >
-        {showPassword ? (
-          <EyeOff className="w-5 h-5" />
-        ) : (
-          <Eye className="w-5 h-5" />
-        )}
-      </Button>
-    }
+    type="tel"
+    label={t.register.phone}
+    value={formData.phone}
+    onChange={(value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        phone: value, // already E.164 formatted from PhoneInput
+      }));
+    }}
+    placeholder={t.register.phonePlaceholder}
   />
 </div>
 
+          {/* PASSWORD */}
+          <div className="mb-6">
+            <Input
+              label={t.register.password}
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleFieldChange("password")}
+              placeholder={t.register.passwordPlaceholder}
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="text-gray-500"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
+            />
+          </div>
 
-    
-    
-
-          {/* Terms */}
+          {/* TERMS */}
           <div className="flex gap-3 mb-6">
             <Checkbox
-              name="agreeToTerms"
               checked={formData.agreeToTerms}
-              onChange={handleChange}
-              required
-              className="mt-1 w-4 h-4 accent-blue-600" // Pass original className to the input
+              onChange={(checked: boolean) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  agreeToTerms: checked,
+                }))
+              }
             />
+
             <p className="text-sm text-gray-500">
               {t.register.termsText}{" "}
-              <Link to="/terms" className="text-blue-600 font-bold hover:underline">
+              <Link to="/terms" className="text-blue-600 font-bold">
                 {t.register.terms}
               </Link>{" "}
               {t.register.and}{" "}
-              <Link to="/privacy" className="text-blue-600 font-bold hover:underline">
+              <Link to="/privacy" className="text-blue-600 font-bold">
                 {t.register.privacy}
-              </Link>.
+              </Link>
             </p>
           </div>
 
-          {/* Submit */}
-         <Button
-  type="submit"
-  disabled={loading}
-  rightIcon={
-    <>
-    <ArrowRight/>
-    </>
-  }
-  className={`
-    group w-full h-14 rounded-full bg-blue-600 text-white font-semibold
-  
-    transition
-    ${loading
-      ? "opacity-70 cursor-not-allowed"
-      : "hover:bg-blue-800 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]"
-    }
-  `}
->
-  {loading ? (
-    <>
-      {/* ✅ Proper spinner */}
-     <CommonSpinner size={20} color="white"/>
-    </>
-  ) : (
-    <>
-      <span>{t.register.submit}</span>
-
-      
-    </>
-  )}
-</Button>
+          {/* SUBMIT */}
+          <Button
+            type="submit"
+            disabled={loading}
+            rightIcon={<ArrowRight />}
+            className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold"
+          >
+            {loading ? (
+              <CommonSpinner size={20} color="white" />
+            ) : (
+              <span>{t.register.submit}</span>
+            )}
+          </Button>
         </form>
 
-        {/* Footer */}
-        <p className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-         {t.register.already}{" "}
-          <Link to="/login" className="text-blue-600 font-bold hover:underline">
-           {t.register.login}
+        {/* FOOTER */}
+        <p className="mt-6 pt-6 border-t text-center text-sm text-gray-500">
+          {t.register.already}{" "}
+          <Link to="/login" className="text-blue-600 font-bold">
+            {t.register.login}
           </Link>
         </p>
       </div>

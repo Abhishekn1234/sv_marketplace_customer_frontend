@@ -21,6 +21,7 @@ export default function ProfileUpdate() {
     phone: "",
   });
 
+  /* ---------------- LOAD PROFILE ---------------- */
   useEffect(() => {
     if (profile) {
       const fullName = profile.fullName || "";
@@ -35,13 +36,16 @@ export default function ProfileUpdate() {
     }
   }, [profile]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  /* ---------------- VALUE BASED HANDLER ---------------- */
+  const handleFieldChange =
+    (field: keyof typeof formData) => (value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    };
 
+  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -51,6 +55,9 @@ export default function ProfileUpdate() {
       "fullName",
       `${formData.firstName} ${formData.lastName}`.trim()
     );
+
+    form.append("email", formData.email);
+    form.append("phone", formData.phone);
 
     updateProfile(form, {
       onSuccess: (updatedUser) => {
@@ -66,63 +73,52 @@ export default function ProfileUpdate() {
 
   return (
     <div className="w-full px-4 py-8 flex justify-center">
-
       <div className="w-full max-w-2xl">
-
         <CommonCard>
-
-          {/* Title */}
+          {/* TITLE */}
           <h3 className="text-[18px] font-bold text-gray-900 mb-6">
             {t.profilepage.personalInfo}
           </h3>
 
-          {/* Form */}
+          {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* First + Last Name */}
+            {/* FIRST + LAST NAME */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               <Input
                 label={t.profilepage.firstName}
-                labelClassName="block text-sm font-semibold mb-2"
-                name="firstName"
                 type="text"
                 value={formData.firstName}
-                onChange={handleChange}
+                onChange={handleFieldChange("firstName")}
               />
 
               <Input
                 label={t.profilepage.lastName}
-                labelClassName="block text-sm font-semibold mb-2"
-                name="lastName"
                 type="text"
                 value={formData.lastName}
-                onChange={handleChange}
+                onChange={handleFieldChange("lastName")}
               />
 
             </div>
 
-            {/* Email */}
+            {/* EMAIL */}
             <Input
               label={t.profilepage.email}
-              labelClassName="block text-sm font-semibold mb-2"
-              name="email"
               type="email"
               value={formData.email}
-              onChange={handleChange}
+              onChange={handleFieldChange("email")}
             />
 
-            {/* Phone */}
+            {/* PHONE */}
             <Input
               label={t.profilepage.phone}
-              labelClassName="block text-sm font-semibold mb-2"
-              name="phone"
               type="tel"
               value={formData.phone}
-              onChange={handleChange}
+              onChange={handleFieldChange("phone")}
             />
 
-            {/* Submit */}
+            {/* SUBMIT */}
             <Button
               type="submit"
               disabled={isPending}
@@ -133,9 +129,7 @@ export default function ProfileUpdate() {
             </Button>
 
           </form>
-
         </CommonCard>
-
       </div>
     </div>
   );

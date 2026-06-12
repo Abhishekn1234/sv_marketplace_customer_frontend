@@ -123,7 +123,7 @@ export default function SuccessProviderCard() {
 
       {/* MODE */}
       <div className="text-center mb-4 text-sm text-gray-500">
-        {isEditMode ? "Update your review" : "Rate your experience"}
+        {isEditMode ? t.serviceratingpage["Update your review"] : t.serviceratingpage["Rate your experience"]}
       </div>
 
       {/* RATINGS */}

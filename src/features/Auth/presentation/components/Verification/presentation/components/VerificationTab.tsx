@@ -17,7 +17,7 @@ export default function VerificationTab() {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const { t } = useLanguage();
   const navigate = useNavigate();
-
+const [responseOtp, setResponseOtp] = useState<string>("");
   const { mobileForVerification } = useAuthStore();
   const [mobileNumber, setMobileNumber] = useState<string>(mobileForVerification || "");
 
@@ -101,10 +101,16 @@ const resend = async () => {
   inputsRef.current[0]?.focus();
 
   try {
-    const response: any = await sendOtpMobile({ phone: mobileNumber }); // ⚠ any here
+    const response: any = await sendOtpMobile({ phone: mobileNumber });
+
     if (response?.otp) {
-      toast.success(`OTP sent! Your OTP is: ${response.otp}`, { autoClose: 10000 });
+      setResponseOtp(response.otp); // ✅ store OTP
+
+      toast.success(`OTP sent successfully`, {
+        autoClose: 5000,
+      });
     } else {
+      setResponseOtp("");
       toast.success("OTP sent again");
     }
   } catch (err: any) {
@@ -178,9 +184,16 @@ const resend = async () => {
                   {t.verification.subtitle}
                 </p>
 
-                <div className="inline-flex items-center gap-2 mt-3 px-3 py-2 sm:px-4 bg-gray-50 rounded-xl text-sm sm:text-base font-semibold">
-                  {mobileNumber || "+1 (555) 123-4567"}
-                </div>
+               <div className="inline-flex flex-col items-center gap-1 mt-3 px-4 py-2 bg-gray-50 rounded-xl text-sm font-semibold">
+  <span>{mobileNumber}</span>
+
+  {/* OTP hint */}
+  {process.env.NODE_ENV === "development" && responseOtp && (
+    <span className="text-xs text-red-500">
+      Dev OTP: {responseOtp}
+    </span>
+  )}
+</div>
               </div>
 
               {/* OTP Inputs */}

@@ -3,6 +3,7 @@ import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Radio } from "@/components/input";
 import Button from "@/components/input/Button";
 import CommonModal from "@/components/common/CommonModal";
+import { useLanguage } from "@/features/context/LanguageContext";
 interface AddressModalProps {
   open: boolean;
   onClose: () => void;
@@ -10,7 +11,7 @@ interface AddressModalProps {
 
 export default function AddressModal({ open, onClose }: AddressModalProps) {
   const { current_location, updateHome } = useAuthStore();
-
+  const{t}=useLanguage();
   const [selectedType, setSelectedType] = useState<"home" | "office">("home");
   const [address, setAddress] = useState("");
 
@@ -62,7 +63,7 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
             key={type}
             label={type}
             containerClassName={`
-              flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition
+              flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition mb-4
               ${
                 selectedType === type
                   ? "border-blue-600 bg-blue-50"
@@ -77,13 +78,12 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
       </div>
 
       {/* Address Input */}
-      <Input
-        type="text"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        placeholder="Enter address..."
-      />
-
+     <Input
+  type="text"
+  value={address}
+  onChange={(value) => setAddress(value)}
+  placeholder={t.profilepage.enterAddress}
+/>
     </CommonModal>
   );
 }

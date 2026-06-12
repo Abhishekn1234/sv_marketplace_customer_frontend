@@ -13,6 +13,7 @@ import { BookingActions } from "./BookingHistoryActions";
 import { formatBookingDuration } from "../helpers/formatduration";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 import { useServices } from "../hooks/useServices";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 interface BookingCardProps {
@@ -39,6 +40,7 @@ export default function BookingCard({
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
   const {services}=useServices();
+  const{t}=useLanguage();
   // console.log(booking);
   const handleActionButtonClick = () => {
     if (!clickable) return;
@@ -104,19 +106,19 @@ export default function BookingCard({
       {/* Info */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl mb-5">
         <div>
-          <span className="text-xs text-gray-500">Date</span>
+          <span className="text-xs text-gray-500">{t.common.date}</span>
           <p className="text-sm sm:text-base font-semibold">
             {formatDates(booking.schedule?.startDateTime)}
           </p>
         </div>
         <div>
-          <span className="text-xs text-gray-500">Duration</span>
+          <span className="text-xs text-gray-500">{t.confirmationpage.bookingSummary.duration}</span>
            <p className="text-sm sm:text-base font-semibold">
             {formatBookingDuration(booking)}
            </p>
         </div>
         <div>
-          <span className="text-xs text-gray-500">Booking ID</span>
+          <span className="text-xs text-gray-500">{t.paymentpage.bookingId}</span>
           {/* <p className="text-sm sm:text-base font-semibold truncate">{booking._id}</p> */}
           <p className="text-sm sm:text-base font-semibold truncate">{booking.bookingCode}</p>
         </div>

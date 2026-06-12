@@ -72,7 +72,7 @@ export default function ChangePasswordCard() {
         <Input
           type={showPassword[field] ? "text" : "password"}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(value) => onChange(value)}
           required
             className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
           placeholder={placeholder}
@@ -107,56 +107,91 @@ export default function ChangePasswordCard() {
         </div>
 
         {/* Card */}
-       <CommonCard className="overflow-hidden">
-  <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
-    <h2 className="text-2xl font-bold text-white">
-      {t.changepasswordpage.cardTitle}
-    </h2>
-    <p className="text-blue-100 mt-2 text-sm">
-      {t.changepasswordpage.cardSubtitle}
-    </p>
+      <CommonCard className="overflow-hidden border border-gray-200 shadow-xl rounded-3xl">
+
+  {/* Header */}
+  <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 px-8 py-10">
+    <div className="absolute inset-0 bg-black/5" />
+
+    <div className="relative">
+      <h2 className="text-3xl font-bold text-white">
+        {t.changepasswordpage.cardTitle}
+      </h2>
+
+      <p className="text-blue-100 mt-2 max-w-md">
+        {t.changepasswordpage.cardSubtitle}
+      </p>
+    </div>
   </div>
 
-  <div className="p-6">
+  {/* Form Section */}
+  <div className="p-8 bg-white">
     <form onSubmit={handleSubmit} className="space-y-6">
-      {renderPasswordInput(
-        t.changepasswordpage.currentPassword,
-        oldPassword,
-        setOldPassword,
-        "old",
-        t.changepasswordpage.enterCurrentPassword
-      )}
 
-      {renderPasswordInput(
-        t.changepasswordpage.newPassword,
-        newPassword,
-        setNewPassword,
-        "new",
-        t.changepasswordpage.enterNewPassword
-      )}
-
-      {renderPasswordInput(
-        t.changepasswordpage.confirmNewPassword,
-        confirmPassword,
-        setConfirmPassword,
-        "confirm",
-        t.changepasswordpage.confirmNewPassword
-      )}
-
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center gap-2"
-      >
-        {loading ? (
-          <span className="flex items-center gap-2">
-            <CommonSpinner size={14} />
-            {t.changepasswordpage.updating}
-          </span>
-        ) : (
-          t.changepasswordpage.updatePassword
+      <div className="space-y-5">
+        {renderPasswordInput(
+          t.changepasswordpage.currentPassword,
+          oldPassword,
+          setOldPassword,
+          "old",
+          t.changepasswordpage.enterCurrentPassword
         )}
-      </Button>
+
+        {renderPasswordInput(
+          t.changepasswordpage.newPassword,
+          newPassword,
+          setNewPassword,
+          "new",
+          t.changepasswordpage.enterNewPassword
+        )}
+
+        {renderPasswordInput(
+          t.changepasswordpage.confirmNewPassword,
+          confirmPassword,
+          setConfirmPassword,
+          "confirm",
+          t.changepasswordpage.confirmNewPassword
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-100 pt-6">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="
+            w-full
+            h-14
+            rounded-2xl
+            bg-blue-600
+            hover:bg-blue-700
+            text-white
+            font-semibold
+            transition-all
+            duration-200
+            shadow-lg
+            hover:shadow-xl
+            disabled:opacity-60
+            disabled:cursor-not-allowed
+            flex
+            items-center
+            justify-center
+            gap-2
+          "
+        >
+          {loading ? (
+            <>
+              <CommonSpinner size={16} color="white" />
+              {t.changepasswordpage.updating}
+            </>
+          ) : (
+            <>
+              🔒 {t.changepasswordpage.updatePassword}
+            </>
+          )}
+        </Button>
+      </div>
+
     </form>
   </div>
 </CommonCard>

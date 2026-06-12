@@ -202,6 +202,7 @@
       "description": "Enjoy professional service at your scheduled time"
     }
   },
+  
   "bookingSummary": {
   "title": "Booking Summary",
    "workers":"Workers",
@@ -255,6 +256,7 @@
     "OTHER": "Other"
   }
 },
+
 "buttons": {
       "startWorkOtp": "Start Work OTP",
       "completeWorkOtp": "Complete Work OTP",
@@ -293,10 +295,10 @@
   },
   "generateWorkStartOtp": "Generate Work Start OTP",
     "generateWorkCompletedOtp": "Generate Work Completed OTP",
-    "call":"Call",
-    "message":"Message"
-    
-},
+    "call": "Call",
+    "message": "Message"
+  },
+ 
 "Bookingspage":{
   "title":"Booking History",
   "subtitle":"View and manage all your service bookings",
@@ -555,7 +557,8 @@
   "serviceratingpage": {
     "rateService": "Rate the Service",
     "rateWorker": "Rate the Worker",
-
+      "Update your review":"Update your review",
+      "Rate your experience":"Rate your experience",
     "labels": ["Poor", "Fair", "Good", "Very Good", "Excellent"],
 
     "whatWentWell": "What went well?",
@@ -785,7 +788,22 @@
       "authorizedSignature": "Authorized Signature",
       "customerSignature": "Customer Signature",
       "onDemandServices": "On-Demand Services"
-    }
+    },
+     "faq": {
+    "whatsappTitle": "Chat with us on WhatsApp",
+    "yourMessage": "Your Message",
+    "messagePlaceholder": "Type your message...",
+    "chatOnWhatsapp": "Chat on WhatsApp",
+    "defaultMessage": "Hi, I need help!",
+    "modalTitle": "Frequently Asked Questions",
+    "q1": "1. How do I book a service?",
+    "a1": "You can book a service from the services page by selecting your category and confirming.",
+    "q2": "2. How do I cancel a booking?",
+    "a2": "Go to your bookings section and click cancel before the service starts.",
+    "q3": "3. Is online payment available?",
+    "location":"Location",
+    "a3": "Yes, we support online and cash payments."
+  }
 
 
 }

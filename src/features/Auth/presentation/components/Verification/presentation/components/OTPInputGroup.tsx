@@ -1,3 +1,4 @@
+import React from "react";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -32,28 +33,29 @@ export default function OTPSection({
 
   return (
     <div className="text-center mb-8">
-
       {/* Title */}
       <p className="text-xs font-bold uppercase tracking-wide mb-4">
         {t.verification.enter_code}
       </p>
 
-      {/* TIMER */}
+      {/* Timer */}
       <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-6 bg-gray-50 border border-gray-200 rounded-full font-semibold text-sm sm:text-base">
-        {t.verification.expires_in}{" "}
+        {t.verification.expires_in}
         <strong>
           {minutes}:{seconds}
         </strong>
       </div>
 
-      {/* OTP INPUTS */}
+      {/* OTP Inputs */}
       <div className="flex justify-center gap-2 sm:gap-3 flex-wrap mb-6">
         {otp.map((value, i) => (
           <Input
             key={i}
-            ref={(el) => {(inputsRef.current[i] = el)}}
+            ref={(el) => {
+              inputsRef.current[i] = el;
+            }}
             value={value}
-            onChange={(e) => handleChange(e.target.value, i)}
+            onChange={(value) => handleChange(value, i)}
             onKeyDown={(e) => handleKeyDown(e, i)}
             onPaste={handlePaste}
             maxLength={1}
@@ -69,19 +71,26 @@ export default function OTPSection({
               font-bold
               bg-gray-50 text-gray-900
               ${value ? "border-emerald-500 bg-white" : "border-gray-200"}
-              ${disabled || isExpired ? "opacity-50 cursor-not-allowed" : ""}
-              focus:outline-none focus:border-blue-600
-              focus:ring-4 focus:ring-blue-100
+              ${
+                disabled || isExpired
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }
+              focus:outline-none
+              focus:border-blue-600
+              focus:ring-4
+              focus:ring-blue-100
               transition
             `}
           />
         ))}
       </div>
 
-      {/* RESEND */}
+      {/* Resend */}
       <div className="mt-2 text-sm text-gray-500">
         {t.verification.resend_question}{" "}
         <Button
+          type="button"
           disabled={!isExpired}
           onClick={resend}
           className="font-bold text-blue-600 disabled:text-gray-400 underline"

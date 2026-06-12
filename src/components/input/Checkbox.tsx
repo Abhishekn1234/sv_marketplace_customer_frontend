@@ -1,21 +1,35 @@
-import React from 'react';
+import React from "react";
 
-interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface CheckboxProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label?: React.ReactNode;
-  wrapperClassName?: string; // For the div wrapping input and label
+  wrapperClassName?: string;
   labelClassName?: string;
+
+  onChange?: (checked: boolean) => void;
 }
 
-export function Checkbox({ label, wrapperClassName, labelClassName, className, ...props }: CheckboxProps) {
+export function Checkbox({
+  label,
+  wrapperClassName,
+  labelClassName,
+  className,
+  onChange,
+  checked,
+  ...props
+}: CheckboxProps) {
   return (
-    <div className={`flex items-center ${wrapperClassName}`}>
+    <div className={`flex items-center ${wrapperClassName || ""}`}>
       <input
         type="checkbox"
-        className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${className}`}
+        checked={checked}
+        onChange={(e) => onChange?.(e.target.checked)}
+        className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${className || ""}`}
         {...props}
       />
+
       {label && (
-        <label className={`ml-2 text-sm text-gray-900 ${labelClassName}`}>
+        <label className={`ml-2 text-sm text-gray-900 ${labelClassName || ""}`}>
           {label}
         </label>
       )}

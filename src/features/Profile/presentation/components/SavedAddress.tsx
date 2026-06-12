@@ -137,7 +137,7 @@ export default function SavedAddress() {
               <AddressInput
                 value={tempAddress}
                 onChange={setTempAddress}
-                placeholder={`Enter ${addr.type} address`}
+                placeholder={t.profilepage.enterAddress}
               />
             ) : (
               <p className="text-sm text-gray-600">{addr.value}</p>
@@ -167,7 +167,7 @@ export default function SavedAddress() {
             <AddressInput
               value={newAddress}
               onChange={setNewAddress}
-              placeholder="Enter address"
+              placeholder={t.profilepage.enterAddress}
             />
 
             <div className="flex gap-3">

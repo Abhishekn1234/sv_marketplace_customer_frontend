@@ -99,8 +99,9 @@ export default function ProfileList() {
                   hover:scale-105
                   disabled:opacity-60
                 "
+                rightIcon={<Pencil className="w-4 h-4" />}
               >
-                <Pencil className="w-4 h-4 text-black" />
+                
               </Button>
             </FileInput>
           </div>
