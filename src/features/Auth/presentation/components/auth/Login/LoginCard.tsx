@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/features/Auth/presentation/hooks/useAuth';
-import { Input, Label } from '@/components/input';
+import { Checkbox, Input, Label } from '@/components/input';
 import Button from '@/components/input/Button';
 import { ArrowRight } from '@/components/icons';
 import CommonSpinner from '@/components/common/CommonLoadingSpinner';
@@ -53,7 +53,7 @@ const LoginCard = () => {
             type="email"
             placeholder="name@homeease.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(value) => setEmail(value)}
             required
             className="w-full px-4 h-13 text-gray-900 text-sm border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none"
           />
@@ -77,7 +77,7 @@ const LoginCard = () => {
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(value) => setPassword(value)}
               required
               className="w-full px-4 h-13 text-gray-900 text-sm border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 pr-12 outline-none"
             />
@@ -115,11 +115,11 @@ const LoginCard = () => {
 
         {/* Remember me */}
         <div className="flex items-center gap-2.5">
-          <Input
+          <Checkbox
             type="checkbox"
             id="remember"
             checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
+            onChange={(value) => setRememberMe(value)}
             className="w-4 h-4 accent-blue-600 cursor-pointer"
           />
           <Label htmlFor="remember" className="text-gray-600 font-medium cursor-pointer">

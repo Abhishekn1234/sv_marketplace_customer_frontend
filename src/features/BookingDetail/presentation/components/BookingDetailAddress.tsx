@@ -150,9 +150,9 @@ export default function BookingDetailAddress() {
     <Input
       type="text"
       value={entryInstructions}
-      onChange={(e) =>
+      onChange={(value) =>
         setEntryInstructions(
-          e.target.value
+         value
         )
       }
       placeholder="Apartment, street, building..."
@@ -224,8 +224,8 @@ export default function BookingDetailAddress() {
     <Input
       type="text"
       value={homeAddress}
-      onChange={(e) =>
-        setHomeAddress(e.target.value)
+      onChange={(value) =>
+        setHomeAddress(value)
       }
       placeholder="Type your home address..."
       className="

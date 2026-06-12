@@ -331,8 +331,8 @@ Return:
             <Input
               type="text"
               value={input}
-              onChange={(e) =>
-                setInput(e.target.value)
+              onChange={(value) =>
+                setInput(value)
               }
               onKeyDown={(e) =>
                 e.key === "Enter" &&

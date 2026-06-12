@@ -42,7 +42,7 @@ export default function ForgotPasswordInput({
           type="email"
           placeholder="john@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(value) => setEmail(value)}
           required
           className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
         />

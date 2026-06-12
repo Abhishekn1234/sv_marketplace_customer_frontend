@@ -45,8 +45,8 @@ export default function ForgotPasswordVerify({
           pattern="[0-9]*"
           placeholder="Enter 6-digit OTP"
           value={otp}
-          onChange={(e) =>
-            setOtp(e.target.value.replace(/\D/g, "")) // allow only numbers
+          onChange={(value) =>
+            setOtp(value.replace(/\D/g, "")) // allow only numbers
           }
           maxLength={6}
           required

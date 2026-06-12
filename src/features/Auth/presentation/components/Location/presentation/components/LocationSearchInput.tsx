@@ -49,7 +49,7 @@ export default function LocationSearchInput({
         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
         <Input
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(value) => setInputValue(value)}
           placeholder={t.location?.searchPlaceholder ?? "Enter location"}
           className="h-14 w-full rounded-2xl px-12"
         />

@@ -27,10 +27,10 @@ export default function ListDisputes() {
           className="border p-2 rounded"
           placeholder="Search..."
           value={filters.search}
-          onChange={(e) =>
+          onChange={(value) =>
             setFilters((prev) => ({
               ...prev,
-              search: e.target.value,
+              search: value,
               page: 1, // reset page on search
             }))
           }

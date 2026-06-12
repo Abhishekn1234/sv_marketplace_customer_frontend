@@ -85,7 +85,7 @@ export default function Disputepage() {
             id="reason"
             type="text"
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(value) => setReason(value)}
             placeholder={t.disputespage.reasonPlaceholder}
             className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             required

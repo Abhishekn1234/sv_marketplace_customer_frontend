@@ -330,7 +330,7 @@ const stepCompletion = {
         <div className="hidden md:flex items-center relative">
           <Input
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(value) => setSearchTerm(value)}
             placeholder={t.navbar.SearchPlaceholder}
             className="pl-10 bg-white w-40 lg:w-64"
             size="md"

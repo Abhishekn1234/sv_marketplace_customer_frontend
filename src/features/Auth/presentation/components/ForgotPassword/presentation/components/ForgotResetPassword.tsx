@@ -50,7 +50,7 @@ export default function ForgotResetPassword({
         <Input
           type={showNewPassword ? "text" : "password"}
           value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
+          onChange={(value) => setNewPassword(value)}
           className="w-full h-12 px-4 pr-10 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
           placeholder="Enter new password"
           required
@@ -74,7 +74,7 @@ export default function ForgotResetPassword({
         <Input
           type={showConfirmPassword ? "text" : "password"}
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(value) => setConfirmPassword(value)}
           className="w-full h-12 px-4 pr-10 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
           placeholder="Confirm new password"
           required

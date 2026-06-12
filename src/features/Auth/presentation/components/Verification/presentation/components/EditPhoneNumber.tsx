@@ -27,7 +27,7 @@ export default function EditPhoneNumber({ onNext }: Props) {
       <Input
         type="tel"
         value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        onChange={(value) => setPhone(value)}
         placeholder="Enter mobile number"
         className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 mb-4 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none"
       />
