@@ -22,6 +22,7 @@ export default function BookingHistoryFilter({
   { key: "WorkerAccepted", label: t.Bookingspage.status.WorkerAccepted },
   { key: "InvoiceGenerated", label: t.Bookingspage.status.InvoiceGenerated },
   { key: "Paid", label: t.Bookingspage.status.Paid },
+  {key:"Refunded",label:t.Bookingspage.status.Refunded}
 ];
   return (
     <div className="w-full mb-6">

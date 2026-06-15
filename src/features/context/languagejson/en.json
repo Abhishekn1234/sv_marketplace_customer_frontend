@@ -306,6 +306,7 @@
       "All": "All",
       "inProgress": "In Progress",
       "Completed": "Completed",
+      "Refunded":"Refunded",
       "Requested": "Requested",
       "Cancelled": "Cancelled",
       "InvoiceGenerated": "Invoice Generated",

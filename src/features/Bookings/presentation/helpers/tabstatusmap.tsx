@@ -20,4 +20,5 @@ export const tabStatusMap: Record<string, BookingStatus[]> = {
   WorkerAccepted: ["WORKER_ACCEPTED"],
 
   Paid: ["PAID"],
+  Refunded:["REFUNDED"]
 };
