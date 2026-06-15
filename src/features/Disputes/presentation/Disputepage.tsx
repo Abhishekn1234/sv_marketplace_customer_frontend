@@ -8,44 +8,73 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useCreateDispute } from "./hooks/useCreateDispute";
 import { toast } from "react-toastify";
 import Button from "@/components/input/Button";
-import { Input, Label, Textarea } from "@/components/input";
+import {  Label, Textarea } from "@/components/input";
 import { ArrowLeftIcon } from "@/components/icons";
+import Select from "@/components/input/Select";
+import { options } from "../domain/entities/reasontypes";
 
 
 
 export default function Disputepage() {
+
   const navigate = useNavigate();
-  const [reason, setReason] = useState("");
+  const [reasonType, setReasonType] = useState("");
   const [description, setDescription] = useState("");
 
   
   const {t}=useLanguage();
   const createDisputeMutation = useCreateDispute();
    const {bookingId}=useParams();
-  const handleSubmit = () => {
-    if (!bookingId) {
-      toast.error("Booking ID is missing");
-      return;
-    }
-    createDisputeMutation.mutate(
-      { reason, description, bookingId },
-      {
-        onSuccess: () => {
-         toast.success("Dispute created successfully");
-          navigate("/bookings");
-        },
-       onError: (err: any) => {
-  const message =
-    err?.response?.data?.message ||   // axios style
-    err?.message ||                   // generic error
-    "Failed to create dispute";       // fallback
-
-  toast.error(message);
-  console.error("Failed to create dispute:", err);
-},
+    const handleSubmit = async () => {
+    
+      if (!bookingId) {
+        toast.error("Booking ID is missing");
+        console.log("❌ Missing bookingId");
+        return;
       }
-    );
-  };
+
+      if (!reasonType) {
+        toast.error("Please select a reason type");
+        console.log("❌ Missing reasonType");
+        return;
+      }
+
+    
+      if (!description || description.trim().length < 10) {
+        toast.error("Please enter a valid description");
+        console.log("❌ Invalid description");
+        return;
+      }
+
+      const payload = {
+        reasonType,
+        description: description.trim(),
+        bookingId,
+      };
+
+      console.log("🚀 Submitting dispute payload:", payload);
+
+      try {
+        const res = await createDisputeMutation.mutateAsync(payload);
+
+        console.log("✅ Success response:", res);
+
+        toast.success("Dispute created successfully");
+
+        navigate("/bookings");
+      } catch (err: any) {
+        // console.log("❌ Error full object:", err);
+        // console.log("❌ Backend response:", err?.response?.data);
+
+        const message =
+          err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          err?.message ||
+          "Failed to create dispute";
+
+        toast.error(message);
+      }
+    };
 
 
   return (
@@ -81,15 +110,11 @@ export default function Disputepage() {
           <Label htmlFor="reason" className="mb-2 text-sm font-medium text-gray-700">
             {t.disputespage.reason}
           </Label>
-          <Input
-            id="reason"
-            type="text"
-            value={reason}
-            onChange={(value) => setReason(value)}
-            placeholder={t.disputespage.reasonPlaceholder}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
+     <Select
+  options={options}
+  onChange={(value) => setReasonType(value)}
+  className="w-full"
+/>
         </div>
 
         {/* Description */}

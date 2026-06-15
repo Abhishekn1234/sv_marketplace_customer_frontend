@@ -5,6 +5,8 @@ export const statusStyles: Record<BookingStatus, string> = {
   WORK_STARTED:"bg-gray-100 text-gray-700 border border-gray-300",
   COMPLETED: "bg-emerald-50 text-emerald-600 border border-emerald-200",
   IN_PROGRESS: "bg-blue-50 text-blue-600 border border-blue-200",
+  REFUNDED: "bg-lime-300 text-red-600 border border-red-200",
+  REFUND_REQUESTED: "bg-orange-50 text-orange-600 border border-orange-200",
   WORKER_ACCEPTED: "bg-amber-50 text-amber-600 border border-amber-200",
   CUSTOMER_CANCELLED: "bg-red-50 text-red-600 border border-red-200",
   WORKER_REJECTED: "bg-blue-100 text-blue-700 border border-blue-300",

@@ -1,5 +1,5 @@
 export interface DisputeInput{
     bookingId:string;
-    reason:string;
+    reasonType:string;
     description:string;
 }

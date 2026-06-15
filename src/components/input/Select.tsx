@@ -29,8 +29,11 @@ export default function Select({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedValue = value ?? internalValue;
-
   const selectedOption = options.find((opt) => opt.value === selectedValue);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
 
   const handleSelect = (val: string) => {
     if (!value) setInternalValue(val);
@@ -38,7 +41,6 @@ export default function Select({
     setOpen(false);
   };
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!dropdownRef.current?.contains(e.target as Node)) {
@@ -50,15 +52,13 @@ export default function Select({
   }, []);
 
   return (
-    <div
-      ref={dropdownRef}
-      className={`relative w-full max-w-xs ${className}`}
-    >
-      {/* Trigger */}
+    <div ref={dropdownRef} className={`relative w-full ${className}`}>
       <button
         type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between px-3 py-2 border rounded-lg bg-white dark:bg-gray-900"
+        className="w-full flex items-center justify-between px-3 py-2 border rounded-lg bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       >
         <span className="flex items-center gap-2">
           {selectedOption?.icon}
@@ -69,7 +69,6 @@ export default function Select({
         <ChevronDown className="w-4 h-4" />
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-900 border rounded-lg shadow-lg max-h-60 overflow-auto">
           {options.map((opt) => (
