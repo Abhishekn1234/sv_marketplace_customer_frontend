@@ -113,7 +113,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           setOtpPurpose("Work Start OTP");
           setOtpModalOpen(true);
         },
-        onError: () => toast.error("Failed to generate Work Start OTP"),
+        onError: (err:any) => toast.error(err?.response?.data?.message ||"Failed to generate Work Start OTP"),
       }
     );
   };
@@ -152,7 +152,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   };
 });
     },
-    onError: () => toast.error("Payment verification failed"),
+    onError: (err:any) => toast.error(err?.response?.data?.message ||"Payment verification failed"),
   });
 };
 

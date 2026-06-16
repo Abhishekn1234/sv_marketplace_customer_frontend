@@ -12,6 +12,7 @@ import { BellIcon } from "../icons/BellIcon";
 
 import clsx from "clsx";
 import { iconBase } from "./iconbase";
+import CommonSpinner from "./CommonLoadingSpinner";
 
 type Props = {
   direction?: "up" | "down";
@@ -173,7 +174,7 @@ export default function CommonNotificationFloater({
                       variant="ghost"
                       className="text-xs"
                     >
-                      Open
+                     {t.common.open}
                     </Button>
                   </div>
                 </div>
@@ -182,7 +183,7 @@ export default function CommonNotificationFloater({
 
             {isFetchingNextPage && (
               <div className="p-3 text-center text-xs text-gray-500">
-                Loading notifications...
+               <CommonSpinner color="blue"/>
               </div>
             )}
           </div>
