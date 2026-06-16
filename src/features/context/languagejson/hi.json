@@ -107,7 +107,7 @@
       "status": "स्थिति",
        "pagination": {
     "page": "पेज",
-    "previous": "पिछला",
+    "prev": "पिछला",
     "next": "अगला",
     "of":"का"
      },

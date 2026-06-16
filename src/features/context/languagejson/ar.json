@@ -86,7 +86,7 @@
       "add": "إضافة",
       "open": "فتح",
       "No data available":"لا تتوفر بيانات",
-      " Failed to load Bookings":"فشل تحميل الحجوزات",
+      "Failed to load Bookings":"فشل تحميل الحجوزات",
       "Video Call":"مكالمة فيديو",
       "pagination":{
         "prev":"السابق",
