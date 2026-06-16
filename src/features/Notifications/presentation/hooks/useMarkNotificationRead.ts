@@ -23,7 +23,7 @@ export const useMarkNotificationRead = () => {
       const previousUnreadCount =
         queryClient.getQueryData<number>(["unread-count"]);
 
-      // Update notification cache
+      // Optimistic update
       queryClient.setQueriesData(
         { queryKey: ["notifications"] },
         (old: any) => {
@@ -35,7 +35,10 @@ export const useMarkNotificationRead = () => {
               ...page,
               data: page.data.map((n: any) =>
                 n._id === id || n.id === id
-                  ? { ...n, isRead: true }
+                  ? {
+                      ...n,
+                      isRead: true,
+                    }
                   : n
               ),
             })),
@@ -43,10 +46,11 @@ export const useMarkNotificationRead = () => {
         }
       );
 
-      // Update badge instantly
+      // Update unread badge immediately
       queryClient.setQueryData(
         ["unread-count"],
-        (old: number = 0) => Math.max(0, old - 1)
+        (old: number = 0) =>
+          Math.max(0, old - 1)
       );
 
       return {
@@ -56,14 +60,35 @@ export const useMarkNotificationRead = () => {
     },
 
     onError: (_err, _id, context) => {
-      context?.previousQueries?.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
+      // Rollback notifications
+      context?.previousQueries?.forEach(
+        ([queryKey, data]) => {
+          queryClient.setQueryData(
+            queryKey,
+            data
+          );
+        }
+      );
 
+      // Rollback badge
       queryClient.setQueryData(
         ["unread-count"],
         context?.previousUnreadCount
       );
+    },
+
+    onSuccess: () => {
+      // Refresh all notification queries
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+    },
+
+    onSettled: () => {
+      // Ensure everything stays synced
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
     },
   });
 };

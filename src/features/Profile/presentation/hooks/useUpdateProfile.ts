@@ -18,8 +18,8 @@ export function useUpdateProfile() {
       queryClient.setQueryData(["profile"], updatedProfile);
       toast.success("Profile Updated successfully!");
     },
-    onError:(Error)=>{
-        toast.error(`Error ${Error.message}`)
+    onError:(Error:any)=>{
+      toast.error(Error?.response?.data?.message);
     }
   });
 }

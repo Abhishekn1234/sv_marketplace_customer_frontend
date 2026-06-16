@@ -19,6 +19,7 @@ import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 import { useQueryClient } from "@tanstack/react-query";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   activeTab: string;
@@ -27,6 +28,7 @@ interface Props {
 export default function BookingHistoryContents({ activeTab }: Props) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
+  const {t}=useLanguage();
 
   // ----------------------------
   // BOOKINGS
@@ -125,7 +127,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           setOtpPurpose("Work Completed OTP");
           setOtpModalOpen(true);
         },
-        onError: () => toast.error("Failed to generate Completed Work OTP"),
+        onError: (err:any) => toast.error(err?.response?.data?.message || "Failed to generate Work Completed OTP"),
       }
     );
   };
@@ -181,7 +183,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   if (isError) {
     return (
       <div className="text-center py-16 text-red-500">
-        Failed to load bookings.
+       {t.common["Failed to load Bookings"]}
       </div>
     );
   }
@@ -189,7 +191,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   if (!filteredBookings.length) {
     return (
       <div className="text-center py-16 text-gray-400">
-        No bookings found.
+        {t.common["No data available"]}
       </div>
     );
   }

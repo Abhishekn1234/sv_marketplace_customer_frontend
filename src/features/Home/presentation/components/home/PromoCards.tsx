@@ -1,7 +1,9 @@
 import Button from "@/components/input/Button";
 import CommonCard from "@/components/common/CommonCards";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function PromoCards() {
+  const{t}=useLanguage();
   return (
     <CommonCard
       className="
@@ -17,17 +19,17 @@ export default function PromoCards() {
 
       {/* Badge */}
       <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold uppercase tracking-wide rounded-full bg-white/20 backdrop-blur-sm border border-white/10">
-        New
+      {t.promocards.badge}
       </span>
 
       {/* Title */}
       <h3 className="text-2xl font-bold mb-2 relative z-10">
-        Get 20% Off
+       {t.promocards.title}
       </h3>
 
       {/* Description */}
       <p className="text-sm text-white/85 mb-5 leading-relaxed relative z-10">
-        On your first plumbing service booking.
+       {t.promocards.description}
       </p>
 
       {/* Button */}
@@ -43,7 +45,7 @@ export default function PromoCards() {
           active:translate-y-0
         "
       >
-        Claim Offer
+      {t.promocards.button}
       </Button>
     </CommonCard>
   );

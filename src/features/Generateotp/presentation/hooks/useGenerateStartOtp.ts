@@ -15,9 +15,9 @@ export function useGenerateStartOtp() {
       // console.log("OTP generated successfully", data);
       toast.success("OTP generated successfully");
     },
-    onError: (error) => {
+    onError: (error:any) => {
       console.error("OTP generation failed", error);
-      toast.error("OTP generation failed");
+      toast.error(error?.response?.data?.message ||"OTP generation failed");
     }
   });
 }

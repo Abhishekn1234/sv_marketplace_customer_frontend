@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import Button from "../input/Button";
 
 type CommonModalProps = {
   open: boolean;
@@ -66,15 +67,15 @@ export default function CommonModal({
         >
           {/* Header */}
           {title && (
-            <div className="px-5 py-4 font-semibold text-lg flex items-center justify-between border-b">
+            <div className="px-5 py-4 font-semibold text-lg flex items-center justify-between border-0">
               <span>{title}</span>
 
-              <button
+              <Button
                 onClick={onClose}
                 className="text-gray-500 hover:text-black"
               >
                 ✕
-              </button>
+              </Button>
             </div>
           )}
 
@@ -85,7 +86,7 @@ export default function CommonModal({
 
           {/* Footer */}
           {footer && (
-            <div className="px-5 py-4 border-t flex justify-end gap-2">
+            <div className="px-5 py-4 border-0 flex justify-end gap-2">
               {footer}
             </div>
           )}

@@ -43,7 +43,7 @@ export default function ChangePasswordCard() {
       toast.success("Password updated successfully 🎉");
       navigate(-1);
     } catch (err: any) {
-      toast.error(err?.message || "Something went wrong");
+      toast.error(err?.response?.data?.message || "Something went wrong");
     }
   };
 

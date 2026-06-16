@@ -81,9 +81,8 @@ export default function LocationInputs() {
   navigate("/register");
 },
       onError: (error: any) => {
-        toast.error(
-          "Failed to save location: " + error.message
-        );
+       toast.error(error.response.data.message);
+        console.error(error);
       },
     });
   };

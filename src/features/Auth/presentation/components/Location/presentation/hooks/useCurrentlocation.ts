@@ -57,9 +57,9 @@ export const useUpdateCurrentLocation = () => {
       }
 
       toast.success("Location updated successfully!");
-    } catch (err) {
+    } catch (err:any) {
       console.error(err);
-      toast.error("Failed to get current location");
+      toast.error(err.response?.data.message)
     }
   };
 

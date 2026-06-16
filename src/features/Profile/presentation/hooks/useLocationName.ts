@@ -23,7 +23,7 @@ export const useUpdateLocation = () => {
         return result;
       } catch (err: any) {
         setError(err.message || "Failed to update location");
-        toast.error(err.message)
+        toast.error(err?.response?.data?.message)
         return null;
       } finally {
         setLoading(false);

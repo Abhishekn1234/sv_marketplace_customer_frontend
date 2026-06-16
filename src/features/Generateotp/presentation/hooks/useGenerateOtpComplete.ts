@@ -16,9 +16,9 @@ export function useGenerateOtpComplete() {
       // You can perform additional actions here
       toast.success("OTP generate successfully");
     },
-    onError: (error) => {
+    onError: (error:any) => {
       console.error("Failed to generate OTP", error);
-      toast.error(error.message);
+      toast.error(error?.response?.data?.message ||error.message);
     },
   });
 }

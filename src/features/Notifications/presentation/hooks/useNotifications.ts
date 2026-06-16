@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
-
 import type { GetNotificationsParams } from "../../domain/entities/notificationgetparams";
 import { GetNotificationsUseCase } from "../../domain/usecases/GetNotificationsUsecase";
 
@@ -15,9 +15,11 @@ export const notificationKeys = {
 };
 
 export const useNotifications = (filters?: GetNotificationsParams) => {
-  const setNotifications = useAuthStore((s) => s.setNotificationsList);
+  const setNotifications = useAuthStore(
+    (s) => s.setNotificationsList
+  );
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: notificationKeys.list(filters),
 
     initialPageParam: 1,
@@ -30,7 +32,7 @@ export const useNotifications = (filters?: GetNotificationsParams) => {
         unreadOnly: filters?.unreadOnly,
       });
 
-      const formatted = {
+      return {
         data: res?.data ?? [],
         pagination: res?.pagination ?? {
           totalItems: 0,
@@ -38,19 +40,23 @@ export const useNotifications = (filters?: GetNotificationsParams) => {
           hasNextPage: false,
         },
       };
-
-      // optional zustand sync
-      setNotifications(formatted.data);
-
-      return formatted;
     },
 
-    getNextPageParam: (lastPage) => {
-      return lastPage?.pagination?.hasNextPage
+    getNextPageParam: (lastPage) =>
+      lastPage?.pagination?.hasNextPage
         ? lastPage.pagination.currentPage + 1
-        : undefined;
-    },
+        : undefined,
 
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
+
+  useEffect(() => {
+    const allNotifications =
+      query.data?.pages.flatMap((p) => p.data) ?? [];
+
+    setNotifications(allNotifications);
+  }, [query.data, setNotifications]);
+
+  return query;
 };

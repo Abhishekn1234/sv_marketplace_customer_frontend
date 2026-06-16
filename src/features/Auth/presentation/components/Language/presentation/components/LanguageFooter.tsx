@@ -34,8 +34,8 @@ export default function LanguageFooter({ selectedLanguage, onContinue }: Languag
 
       toast.success(`Language selected: ${selectedLanguages}`);
       navigate("/location");
-    } catch (error) {
-      toast.error("Failed to save language. Please try again.");
+    } catch (error:any) {
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };

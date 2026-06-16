@@ -64,7 +64,7 @@ const RegistrationCard = () => {
 
       navigate("/verification");
     } catch (err: any) {
-      toast.error(err?.message?.[0] || err.message || "Registration failed");
+      toast.error(err.response.data.message);
     } finally {
       setLoading(false);
     }

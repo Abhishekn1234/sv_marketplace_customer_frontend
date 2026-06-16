@@ -26,7 +26,7 @@ export default function ForgotPasswordInput({
       toast.success("OTP sent to your email!");
       onNext(res.hash);
     } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP");
+      toast.error(err?.response?.data?.message || "Failed to send OTP");
     }
   };
 

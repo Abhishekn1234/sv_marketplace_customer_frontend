@@ -28,7 +28,7 @@ export const useAuth = () => {
       // toast.success(res.message);
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'Login failed ❌');
+      toast.error(err?.response?.data?.message || 'Login failed ❌');
     },
   });
 
@@ -39,7 +39,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Registration successful ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'Registration failed ❌');
+      toast.error(err?.response?.data?.message || 'Registration failed ❌');
     },
   });
 
@@ -50,7 +50,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'OTP sent successfully ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'Failed to send OTP ❌');
+      toast.error(err?.response?.data?.message || 'Failed to send OTP ❌');
     },
   });
 
@@ -61,7 +61,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'OTP verified ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'OTP verification failed ❌');
+      toast.error(err?.response?.data?.message || 'OTP verification failed ❌');
     },
   });
 
@@ -72,7 +72,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Password reset link sent ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'Failed to send password reset link ❌');
+      toast.error(err?.response?.data?.message || 'Failed to send password reset link ❌');
     },
   });
 
@@ -83,7 +83,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Password reset successful ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.message || 'Password reset failed ❌');
+      toast.error(err?.response?.data?.message  || 'Password reset failed ❌');
     },
   });
 

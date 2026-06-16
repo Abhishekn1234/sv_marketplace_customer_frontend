@@ -23,7 +23,7 @@ const LoginCard = () => {
       toast.success(response.message);
       navigate('/');
     } catch (err: any) {
-      toast.error(err.message || 'Login failed');
+      toast.error(err.response.data.message);
     }
   };
 

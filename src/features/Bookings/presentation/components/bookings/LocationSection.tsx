@@ -40,7 +40,7 @@ export default function LocationSelector({
       setPlaceName(`Lat: ${location.lat.toFixed(5)}, Lng: ${location.lng.toFixed(5)}`);
       setLocationMode("current");
     } catch (err: any) {
-      toast.error(err.message || "Unable to get location");
+      toast.error(err?.response?.data?.message || "Unable to get location");
     } finally {
       setIsGeocoding(false);
     }

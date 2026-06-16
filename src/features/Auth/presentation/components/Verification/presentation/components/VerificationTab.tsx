@@ -114,7 +114,7 @@ const resend = async () => {
       toast.success("OTP sent again");
     }
   } catch (err: any) {
-    toast.error(err.message || "Failed to resend OTP");
+    toast.error(err.response?.data?.message || "Failed to resend OTP");
   }
 };
   // // change phone
@@ -146,7 +146,7 @@ const resend = async () => {
       toast.success(response.message);
       navigate("/");
     } catch (err: any) {
-      toast.error(err.message || "OTP verification failed");
+      toast.error(err.response?.data?.message || "OTP verification failed");
     }
   };
 

@@ -28,7 +28,7 @@ export const useSubmitServiceReview = () => {
     },
 
     onError: (error: any) => {
-      toast.error(error?.message || "Failed to submit review");
+      toast.error(error?.response?.data.message || "Failed to submit review");
     },
   });
 };

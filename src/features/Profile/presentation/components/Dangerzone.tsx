@@ -1,9 +1,9 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { DangerZoneIcon, SecurityIcon, DeleteAccountIcon } from "@/components/icons";
+import { DangerZoneIcon, SecurityIcon } from "@/components/icons";
 import Button from "@/components/input/Button";
 import CommonCard from "@/components/common/CommonCards";
-
+// DeleteAccountIcon
 export default function DangerZone() {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -18,7 +18,7 @@ export default function DangerZone() {
       </h3>
 
       {/* Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
 
         {/* Change Password */}
         <Button
@@ -37,7 +37,7 @@ export default function DangerZone() {
         </Button>
 
         {/* Delete Account */}
-        <Button
+        {/* <Button
           leftIcon={<DeleteAccountIcon className="w-[18px] h-[18px]" />}
           className="
             flex items-center justify-center gap-2
@@ -49,7 +49,7 @@ export default function DangerZone() {
           "
         >
           {t.profilepage.deleteAccount}
-        </Button>
+        </Button> */}
 
       </div>
 

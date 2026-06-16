@@ -125,7 +125,7 @@ const currentBooking = localBooking ?? booking;
           setOtpPurpose(translationMessages["Work Start OTP"]);
           setOtpModalOpen(true);
         },
-        onError: () => toast.error(translationMessages["Failed Start OTP"]),
+        onError: (err:any) => toast.error(err.response?.data?.message ||translationMessages["Failed Start OTP"]),
       }
     );
   };
@@ -144,7 +144,7 @@ const currentBooking = localBooking ?? booking;
           setOtpPurpose(translationMessages["Work Completed OTP"]);
           setOtpModalOpen(true);
         },
-        onError: () => toast.error(translationMessages["Failed Complete OTP"]),
+        onError: (err:any) => toast.error(err.response?.data?.message ||translationMessages["Failed Complete OTP"]),
       }
     );
   };
@@ -260,8 +260,10 @@ const currentBooking = localBooking ?? booking;
                             },
                           });
                         },
-                        onError: () => {
-                          toast.error(translationMessages["Payment Verification Failed"]);
+                        onError: (err:any) => {
+                          
+                          toast.error(err?.response?.data?.message || translationMessages["Payment Verification Failed"])
+
                         },
                       }
                     );

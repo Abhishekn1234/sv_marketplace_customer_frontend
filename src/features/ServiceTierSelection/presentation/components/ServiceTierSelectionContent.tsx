@@ -118,7 +118,7 @@ export default function ServiceTierSelectionContent() {
         </Button>
 
         <p className="text-sm text-gray-400 font-medium">
-          Prices may vary based on your home's square footage.
+          {t.servicetierselectionpage["Prices may vary based on your home's square footage."]}
         </p>
 
         <Button

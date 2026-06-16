@@ -155,7 +155,7 @@ export default function BookingDetailAddress() {
          value
         )
       }
-      placeholder="Apartment, street, building..."
+      placeholder={t.bookingdetailpage["Apartment, street, building..."]}
       className="
         h-12
         w-full

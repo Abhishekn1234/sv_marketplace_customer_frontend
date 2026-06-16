@@ -22,7 +22,7 @@ export const useMarkAllAsRead = () => {
     try {
       await useCase.execute();
 
-      // Update notification list
+      // Optimistic update all notification caches
       queryClient.setQueriesData(
         { queryKey: ["notifications"] },
         (old: any) => {
@@ -41,15 +41,25 @@ export const useMarkAllAsRead = () => {
         }
       );
 
-      // Update badge instantly
+      // Reset unread badge
       queryClient.setQueryData(
         ["unread-count"],
         0
       );
 
-      toast.success("All notifications marked as read");
+      // Refetch all notification queries in background
+      await queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      toast.success(
+        "All notifications marked as read"
+      );
     } catch (err: any) {
-      toast.error(err?.message || "Failed");
+      toast.error(
+        err?.response?.data?.message ||
+          "Failed to mark notifications as read"
+      );
     }
   }, [useCase, queryClient]);
 

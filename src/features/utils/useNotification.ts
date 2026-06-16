@@ -51,7 +51,7 @@ export const useNotification = () => {
 
       watchIdRef.current = navigator.geolocation.watchPosition(
         handlePosition,
-        (err) => toast.error(err.message),
+        (err:any) => toast.error(err?.response?.data?.message),
         { enableHighAccuracy: true }
       );
 

@@ -2,6 +2,7 @@
 
 import { type ReactNode, useState, useMemo } from "react";
 import Button from "../input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export type Column<T> = {
   header: string;
@@ -19,7 +20,7 @@ type CommonTableProps<T> = {
 export default function CommonTable<T>({
   data,
   columns,
-  emptyText = "No data found",
+  emptyText,
   pageSize = 5,
 }: CommonTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +37,7 @@ export default function CommonTable<T>({
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-
+  const{t}=useLanguage();
   return (
   <div className="w-full">
     {/* Table */}
@@ -152,11 +153,11 @@ export default function CommonTable<T>({
       >
         {/* Info */}
         <div className="text-sm text-gray-500">
-          Page{" "}
+         {t.common.pagination.page}{" "}
           <span className="font-semibold text-gray-800">
             {currentPage}
           </span>{" "}
-          of{" "}
+          {t.common.pagination.of}{" "}
           <span className="font-semibold text-gray-800">
             {totalPages}
           </span>
@@ -186,7 +187,7 @@ export default function CommonTable<T>({
               disabled:opacity-40
             "
           >
-            Prev
+            {t.common.pagination.prev}
           </Button>
 
           {/* Page Numbers */}
@@ -252,7 +253,7 @@ export default function CommonTable<T>({
               disabled:opacity-40
             "
           >
-            Next
+           {t.common.pagination.next}
           </Button>
         </div>
       </div>

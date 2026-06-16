@@ -17,7 +17,7 @@ export const useSendOtpMobile = () => {
       toast.success("OTP sent successfully");
       return res;
     } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP");
+      toast.error(err.response?.data.message || "Failed to send OTP");
       throw err;
     } finally {
       setLoading(false);

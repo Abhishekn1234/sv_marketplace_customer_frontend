@@ -34,7 +34,7 @@ export default function ForgotResetPassword({
       toast.success("Password reset successful!");
       onDone();
     } catch (err: any) {
-      toast.error(err.message || "Failed to reset password");
+      toast.error(err.response?.data?.message || "Failed to reset password");
     }
   };
 

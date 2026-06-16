@@ -12,6 +12,13 @@
       "add": "Add",
       "open": "Open",
       "Video Call":"Video Call",
+      "Failed to load Bookings":"Failed to load Bookings",
+      "pagination":{
+       "prev":"Previous",
+       "next":"Next",
+       "page":"Page",
+       "of":"of"
+      },
 
       "exportPdf": "Export PDF",
 
@@ -21,7 +28,7 @@
       "invoiceDetails": "Invoice Details",
       "invoiceNo": "Invoice No",
       "status": "Status",
-
+      "No data available":"No Data available",
       "workers": "Workers",
       "pricingMode": "Pricing Mode",
       "rate": "Rate",
@@ -144,7 +151,8 @@
       "schedule": "Schedule"
     },
     "title": "Choose Your Service Level",
-    "description": "Select the tier that best fits your home's needs. All plans include our 100% satisfaction guarantee. Prices may vary based on your home's square footage.",
+    "description": "Select the tier that best fits your home's needs. All plans include our 100% satisfaction guarantee.",
+    "Prices may vary based on your home's square footage.":"Prices may vary based on your home's square footage.",
     "buttons": {
       "back": "Back to Service Selection",
       "continue": "Continue to Schedule"
@@ -160,6 +168,8 @@
     "serviceProfessional": "Service Professional",
     "equipment": "Equipment",
     "included": "Included",
+     "Apartment, street, building...":"Apartment, street, building...",
+     "e.g. Focus on kitchen cabinets, be careful with the glass table...":"e.g. Focus on kitchen cabinets, be careful with the glass table...",
  "serviceAddress": "Service Address",
   "change": "Change",
   "home": "Home",
@@ -187,6 +197,7 @@
   "returnHome": "Return Home",
   "viewBookings": "View All Bookings",
   "whatsNext": "What's Next?",
+ 
 
   "steps": {
     "step1": {
@@ -804,7 +815,12 @@
     "q3": "3. Is online payment available?",
     "location":"Location",
     "a3": "Yes, we support online and cash payments."
+  },
+   "promocards": {
+    "badge": "New",
+    "title": "Get 20% Off",
+    "description": "On your first plumbing service booking.",
+    "button": "Claim Offer"
   }
-
 
 }

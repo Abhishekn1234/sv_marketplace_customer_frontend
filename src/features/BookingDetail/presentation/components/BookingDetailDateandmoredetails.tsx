@@ -150,7 +150,7 @@ const selectedService = services?.find(
 
     await createBooking.mutateAsync(payload);
   } catch (error: any) {
-    toast.error(error?.message || "Booking failed");
+    toast.error(error?.response?.data?.message || error?.message);
   } finally {
     // ✅ ALWAYS stop loader
     setLoading(false);
@@ -313,7 +313,7 @@ const selectedService = services?.find(
       onChange={(e) =>
         setNotes(e.target.value)
       }
-      placeholder="e.g. Focus on kitchen cabinets, be careful with the glass table..."
+      placeholder={t.bookingdetailpage["e.g. Focus on kitchen cabinets, be careful with the glass table..."]}
       className="
         h-32
         w-full
