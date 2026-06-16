@@ -77,7 +77,8 @@ export function BookingActions({
  const canTrack =
   !isExpired &&
   TRACKABLE_STATUSES.includes(status);
-  const canDispute = true;
+ const canDispute =
+  status && status.toUpperCase() !== "REFUNDED";
 
  const showPrimaryAction = !isExpired;
   return (
