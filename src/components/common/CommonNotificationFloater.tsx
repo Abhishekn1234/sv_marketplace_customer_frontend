@@ -4,10 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-
-
 import { useLanguage } from "@/features/context/LanguageContext";
-
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { getNotificationTarget } from "@/features/Notifications/presentation/utils/notificationNavigation";
@@ -15,8 +12,6 @@ import { BellIcon } from "../icons/BellIcon";
 
 import clsx from "clsx";
 import { iconBase } from "./iconbase";
-
-
 
 type Props = {
   direction?: "up" | "down";
@@ -32,53 +27,51 @@ export default function CommonNotificationFloater({
 
   const { t } = useLanguage();
 
-  // -----------------------------
-  // FILTER
-  // -----------------------------
-  const notificationFilters = useMemo(
-    () => ({
-      page: 1,
-      limit: 100,
-      unreadOnly: false,
-    }),
-    []
+  const { mutateAsync: markAsRead } = useMarkNotificationRead();
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useNotifications({
+    unreadOnly: false,
+  });
+
+  // Fetch all pages automatically
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const notifications = useMemo(
+    () => data?.pages?.flatMap((page) => page.data) ?? [],
+    [data]
   );
 
-  // -----------------------------
-  // API FETCH (SOURCE OF TRUTH)
-  // -----------------------------
-  const { data } = useNotifications(notificationFilters);
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.isRead).length,
+    [notifications]
+  );
 
- const notifications =
-  data?.pages.flatMap((p) => p.data) ?? [];
-
-const unreadCount = notifications.filter(
-  (n) => !n.isRead
-).length;
-const {mutateAsync:markAsRead}=useMarkNotificationRead();
-
-  // -----------------------------
-  // CLICK HANDLER (OPTIMISTIC SAFE)
-  // -----------------------------
   const handleNotificationClick = async (item: any) => {
-  const target = getNotificationTarget(item);
-  if (!target) return;
+    const target = getNotificationTarget(item);
 
-  const id = item._id || item.id;
+    if (!target) return;
 
-  try {
-    await markAsRead(id); // React Query updates cache + unread count
+    const id = item._id || item.id;
 
-    navigate(target);
-    setOpen(false);
-  } catch (err) {
-    console.error("Failed to mark notification as read", err);
-  }
-};
+    try {
+      await markAsRead(id);
 
-  // -----------------------------
-  // OUTSIDE CLICK CLOSE
-  // -----------------------------
+      navigate(target);
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to mark notification as read", error);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -90,33 +83,32 @@ const {mutateAsync:markAsRead}=useMarkNotificationRead();
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
   }, []);
 
-  // -----------------------------
-  // UI
-  // -----------------------------
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* BUTTON */}
-     <Button
-  onClick={() => setOpen((prev) => !prev)}
-  variant="ghost"
-  size="lg"
-  className="relative flex items-center justify-center
-            "
->
-  <BellIcon className={clsx(iconBase)} />
+      <Button
+        onClick={() => setOpen((prev) => !prev)}
+        variant="ghost"
+        size="lg"
+        className="relative flex items-center justify-center"
+      >
+        <BellIcon className={clsx(iconBase)} />
 
-  {unreadCount > 0 && (
-    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
-      {unreadCount}
-    </span>
-  )}
-</Button>
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
+            {unreadCount}
+          </span>
+        )}
+      </Button>
 
-      {/* DROPDOWN */}
       {open && (
         <div
           className={`absolute z-50 bg-white rounded-2xl shadow-xl border w-72 sm:w-80 right-0 ${
@@ -125,7 +117,6 @@ const {mutateAsync:markAsRead}=useMarkNotificationRead();
               : "top-full mt-3"
           }`}
         >
-          {/* HEADER */}
           <div className="px-4 py-3 border-b flex justify-between">
             <h3 className="font-semibold text-sm">
               {t.notificationpage.title} ({unreadCount})
@@ -143,7 +134,6 @@ const {mutateAsync:markAsRead}=useMarkNotificationRead();
             </Button>
           </div>
 
-          {/* LIST */}
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">
@@ -152,13 +142,17 @@ const {mutateAsync:markAsRead}=useMarkNotificationRead();
             ) : (
               notifications.map((item: any) => (
                 <div
-                  key={item.id || item._id}
+                  key={item._id || item.id}
                   className={`px-4 py-3 border-b last:border-b-0 ${
-                    !item.isRead ? "bg-blue-50/40" : "bg-white"
+                    !item.isRead
+                      ? "bg-blue-50/40"
+                      : "bg-white"
                   }`}
                 >
                   <div
-                    onClick={() => handleNotificationClick(item)}
+                    onClick={() =>
+                      handleNotificationClick(item)
+                    }
                     className="cursor-pointer"
                   >
                     <p className="text-sm font-semibold">
@@ -184,6 +178,12 @@ const {mutateAsync:markAsRead}=useMarkNotificationRead();
                   </div>
                 </div>
               ))
+            )}
+
+            {isFetchingNextPage && (
+              <div className="p-3 text-center text-xs text-gray-500">
+                Loading notifications...
+              </div>
             )}
           </div>
         </div>
