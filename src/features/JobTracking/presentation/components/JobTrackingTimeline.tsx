@@ -68,11 +68,13 @@ export default function JobTrackingTimeline({
   }, [accessToken]);
 
 // ✅ Socket for real-time activity updates - now passes setLocalBooking for instant UI
-  useSocketTimelineJobTracking({
-    bookingId,
-    setLocalBooking,
-    navigate
-  });
+  if (!bookingId) return null;
+
+      useSocketTimelineJobTracking({
+        bookingId,
+        setLocalBooking,
+        navigate,
+      });
 
   // ✅ Use localBooking (merged with socket updates) for instant UI display
   // Falls back to booking prop if no socket updates yet
