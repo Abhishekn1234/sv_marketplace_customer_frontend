@@ -9,10 +9,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSocketJobProgressActivities } from "./hooks/useJobProgressSocket";
 import { useBookingDetail } from "@/features/Bookings/presentation/hooks/useBookingDetail";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobProgressPage() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
+  const{isRTLOrder}=useLanguage();
 
   // ✅ API base data
   const { booking: baseBooking, loading: isLoading } =
@@ -82,12 +84,14 @@ export default function JobProgressPage() {
   // =========================
   return (
     <PageContainer>
+      <div dir={`${isRTLOrder?"rtl":""}`}>
       <JobProgressHeader />
 
       <JobProgressContents
         booking={booking}
         loading={false}
       />
+      </div>
     </PageContainer>
   );
 }

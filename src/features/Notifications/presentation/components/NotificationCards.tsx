@@ -24,7 +24,7 @@ import { useNotificationFilters } from "../utils/notificationfilterskeylanguages
 import { useTheme } from "@/features/context/themeContext";
 
 export default function NotificationCards() {
-  const { t } = useLanguage();
+  const { t,isRTLOrder } = useLanguage();
   const navigate = useNavigate();
   const { theme } = useTheme();
 
@@ -135,11 +135,12 @@ export default function NotificationCards() {
   }, [fetchNextPage, hasNextPage]);
 
   return (
-   <div
-  className={`min-h-screen w-full ${
-    theme === "dark" ? "bg-zinc-950" : ""
-  }`}
->
+        <div
+        className={`min-h-screen w-full ${
+          theme === "dark" ? "bg-zinc-950" : ""
+        }`}
+        dir={isRTLOrder?"rtl":""}
+      >
       {/* HEADER */}
     <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">

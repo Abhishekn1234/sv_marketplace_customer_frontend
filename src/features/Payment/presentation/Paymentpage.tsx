@@ -1,162 +1,200 @@
 "use client";
 
-
 import { useState } from "react";
-import { useBookingPayment } from "./hooks/useBookingPayment";
-import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useGetPaymentGateway } from "./hooks/useGetPaymentGateway";
-import type { PaymentMethod } from "../domain/entities/intiatepayment";
-import { normalizeGateways } from "./utils/normalizedGateways";
-import { getIcon } from "./utils/getpaymentgatewayicon";
-import { getDisplayName } from "./utils/getDisplayNamepaymentgateways";
-import { useLanguage } from "@/features/context/LanguageContext";
+import { toast } from "react-toastify";
+
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
+import { useBookingPayment } from "./hooks/useBookingPayment";
+import { useGetPaymentGateway } from "./hooks/useGetPaymentGateway";
+
+import { normalizeGateways } from "./utils/normalizedGateways";
+import { getDisplayName } from "./utils/getDisplayNamepaymentgateways";
+import { getIcon } from "./utils/getpaymentgatewayicon";
+
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function PaymentPage() {
-  const [method, setMethod] = useState<string>("");
- const {t}=useLanguage();
-  const { mutate, isPending } = useBookingPayment();
-  const { data: gateways, isLoading } = useGetPaymentGateway();
+const [method, setMethod] = useState("");
 
-  const { state } = useLocation();
-  const navigate = useNavigate();
+const { t } = useLanguage();
+const navigate = useNavigate();
+const { state } = useLocation();
 
-  // ✅ Safe extraction
-  const bookingId = state?.bookingId ?? "";
-  const serviceName = state?.serviceName ?? "Service";
-  const price = Number(state?.price ?? 0);
-  const currency = state?.currency ?? "SAR";
+const { mutate, isPending } = useBookingPayment();
+const { data: gateways, isLoading } = useGetPaymentGateway();
 
-  // ✅ Prevent crash if accessed directly
-  if (!bookingId) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <button
-          onClick={() => navigate("/bookings")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-        >
-         {t.paymentpage.goToBookings}
-        </button>
-      </div>
-    );
-  }
+const bookingId = state?.bookingId ?? "";
+const serviceName = state?.serviceName ?? "Service";
+const price = Number(state?.price ?? 0);
+const currency = state?.currency ?? "SAR";
 
-  const handlePayment = () => {
-    if (!method) {
-      toast.error("Please select a payment method");
-      return;
-    }
+const normalized = normalizeGateways(gateways ?? []);
 
-    mutate(
-      {
-        bookingId,
-        paymentMethod: method as PaymentMethod,
-      },
-      {
-        onSuccess: (data) => {
-         
-         
+if (!bookingId) {
+return ( <div className="flex justify-center items-center h-screen">
+<Button
+onClick={() => navigate("/bookings")}
+className="px-6 py-3"
+>
+{t.paymentpage.goToBookings} </Button> </div>
+);
+}
 
-          
-          toast.success("Payment Initiated");
+const handlePayment = () => {
+if (!method) {
+toast.error("Please select payment method");
+return;
+}
 
-          navigate("/payment/callback", {
-            state: {
-              paymentId: data.paymentId,
-              status: "SUCCESS",
-              transactionId: data.paymentId,
-              bookingId,
-            },
-          });
-        },
-       onError: (err: any) => {
-          const message =
-            err?.response?.data?.message ||
-            err?.response?.data?.error ||
-            err?.message ||
-            "Payment Failed";
 
-          toast.error(message);
-          console.error("Payment Failed:", err);
-        },
+mutate(
+  {
+    bookingId,
+    paymentMethod: method as any,
+  },
+  {
+    onSuccess: (data) => {
+      if (method === "CASH") {
+        navigate("/payment/callback", {
+          state: {
+            paymentId: data.paymentId,
+            transactionId: data.paymentId,
+            bookingId,
+            status: "SUCCESS",
+          },
+        });
+
+        return;
       }
-    );
-  };
-  const normalized = normalizeGateways(gateways ?? []);
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 ">
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-         {t.paymentpage.title}
+
+      if (data.paymentUrl) {
+        toast.success("Redirecting to secure payment...");
+        window.location.href = data.paymentUrl;
+        return;
+      }
+
+      toast.error("Payment URL not found");
+    },
+
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Payment failed"
+      );
+    },
+  }
+);
+
+
+};
+
+return ( <div className="min-h-screen bg-slate-50 flex justify-center items-center px-4 py-10"> <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden">
+
+
+    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8">
+      <h1 className="text-3xl font-bold">
+        Complete Payment
+      </h1>
+
+      <p className="mt-2 opacity-90">
+        Secure booking payment
+      </p>
+    </div>
+
+    <div className="p-8">
+
+      <div className="bg-gray-50 border rounded-2xl p-5 mb-8">
+        <h2 className="font-semibold text-lg">
+          {serviceName}
         </h2>
 
-        {/* Service Info */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {serviceName}
-          </h3>
-          <p className="text-gray-500">{t.paymentpage.bookingId}: {bookingId}</p>
-          <p className="mt-2 text-xl font-bold text-gray-900">
-            {currency} {price.toFixed(2)}
-          </p>
-        </div>
-
-        {/* Payment Method */}
-        <p className="text-sm text-gray-500 mb-3 text-center font-medium">
-          {t.paymentpage.selectMethod}
+        <p className="text-sm text-gray-500 mt-2">
+          Booking ID: {bookingId}
         </p>
 
-        {/* Dynamic Methods */}
-    <div className="grid grid-cols-3 gap-4 mb-6">
-  {isLoading ? (
-   <CommonSpinner size={30} />
-  ) : normalized.length ? (
-    normalized.map((gateway) => {
-      const isSelected = method === gateway.type;
-
-      return (
-        <Button
-          key={gateway.id}
-          onClick={() => setMethod(gateway.type)}
-          className={`border rounded-xl p-4 flex flex-col items-center gap-2 transition
-            ${
-              isSelected
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
-        >
-          {getIcon(gateway.type)}
-
-          <span className="text-sm font-semibold">
-            {getDisplayName(gateway.type)}
+        <div className="mt-4">
+          <span className="text-3xl font-bold">
+            {currency} {price.toFixed(2)}
           </span>
-        </Button>
-      );
-    })
-  ) : (
-    <p className="col-span-3 text-center text-sm text-red-500">
-      {t.paymentpage.noMethods}
-    </p>
-  )}
+        </div>
+      </div>
+
+      <h3 className="font-semibold text-lg mb-4">
+        Select Payment Method
+      </h3>
+
+      {isLoading ? (
+        <div className="flex justify-center py-10">
+          <CommonSpinner size={40} />
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          {normalized.map((gateway) => {
+            const selected = method === gateway.type;
+
+            return (
+              <button
+                key={gateway.id}
+                onClick={() => setMethod(gateway.type)}
+                className={`
+                border-2 rounded-2xl p-5
+                transition-all duration-200
+                flex flex-col items-center gap-3
+
+                ${
+                  selected
+                    ? "border-blue-600 bg-blue-50 scale-105"
+                    : "border-gray-200 hover:border-blue-300"
+                }
+              `}
+              >
+                <div className="text-4xl">
+                  {getIcon(gateway.type)}
+                </div>
+
+                <span className="font-medium">
+                  {getDisplayName(gateway.type)}
+                </span>
+
+                {selected && (
+                  <span className="text-xs text-blue-600 font-semibold">
+                    Selected
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <Button
+        disabled={!method || isPending}
+        onClick={handlePayment}
+        className="
+        w-full
+        py-4
+        text-lg
+        font-semibold
+        rounded-2xl
+        bg-blue-600
+        hover:bg-blue-700
+        text-white
+      "
+      >
+        {isPending ? (
+          "Processing..."
+        ) : (
+          `Pay ${currency} ${price.toFixed(2)}`
+        )}
+      </Button>
+    </div>
+  </div>
 </div>
 
-        {/* Pay Button */}
-        <Button
-          onClick={handlePayment}
-          disabled={isPending}
-          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition disabled:bg-gray-300"
-        >
-          {isPending
-            ? t.paymentpage.processing
-            : method === "CASH"
-            ? `${t.paymentpage.confirmCash} (${currency} ${price.toFixed(2)})`
-            : `${t.paymentpage.pay} ${currency} ${price.toFixed(2)}`}
-        </Button>
-      </div>
-    </div>
-  );
+
+);
 }

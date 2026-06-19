@@ -2,96 +2,113 @@
 
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useVerifyPayment } from "../hooks/useVerifyPayment";
-import { toast } from "react-toastify";
-import { useLanguage } from "@/features/context/LanguageContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
+import { useVerifyPayment } from "../hooks/useVerifyPayment";
+import { useLanguage } from "@/features/context/LanguageContext";
+import type { PaymentStatus } from "../../domain/entities/paymentstatus";
+
 export default function PaymentCallbackPage() {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const verifyPayment = useVerifyPayment();
-  const { t } = useLanguage();
-  const queryClient = useQueryClient();
+const navigate = useNavigate();
+const location = useLocation();
 
-  const hasCalled = useRef(false);
+const queryClient = useQueryClient();
+const verifyPayment = useVerifyPayment();
 
-  const paymentId = state?.paymentId;
-  const status = state?.status;
-  const transactionId = state?.transactionId;
-  const bookingId = state?.bookingId;
+const { t } = useLanguage();
 
-  useEffect(() => {
-    const verify = async () => {
-      if (!paymentId || hasCalled.current) {
-        if (!paymentId) navigate("/bookings");
-        return;
-      }
+const called = useRef(false);
 
-      hasCalled.current = true;
+useEffect(() => {
+const verify = async () => {
+if (called.current) return;
 
-      try {
-        // 1. VERIFY PAYMENT
-        await verifyPayment.mutateAsync({
-          paymentId,
-          status,
-          transactionId,
-        });
 
-        toast.success(t.paymentpage.verified);
+  called.current = true;
 
-        // 2. UPDATE CACHE FIRST
-        queryClient.setQueryData(["bookings"], (old: any) => {
-          if (!Array.isArray(old)) return old;
+  const params = new URLSearchParams(location.search);
 
-          return old.map((b: any) =>
-            b._id === bookingId
-              ? {
-                  ...b,
-                  paymentStatus: "PAID",
-                  status: "COMPLETED",
-                }
-              : b
-          );
-        });
+  const paymentId = params.get("paymentId");
+  const sessionId = params.get("session_id");
+const rawStatus = params.get("status");
 
-        // 3. FORCE REFRESH BOOKINGS (VERY IMPORTANT FIX)
-        queryClient.invalidateQueries({ queryKey: ["bookings"] });
+const status: PaymentStatus =
+  rawStatus === "SUCCESS"
+    ? "SUCCESS"
+    : rawStatus === "FAILED"
+    ? "FAILED"
+    : "PENDING";
+  const bookingId = params.get("bookingId");
 
-        // 4. NAVIGATE
-        setTimeout(() => {
-          navigate("/jobcompleted", {
-            state: {
-              bookingId,
-              paymentDone: true,
-            },
-          });
-        }, 800);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.message ||
-            error?.message ||
-            t.paymentpage.failed
-        );
+  if (!paymentId) {
+    navigate("/bookings");
+    return;
+  }
 
-        setTimeout(() => {
-          navigate("/bookings");
-        }, 1200);
-      }
-    };
+  try {
+    await verifyPayment.mutateAsync({
+      paymentId,
+      transactionId: sessionId || paymentId,
+      status,
+    });
 
-    verify();
-  }, [paymentId, status, transactionId, bookingId, navigate, verifyPayment, queryClient, t]);
+    queryClient.invalidateQueries({
+      queryKey: ["bookings"],
+    });
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
-        <h2 className="text-xl font-bold mb-3">
-          {t.paymentpage.verifying}
-        </h2>
-      <CommonSpinner size={30} />
-      </div>
-    </div>
-  );
+    toast.success(t.paymentpage.verified);
+
+    setTimeout(() => {
+      navigate("/jobcompleted", {
+        replace: true,
+        state: {
+          bookingId,
+          paymentDone: true,
+        },
+      });
+    }, 1000);
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message ||
+        error?.message ||
+        t.paymentpage.failed
+    );
+
+    setTimeout(() => {
+      navigate("/bookings");
+    }, 1500);
+  }
+};
+
+verify();
+
+
+}, [
+location.search,
+navigate,
+queryClient,
+verifyPayment,
+t,
+]);
+
+return ( <div className="min-h-screen flex justify-center items-center bg-slate-50"> <div className="bg-white shadow-xl rounded-3xl p-10 text-center w-full max-w-md">
+
+
+    <CommonSpinner size={40} />
+
+    <h2 className="text-2xl font-bold mt-5">
+      Verifying Payment
+    </h2>
+
+    <p className="text-gray-500 mt-2">
+      Please wait while we confirm your payment.
+    </p>
+  </div>
+</div>
+
+
+);
 }

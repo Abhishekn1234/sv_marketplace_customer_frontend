@@ -7,9 +7,10 @@ import ServiceDetailHeader from "./components/ServiceDetailHeader";
 import CommonFaq from "@/components/common/CommonFaq";
 
 import type{ SortKey, FilterKey } from "../domain/entities/filterkeys";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function ServiceDetailPage() {
-  
+   const{isRTLOrder}=useLanguage();
 const [activeFilter, setActiveFilter] =
     useState<FilterKey>("All Services");
 
@@ -18,6 +19,7 @@ const [activeFilter, setActiveFilter] =
 
   return (
     <>
+    <div dir={isRTLOrder?"rtl":""}>
       <ServiceDetailBreadcrumb />
       <ServiceDetailHeader />
 
@@ -33,6 +35,7 @@ const [activeFilter, setActiveFilter] =
         sortBy={sortBy}
        
       />
+      </div>
 
       <CommonFaq />
     </>

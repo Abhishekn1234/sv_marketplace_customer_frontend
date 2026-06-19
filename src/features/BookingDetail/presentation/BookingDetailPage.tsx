@@ -2,13 +2,20 @@ import CommonFaq from "@/components/common/CommonFaq";
 import BookingDetailBreadCrumb from "./components/BookingDetailBreadCrumb";
 
 import BookingDetailHeader from "./components/BookingDetailHeader";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function BookingDetailPage(){
+    const {isRTLOrder}=useLanguage();
     return(
         <>
-        <BookingDetailBreadCrumb/>
-        <BookingDetailHeader/>
-       <CommonFaq/> 
+        <div
+  dir={isRTLOrder ? "rtl" : "ltr"}
+  className={isRTLOrder ? "text-right" : "text-left"}
+>
+  <BookingDetailBreadCrumb />
+  <BookingDetailHeader />
+</div>
+<CommonFaq/>
        
         </>
     )

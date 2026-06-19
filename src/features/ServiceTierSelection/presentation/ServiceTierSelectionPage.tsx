@@ -1,4 +1,5 @@
 
+import { useLanguage } from "@/features/context/LanguageContext";
 import ServiceTierSelectionBreadCrumb from "./components/ServiceTierSelectionBreadCrumb";
 import ServiceTierSelectionContent from "./components/ServiceTierSelectionContent";
 
@@ -10,9 +11,10 @@ import CommonFaq from "@/components/common/CommonFaq";
 
 
 export default function ServiceTierSelectionPage() {
+  const{isRTLOrder}=useLanguage();
   return (
    <>
-   <div>
+   <div dir={isRTLOrder?"rtl":""}>
    <ServiceTierSelectionBreadCrumb/>
    <ServiceTierSelectionTitleDescription/>
    <ServiceTierSelectionContent/>

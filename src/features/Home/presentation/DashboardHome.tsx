@@ -10,13 +10,13 @@ import SatisfactionGuarantee from "./components/home/SatisificationGuarantte";
 import PromoCards from "./components/home/PromoCards";
 import CommonFaq from "@/components/common/CommonFaq";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-
+import { useLanguage } from "@/features/context/LanguageContext";
 export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
-
+ const{isRTLOrder}=useLanguage()
 
   useEffect(() => {
     if (apiResponse) {
@@ -45,7 +45,7 @@ export default function WebsiteHome() {
   if (error) return <div>Error loading categories</div>;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10" dir={`${isRTLOrder?"rtl":""}`}>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
        
         <div className="flex flex-col gap-6">

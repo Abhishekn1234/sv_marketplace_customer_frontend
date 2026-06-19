@@ -232,25 +232,25 @@ const selectedService = services?.find(
     </h2>
 
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {times.map((time, index) => (
-        <div
-          key={index}
-          onClick={() =>
-            setSelectedTime(index)
-          }
-          className={`flex cursor-pointer items-center justify-center rounded-xl border-2 p-4 text-sm font-semibold transition-all
-
-            ${
-              selectedTime === index
-                ? "border-blue-600 bg-blue-600 text-white shadow-lg"
-                : "border-gray-200 bg-white hover:border-blue-600"
-            }
-          `}
-        >
-          {time}
-        </div>
-      ))}
+  {times.map((time, index) => (
+    <div
+      key={index}
+      onClick={() => setSelectedTime(index)}
+      className={`flex cursor-pointer items-center justify-center rounded-xl border-2 p-4 text-sm font-semibold transition-all
+        ${
+          selectedTime === index
+            ? "border-blue-600 bg-blue-600 text-white shadow-lg"
+            : "border-gray-200 bg-white hover:border-blue-600"
+        }
+      `}
+    >
+      {/* FORCE CORRECT TIME ORDER */}
+      <span dir="ltr" className="inline-block">
+        {time}
+      </span>
     </div>
+  ))}
+</div>
   </div>
 
   {/* Duration */}

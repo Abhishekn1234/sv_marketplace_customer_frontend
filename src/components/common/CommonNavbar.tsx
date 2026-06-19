@@ -11,8 +11,6 @@ import {
   Shield,
   HelpCircle,
   MapPin,
-  // CheckCircle2,
-  // Circle,
 } from "lucide-react";
 
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
@@ -24,6 +22,9 @@ import { UserIcon } from "../icons";
 import { Image, Input } from "../input";
 import Button from "../input/Button";
 import OnboardingChecklist from "./OnboardingCheckList";
+import Select from "../input/Select";
+import { languages } from "./languages";
+import { toast } from "react-toastify";
 
 interface NavbarProps {
   showBackButton?: boolean;
@@ -39,10 +40,6 @@ interface NavbarProps {
   showHomeLinks?: boolean;
 }
 
-// Onboarding steps definition — extend this array to add more steps
-
-
-
 const CommonNavbar: React.FC<NavbarProps> = ({
   showBackButton = false,
   showSearch = false,
@@ -54,29 +51,37 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 }) => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
-
+  const { isRTLOrder } = useLanguage();
   const { user, current_location } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { handleUseCurrentLocation } = useUpdateCurrentLocation();
   const { t } = useLanguage();
 
   const profilePic = user?.profilePictureUrl;
-
   const location = current_location?.addresses ?? [];
- const ONBOARDING_STEPS = [
-  {
-    id: "location",
-    label: t.onboarding.location.label,
-    description: t.onboarding.location.description,
-  },
-  {
-    id: "notifications",
-    label: t.onboarding.notifications.label,
-    description: t.onboarding.notifications.description,
-  },
-] as const;
-const notificationRef = useRef<HTMLDivElement | null>(null);
 
+  const ONBOARDING_STEPS = [
+    {
+      id: "location",
+      label: t.onboarding.location.label,
+      description: t.onboarding.location.description,
+    },
+    {
+      id: "notifications",
+      label: t.onboarding.notifications.label,
+      description: t.onboarding.notifications.description,
+    },
+  ] as const;
+
+  const language = useAuthStore((state) => state.language);
+  const setLanguage = useAuthStore((state) => state.setLanguage);
+
+  const handleChange = (code: string, label: string) => {
+    setLanguage(code);
+    toast.success(`Language changed to ${label}`);
+  };
+
+  const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const currentLocation =
     location.find((addr) => addr.type === "home")?.value ||
@@ -85,40 +90,35 @@ const notificationRef = useRef<HTMLDivElement | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
- const hasLocation = Boolean(
-  current_location?.lat != null &&
-    current_location?.lng != null &&
-    currentLocation?.trim()
-);
-
-  // Derive per-step completion from real state
-const hasNotificationsEnabled = true; // replace with real API/state
-
-const stepCompletion = {
-  location: hasLocation,
-  notifications: hasNotificationsEnabled,
-};
-
-  const allStepsDone = ONBOARDING_STEPS.every(
-    (step) => stepCompletion[step.id]
+  const hasLocation = Boolean(
+    current_location?.lat != null &&
+      current_location?.lng != null &&
+      currentLocation?.trim()
   );
 
-  // Show onboarding if any step is incomplete and the user hasn't dismissed it
- useEffect(() => {
-  const isLocationEmpty = !currentLocation?.trim();
+  const hasNotificationsEnabled = true;
+  const stepCompletion = {
+    location: hasLocation,
+    notifications: hasNotificationsEnabled,
+  };
 
-  setShowOnboarding(isLocationEmpty);
-}, [currentLocation]);
-  // Auto-dismiss once every step is complete
+  const allStepsDone = ONBOARDING_STEPS.every((step) => stepCompletion[step.id]);
+
+  useEffect(() => {
+    const isLocationEmpty = !currentLocation?.trim();
+    setShowOnboarding(isLocationEmpty);
+  }, [currentLocation]);
+
   useEffect(() => {
     if (allStepsDone && showOnboarding) {
       const timer = setTimeout(() => {
         localStorage.setItem("location-onboarding-seen", "true");
         setShowOnboarding(false);
-      }, 1500); // brief delay so user sees the final checkmark
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [allStepsDone, showOnboarding]);
@@ -135,6 +135,22 @@ const stepCompletion = {
   const jobTrackingPage = routerLocation.pathname.startsWith("/jobtracking/");
   const jobCompletePage = routerLocation.pathname === "/jobcompleted";
 
+  const isTransparentPage =
+    isBookingPage ||
+    isHomePage ||
+    serviceRatingPage ||
+    jobProgressPage ||
+    jobTrackingPage ||
+    jobCompletePage;
+
+  const showLocationSection =
+    showLocation ||
+    isHomePage ||
+    isBookingPage ||
+    serviceRatingPage ||
+    jobProgressPage ||
+    jobTrackingPage;
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -148,265 +164,329 @@ const stepCompletion = {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setShowMobileSearch(false);
+  }, [routerLocation.pathname]);
+
+  const navLinks = [
+    { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
+    { icon: Info, label: t.navbar.About, to: "/about" },
+    { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
+    { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
+  ];
+
   return (
     <>
       <header
-  className={`top-0 z-50 w-full relative ${
-    isBookingPage
-      ? "bg-transparent shadow-none"
-      : isHomePage
-      ? "bg-transparent"
-      : jobTrackingPage
-      ? "bg-transparent shadow-none"
-      : serviceRatingPage
-      ? "bg-transparent shadow-none"
-      : jobProgressPage
-      ? "bg-transparent shadow-none"
-      : jobCompletePage
-      ? "bg-transparent shadow-none"
-      : "bg-white border-b border-gray-200 shadow-sm"
-  }`}
->
-  <div
-    className={`flex items-center py-3 px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 ${
-      isBookingPage ||
-      isHomePage ||
-      serviceRatingPage ||
-      jobProgressPage ||
-      jobTrackingPage ||
-      jobCompletePage
-        ? "max-w-7xl mx-auto justify-between"
-        : "w-full justify-between"
-    }`}
-  >
-    {/* LEFT SECTION */}
-    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-      {/* LOGO */}
-      <div
-        onClick={() => navigate("/")}
-        className="flex items-center gap-2 cursor-pointer shrink-0"
+        className={`top-0 z-50 w-full relative ${
+          isTransparentPage
+            ? "bg-transparent shadow-none"
+            : "bg-white border-b border-gray-200 shadow-sm"
+        }`}
+        dir={isRTLOrder ? "rtl" : "ltr"}
       >
-        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-            <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
-          </svg>
-        </div>
-
-        <span className="hidden sm:block font-bold text-lg text-gray-900">
-          {title}
-        </span>
-      </div>
-
-      {/* LOCATION SECTION */}
-      {(showLocation ||
-        isHomePage ||
-        isBookingPage ||
-        serviceRatingPage ||
-        jobProgressPage ||
-        jobTrackingPage) && (
+        {/* ── MAIN NAV ROW ── */}
         <div
-          ref={dropdownRef}
-          className="relative flex flex-col min-w-0 flex-1"
+          className={`flex items-center h-14 sm:h-16 px-3 sm:px-5 lg:px-8 gap-2 ${
+            isTransparentPage ? "max-w-7xl mx-auto" : "w-full"
+          } justify-between`}
         >
-          {/* LOCATION INPUT */}
-          <Input
-            variant="unstyled"
-            onClick={() => setShowDropdown((prev) => !prev)}
-            value={currentLocation || ""}
-            readOnly
-            placeholder={!currentLocation ? "Select location" : ""}
-            className="cursor-pointer px-0 py-0 placeholder:text-gray-400 truncate max-w-[160px] sm:max-w-xs"
-            rightElement={
-              !currentLocation ? (
-                <MapPin className="w-4 h-4 text-gray-400" />
-              ) : null
-            }
-          />
-
-          {/* ONBOARDING */}
-          {showOnboarding && (
-            <OnboardingChecklist
-              steps={ONBOARDING_STEPS.map((step) => ({
-                ...step,
-                onAction:
-                  step.id === "location"
-                    ? handleUseCurrentLocation
-                    : () =>
-                        notificationRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        }),
-                actionLabel: step.id === "location" ? "Use" : "View",
-              }))}
-              completion={stepCompletion}
-              onClose={dismissOnboarding}
-              allDone={allStepsDone}
-              anchorRef={notificationRef}
-            />
-          )}
-
-          {/* DROPDOWN */}
-          {showDropdown && (
-            <div
-  className={`
-    absolute top-full mt-2
-    w-[90vw] sm:w-72 md:w-80
-    max-w-[220px]
-    bg-white border border-gray-200
-    rounded-xl shadow-xl
-    z-[9999]
-
-    overflow-hidden
-    animate-fadeIn
-
-    ${isBookingPage || serviceRatingPage
-      ? "left-1/2 -translate-x-1/2"
-      : "left-0 sm:left-0"
-    }
-
-    sm:left-0
-  `}
->
-             <Button
-  onClick={handleUseCurrentLocation}
-  className="
-    w-full flex items-center
-    px-4 py-3
-    text-sm font-medium text-gray-700
-    hover:bg-blue-50 active:bg-blue-100
-    transition-colors
-    rounded-none
-  "
->
-  {t.navbar["Use current location"]}
-</Button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* BACK BUTTON */}
-      {showBackButton && (
-        <Button
-          onClick={() => navigate(-1)}
-          className="px-2 sm:px-3 py-2 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap"
-        >
-          {t.navbar.Back}
-        </Button>
-      )}
-    </div>
-
-    {/* RIGHT SECTION */}
-    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-      {rightButton && (
-        <Link
-          to={rightButton.to}
-          className="hidden sm:flex items-center justify-center px-4 sm:px-5 py-2 text-blue-600 border-2 border-blue-600 rounded-full text-sm font-semibold hover:bg-blue-600 hover:text-white transition"
-        >
-          {rightButton.label}
-        </Link>
-      )}
-
-      {showHomeLinks && (
-        <div className="hidden lg:flex items-center gap-2">
-          {[
-            { label: t.navbar.Bookings, to: "/bookings" },
-            { label: t.navbar.About, to: "/about" },
-            { label: t.navbar.Privacy, to: "/privacy" },
-            { label: t.navbar.Help, to: "/help" },
-          ].map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="px-3 py-2 text-sm font-medium rounded-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition"
+          {/* ── LEFT: Logo + Location / Back ── */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            {/* Logo */}
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+              aria-label="Go to home"
             >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      )}
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-white">
+                  <path d="M12 2.1L2 9.6v11.3h8.2v-6.5h3.6v6.5H22V9.6L12 2.1z" />
+                </svg>
+              </div>
+              <span className="hidden sm:block font-bold text-base lg:text-lg text-gray-900 whitespace-nowrap">
+                {title}
+              </span>
+            </button>
 
-      {/* SEARCH */}
-      {showSearch && (
-        <div className="hidden md:flex items-center relative">
-          <Input
-            value={searchTerm}
-            onChange={(value) => setSearchTerm(value)}
-            placeholder={t.navbar.SearchPlaceholder}
-            className="pl-10 bg-white w-40 lg:w-64"
-            size="md"
-            radius="lg"
-          />
-          <Search className="w-4 h-4 text-gray-400 absolute left-3" />
-        </div>
-      )}
+            {/* Back Button */}
+            {showBackButton && (
+              <Button
+                onClick={() => navigate(-1)}
+                className="px-2 sm:px-3 py-1.5 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap shrink-0"
+              >
+                {t.navbar.Back}
+              </Button>
+            )}
 
-      {/* USER CONTROLS */}
-      {showUserControls && user && (
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div ref={notificationRef}>
-            <CommonNotificationFloater />
+            {/* Location picker */}
+            {showLocationSection && (
+              <div
+                ref={dropdownRef}
+                className="relative flex flex-col min-w-0 flex-1 max-w-[160px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-xs"
+              >
+                <Input
+                  variant="unstyled"
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  value={currentLocation || ""}
+                  readOnly
+                  placeholder={!currentLocation ? "Select location" : ""}
+                  className="cursor-pointer px-0 py-0 placeholder:text-gray-400 truncate w-full text-sm sm:text-base"
+                  rightElement={
+                    !currentLocation ? (
+                      <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                    ) : null
+                  }
+                />
+
+                {/* Onboarding tooltip */}
+                {showOnboarding && (
+                  <OnboardingChecklist
+                    steps={ONBOARDING_STEPS.map((step) => ({
+                      ...step,
+                      onAction:
+                        step.id === "location"
+                          ? handleUseCurrentLocation
+                          : () =>
+                              notificationRef.current?.scrollIntoView({
+                                behavior: "smooth",
+                              }),
+                      actionLabel: step.id === "location" ? "Use" : "View",
+                    }))}
+                    completion={stepCompletion}
+                    onClose={dismissOnboarding}
+                    allDone={allStepsDone}
+                    anchorRef={notificationRef}
+                  />
+                )}
+
+                {/* Location dropdown */}
+                {showDropdown && (
+                  <div
+                    className={`
+                      absolute top-full mt-2 z-[9999]
+                      w-56 sm:w-64 md:w-72
+                      bg-white border border-gray-200
+                      rounded-xl shadow-xl overflow-hidden
+                      animate-fadeIn
+                      ${
+                        isBookingPage || serviceRatingPage
+                          ? "left-1/2 -translate-x-1/2"
+                          : isRTLOrder
+                          ? "right-0"
+                          : "left-0"
+                      }
+                    `}
+                  >
+                    <Button
+                      onClick={handleUseCurrentLocation}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 active:bg-blue-100 transition-colors rounded-none"
+                    >
+                      <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+                      {t.navbar["Use current location"]}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          <Image
-            src={profilePic}
-            alt="Profile"
-            onClick={() => navigate("/profile")}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
-            fallback={
-              <div
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center cursor-pointer"
-                onClick={() => navigate("/profile")}
+          {/* ── RIGHT: Controls ── */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 shrink-0">
+            {/* Desktop nav links */}
+            {showHomeLinks && (
+              <nav className="hidden lg:flex items-center gap-1">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="px-3 py-1.5 text-sm font-medium rounded-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition whitespace-nowrap"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
+
+            {/* Desktop search */}
+            {showSearch && (
+              <>
+                {/* Expanded on md+ */}
+                <div className="hidden md:flex items-center relative">
+                  <Input
+                    value={searchTerm}
+                    onChange={(value) => setSearchTerm(value)}
+                    placeholder={t.navbar.SearchPlaceholder}
+                    className="pl-9 bg-white w-36 lg:w-56 xl:w-64 text-sm"
+                    size="md"
+                    radius="lg"
+                  />
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
+                </div>
+
+                {/* Icon-only toggle on small screens */}
+                <button
+                  className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition text-gray-600"
+                  onClick={() => setShowMobileSearch((prev) => !prev)}
+                  aria-label="Toggle search"
+                >
+                  {showMobileSearch ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Search className="w-5 h-5" />
+                  )}
+                </button>
+              </>
+            )}
+
+            {/* Language selector — hidden on mobile, shown sm+ */}
+            <div className="hidden sm:block">
+              <Select
+                value={language}
+                onChange={(code) => {
+                  const selectedLanguage = languages.find(
+                    (lang) => lang.code === code
+                  );
+                  if (!selectedLanguage) return;
+                  handleChange(selectedLanguage.code, selectedLanguage.label);
+                }}
+                options={languages.map((lang) => ({
+                  label: lang.label,
+                  value: lang.code,
+                  icon: <span className="text-lg">{lang.flag}</span>,
+                }))}
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+
+            {/* CTA button */}
+            {rightButton && (
+              <Link
+                to={rightButton.to}
+                className="hidden sm:flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 text-blue-600 border-2 border-blue-600 rounded-full text-sm font-semibold hover:bg-blue-600 hover:text-white transition whitespace-nowrap"
               >
-                <UserIcon />
+                {rightButton.label}
+              </Link>
+            )}
+
+            {/* User controls: notifications + avatar */}
+            {showUserControls && user && (
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div ref={notificationRef}>
+                  <CommonNotificationFloater />
+                </div>
+
+                <Image
+                  src={profilePic}
+                  alt="Profile"
+                  onClick={() => navigate("/profile")}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover cursor-pointer hover:scale-105 transition"
+                  fallback={
+                    <div
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-100 transition"
+                      onClick={() => navigate("/profile")}
+                    >
+                      <UserIcon />
+                    </div>
+                  }
+                />
               </div>
-            }
-          />
-        </div>
-      )}
+            )}
 
-      {/* MOBILE MENU BUTTON */}
-      {showHomeLinks && (
-        <Button
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-        >
-          {mobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </Button>
-      )}
-    </div>
-  </div>
-
-  {/* MOBILE MENU (UNCHANGED) */}
-  {mobileMenuOpen && (
-    <div className="lg:hidden border-t bg-white shadow-md">
-      <div className="flex flex-col p-4 gap-3">
-        {[
-          { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
-          { icon: Info, label: t.navbar.About, to: "/about" },
-          { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
-          { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
-        ].map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50"
+            {/* Mobile hamburger — always shown on mobile (language lives in drawer);
+                on desktop only shown when showHomeLinks is true */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition text-gray-700"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
             >
-              <Icon className="w-5 h-5 text-gray-400" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-    </div>
-  )}
-</header>
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* ── MOBILE SEARCH BAR (expands below nav row) ── */}
+        {showSearch && showMobileSearch && (
+          <div className="md:hidden border-t bg-white px-3 py-2.5 animate-fadeIn">
+            <div className="relative">
+              <Input
+                value={searchTerm}
+                onChange={(value) => setSearchTerm(value)}
+                placeholder={t.navbar.SearchPlaceholder}
+                className="pl-9 w-full text-sm"
+                size="md"
+                radius="lg"
+                autoFocus
+              />
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
+        )}
+
+        {/* ── MOBILE MENU ── */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t bg-white shadow-md">
+            <nav className="flex flex-col p-3 gap-1">
+              {navLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition text-sm font-medium"
+                  >
+                    <Icon className="w-4 h-4 shrink-0 text-gray-400" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <div className="border-t border-gray-100 mt-1 pt-2">
+                <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  Language
+                </p>
+                <Select
+                  value={language}
+                  onChange={(code) => {
+                    const selectedLanguage = languages.find(
+                      (lang) => lang.code === code
+                    );
+                    if (!selectedLanguage) return;
+                    handleChange(selectedLanguage.code, selectedLanguage.label);
+                    setMobileMenuOpen(false);
+                  }}
+                  options={languages.map((lang) => ({
+                    label: lang.label,
+                    value: lang.code,
+                    icon: <span className="text-lg">{lang.flag}</span>,
+                  }))}
+                  size="sm"
+                  variant="ghost"
+                />
+              </div>
+
+              {/* Mobile CTA button */}
+              {rightButton && (
+                <Link
+                  to={rightButton.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mt-1 flex items-center justify-center px-4 py-2 text-blue-600 border-2 border-blue-600 rounded-full text-sm font-semibold hover:bg-blue-600 hover:text-white transition"
+                >
+                  {rightButton.label}
+                </Link>
+              )}
+            </nav>
+          </div>
+        )}
+      </header>
     </>
   );
 };

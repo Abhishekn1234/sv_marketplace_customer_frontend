@@ -28,6 +28,15 @@ interface BookingActionsProps {
 /* =========================
    ✅ COMPONENT
 ========================= */
+
+
+/* =========================
+   COMPONENT
+========================= */
+
+/* =========================
+   COMPONENT
+========================= */
 export function BookingActions({
   booking,
   label,
@@ -38,35 +47,25 @@ export function BookingActions({
   onCheckProgress,
   navigatetodispute,
 }: BookingActionsProps) {
-  const { t } = useLanguage();
+  const { t, isRTLOrder } = useLanguage();
 
   const status = booking.status as BookingStatus;
 
-  /* =========================
-     ✅ DATE SAFETY
-  ========================= */
   const isOlderThan10Days = booking.updatedAt
     ? Date.now() - new Date(booking.updatedAt).getTime() >
       1000 * 60 * 60 * 24 * 10
     : false;
 
-  const shouldShowButtons = !(
-    status === "PAID" && isOlderThan10Days
-  );
+  const shouldShowButtons = !(status === "PAID" && isOlderThan10Days);
 
   if (!shouldShowButtons) return null;
 
-  /* =========================
-     ✅ ACTION CONDITIONS
-  ========================= */
+  const isExpired = status === "EXPIRED";
 
-  // ✅ Pay Now logic
-  
-    const isExpired = status === "EXPIRED";
-   const shouldPayNow =
-  !isExpired &&
-  (status === "COMPLETED" || status === "INVOICE_GENERATED");
-  // ✅ Track progress visibility
+  const shouldPayNow =
+    !isExpired &&
+    (status === "COMPLETED" || status === "INVOICE_GENERATED");
+
   const TRACKABLE_STATUSES: BookingStatus[] = [
     "IN_PROGRESS",
     "COMPLETED",
@@ -74,33 +73,40 @@ export function BookingActions({
     "REQUESTED",
   ];
 
- const canTrack =
-  !isExpired &&
-  TRACKABLE_STATUSES.includes(status);
- const canDispute =
-  status && status.toUpperCase() !== "REFUNDED";
+  const canTrack =
+    !isExpired && TRACKABLE_STATUSES.includes(status);
 
- const showPrimaryAction = !isExpired;
+  const canDispute =
+    status && status.toUpperCase() !== "REFUNDED";
+
+  const showPrimaryAction = !isExpired;
+
   return (
-    <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full sm:w-auto">
-      
+    <div
+      className={`
+        flex flex-col sm:flex-row
+        justify-end items-center gap-2
+        w-full sm:w-auto
+        ${isRTLOrder ? "sm:flex-row-reverse" : ""}
+      `}
+    >
+
       {/* Primary Action */}
-    {showPrimaryAction && (
-  <Button
-    onClick={onActionClick}
-    className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
-      !clickable ? "cursor-not-allowed opacity-60" : ""
-    }`}
-    disabled={!clickable}
-  >
-    {label}
-  </Button>
-)}
+      {showPrimaryAction && (
+        <Button
+          onClick={onActionClick}
+          className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
+            !clickable ? "cursor-not-allowed opacity-60" : ""
+          }`}
+          disabled={!clickable}
+        >
+          {label}
+        </Button>
+      )}
 
       {/* Track Progress */}
       {canTrack && (
         <Button
-        
           onClick={onCheckProgress}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
         >
@@ -109,25 +115,25 @@ export function BookingActions({
       )}
 
       {/* Pay Now / View Details */}
-  <Button
-  onClick={() => {
-    if (shouldPayNow) {
-      onPayNow({
-        bookingId: booking._id,
-        serviceName: booking.service?.name ?? "Service",
-        price: booking?.totalCost ?? 0,
-        currency: booking.currency ?? "SAR",
-      });
-    } else {
-      onViewDetails();
-    }
-  }}
-  className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
->
-  {shouldPayNow
-    ? t.Bookingspage.Actions.payNow
-    : t.Bookingspage.Actions.viewDetails}
-</Button>
+      <Button
+        onClick={() => {
+          if (shouldPayNow) {
+            onPayNow({
+              bookingId: booking._id,
+              serviceName: booking.service?.name ?? "Service",
+              price: booking?.totalCost ?? 0,
+              currency: booking.currency ?? "SAR",
+            });
+          } else {
+            onViewDetails();
+          }
+        }}
+        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+      >
+        {shouldPayNow
+          ? t.Bookingspage.Actions.payNow
+          : t.Bookingspage.Actions.viewDetails}
+      </Button>
 
       {/* Dispute */}
       {canDispute && (

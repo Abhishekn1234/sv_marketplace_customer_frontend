@@ -6,11 +6,12 @@ import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings"
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function JobTrackingPage() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
-
+ const {isRTLOrder}=useLanguage();
   const { bookings, loading } = useBookings();
 
   const booking = bookings?.find(
@@ -59,9 +60,11 @@ export default function JobTrackingPage() {
   }
 
   return (
+    <div dir={isRTLOrder?"rtl":""}>
     <PageContainer>
       <JobTrackingHeader booking={booking} />
       <JobTrackingContent bookings={booking} loading={false} />
     </PageContainer>
+    </div>
   );
 }

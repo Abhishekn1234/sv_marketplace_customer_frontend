@@ -5,18 +5,14 @@ import { Label, Radio } from "@/components/input";
 import { useAuthStore } from "@/features/core/store/auth";
 import CommonCard from "@/components/common/CommonCards";
 import { toast } from "react-toastify";
+import { languages } from "@/components/common/languages";
 
 export default function LanguageSettings() {
   const language = useAuthStore((state) => state.language);
   const setLanguage = useAuthStore((state) => state.setLanguage);
   const { t } = useLanguage();
 
-  const languages = [
-    { code: "EN", label: "English" },
-    { code: "HI", label: "Hindi" },
-    { code: "AR", label: "Arabic" },
-  ];
-
+ 
   const handleChange = (code: string, label: string) => {
     setLanguage(code);
     toast.success(`Language changed to ${label}`);

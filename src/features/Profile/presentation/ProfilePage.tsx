@@ -1,3 +1,4 @@
+import { useLanguage } from "@/features/context/LanguageContext";
 import DangerZone from "./components/Dangerzone";
 import LanguageSettings from "./components/LanguageSettings";
 import PrefeneceandNotifications from "./components/Preferenceandnotifications";
@@ -8,8 +9,9 @@ import QuickActions from "./components/QuickActions";
 import SavedAddress from "./components/SavedAddress";
 
 export default function Profile() {
+  const{isRTLOrder}=useLanguage();
   return (
-    <div className="w-full">
+    <div className="w-full" dir={`${isRTLOrder?"rtl":""}`}>
       {/* Top Section */}
       <ProfileTop />
 

@@ -49,6 +49,8 @@ import VideoCallPage from "./features/WorkerChat/presentation/components/VideoCa
 import AIChatPage from "./features/JobTracking/presentation/components/AIChatWindow";
 import ScrollToTop from "./ScrollToTop";
 import NotificationNavigation from "./NavigationNotification";
+import PaymentStripeCallbackPage from "./features/Payment/presentation/components/PaymentStripeCallbackPage";
+import PaymentStripeCallbackFailurePage from "./features/Payment/presentation/components/PaymentStripeCallbackFailurePage";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -160,6 +162,9 @@ function App() {
                 path="jobtracking/:bookingId"
                 element={<JobTrackingPage />}
               />
+              <Route path="/payment/success"
+              element={<PaymentStripeCallbackPage/>}/>
+              <Route path="/payment/failure" element={<PaymentStripeCallbackFailurePage/>}/>
               <Route
                 path="jobprogress/:bookingId"
                 element={<JobProgressPage />}
