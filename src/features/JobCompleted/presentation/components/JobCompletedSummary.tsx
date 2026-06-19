@@ -78,7 +78,7 @@ export default function JobCompletedSummary({ booking }: any) {
 
       {/* TOTAL */}
       <div className="flex justify-between">
-        <span className="font-semibold">Total Paid</span>
+        <span className="font-semibold">{t.common.totalPaid}</span>
         <span className="text-emerald-600 font-bold">
           {currency} {price}
         </span>
