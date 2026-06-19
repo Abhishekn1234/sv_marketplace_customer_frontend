@@ -66,9 +66,9 @@ export default function PaymentPage() {
   if (!bookingId) {
     return (
       <div style={styles.centeredPage}>
-        <button style={styles.ghostBtn} onClick={() => navigate("/bookings")}>
+        <Button style={styles.ghostBtn} onClick={() => navigate("/bookings")}>
           {t.paymentpage.goToBookings}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function PaymentPage() {
                 const selected = method === gateway.type;
 
                 return (
-                  <button
+                  <Button
                     key={gateway.id}
                     onClick={() => setMethod(gateway.type)}
                     style={{
@@ -208,7 +208,7 @@ export default function PaymentPage() {
                     >
                       {meta.label}
                     </span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -260,7 +260,7 @@ export default function PaymentPage() {
           )}
 
           {/* Pay button */}
-          <button
+          <Button
             disabled={!method || isPending}
             onClick={handlePayment}
             style={{
@@ -276,7 +276,7 @@ export default function PaymentPage() {
                 {`Pay ${currency} ${price.toFixed(2)}`}
               </>
             )}
-          </button>
+          </Button>
 
           <p style={styles.footerNote}>
             <ShieldSmallIcon />
