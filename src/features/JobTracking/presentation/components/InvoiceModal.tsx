@@ -129,7 +129,7 @@ export default function InvoiceModal({
       {/* WORK DETAILS */}
       <div className="border rounded-lg p-4 mt-4">
         <h4 className="font-semibold mb-3">
-          Work Details
+         {t.invoice.workDetails}
         </h4>
 
         <div className="space-y-2 text-sm">

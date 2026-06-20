@@ -1,7 +1,12 @@
 {
   "language": {
-    "title": "अपनी भाषा चुनें",
-    "continue": "जारी रखें"
+    "title": "भाषा",
+    "continue": "जारी रखें",
+     "titles": "अपनी भाषा चुनें",
+    "highlight": "भाषा",
+    "description": "अपने घर के लिए सबसे अच्छी सहायता पाने हेतु अपने अनुभव को अपनी पसंदीदा भाषा में अनुकूलित करें।",
+    "questions": "कोई प्रश्न है?",
+    "talkToTeam": "हमारी टीम से बात करें"
   },
   "onboarding": {
     "title": "सेटअप पूरा करें",
@@ -33,6 +38,11 @@
   },
   "location": {
     "searchPlaceholder": "सड़क, इमारत या क्षेत्र खोजें",
+      "location": {
+    "title": "आपको हमारी सेवा कहाँ चाहिए?",
+    "highlight": "",
+    "description": "अपने क्षेत्र में उपलब्ध विशेषज्ञ सेवाओं और सफाई टीमों को खोजने के लिए अपना स्थान दर्ज करें।"
+  },
     "useCurrent": "मेरी वर्तमान लोकेशन का उपयोग करें",
     "home": "घर",
     "homeDesc": "प्राथमिक सेट करें",
@@ -383,13 +393,40 @@
   "loading": "भुगतान विधियाँ लोड हो रही हैं...",
   "noMethods": "कोई भुगतान विधि उपलब्ध नहीं है",
   "bookingId": "बुकिंग आईडी",
+  "goToBookings": "बुकिंग्स पर जाएं",
+    "secureCheckout": "सुरक्षित भुगतान",
+    "bookingSummary": "बुकिंग सारांश",
+    "totalDue": "कुल देय राशि",
+    "serviceFee": "सेवा शुल्क",
+    "vat": "GST (15%)",
+    "total": "कुल",
+    "choosePaymentMethod": "भुगतान तरीका चुनें",
+    "cardNumber": "कार्ड नंबर",
+    "expiry": "समाप्ति तिथि",
+    "cvv": "CVV",
+    "pay": "भुगतान करें",
+    "processing": "प्रोसेस हो रहा है…",
+    "Failed to load Bookings":"बुकिंग लोड नहीं हो सकीं",
+   "paymentMethods": {
+      "creditCard": "क्रेडिट कार्ड",
+      "applePay": "एप्पल पे",
+      "cash": "नकद",
+      "stcPay": "एसटीसी पे",
+      "mada": "माडा",
+      "bankTransfer": "बैंक ट्रांसफर"
+    },
+    "secureNote": "आपका भुगतान सुरक्षित और एन्क्रिप्टेड है। हम कार्ड विवरण स्टोर नहीं करते।",
+    "footerNote": "256-bit SSL एन्क्रिप्शन · PCI DSS अनुपालक",
+    "redirecting": "सुरक्षित भुगतान पर भेजा जा रहा है…",
+    "pleaseSelectMethod": "कृपया भुगतान तरीका चुनें",
+    "paymentUrlNotFound": "भुगतान URL नहीं मिला",
+   
   "confirmCash": "बुकिंग की पुष्टि करें",
-  "pay": "भुगतान करें",
-  "processing": "प्रोसेस हो रहा है...",
+ 
   "cashConfirmed": "बुकिंग पुष्टि (नकद)",
   "paymentInitiated": "भुगतान शुरू हुआ",
   "paymentFailed": "भुगतान विफल",
-  "goToBookings": "बुकिंग पर जाएँ",
+  
    "verifying": "भुगतान सत्यापित किया जा रहा है...",
     "wait": "कृपया प्रतीक्षा करें, हम आपका भुगतान पुष्टि कर रहे हैं।",
     "verified": "भुगतान सत्यापित",
@@ -778,6 +815,7 @@
 "invoice": {
       "title": "इनवॉइस",
       "no": "नंबर",
+       "workDetails": "कार्य विवरण",
       "issued": "जारी किया गया",
       "billedTo": "बिल किसे किया गया",
       "serviceProfessional": "सेवा पेशेवर",

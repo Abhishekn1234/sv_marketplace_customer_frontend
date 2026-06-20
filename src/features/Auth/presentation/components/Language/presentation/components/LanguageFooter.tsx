@@ -1,7 +1,9 @@
 
+import { ArrowRight } from "@/components/icons";
 import Button from "@/components/input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-import { ArrowRight } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -13,7 +15,7 @@ interface LanguageFooterProps {
 export default function LanguageFooter({ selectedLanguage, onContinue }: LanguageFooterProps) {
   const navigate = useNavigate();
   const { setLanguage } = useAuthStore(); 
-
+ const {t}=useLanguage();
   const handleContinue = async () => {
     if (!selectedLanguage) {
       toast.error("Please select a language");
@@ -55,15 +57,20 @@ export default function LanguageFooter({ selectedLanguage, onContinue }: Languag
           hover:shadow-[0_8px_24px_rgba(37,99,235,0.4)]
           disabled:opacity-50 disabled:cursor-not-allowed
         "
+        rightIcon={
+          <>
+          <ArrowRight/>
+          </>
+        }
       >
-        Continue
-        <ArrowRight className="w-5 h-5" />
+       {t.language.continue}
+        
       </Button>
 
       <p className="text-sm font-medium text-gray-500 text-center">
-        Questions?{" "}
+       {t.language.questions}?{" "}
         <span className="text-primary font-bold cursor-pointer hover:underline">
-          Talk to our team
+          {t.language.talkToTeam}
         </span>
       </p>
     </div>

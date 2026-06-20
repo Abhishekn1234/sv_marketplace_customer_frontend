@@ -61,11 +61,11 @@ export default function BookingCard({
         break;
           case "PAYMENT_PENDING":
         if (booking?.paymentId) {
-          onVerifyPayment({
-            paymentId: booking.paymentId,
-            status: "SUCCESS", 
-            transactionId: booking.paymentId, 
-          });
+        onVerifyPayment({
+          paymentId: booking.paymentId,
+          status: "SUCCESS",
+          sessionId: booking.sessionId,
+        });
         }
         break;
       case "PAID":
@@ -131,19 +131,19 @@ export default function BookingCard({
         clickable={clickable}
         onActionClick={handleActionButtonClick}
         onViewDetails={() => onViewDetails(booking)}
-     onPayNow={() => {
-  const finalPrice = booking?.totalCost;
- const serviceName =
-  services.find(s => s._id === booking.serviceId)?.name || "Service";
-  navigate("/payment", {
-    state: {
-      bookingId: booking._id,
-      serviceName: serviceName,
-      price: Number(finalPrice).toFixed(2),
-      currency: booking.currency ?? "₹",
-    },
-  });
-}}
+            onPayNow={() => {
+          const finalPrice = booking?.totalCost;
+        const serviceName =
+          services.find(s => s._id === booking.serviceId)?.name || "Service";
+          navigate("/payment", {
+            state: {
+              bookingId: booking._id,
+              serviceName: serviceName,
+              price: Number(finalPrice).toFixed(2),
+              currency: booking.currency ?? "SAR",
+            },
+          });
+        }}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
          navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}

@@ -36,13 +36,17 @@ import { UserIcon } from "./UserIcon";
 import { HomeIcon } from "./HomeIcon";
 import { AboutIcon } from "./AboutIcon";
 import { BookingIcon } from "./BookingIcon";
-
-
+import { CheckIcon } from "./CheckIcon";
+import { ShieldSmallIcon } from "./ShieldSmallIcon";
+import { NavigationGPSIcon } from "./NavigationIcon";
 // Export everything
 export {
   GoogleIcon,
   FacebookIcon,
+  NavigationGPSIcon,
   MoneyIcon,
+  CheckIcon,
+  ShieldSmallIcon,
   ReactIcon,
   QuickActionsIcon,
   SecurityIcon,

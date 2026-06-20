@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { getCurrentLocation } from "@/features/utils/reverse";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
+import { NavigationGPSIcon } from "@/components/icons";
 
 type Props = {
   selected: "home" | "office" | null;
@@ -60,15 +61,17 @@ export default function LocationSearchInput({
           </div>
         )}
       </div>
-
+       
       <Button
         variant="ghost"
         onClick={handleUseCurrentLocation}
         className="inline-flex items-center gap-2 mb-2 text-blue-600 cursor-pointer text-sm font-bold px-4 py-2 rounded-full hover:bg-blue-100"
+      
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <polygon points="3 11 22 2 13 21 11 13 3 11" />
-        </svg>
+              <div className="flex justify-center">
+          <NavigationGPSIcon size={50} color="#0000FF" />
+        </div>
+        
         {t.location?.useCurrent ?? "Use current location"}
       </Button>
     </>

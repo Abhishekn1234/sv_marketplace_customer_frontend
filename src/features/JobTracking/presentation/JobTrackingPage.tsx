@@ -26,7 +26,7 @@ export default function JobTrackingPage() {
       toast.error("Booking not found or already finished");
 
       const timer = setTimeout(() => {
-        navigate("/bookings", { replace: true });
+        navigate("/bookings");
       }, 1200);
 
       return () => clearTimeout(timer);

@@ -1,4 +1,8 @@
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function LanguageHeader() {
+  const { t } = useLanguage();
+
   return (
     <div className="mt-8 text-center px-4">
       <h1
@@ -10,7 +14,7 @@ export default function LanguageHeader() {
           mb-4
         "
       >
-        Choose Your <span className="text-primary-600">Language</span>
+        {t.language.titles}
       </h1>
 
       <p
@@ -22,8 +26,7 @@ export default function LanguageHeader() {
           max-w-xl mx-auto
         "
       >
-        Customize your experience to find the best help for your home in the
-        language you're most comfortable with.
+        {t.language.description}
       </p>
     </div>
   );

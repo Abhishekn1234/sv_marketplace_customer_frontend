@@ -154,7 +154,7 @@ export function useSocketTimelineJobTracking({
         mappedStatus === "WORKER_CANCELLED" ||
         mappedStatus === "PLATFORM_CANCELLED"
       ) {
-        navigate("/", { replace: true });
+        navigate("/");
       }
     };
 

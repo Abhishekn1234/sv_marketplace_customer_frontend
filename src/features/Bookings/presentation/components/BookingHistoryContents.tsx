@@ -7,7 +7,7 @@ import { useBookingHistory } from "../hooks/useBookingHistory";
 import { useServiceCategory } from "../hooks/useServiceCategory";
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
-import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
+
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
 
 import BookingCard from "./BookingHistoryCards";
@@ -16,10 +16,14 @@ import BookingModals from "./BookingHistoryModals";
 import { tabStatusMap } from "../helpers/tabstatusmap";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
-import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
-import { useQueryClient } from "@tanstack/react-query";
+
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useLanguage } from "@/features/context/LanguageContext";
+
+
+import { useNavigate } from "react-router-dom";
+import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 
 interface Props {
   activeTab: string;
@@ -27,8 +31,9 @@ interface Props {
 
 export default function BookingHistoryContents({ activeTab }: Props) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const queryClient = useQueryClient();
+
   const {t}=useLanguage();
+  const navigate=useNavigate();
 
   // ----------------------------
   // BOOKINGS
@@ -65,7 +70,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   // ----------------------------
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
-  const verifyPaymentMutation = useVerifyPayment();
+
 
   const { data: categoriesData } = useServiceCategory();
 
@@ -133,27 +138,10 @@ export default function BookingHistoryContents({ activeTab }: Props) {
   };
 
 const handleVerifyPayment = (data: PaymentCallback) => {
-  verifyPaymentMutation.mutate(data, {
-    onSuccess: () => {
-      toast.success("Payment verified!");
-
-      // 🔥 UPDATE UI instantly
-     queryClient.setQueryData(["bookings"], (old: any) => {
-  return {
-    ...old,
-    pages: old.pages.map((page: any) => ({
-      ...page,
-      data: page.data.map((b: BookingHistory) =>
-        b.paymentId === data.paymentId
-          ? { ...b, status: "PAID" }
-          : b
-      ),
-    })),
-  };
-});
-    },
-    onError: (err:any) => toast.error(err?.response?.data?.message ||"Payment verification failed"),
-  });
+  // console.log(data);
+  navigate(
+    `/payment/success?paymentId=${data.paymentId}&status=${data.status}&session_id=${data.session_id}`
+  );
 };
 
   // ----------------------------
@@ -203,21 +191,21 @@ const handleVerifyPayment = (data: PaymentCallback) => {
     <div className="flex flex-col gap-5 sm:gap-6">
       {filteredBookings.map((booking) => (
         <BookingCard
-          key={booking._id}
-          booking={booking}
-          onViewDetails={(b) => {
-            setSelectedBooking(b);
-            setModalOpen(true);
-          }}
-          onPayNow={(bookingId) => {
-            setPaymentBookingId(bookingId);
-            setPaymentModalOpen(true);
-          }}
-          onGenerateStartOtp={handleGenerateStartOtp}
-          onGenerateCompletedOtp={handleGenerateCompletedOtp}
-          onInvoiceClick={handleInvoiceClick}
-          onVerifyPayment={handleVerifyPayment}
-        />
+  key={booking._id}
+  booking={booking}
+  onViewDetails={(b) => {
+    setSelectedBooking(b);
+    setModalOpen(true);
+  }}
+  onPayNow={(bookingId) => {
+    setPaymentBookingId(bookingId);
+    setPaymentModalOpen(true);
+  }}
+  onGenerateStartOtp={handleGenerateStartOtp}
+  onGenerateCompletedOtp={handleGenerateCompletedOtp}
+  onInvoiceClick={handleInvoiceClick}
+  onVerifyPayment={handleVerifyPayment}
+/>
       ))}
 
       {/* infinite scroll trigger */}

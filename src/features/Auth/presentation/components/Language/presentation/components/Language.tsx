@@ -1,51 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LanguageCards from "./LanguageCards";
 import LanguageHeader from "./LanguageHeader";
 import LanguageBadge from "./LanguageBadge";
 import LanguageFooter from "./LanguageFooter";
 
-
-
-
 import { useLang } from "../hooks/useLang";
-
-
+import { useAuthStore } from "@/features/core/store/auth";
 
 export default function Language() {
   const { language, setLanguage: saveLanguage, loading } = useLang();
 
-  // Local UI state for selected language (updates on click only)
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(language || null);
+  // Zustand
+  const setAppLanguage = useAuthStore(
+    (state) => state.setLanguage
+  );
 
-  if (loading)
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    if (language) {
+      setSelectedLanguage(language);
+    }
+  }, [language]);
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
       </div>
     );
+  }
 
   return (
     <div className="bg-gray-50">
-      
       <LanguageBadge />
       <LanguageHeader />
-
-    
       <LanguageCards
         selectedLanguage={selectedLanguage}
-        onSelectLanguage={setSelectedLanguage}
+        onSelectLanguage={(lang) => {
+          setSelectedLanguage(lang);
+          setAppLanguage(lang);
+        }}
       />
 
-    
       <LanguageFooter
         selectedLanguage={selectedLanguage}
         onContinue={async () => {
           if (!selectedLanguage) return;
 
-          await saveLanguage(selectedLanguage as "en" | "hi" | "ar");
+          // API / backend save
+          await saveLanguage(
+            selectedLanguage as "en" | "hi" | "ar"
+          );
+
+          // Zustand update
+          setAppLanguage(selectedLanguage);
         }}
       />
-
     </div>
   );
 }

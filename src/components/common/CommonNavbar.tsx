@@ -327,7 +327,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Icon-only toggle on small screens */}
-                <button
+                <Button
                   className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition text-gray-600"
                   onClick={() => setShowMobileSearch((prev) => !prev)}
                   aria-label="Toggle search"
@@ -337,30 +337,32 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   ) : (
                     <Search className="w-5 h-5" />
                   )}
-                </button>
+                </Button>
               </>
             )}
 
             {/* Language selector — hidden on mobile, shown sm+ */}
-            <div className="hidden sm:block">
-              <Select
-                value={language}
-                onChange={(code) => {
-                  const selectedLanguage = languages.find(
-                    (lang) => lang.code === code
-                  );
-                  if (!selectedLanguage) return;
-                  handleChange(selectedLanguage.code, selectedLanguage.label);
-                }}
-                options={languages.map((lang) => ({
-                  label: lang.label,
-                  value: lang.code,
-                  icon: <span className="text-lg">{lang.flag}</span>,
-                }))}
-                size="sm"
-                variant="ghost"
-              />
-            </div>
+          {user && (
+  <div className="hidden sm:block">
+    <Select
+      value={language}
+      onChange={(code) => {
+        const selectedLanguage = languages.find(
+          (lang) => lang.code === code
+        );
+        if (!selectedLanguage) return;
+        handleChange(selectedLanguage.code, selectedLanguage.label);
+      }}
+      options={languages.map((lang) => ({
+        label: lang.label,
+        value: lang.code,
+        icon: <span className="text-lg">{lang.flag}</span>,
+      }))}
+      size="sm"
+      variant="ghost"
+    />
+  </div>
+)}
 
             {/* CTA button */}
             {rightButton && (
@@ -398,7 +400,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
 
             {/* Mobile hamburger — always shown on mobile (language lives in drawer);
                 on desktop only shown when showHomeLinks is true */}
-            <button
+            <Button
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition text-gray-700"
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -409,7 +411,7 @@ const CommonNavbar: React.FC<NavbarProps> = ({
               ) : (
                 <Menu className="w-5 h-5" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -449,29 +451,37 @@ const CommonNavbar: React.FC<NavbarProps> = ({
                   </Link>
                 );
               })}
-              <div className="border-t border-gray-100 mt-1 pt-2">
-                <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Language
-                </p>
-                <Select
-                  value={language}
-                  onChange={(code) => {
-                    const selectedLanguage = languages.find(
-                      (lang) => lang.code === code
-                    );
-                    if (!selectedLanguage) return;
-                    handleChange(selectedLanguage.code, selectedLanguage.label);
-                    setMobileMenuOpen(false);
-                  }}
-                  options={languages.map((lang) => ({
-                    label: lang.label,
-                    value: lang.code,
-                    icon: <span className="text-lg">{lang.flag}</span>,
-                  }))}
-                  size="sm"
-                  variant="ghost"
-                />
-              </div>
+             {user && (
+  <div className="border-t border-gray-100 mt-1 pt-2">
+    <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      {t.language.title}
+    </p>
+
+    <Select
+      value={language}
+      onChange={(code) => {
+        const selectedLanguage = languages.find(
+          (lang) => lang.code === code
+        );
+        if (!selectedLanguage) return;
+
+        handleChange(
+          selectedLanguage.code,
+          selectedLanguage.label
+        );
+
+        setMobileMenuOpen(false);
+      }}
+      options={languages.map((lang) => ({
+        label: lang.label,
+        value: lang.code,
+        icon: <span className="text-lg">{lang.flag}</span>,
+      }))}
+      size="sm"
+      variant="ghost"
+    />
+  </div>
+)}
 
               {/* Mobile CTA button */}
               {rightButton && (

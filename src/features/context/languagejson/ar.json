@@ -1,9 +1,14 @@
 {
   "language": {
-    "title": "اختر لغتك",
-    "continue": "متابعة"
+    "title": "لغة",
+    "continue": "متابعة",
+       "titles": "اختر لغتك",
+    "highlight": "اللغة",
+    "description": "خصص تجربتك للعثور على أفضل المساعدة لمنزلك باللغة التي تشعر بالراحة معها.",
+    "questions": "هل لديك أسئلة؟",
+    "talkToTeam": "تحدث مع فريقنا"
   },
-   
+ 
    "onboarding": {
     "title": "إكمال الإعداد",
     "completedTitle": "تم الإعداد بالكامل 🎉",
@@ -27,6 +32,11 @@
     "useCurrent": "استخدم موقعي الحالي",
     "home": "المنزل",
     "homeDesc": "تعيين كافتراضي",
+      "location":{
+     "title": "أين تحتاج إلى خدماتنا؟",
+    "highlight": "",
+    "description": "أدخل موقعك لاكتشاف الخدمات الاحترافية وفرق التنظيف المتوفرة في منطقتك."
+   },
     "office": "المكتب",
     "premium": "وصول مميز",
     "title":"الموقع",
@@ -385,15 +395,41 @@
   "title": "إتمام الدفع",
   "selectMethod": "اختر طريقة الدفع",
   "loading": "جارٍ تحميل طرق الدفع...",
+  "Failed to load Bookings":"فشل تحميل الحجوزات",
   "noMethods": "لا توجد طرق دفع متاحة",
   "bookingId": "رقم الحجز",
   "confirmCash": "تأكيد الحجز",
-  "pay": "ادفع",
-  "processing": "جارٍ المعالجة...",
+  "goToBookings": "الذهاب إلى الحجوزات",
+    "secureCheckout": "دفع آمن",
+    "bookingSummary": "ملخص الحجز",
+    "totalDue": "المبلغ المستحق",
+    "serviceFee": "رسوم الخدمة",
+    "vat": "ضريبة القيمة المضافة (15%)",
+    "total": "الإجمالي",
+    "choosePaymentMethod": "اختر طريقة الدفع",
+    "cardNumber": "رقم البطاقة",
+    "expiry": "تاريخ الانتهاء",
+    "cvv": "رمز التحقق",
+    "pay": "ادفع",
+    "processing": "جارٍ المعالجة…",
+    "paymentMethods": {
+      "creditCard": "بطاقة ائتمان",
+      "applePay": "آبل باي",
+      "cash": "نقداً",
+      "stcPay": "إس تي سي باي",
+      "mada": "مدى",
+      "bankTransfer": "تحويل بنكي"
+    },
+    "secureNote": "دفعتك مشفرة وآمنة، ولا نقوم بتخزين بيانات البطاقة.",
+    "footerNote": "تشفير SSL 256-bit · متوافق مع PCI DSS",
+    "redirecting": "جارٍ التحويل إلى بوابة الدفع الآمنة…",
+    "pleaseSelectMethod": "يرجى اختيار طريقة الدفع",
+    "paymentUrlNotFound": "لم يتم العثور على رابط الدفع",
+    "paymentFailed": "فشل الدفع",
+ 
   "cashConfirmed": "تم تأكيد الحجز (نقدًا)",
   "paymentInitiated": "تم بدء الدفع",
-  "paymentFailed": "فشل الدفع",
-  "goToBookings": "الذهاب إلى الحجوزات",
+  
   "verifying": "جارٍ التحقق من الدفع...",
     "wait": "يرجى الانتظار حتى نؤكد عملية الدفع.",
     "verified": "تم التحقق من الدفع",
@@ -781,6 +817,7 @@
 "invoice": {
       "title": "فاتورة",
       "no": "رقم",
+      "workDetails": "تفاصيل العمل",
       "issued": "تاريخ الإصدار",
       "billedTo": "فاتورة إلى",
       "serviceProfessional": "المحترف",

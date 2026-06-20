@@ -1,7 +1,8 @@
 
-import { ArrowRight } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
+import { ArrowRight } from "@/components/icons";
 
 export default function ConfirmLocationFooter({
   onConfirm,
@@ -14,10 +15,15 @@ export default function ConfirmLocationFooter({
     <>
       <Button
         onClick={onConfirm}
+        rightIcon={
+          <>
+          <ArrowRight  />  
+          </>
+        }
         className="w-full max-w-[500px] h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg flex items-center justify-center gap-2 mt-4"
       >
         {t.location.confirmLocation}
-        <ArrowRight className="w-5 h-5" />
+        
       </Button>
 
       <p className="text-sm text-gray-500 mt-2">

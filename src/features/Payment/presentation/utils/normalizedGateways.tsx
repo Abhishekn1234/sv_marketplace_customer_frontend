@@ -5,16 +5,12 @@ export const normalizeGateways = (
 ): PaymentGateway[] => {
   const seen = new Set<string>();
 
-  const order = ["UPI", "CARD", "NET_BANKING", "WALLET", "CASH"];
+  return gateways.filter((g) => {
+    if (!g?.type) return false;
 
-  return gateways
-    .filter((g) => {
-      if (!g?.type) return false;
+    if (seen.has(g.type)) return false;
 
-      if (seen.has(g.type)) return false;
-
-      seen.add(g.type);
-      return true;
-    })
-    .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+    seen.add(g.type);
+    return true;
+  });
 };

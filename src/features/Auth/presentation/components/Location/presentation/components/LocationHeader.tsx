@@ -1,4 +1,8 @@
+import { useLanguage } from "@/features/context/LanguageContext";
+
 export default function LocationHeader() {
+  const { t } = useLanguage();
+
   return (
     <div className="mt-2 flex flex-col items-center text-center px-4">
       <h1
@@ -10,8 +14,7 @@ export default function LocationHeader() {
           mb-4
         "
       >
-        Where do you{" "}
-        <span className="text-blue-600">need us?</span>
+        {t.location.location.title}
       </h1>
 
       <p
@@ -23,8 +26,7 @@ export default function LocationHeader() {
           max-w-xl
         "
       >
-        Enter your location to discover expert services and cleaning teams
-        available in your neighborhood.
+        {t.location.location.description}
       </p>
     </div>
   );

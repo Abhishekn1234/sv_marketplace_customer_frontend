@@ -1,7 +1,12 @@
 {
   "language": {
-    "title": "Choose your language",
-    "continue": "Continue"
+    "title": "Language",
+    "continue": "Continue",
+      "titles": "Choose Your Language",
+    "highlight": "Language",
+    "description": "Customize your experience to find the best help for your home in the language you're most comfortable with.",
+    "questions": "Questions?",
+    "talkToTeam": "Talk to our team"
   },
  "common": {
       "geoNotSupported": "Geolocation is not supported",
@@ -49,6 +54,11 @@
   "location": {
     "searchPlaceholder": "Search street, building or area",
     "useCurrent": "Use my current location",
+      "location": {
+    "title": "Where do you need us?",
+    "highlight": "need us?",
+    "description": "Enter your location to discover expert services and cleaning teams available in your neighborhood."
+      },
     "home": "Home",
     "title":"Location",
     "homeDesc": "Set primary",
@@ -765,21 +775,50 @@
       "verifying": "Verifying Payment...",
     "wait": "Please wait while we confirm your payment.",
     "verified": "Payment Verified",
+     "goToBookings": "Go to Bookings",
+    "secureCheckout": "Secure checkout",
+    "bookingSummary": "Booking summary",
+    "totalDue": "Total due",
+    "serviceFee": "Service fee",
+    "vat": "VAT (15%)",
+    "total": "Total",
+    "choosePaymentMethod": "Choose payment method",
+    "cardNumber": "Card number",
+    "expiry": "Expiry",
+    "cvv": "CVV",
+    "pay": "Pay",
+    "Failed to load Bookings":"Failed to load Bookings",
+    "processing": "Processing…",
+    "paymentMethods": {
+      "creditCard": "Credit Card",
+      "applePay": "Apple Pay",
+      "cash": "Cash",
+      "stcPay": "STC Pay",
+      "mada": "Mada",
+      "bankTransfer": "Bank Transfer"
+    },
+    "secureNote": "Your payment is encrypted and processed securely. We never store card details.",
+    "footerNote": "256-bit SSL encrypted · PCI DSS compliant",
+    "redirecting": "Redirecting to secure payment…",
+    "pleaseSelectMethod": "Please select a payment method",
+    "paymentUrlNotFound": "Payment URL not found",
+    
+  
     "failed": "Verification failed",
     "loading": "Loading payment methods...",
     "noMethods": "No payment methods available",
     "bookingId": "Booking ID",
     "confirmCash": "Confirm Booking",
-    "pay": "Pay",
-    "processing": "Processing...",
+  
     "cashConfirmed": "Booking Confirmed (Cash)",
     "paymentInitiated": "Payment Initiated",
-    "paymentFailed": "Payment Failed",
-    "goToBookings": "Go to Bookings"
+    "paymentFailed": "Payment Failed"
+    
 },
 "invoice": {
       "title": "INVOICE",
       "no": "No",
+       "workDetails": "Work Details",
       "issued": "Issued",
       "billedTo": "Billed To",
       "serviceProfessional": "Service Professional",

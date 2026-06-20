@@ -24,6 +24,7 @@ export interface BookingHistory {
   userId: string;
   bookingCode?:string;
   price?:number;
+  sessionId?:string;
   serviceId: string;
   serviceTierId: string;
   assignedWorkers?:AssignedWorker[];

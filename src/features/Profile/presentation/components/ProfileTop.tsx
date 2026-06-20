@@ -13,7 +13,7 @@ export default function ProfileTop() {
   const handleLogout = () => {
     clearAuth();
     toast.success("Logged out successfully");
-    navigate("/login", { replace: true });
+    navigate("/login");
   };
 
   return (

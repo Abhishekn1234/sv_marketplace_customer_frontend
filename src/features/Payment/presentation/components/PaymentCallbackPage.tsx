@@ -63,7 +63,7 @@ const status: PaymentStatus =
 
     setTimeout(() => {
       navigate("/jobcompleted", {
-        replace: true,
+
         state: {
           bookingId,
           paymentDone: true,

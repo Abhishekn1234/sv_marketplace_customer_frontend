@@ -1,16 +1,16 @@
 export const languages = [
   {
-    code: "EN",
+    code: "en",
     label: "English",
     flag: "🇬🇧",
   },
   {
-    code: "HI",
+    code: "hi",
     label: "हिन्दी",
     flag: "🇮🇳",
   },
   {
-    code: "AR",
+    code: "ar",
     label: "العربية",
     flag: "🇸🇦",
   },

@@ -1,88 +1,46 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import apiClient from "@/features/api/interceptor";
+import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 import SuccessSection from "@/features/JobCompleted/presentation/components/Successsection";
 import JobCompletedSummary from "@/features/JobCompleted/presentation/components/JobCompletedSummary";
 import JobCompletedActions from "@/features/JobCompleted/presentation/components/JobCompletedActions";
-import Button from "@/components/input/Button";
+import { useVerifyStripePayment } from "../hooks/useVerifyStripePayment";
+// import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
+
+
 
 export default function PaymentStripeCallbackPage() {
+    // usePreventBackNavigation();
   const navigate = useNavigate();
   const { services } = useServices();
+  const { t } = useLanguage();
 
   const [searchParams] = useSearchParams();
 
   const paymentId = searchParams.get("paymentId");
   const status = searchParams.get("status");
-  const session_id = searchParams.get("session_id");
+  const sessionId = searchParams.get("session_id");
 
-  const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState<any>(null);
-  const [error, setError] = useState("");
+  const {
+    data,
+    isLoading,
+    error,
+  } = useVerifyStripePayment(
+    paymentId,
+    status,
+    sessionId
+  );
 
-  // ✅ prevents duplicate API calls (StrictMode / retry safe)
-  const hasFetched = useRef(false);
+  const booking = data?.bookingDetails;
 
-  useEffect(() => {
-    const verifyPayment = async () => {
-      // 🔥 block duplicate execution
-      if (hasFetched.current) return;
-      hasFetched.current = true;
-
-      try {
-        setLoading(true);
-
-        const response = await apiClient.get(
-          "/booking/payment/stripe/callback",
-          {
-            params: {
-              paymentId,
-              status,
-              session_id,
-            },
-          }
-        );
-
-        console.log("Stripe Callback Response:", response.data);
-
-        const bookingData = response.data?.bookingDetails;
-
-        if (!bookingData) {
-          throw new Error("Booking details not found");
-        }
-
-        setBooking(bookingData);
-      } catch (err: any) {
-        console.error(err);
-
-        setError(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Payment verification failed"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (paymentId && status && session_id) {
-      verifyPayment();
-    } else {
-      setLoading(false);
-      setError("Invalid payment callback URL");
-    }
-  }, [paymentId, status, session_id]);
-
-  /* =========================
-     LOADING STATE
-  ========================= */
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <CommonSpinner />
@@ -90,33 +48,29 @@ export default function PaymentStripeCallbackPage() {
     );
   }
 
-  /* =========================
-     ERROR STATE
-  ========================= */
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md w-full">
           <h2 className="text-2xl font-bold text-red-600 mb-3">
-            Payment Failed
+            {t.paymentpage.paymentFailed}
           </h2>
 
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-gray-600 mb-6">
+            {(error as Error).message}
+          </p>
 
           <Button
             onClick={() => navigate("/bookings")}
             className="px-6 py-3 rounded-lg bg-blue-600 text-white"
           >
-            Back to Bookings
+            {t.paymentpage.goToBookings}
           </Button>
         </div>
       </div>
     );
   }
 
-  /* =========================
-     EMPTY STATE
-  ========================= */
   if (!booking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -125,9 +79,6 @@ export default function PaymentStripeCallbackPage() {
     );
   }
 
-  /* =========================
-     SUCCESS UI
-  ========================= */
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
@@ -142,13 +93,12 @@ export default function PaymentStripeCallbackPage() {
           categories={services}
         />
 
-        {/* optional navigation */}
         <div className="flex justify-center pt-4">
           <Button
             onClick={() => navigate("/bookings")}
             className="px-6 py-3 bg-gray-900 text-white rounded-lg"
           >
-            Go to Bookings
+            {t.paymentpage.goToBookings}
           </Button>
         </div>
       </div>

@@ -59,7 +59,7 @@ export default function JobProgressPage() {
   // =========================
   useEffect(() => {
     if (!isLoading && baseBooking === null) {
-      navigate("/bookings", { replace: true });
+      navigate("/bookings");
     }
   }, [isLoading, baseBooking, navigate]);
 
