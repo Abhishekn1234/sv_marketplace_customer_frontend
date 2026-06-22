@@ -10,9 +10,16 @@ interface CommonCardProps {
   className?: string;
   onClick?: () => void;
 
-  type?: "none" | "white" | "soft" | "dark" | "blue" | "green" | "red" | "orange";
+  type?:
+    | "none"
+    | "white"
+    | "soft"
+    | "dark"
+    | "blue"
+    | "green"
+    | "red"
+    | "orange";
 
-  // NEW: RTL control (optional override)
   forceLTR?: boolean;
   forceRTL?: boolean;
 }
@@ -45,12 +52,11 @@ export default function CommonCard({
   return (
     <div
       onClick={onClick}
-     
+      dir={isRTL ? "rtl" : "ltr"}
       className={`
         rounded-xl
         p-4 sm:p-5
         transition
-        text-start
 
         ${typeStyles[type]}
 
@@ -64,14 +70,14 @@ export default function CommonCard({
         <div
           className={`mb-3 text-sm font-semibold ${
             type === "dark" ? "text-white" : "text-gray-800"
-          } ${isRTL ? "rtl" : ""}`}
+          } ${isRTL ? "text-right" : "text-left"}`}
         >
           {title}
         </div>
       )}
 
       {/* BODY */}
-      <div className={`${isRTL ? "rtl" : ""}`}>
+      <div className={isRTL ? "text-right" : "text-left"}>
         {children}
       </div>
 
@@ -79,8 +85,12 @@ export default function CommonCard({
       {footer && (
         <div
           className={`mt-4 pt-3 border-t ${
-            type === "dark" ? "border-gray-700" : "border-gray-100"
-          } ${isRTL ? "text-right" : "text-left"}`}
+            type === "dark"
+              ? "border-gray-700"
+              : "border-gray-100"
+          } ${
+            isRTL ? "text-right" : "text-left"
+          }`}
         >
           {footer}
         </div>

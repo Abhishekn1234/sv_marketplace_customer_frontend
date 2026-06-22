@@ -5,7 +5,7 @@ import CommonCard from "@/components/common/CommonCards";
 
 export default function JobCompletedSummary({ booking }: any) {
   const { serviceTiers, services } = useServices();
-  const { t } = useLanguage();
+  const { t, isRTLOrder } = useLanguage();
 
   const serviceName =
     booking.serviceId?.name ?? booking.service?.name;
@@ -23,12 +23,48 @@ export default function JobCompletedSummary({ booking }: any) {
   const tierName = pricingTier?.displayName || "—";
 
   const price = booking?.totalCost;
-  const currency = booking?.currency || "₹";
+  const currency = booking?.currency || "SAR";
+
+  const summaryItems = [
+  {
+    label: t.jobcompletedpage.serviceType,
+    value: service,
+  },
+  {
+    label: t.jobcompletedpage.serviceTier,
+    value: tierName,
+  },
+  {
+    label: t.jobcompletedpage.date,
+    value:
+      formatDates(
+        booking?.schedule?.startDateTime
+      ) || "N/A",
+    isLTR: true,
+  },
+  {
+    label: t.jobcompletedpage.duration,
+    value: booking.schedule?.estimatedHours,
+  },
+];
+
+  const displayItems = isRTLOrder
+    ? [
+        summaryItems[1],
+        summaryItems[0],
+        summaryItems[3],
+        summaryItems[2],
+      ]
+    : summaryItems;
 
   return (
     <CommonCard>
       {/* HEADER */}
-      <div className="flex justify-between mb-6">
+      <div
+        className={`flex justify-between mb-6 ${
+          isRTLOrder ? "flex-row-reverse" : ""
+        }`}
+      >
         <h2 className="text-lg font-bold text-gray-900">
           {t.jobcompletedpage.serviceSummary}
         </h2>
@@ -40,48 +76,64 @@ export default function JobCompletedSummary({ booking }: any) {
 
       {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">
-            {t.jobcompletedpage.serviceType}
-          </div>
-          <div className="font-semibold">{service}</div>
-        </div>
+        {displayItems.map((item, index) => (
+          <div
+            key={index}
+            className={`bg-gray-50 p-4 rounded-xl ${
+              isRTLOrder ? "flex-row-reverse" : ""
+            }`}
+          >
+            <div className="text-xs text-gray-500">
+              {item.label}
+            </div>
 
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">
-            {t.jobcompletedpage.serviceTier}
+                        <div
+                dir={item.isLTR ? "ltr" : undefined}
+                style={
+                  item.isLTR
+                    ? {
+                        direction: "ltr",
+                        unicodeBidi: "plaintext",
+                      }
+                    : undefined
+                }
+                className={`font-semibold break-words ${
+                  item.isLTR && isRTLOrder
+                    ? "text-left"
+                    : ""
+                }`}
+              >
+                {item.value}
+              </div>
           </div>
-          <div className="font-semibold">{tierName}</div>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">
-            {t.jobcompletedpage.date}
-          </div>
-          <div className="font-semibold">
-            {formatDates(booking?.schedule?.startDateTime) || "N/A"}
-          </div>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <div className="text-xs text-gray-500">
-            {t.jobcompletedpage.duration}
-          </div>
-          <div className="font-semibold">
-            {booking.schedule?.estimatedHours}
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* DIVIDER */}
       <div className="h-px bg-gray-200 my-6" />
 
       {/* TOTAL */}
-      <div className="flex justify-between">
-        <span className="font-semibold">{t.common.totalPaid}</span>
-        <span className="text-emerald-600 font-bold">
-          {currency} {price}
+      <div
+        className={`flex justify-between items-center ${
+          isRTLOrder ? "flex-row-reverse" : ""
+        }`}
+      >
+        <span className="font-semibold">
+          {t.common.totalPaid}
         </span>
+
+            <span
+        dir="ltr"
+        style={{
+          direction: "ltr",
+          unicodeBidi: "plaintext",
+        }}
+        className={`text-emerald-600 font-bold ${
+          isRTLOrder ? "text-left" : ""
+        }`}
+      >
+        {currency} {price}
+      </span>
       </div>
     </CommonCard>
   );

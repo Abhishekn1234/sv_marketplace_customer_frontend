@@ -26,7 +26,7 @@ export default function CommonNotificationFloater({
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { t } = useLanguage();
+  const { t, isRTLOrder:isRTL } = useLanguage();
 
   const { mutateAsync: markAsRead } = useMarkNotificationRead();
 
@@ -95,28 +95,44 @@ export default function CommonNotificationFloater({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <Button
-        onClick={() => setOpen((prev) => !prev)}
-        variant="ghost"
-        size="lg"
-        className="relative flex items-center justify-center"
-      >
-        <BellIcon className={clsx(iconBase)} />
+    <Button
+  onClick={() => setOpen((prev) => !prev)}
+  variant="ghost"
+  size="lg"
+  className={clsx(
+    "relative flex items-center justify-center",
+    direction === "down" && "hidden sm:flex"
+  )}
+>
+  <BellIcon className={clsx(iconBase)} />
 
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
-            {unreadCount}
-          </span>
-        )}
-      </Button>
+  {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
+      {unreadCount}
+    </span>
+  )}
+</Button>
 
       {open && (
         <div
-          className={`absolute z-50 bg-white rounded-2xl shadow-xl border w-72 sm:w-80 right-0 ${
+          className={clsx(
+            "absolute z-50 bg-white rounded-2xl shadow-xl border",
+            "w-[calc(100vw-2rem)] max-w-80",
+
             direction === "up"
               ? "bottom-full mb-3"
-              : "top-full mt-3"
-          }`}
+              : "top-full mt-3",
+
+            // Mobile => always centered
+            "left-1/2 -translate-x-1/2",
+
+            // Desktop
+            "sm:translate-x-1/2 sm:left-auto",
+
+            // Desktop RTL => right aligned
+            // Desktop LTR => keep current design (right aligned)
+            "sm:right-0"
+          )}
         >
           <div className="px-4 py-3 border-b flex justify-between">
             <h3 className="font-semibold text-sm">
@@ -144,11 +160,12 @@ export default function CommonNotificationFloater({
               notifications.map((item: any) => (
                 <div
                   key={item._id || item.id}
-                  className={`px-4 py-3 border-b last:border-b-0 ${
+                  className={clsx(
+                    "px-4 py-3 border-b last:border-b-0",
                     !item.isRead
                       ? "bg-blue-50/40"
                       : "bg-white"
-                  }`}
+                  )}
                 >
                   <div
                     onClick={() =>
@@ -165,7 +182,14 @@ export default function CommonNotificationFloater({
                     </p>
                   </div>
 
-                  <div className="mt-2 flex justify-end">
+                  <div
+                    className={clsx(
+                      "mt-2 flex",
+                      isRTL
+                        ? "justify-start"
+                        : "justify-end"
+                    )}
+                  >
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -174,7 +198,7 @@ export default function CommonNotificationFloater({
                       variant="ghost"
                       className="text-xs"
                     >
-                     {t.common.open}
+                      {t.common.open}
                     </Button>
                   </div>
                 </div>
@@ -183,7 +207,7 @@ export default function CommonNotificationFloater({
 
             {isFetchingNextPage && (
               <div className="p-3 text-center text-xs text-gray-500">
-               <CommonSpinner color="blue"/>
+                <CommonSpinner color="blue" />
               </div>
             )}
           </div>

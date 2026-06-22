@@ -17,7 +17,7 @@ export default function JobTrackingServiceDetails({
   booking,
   loading,
 }: Props) {
-  const { t } = useLanguage();
+  const { t,isRTLOrder } = useLanguage();
   const { serviceTiers, services } = useServices();
 
   const [coordinates, setCoordinates] = useState("Loading...");
@@ -132,17 +132,24 @@ const finalAmount = Number(booking.totalCost || 0);
               {item.label}
             </span>
 
-            <span
-              className={`font-semibold text-right break-words min-w-0 ${
-                item.isSmall
-                  ? "text-xs text-gray-700"
-                  : item.isPrice
-                  ? "text-blue-600 text-base"
-                  : "text-sm text-gray-900"
-              }`}
-            >
-              {item.value}
-            </span>
+                  <span
+          dir="ltr"
+          style={{
+            direction: "ltr",
+            unicodeBidi: "plaintext",
+          }}
+          className={`font-semibold break-words min-w-0 ${
+            isRTLOrder ? "text-left" : "text-right"
+          } ${
+            item.isSmall
+              ? "text-xs text-gray-700"
+              : item.isPrice
+              ? "text-blue-600 text-base"
+              : "text-sm text-gray-900"
+          }`}
+        >
+          {item.value}
+        </span>
           </div>
         ))}
       </div>

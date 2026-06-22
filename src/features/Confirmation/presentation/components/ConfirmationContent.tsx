@@ -138,6 +138,7 @@ export default function ConfirmationContent() {
         </Button>
 
         {/* Links */}
+
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
           <Link to="/" className="hover:text-blue-600 flex items-center gap-2">
             <Home className="w-5" />

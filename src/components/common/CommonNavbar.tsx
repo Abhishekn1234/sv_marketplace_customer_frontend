@@ -222,75 +222,88 @@ const CommonNavbar: React.FC<NavbarProps> = ({
             )}
 
             {/* Location picker */}
-            {showLocationSection && (
-              <div
-                ref={dropdownRef}
-                className="relative flex flex-col min-w-0 flex-1 max-w-[160px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-xs"
-              >
-                <Input
-                  variant="unstyled"
-                  onClick={() => setShowDropdown((prev) => !prev)}
-                  value={currentLocation || ""}
-                  readOnly
-                  placeholder={!currentLocation ? "Select location" : ""}
-                  className="cursor-pointer px-0 py-0 placeholder:text-gray-400 truncate w-full text-sm sm:text-base"
-                  rightElement={
-                    !currentLocation ? (
-                      <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
-                    ) : null
-                  }
-                />
+           {showLocationSection && (
+  <div
+    ref={dropdownRef}
+    className="
+      relative flex flex-col min-w-0 flex-1
+      max-w-full
+      sm:max-w-[320px]
+      md:max-w-xs
+    "
+  >
+    <Input
+      variant="unstyled"
+      onClick={() => setShowDropdown((prev) => !prev)}
+      value={currentLocation || ""}
+      readOnly
+      title={currentLocation || ""}
+      placeholder={!currentLocation ? "Select location" : ""}
+      className="
+        cursor-pointer
+        px-0 py-0
+        w-full
+        text-sm sm:text-base
+        placeholder:text-gray-400
+      "
+      rightElement={
+        !currentLocation ? (
+          <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+        ) : null
+      }
+    />
 
-                {/* Onboarding tooltip */}
-                {showOnboarding && (
-                  <OnboardingChecklist
-                    steps={ONBOARDING_STEPS.map((step) => ({
-                      ...step,
-                      onAction:
-                        step.id === "location"
-                          ? handleUseCurrentLocation
-                          : () =>
-                              notificationRef.current?.scrollIntoView({
-                                behavior: "smooth",
-                              }),
-                      actionLabel: step.id === "location" ? "Use" : "View",
-                    }))}
-                    completion={stepCompletion}
-                    onClose={dismissOnboarding}
-                    allDone={allStepsDone}
-                    anchorRef={notificationRef}
-                  />
-                )}
+    {/* Onboarding tooltip */}
+    {showOnboarding && (
+      <OnboardingChecklist
+        steps={ONBOARDING_STEPS.map((step) => ({
+          ...step,
+          onAction:
+            step.id === "location"
+              ? handleUseCurrentLocation
+              : () =>
+                  notificationRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                  }),
+          actionLabel:
+            step.id === "location" ? "Use" : "View",
+        }))}
+        completion={stepCompletion}
+        onClose={dismissOnboarding}
+        allDone={allStepsDone}
+        anchorRef={notificationRef}
+      />
+    )}
 
-                {/* Location dropdown */}
-                {showDropdown && (
-                  <div
-                    className={`
-                      absolute top-full mt-2 z-[9999]
-                      w-56 sm:w-64 md:w-72
-                      bg-white border border-gray-200
-                      rounded-xl shadow-xl overflow-hidden
-                      animate-fadeIn
-                      ${
-                        isBookingPage || serviceRatingPage
-                          ? "left-1/2 -translate-x-1/2"
-                          : isRTLOrder
-                          ? "right-0"
-                          : "left-0"
-                      }
-                    `}
-                  >
-                    <Button
-                      onClick={handleUseCurrentLocation}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 active:bg-blue-100 transition-colors rounded-none"
-                    >
-                      <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
-                      {t.navbar["Use current location"]}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
+    {/* Location dropdown */}
+    {showDropdown && (
+      <div
+        className={`
+          absolute top-full mt-2 z-[9999]
+          w-56 sm:w-64 md:w-72
+          bg-white border border-gray-200
+          rounded-xl shadow-xl overflow-hidden
+          animate-fadeIn
+          ${
+            isBookingPage || serviceRatingPage
+              ? "left-1/2 -translate-x-1/2"
+              : isRTLOrder
+              ? "right-0"
+              : "left-0"
+          }
+        `}
+      >
+        <Button
+          onClick={handleUseCurrentLocation}
+          className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 active:bg-blue-100 transition-colors rounded-none"
+        >
+          <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+          {t.navbar["Use current location"]}
+        </Button>
+      </div>
+    )}
+  </div>
+)}
           </div>
 
           {/* ── RIGHT: Controls ── */}

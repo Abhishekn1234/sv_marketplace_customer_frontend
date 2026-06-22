@@ -11,6 +11,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 
 import { useGetChatMessages } from "@/features/WorkerChat/presentation/hooks/useGetChatMessages";
+import { BookingEvents } from "@/components/common/BookingEvents";
 
 interface Props {
   booking: Booking | null;
@@ -137,14 +138,15 @@ export default function JobTrackingWorkerDetails({
       );
     };
 
-    const events = [
-      "booking:update",
-      "booking.worker.assigned",
-      "booking.worker.accepted",
-      "booking.work.started",
-      "booking.work.completed-by-worker",
-      "booking.cancelled.worker",
-    ];
+          const events = [
+        BookingEvents.ASSIGNED,
+        BookingEvents.WORKER_ACCEPTED,
+        BookingEvents.WORK_STARTED,
+        BookingEvents.WORK_COMPLETED_BY_WORKER,
+        BookingEvents.CANCELLED_BY_WORKER,
+        BookingEvents.COORDINATOR_ASSIGNED_WORKER,
+        BookingEvents.COORDINATOR_REASSIGNED_WORKER,
+      ];
 
     events.forEach((e) =>
       socket.on(e, handler)

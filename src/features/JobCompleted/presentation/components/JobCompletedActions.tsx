@@ -10,57 +10,67 @@ export default function JobCompletedActions({
   services,
   categories,
 }: any) {
-  const { t } = useLanguage();
+  const { t, isRTLOrder } = useLanguage();
   const navigate = useNavigate();
 
   const [openInvoice, setOpenInvoice] = useState(false);
   const [openShare, setOpenShare] = useState(false);
 
+  const actionItems = [
+    {
+      label: t.jobcompletedpage.viewInvoice,
+      onClick: () => setOpenInvoice(true),
+    },
+    {
+      label: t.jobcompletedpage.bookAgain,
+      onClick: () => navigate("/"),
+    },
+    {
+      label: t.jobcompletedpage.getSupport,
+      onClick: () => navigate("/help"),
+    },
+    {
+      label: t.jobcompletedpage.share,
+      onClick: () => setOpenShare(true),
+    },
+  ];
+
+  
+  const displayItems = isRTLOrder
+    ? [
+        actionItems[1],
+        actionItems[0],
+        actionItems[3],
+        actionItems[2],
+      ]
+    : actionItems;
+
   return (
     <CommonCard>
       {/* TITLE */}
-      <h2 className="text-base font-bold text-gray-900 mb-4">
+      <h2
+        className={`text-base font-bold text-gray-900 mb-4 ${
+          isRTLOrder ? "flex-row-reverse" : ""
+        }`}
+      >
         {t.jobcompletedpage.whatsNext}
       </h2>
 
       {/* ACTION GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-        <div
-          onClick={() => setOpenInvoice(true)}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
-        >
-          <span className="text-sm font-semibold">
-            {t.jobcompletedpage.viewInvoice}
-          </span>
-        </div>
-
-        <div
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
-        >
-          <span className="text-sm font-semibold">
-            {t.jobcompletedpage.bookAgain}
-          </span>
-        </div>
-
-        <div
-          onClick={() => navigate("/help")}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
-        >
-          <span className="text-sm font-semibold">
-            {t.jobcompletedpage.getSupport}
-          </span>
-        </div>
-
-        <div
-          onClick={() => setOpenShare(true)}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition"
-        >
-          <span className="text-sm font-semibold">
-            {t.jobcompletedpage.share}
-          </span>
-        </div>
+        {displayItems.map((item, index) => (
+          <div
+            key={index}
+            onClick={item.onClick}
+            className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition ${
+              isRTLOrder ? "flex-row-reverse" : ""
+            }`}
+          >
+            <span className="text-sm font-semibold">
+              {item.label}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* MODALS */}
@@ -73,7 +83,10 @@ export default function JobCompletedActions({
       />
 
       {openShare && (
-        <ShareModal booking={booking} onClose={() => setOpenShare(false)} />
+        <ShareModal
+          booking={booking}
+          onClose={() => setOpenShare(false)}
+        />
       )}
     </CommonCard>
   );
