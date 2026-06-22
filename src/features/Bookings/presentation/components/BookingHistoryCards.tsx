@@ -62,6 +62,7 @@ export default function BookingCard({
           case "PAYMENT_PENDING":
         if (booking?.paymentId) {
         onVerifyPayment({
+          bookingId:booking._id,
           paymentId: booking.paymentId,
           status: "SUCCESS",
           sessionId: booking.sessionId,
