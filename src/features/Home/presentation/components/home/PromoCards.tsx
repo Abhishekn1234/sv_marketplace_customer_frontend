@@ -24,13 +24,12 @@ export default function PromoCards() {
 
       {/* Title */}
       <h3 className="text-2xl font-bold mb-2 relative z-10">
-       {t.promocards.title}
-      </h3>
+  <span dir="ltr">{t.promocards.title}</span>
+</h3>
 
-      {/* Description */}
-      <p className="text-sm text-white/85 mb-5 leading-relaxed relative z-10">
-       {t.promocards.description}
-      </p>
+<p className="text-sm text-white/85 mb-5 leading-relaxed relative z-10">
+  <span dir="ltr">{t.promocards.description}</span>
+</p>
 
       {/* Button */}
       <Button
@@ -45,7 +44,7 @@ export default function PromoCards() {
           active:translate-y-0
         "
       >
-      {t.promocards.button}
+      <span dir="ltr">{t.promocards.button}</span>
       </Button>
     </CommonCard>
   );

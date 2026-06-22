@@ -15,7 +15,7 @@ import { useRegisterDeviceToken } from "./features/Notifications/presentation/ho
 import DashboardLayout from "./features/Layout/DashboardLayout";
 import { ProtectedRoute } from "./ProtectedLayout";
 
-import WebsiteHome from "./features/Home/presentation/DashboardHome";
+import WebsiteHome from "./features/Home/presentation/Homepage";
 import MyBookings from "./features/Bookings/presentation/MyBookings";
 import Profile from "./features/Profile/presentation/ProfilePage";
 import LoginLayout from "./features/Auth/presentation/components/auth/Login/LoginLayout";

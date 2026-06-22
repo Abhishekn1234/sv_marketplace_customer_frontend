@@ -139,9 +139,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
 const handleVerifyPayment = (data: PaymentCallback) => {
   // console.log(data);
-  navigate(
-    `/payment/success?paymentId=${data.paymentId}&status=${data.status}&session_id=${data.session_id}`
-  );
+  navigate(`/jobtracking/${data.bookingId}`);
 };
 
   // ----------------------------

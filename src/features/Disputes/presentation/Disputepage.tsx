@@ -12,6 +12,7 @@ import {  Label, Textarea } from "@/components/input";
 import { ArrowLeftIcon } from "@/components/icons";
 import Select from "@/components/input/Select";
 import { options } from "../domain/entities/reasontypes";
+import clsx from "clsx";
 
 
 
@@ -22,7 +23,7 @@ export default function Disputepage() {
   const [description, setDescription] = useState("");
 
   
-  const {t}=useLanguage();
+  const {t,isRTLOrder}=useLanguage();
   const createDisputeMutation = useCreateDispute();
    const {bookingId}=useParams();
     const handleSubmit = async () => {
@@ -80,8 +81,7 @@ export default function Disputepage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       
-      {/* Back Button */}
-      <div className="self-start mb-6">
+          <div className={clsx("mb-6",`${isRTLOrder?"self-end":"self-start"}`)}>
         <Button
          
           onClick={() => navigate(-1)}
@@ -92,6 +92,9 @@ export default function Disputepage() {
           {t.disputespage.back}
         </Button>
       </div>
+       
+    
+     
 
       {/* Title */}
       <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-10 text-center">
@@ -107,19 +110,19 @@ export default function Disputepage() {
       >
         {/* Reason */}
         <div className="flex flex-col">
-          <Label htmlFor="reason" className="mb-2 text-sm font-medium text-gray-700">
+          <Label htmlFor="reason"  className={clsx("mb-2 text-sm font-medium text-gray-700",`${isRTLOrder?"justify-end":""}`)}>
             {t.disputespage.reason}
           </Label>
-     <Select
-  options={options}
-  onChange={(value) => setReasonType(value)}
-  className="w-full"
-/>
+            <Select
+          options={options}
+          onChange={(value) => setReasonType(value)}
+          className="w-full"
+        />
         </div>
 
         {/* Description */}
         <div className="flex flex-col">
-          <Label htmlFor="description" className="mb-2 text-sm font-medium text-gray-700">
+          <Label htmlFor="description" className={clsx("mb-2 text-sm font-medium text-gray-700",`${isRTLOrder?"justify-end":""}`)}>
             {t.disputespage.description}
           </Label>
           <Textarea
@@ -134,7 +137,7 @@ export default function Disputepage() {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
+        <div className={clsx("flex",`${isRTLOrder?"justify-start":"self-end"}`)}>
           <Button
             type="submit"
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md text-sm sm:text-base font-medium transition"
