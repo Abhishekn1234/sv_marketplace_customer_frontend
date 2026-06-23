@@ -13,7 +13,7 @@ import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/us
 import BookingCard from "./BookingHistoryCards";
 import BookingModals from "./BookingHistoryModals";
 
-import { tabStatusMap } from "../helpers/tabstatusmap";
+import { tabStatusMap } from "../utils/tabstatusmap";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 

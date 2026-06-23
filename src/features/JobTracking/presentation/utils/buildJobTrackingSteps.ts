@@ -1,7 +1,7 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
 import { STEP_CONFIG } from "../utils/stepconfig";
-import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
+import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 
 interface Params {
   localBooking: LocalBooking;

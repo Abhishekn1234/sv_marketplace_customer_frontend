@@ -1,7 +1,7 @@
 
-import { formatSmartDate } from "@/features/Confirmation/presentation/helpers/formatdatetime";
+import { formatSmartDate } from "@/features/Confirmation/presentation/utils/formatdatetime";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
-import { formatBookingDuration } from "../helpers/formatduration";
+import { formatBookingDuration } from "../utils/formatduration";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import CommonModal from "@/components/common/CommonModal";

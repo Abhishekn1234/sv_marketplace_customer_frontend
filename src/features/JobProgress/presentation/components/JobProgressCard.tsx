@@ -2,30 +2,19 @@
 
 import { useMemo } from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { normalizeStatus } from "../helpers/mapstatusactivities";
+// import { normalizeStatus } from "../helpers/mapstatusactivities";
 import CommonCard from "@/components/common/CommonCards";
+// import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
+import { getJobProgressTasks } from "../utils/getJobProgressTasks";
+import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 
 export function JobProgressCard({ booking }: any) {
   const { t } = useLanguage();
 
-  const tasks = useMemo(() => {
-    const activities = booking?.activities ?? [];
-
-    return [...activities]
-      .filter((a: any) => a?.createdAt)
-      .sort(
-        (a: any, b: any) =>
-          new Date(a.createdAt).getTime() -
-          new Date(b.createdAt).getTime()
-      )
-      .map((a: any) => ({
-        title:
-          t.jobprogresspage[a.type as keyof typeof t.jobprogresspage] ??
-          a.type,
-        status: normalizeStatus(a.type),
-        time: a.createdAt,
-      }));
-  }, [booking?.activities, t]);
+    const tasks = useMemo(
+      () => getJobProgressTasks(booking, t.jobprogresspage),
+      [booking, t]
+    );
 
   const isCancelled =
     booking?.status === "WORKER_CANCELLED" ||
@@ -132,7 +121,7 @@ export function JobProgressCard({ booking }: any) {
               </div>
 
               <div className="text-[11px] text-gray-400">
-                {new Date(task.time).toLocaleString()}
+                {formatDates(task.time).toLocaleString()}
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
+import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import CommonCard from "@/components/common/CommonCards";
 
 export default function JobCompletedSummary({ booking }: any) {

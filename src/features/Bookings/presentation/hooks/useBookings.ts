@@ -19,7 +19,7 @@ import type { BookingPayload } from "../../domain/entities/bookingpayload.types"
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
 
 import { getSocket } from "@/features/core/Websocket/socket";
-import { bookingKeys } from "@/features/Confirmation/presentation/helpers/bookingkeys";
+import { bookingKeys } from "@/features/Confirmation/presentation/utils/bookingkeys";
 
 const repo = new BookingRepository();
 const getBookings = new GetBookingsUseCase(repo);

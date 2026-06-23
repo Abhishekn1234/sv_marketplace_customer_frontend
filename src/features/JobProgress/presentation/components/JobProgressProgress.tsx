@@ -1,7 +1,7 @@
 "use client";
 
-import { progressMap } from "@/features/Home/presentation/helpers/progressmap";
-import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
+import { progressMap } from "@/features/Home/presentation/utils/progressmap";
+import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";

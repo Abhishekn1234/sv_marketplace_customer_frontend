@@ -1,5 +1,5 @@
 import { Image } from "@/components/input";
-import { getStatusText } from "../helpers/getstatustexts";
+import { getStatusText } from "../utils/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Link } from "react-router-dom";
 import CommonCard from "@/components/common/CommonCards";

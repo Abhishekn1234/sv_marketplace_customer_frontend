@@ -1,6 +1,6 @@
 import CommonSpinner from "@/components/common/CommonLoadingSpinner"
 import { useServices } from "../../../../Bookings/presentation/hooks/useServices"
-import { circleColors } from "../../helpers/circlecolors"
+import { circleColors } from "../../utils/circlecolors"
 import CommonCard from "@/components/common/CommonCards"
 import { Image } from "@/components/input"
 

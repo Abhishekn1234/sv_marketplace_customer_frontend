@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/input/Button";
-import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
+import { formatWorkHours } from "@/features/Bookings/presentation/utils/formathours";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";

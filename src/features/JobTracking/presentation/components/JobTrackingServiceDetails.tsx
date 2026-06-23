@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { formatDates } from "@/features/Home/presentation/helpers/formatdatestring";
+import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";

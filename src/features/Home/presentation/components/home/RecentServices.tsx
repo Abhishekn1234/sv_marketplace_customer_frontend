@@ -2,8 +2,8 @@ import React from "react";
 
 import { RecentItem } from "./RecentItem";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
-import { getBookingPrice } from "../../helpers/getbookprice";
-import { formatDate } from "../../helpers/formatdate";
+import { getBookingPrice } from "../../utils/getbookprice";
+import { formatDate } from "../../utils/formatdate";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import CommonCard from "@/components/common/CommonCards";

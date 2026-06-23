@@ -4,7 +4,7 @@ import type {
   BookingHistory,
   BookingHistoryResponse,
 } from "../../domain/entities/bookinghistory.types";
-import { bookingKeys } from "@/features/Confirmation/presentation/helpers/bookingkeys";
+import { bookingKeys } from "@/features/Confirmation/presentation/utils/bookingkeys";
 
 export type BookingSocketPayload = {
   eventName?: string;

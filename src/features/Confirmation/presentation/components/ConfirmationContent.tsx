@@ -7,7 +7,7 @@ import BookingSummary from "./BookingSummary";
 import WhatsNext from "./WhatsNext";
 
 import { ArrowRight, Calendar, Home } from "lucide-react";
-import { statusMessageMap } from "../helpers/statusmessagemapping";
+import { statusMessageMap } from "../utils/statusmessagemapping";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";

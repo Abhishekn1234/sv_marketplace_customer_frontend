@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
-import { progressMap } from "../../helpers/progressmap";
-import { getBookingFlags } from "../../helpers/getbookingflags";
+import { progressMap } from "../../utils/progressmap";
+import { getBookingFlags } from "../../utils/getbookingflags";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";

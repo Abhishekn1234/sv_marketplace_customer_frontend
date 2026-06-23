@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowRight, Calendar, Home } from "lucide-react";
 import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
-import { formatSmartDate } from "../helpers/formatdatetime";
+import { formatSmartDate } from "../utils/formatdatetime";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
 
