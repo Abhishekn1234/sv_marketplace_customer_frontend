@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@/components/input/Button";
 import { formatWorkHours } from "@/features/Bookings/presentation/helpers/formathours";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
@@ -23,7 +25,7 @@ export default function InvoiceModal({
   const navigate = useNavigate();
   const { data: invoice } = useGenerateInvoice(booking?._id);
   const { serviceTiers, services } = useServices();
-  const { t } = useLanguage();
+  const { t, isRTLOrder } = useLanguage();
 
   if (!open || !booking) return null;
 
@@ -53,7 +55,7 @@ export default function InvoiceModal({
           invoiceData?.actualWorkDays ??
           booking?.actualWorkDays ??
           0
-        } days`;
+        } ${t.common.days}`;
 
   const rate = Number(booking?.amount || 0);
   const vatAmount = Number(booking?.vatAmount || 0);
@@ -85,7 +87,13 @@ export default function InvoiceModal({
       title={t.common.invoiceDetails}
       width="max-w-lg"
       footer={
-        <div className="flex justify-between w-full">
+        <div
+          className={`flex w-full items-center ${
+            isRTLOrder
+              ? "flex-row-reverse justify-between"
+              : "justify-between"
+          }`}
+        >
           {invoice?.status === "PAID" && (
             <Button
               onClick={handleExport}
@@ -104,88 +112,109 @@ export default function InvoiceModal({
         </div>
       }
     >
-      {/* INVOICE INFO */}
-      <div className="space-y-2 text-sm">
-        <p>
-          <b>{t.common.invoiceNo}:</b>{" "}
-          {invoice?.invoiceNumber || "-"}
-        </p>
-
-        <p>
-          <b>{t.common.status}:</b>{" "}
-          {invoice?.status || "-"}
-        </p>
-
-        <p>
-          <b>{t.common.service}:</b> {service}
-        </p>
-
-        <p>
-          <b>{t.common.serviceTier}:</b>{" "}
-          {serviceTierName}
-        </p>
-      </div>
-
-      {/* WORK DETAILS */}
-      <div className="border rounded-lg p-4 mt-4">
-        <h4 className="font-semibold mb-3">
-         {t.invoice.workDetails}
-        </h4>
-
+      <div
+        dir={isRTLOrder ? "rtl" : "ltr"}
+        className={isRTLOrder ? "text-right" : "text-left"}
+      >
+        {/* INVOICE INFO */}
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span>{t.common.workers}</span>
-            <span>{booking?.numberOfWorkers}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span>{t.common.pricingMode}</span>
-            <span>{booking?.pricingMode}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span>{t.common.rate}</span>
-            <span>
-              {rate.toFixed(2)} {currency}
-              {booking?.pricingMode === "HOURLY"
-                ? "/hour"
-                : "/day"}
+          <p>
+            <b>{t.common.invoiceNo}:</b>{" "}
+            <span dir="ltr">
+              {invoice?.invoiceNumber || "-"}
             </span>
-          </div>
+          </p>
 
-          <div className="flex justify-between">
-            <span>{t.common.workedDuration}</span>
-            <span>{workedDuration}</span>
+          <p>
+            <b>{t.common.status}:</b>{" "}
+            {invoice?.status || "-"}
+          </p>
+
+          <p>
+            <b>{t.common.service}:</b> {service}
+          </p>
+
+          <p>
+            <b>{t.common.serviceTier}:</b>{" "}
+            {serviceTierName}
+          </p>
+        </div>
+
+        {/* WORK DETAILS */}
+        <div className="border rounded-lg p-4 mt-4">
+          <h4 className="font-semibold mb-3">
+            {t.invoice.workDetails}
+          </h4>
+
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>{t.common.workers}</span>
+              <span dir="ltr">
+                {booking?.numberOfWorkers}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>{t.common.pricingMode}</span>
+              <span>{booking?.pricingMode}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>{t.common.rate}</span>
+
+              <span dir="ltr">
+                {rate.toFixed(2)} {currency}
+                {booking?.pricingMode === "HOURLY"
+                  ? "/hour"
+                  : "/day"}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>{t.common.workedDuration}</span>
+
+              <span dir="ltr">
+                {workedDuration}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* PAYMENT SUMMARY */}
-      <div className="border rounded-lg p-4 mt-4 bg-gray-50">
-        <h4 className="font-semibold mb-3">
-         {t.common.payment}
-        </h4>
+        {/* PAYMENT SUMMARY */}
+        <div className="border rounded-lg p-4 mt-4 bg-gray-50">
+          <h4 className="font-semibold mb-3">
+            {t.common.payment}
+          </h4>
 
-        <div className="space-y-3">
-          <div className="flex justify-between text-sm">
-            <span>{t.bookingdetailpage.basePrice}</span>
-            <span>
-              {rate.toFixed(2)} {currency}
-            </span>
-          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span>{t.bookingdetailpage.basePrice}</span>
 
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>+ {t.bookingdetailpage.vatRate}</span>
-            <span>
-              {vatAmount.toFixed(2)} {currency}
-            </span>
-          </div>
+              <span dir="ltr">
+                {rate.toFixed(2)} {currency}
+              </span>
+            </div>
 
-          <div className="border-t pt-3 flex justify-between font-bold text-lg">
-            <span>{t.bookingdetailpage.total}</span>
-            <span className="text-primary">
-              {finalAmount.toFixed(2)} {currency}
-            </span>
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>
+                + {t.bookingdetailpage.vatRate}
+              </span>
+
+              <span dir="ltr">
+                {vatAmount.toFixed(2)} {currency}
+              </span>
+            </div>
+
+            <div className="border-t pt-3 flex justify-between font-bold text-lg">
+              <span>{t.bookingdetailpage.total}</span>
+
+              <span
+                dir="ltr"
+                className="text-primary"
+              >
+                {finalAmount.toFixed(2)} {currency}
+              </span>
+            </div>
           </div>
         </div>
       </div>

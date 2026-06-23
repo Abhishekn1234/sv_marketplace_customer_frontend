@@ -9,7 +9,7 @@ import Button from "@/components/input/Button";
 import { Input, Label } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
-import { ArrowLeftIcon, ArrowRight } from "@/components/icons";
+import { ArrowLeftIcon } from "@/components/icons";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ export default function ChangePasswordCard() {
         {isRTLOrder ? (
           <>
             <span>{t.changepasswordpage.backToSettings}</span>
-            <ArrowRight />
+            
           </>
         ) : (
           <>

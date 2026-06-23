@@ -99,7 +99,7 @@ export default function JobCompletedSummary({ booking }: any) {
                 }
                 className={`font-semibold break-words ${
                   item.isLTR && isRTLOrder
-                    ? "text-left"
+                    ? "text-right"
                     : ""
                 }`}
               >

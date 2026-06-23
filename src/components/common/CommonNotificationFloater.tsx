@@ -26,20 +26,16 @@ export default function CommonNotificationFloater({
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { t, isRTLOrder:isRTL } = useLanguage();
+  const { t, isRTLOrder: isRTL } = useLanguage();
 
   const { mutateAsync: markAsRead } = useMarkNotificationRead();
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useNotifications({
-    unreadOnly: false,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useNotifications({
+      unreadOnly: false,
+    });
 
-  // Fetch all pages automatically
+  // auto fetch all pages
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -58,14 +54,12 @@ export default function CommonNotificationFloater({
 
   const handleNotificationClick = async (item: any) => {
     const target = getNotificationTarget(item);
-
     if (!target) return;
 
     const id = item._id || item.id;
 
     try {
       await markAsRead(id);
-
       navigate(target);
       setOpen(false);
     } catch (error) {
@@ -84,56 +78,49 @@ export default function CommonNotificationFloater({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
-    <Button
-  onClick={() => setOpen((prev) => !prev)}
-  variant="ghost"
-  size="lg"
-  className={clsx(
-    "relative flex items-center justify-center",
-    direction === "down" && "hidden sm:flex"
-  )}
->
-  <BellIcon className={clsx(iconBase)} />
+      {/* Bell Button */}
+      <Button
+        onClick={() => setOpen((prev) => !prev)}
+        variant="ghost"
+        size="lg"
+        className={clsx(
+          "relative flex items-center justify-center",
+          direction === "down" && "hidden sm:flex"
+        )}
+      >
+        <BellIcon className={clsx(iconBase)} />
 
-  {unreadCount > 0 && (
-    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
-      {unreadCount}
-    </span>
-  )}
-</Button>
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
+            {unreadCount}
+          </span>
+        )}
+      </Button>
 
+      {/* Dropdown */}
       {open && (
-        <div
-          className={clsx(
-            "absolute z-50 bg-white rounded-2xl shadow-xl border",
-            "w-[calc(100vw-2rem)] max-w-80",
+              <div
+        className={clsx(
+          "absolute z-50 bg-white rounded-2xl shadow-xl border",
+          "w-[calc(100vw-2rem)] max-w-80",
 
-            direction === "up"
-              ? "bottom-full mb-3"
-              : "top-full mt-3",
+          direction === "up" ? "bottom-full mb-3" : "top-full mt-3",
 
-            // Mobile => always centered
-            "left-1/2 -translate-x-1/2",
+          // mobile center
+          "left-1/2 -translate-x-1/2",
 
-            // Desktop
-            "sm:translate-x-1/2 sm:left-auto",
-
-            // Desktop RTL => right aligned
-            // Desktop LTR => keep current design (right aligned)
-            "sm:right-0"
-          )}
+          // desktop RTL/LTR alignment
+          isRTL
+            ? "sm:left-0 sm:right-auto sm:translate-x-0"
+            : "sm:right-0 sm:left-auto sm:translate-x-0"
+        )}
         >
+          {/* Header */}
           <div className="px-4 py-3 border-b flex justify-between">
             <h3 className="font-semibold text-sm">
               {t.notificationpage.title} ({unreadCount})
@@ -151,6 +138,7 @@ export default function CommonNotificationFloater({
             </Button>
           </div>
 
+          {/* List */}
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">
@@ -162,21 +150,14 @@ export default function CommonNotificationFloater({
                   key={item._id || item.id}
                   className={clsx(
                     "px-4 py-3 border-b last:border-b-0",
-                    !item.isRead
-                      ? "bg-blue-50/40"
-                      : "bg-white"
+                    !item.isRead ? "bg-blue-50/40" : "bg-white"
                   )}
                 >
                   <div
-                    onClick={() =>
-                      handleNotificationClick(item)
-                    }
+                    onClick={() => handleNotificationClick(item)}
                     className="cursor-pointer"
                   >
-                    <p className="text-sm font-semibold">
-                      {item.title}
-                    </p>
-
+                    <p className="text-sm font-semibold">{item.title}</p>
                     <p className="text-xs text-gray-500 truncate">
                       {item.message}
                     </p>
@@ -185,9 +166,7 @@ export default function CommonNotificationFloater({
                   <div
                     className={clsx(
                       "mt-2 flex",
-                      isRTL
-                        ? "justify-start"
-                        : "justify-end"
+                      isRTL ? "justify-start" : "justify-end"
                     )}
                   >
                     <Button

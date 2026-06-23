@@ -157,7 +157,7 @@ export default function NotificationCards() {
 
         {unreadNotifications.length > 0 && (
           <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-            {unreadNotifications.length} unread
+            {unreadNotifications.length} {t.notificationpage.unread}
           </div>
         )}
       </div>

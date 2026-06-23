@@ -46,7 +46,7 @@ export default function NotificationContent({
         // console.log(notifications);
        const notificationId = n._id || n.id;
      
-const isSelected = selected.includes(notificationId);
+       const isSelected = selected.includes(notificationId);
         const isUnread = !n.isRead;
 
         const createdAt = new Date(n.createdAt);
