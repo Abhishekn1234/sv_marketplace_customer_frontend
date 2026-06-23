@@ -116,23 +116,30 @@ export default function ChangePasswordCard() {
     <div className="w-full max-w-md">
       {/* Back Button */}
       <div
-        className={`mb-4 ${
-          isRTLOrder ? "text-right" : "text-left"
-        }`}
+      className={`mb-4 ${
+      isRTLOrder ? "text-right" : "text-left"
+      }`}
       >
-              <Button
-        onClick={() => navigate(-1)}
-        className={`inline-flex items-center gap-2 flex-nowrap text-sm text-gray-600 hover:text-blue-600 transition ${
-          isRTLOrder ? "flex-row-reverse" : ""
-        }`}
-      >
-        <ArrowLeftIcon
-          className={`h-4 w-4 shrink-0 ${isRTLOrder ? "rotate-180" : ""}`}
-        />
-        <span className="whitespace-nowrap">
-          {t.changepasswordpage.backToSettings}
-        </span>
-      </Button>
+              <div
+                  onClick={() => navigate(-1)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      navigate(-1);
+                    }
+                  }}
+                  className={`inline-flex cursor-pointer items-center gap-2 flex-nowrap text-sm text-gray-600 hover:text-blue-600 transition ${
+                    isRTLOrder ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <ArrowLeftIcon
+                    className={`h-4 w-4 shrink-0 ${isRTLOrder ? "rotate-180" : ""}`}
+                  />
+                  <span className="whitespace-nowrap">
+                    {t.changepasswordpage.backToSettings}
+                  </span>
+                </div>
       </div>
 
       <CommonCard className="overflow-hidden border border-gray-200 shadow-xl rounded-3xl">
