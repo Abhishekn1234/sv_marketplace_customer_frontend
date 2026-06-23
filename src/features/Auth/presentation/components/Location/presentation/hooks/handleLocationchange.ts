@@ -48,7 +48,7 @@ export const handleLocationChange = async () => {
   const token = await requestAndGetToken();
 
   if (token) {
-    console.log("FCM Token:", token);
+    // console.log("FCM Token:", token);
 
     // store locally so SW can use it
     localStorage.setItem("fcm_token", token);

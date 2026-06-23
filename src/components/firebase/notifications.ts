@@ -18,7 +18,7 @@ export const registerFirebaseMessagingSW = async () => {
       { scope: "/" }
     );
 
-    console.log("✅ Firebase SW registered:", registration.scope);
+    // console.log("✅ Firebase SW registered:", registration.scope);
     return registration;
   } catch (err) {
     console.error("❌ Firebase SW registration error:", err);
@@ -116,7 +116,7 @@ export async function requestAndGetToken() {
       serviceWorkerRegistration: registration,
     });
 
-    console.log("FCM TOKEN:", token);
+    // console.log("FCM TOKEN:", token);
     return token;
   } catch (err) {
     console.error("FCM token error:", err);

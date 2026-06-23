@@ -86,7 +86,7 @@ export const useRegisterDeviceToken = (enabled = true) => {
         });
 
         if (isMounted) setFcmToken(newToken);
-        console.log("FCM token registered");
+        // console.log("FCM token registered");
       } catch (err) {
         console.error("Notification setup failed:", err);
       }

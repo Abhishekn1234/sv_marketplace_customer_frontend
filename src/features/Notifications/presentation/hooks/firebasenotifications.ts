@@ -33,7 +33,7 @@ export async function requestNotificationPermissions() {
     serviceWorkerRegistration: registration, // IMPORTANT FIX
   });
 
-  console.log("FCM TOKEN:", token);
+  // console.log("FCM TOKEN:", token);
 
   return token;
 }

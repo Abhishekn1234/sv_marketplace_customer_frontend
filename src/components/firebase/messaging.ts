@@ -20,7 +20,7 @@ export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
 
     messagingInstance = messaging;
 
-    console.log("🔥 Firebase Messaging initialized");
+    // console.log("🔥 Firebase Messaging initialized");
 
     return messagingInstance;
   } catch (err) {
