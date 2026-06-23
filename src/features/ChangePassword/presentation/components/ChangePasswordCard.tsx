@@ -120,21 +120,18 @@ export default function ChangePasswordCard() {
           isRTLOrder ? "text-right" : "text-left"
         }`}
       >
-            <Button
+              <Button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 whitespace-nowrap text-sm text-gray-600 hover:text-blue-600 transition"
+        className={`inline-flex items-center gap-2 flex-nowrap text-sm text-gray-600 hover:text-blue-600 transition ${
+          isRTLOrder ? "flex-row-reverse" : ""
+        }`}
       >
-        {isRTLOrder ? (
-          <>
-            <span>{t.changepasswordpage.backToSettings}</span>
-            
-          </>
-        ) : (
-          <>
-            <ArrowLeftIcon className="h-4 w-4 shrink-0" />
-            <span>{t.changepasswordpage.backToSettings}</span>
-          </>
-        )}
+        <ArrowLeftIcon
+          className={`h-4 w-4 shrink-0 ${isRTLOrder ? "rotate-180" : ""}`}
+        />
+        <span className="whitespace-nowrap">
+          {t.changepasswordpage.backToSettings}
+        </span>
       </Button>
       </div>
 
