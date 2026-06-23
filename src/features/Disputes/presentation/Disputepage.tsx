@@ -137,14 +137,17 @@ export default function Disputepage() {
         </div>
 
         {/* Submit Button */}
-        <div className={clsx("flex",`${isRTLOrder?"justify-start":"self-end"}`)}>
-          <Button
-            type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md text-sm sm:text-base font-medium transition"
-          >
-            {t.disputespage.submit}
-          </Button>
-        </div>
+              <div className="flex w-full">
+        <Button
+          type="submit"
+          className={clsx(
+            "bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md text-sm sm:text-base font-medium transition",
+            isRTLOrder ? "ml-auto" : "mr-auto"
+          )}
+        >
+          {t.disputespage.submit}
+        </Button>
+      </div>
       </form>
     </div>
   );
