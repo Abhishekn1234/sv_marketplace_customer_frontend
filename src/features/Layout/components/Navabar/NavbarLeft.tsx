@@ -9,7 +9,7 @@ import { useUpdateCurrentLocation } from "@/features/Auth/presentation/component
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { Input } from "@/components/input";
-import OnboardingChecklist from "../OnboardingCheckList";
+import OnboardingChecklist from "../../../../components/common/OnboardingCheckList";
 import { LogoIcon } from "@/components/icons";
 
 

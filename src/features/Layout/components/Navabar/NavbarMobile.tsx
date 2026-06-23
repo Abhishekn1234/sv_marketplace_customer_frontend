@@ -11,7 +11,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import { toast } from "react-toastify";
 import Select from "@/components/input/Select";
-import { languages } from "../languages";
+import { languages } from "../../../../components/common/languages";
 import { Input } from "@/components/input";
 
 interface NavbarMobileProps {

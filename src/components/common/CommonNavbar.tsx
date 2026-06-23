@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/features/context/LanguageContext";
-import NavbarLeft from "./Navabar/NavbarLeft";
-import NavbarRight from "./Navabar/NavbarRight";
-import NavbarMobile from "./Navabar/NavbarMobile";
+import NavbarLeft from "../../features/Layout/components/Navabar/NavbarLeft";
+import NavbarRight from "../../features/Layout/components/Navabar/NavbarRight";
+import NavbarMobile from "../../features/Layout/components/Navabar/NavbarMobile";
 
 
 

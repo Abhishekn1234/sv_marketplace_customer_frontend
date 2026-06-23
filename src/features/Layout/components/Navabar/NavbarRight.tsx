@@ -11,7 +11,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
-import { languages } from "../languages";
+import { languages } from "../../../../components/common/languages";
 import Select from "@/components/input/Select";
 import { UserIcon } from "@/components/icons";
 import { Image } from "@/components/input"; // ✅ FIXED MISSING IMPORT
