@@ -10,39 +10,34 @@ interface PhoneInputProps {
   labelClassName?: string;
 }
 
+
 export function PhoneInput({
-  label,
   value,
   onChange,
   country = "in",
-  containerClassName,
-  labelClassName,
 }: PhoneInputProps) {
+  // Convert "+91-9876543210" -> "919876543210"
+  const phoneValue = value
+    ? value.replace("+", "").replace("-", "")
+    : "";
+
   return (
-    <div className={containerClassName}>
-      {label && (
-        <label className={`block text-sm font-semibold mb-2 ${labelClassName}`}>
-          {label}
-        </label>
-      )}
+    <ReactPhoneInput
+      country={country}
+      value={phoneValue}
+      onChange={(phone: string, data: any) => {
+        const dialCode = data?.dialCode || "";
 
-      <ReactPhoneInput
-        country={country}
-        value={value}
-        onChange={(phone: string, data: any) => {
-          const dial = data.dialCode || ""; // "91"
+        const nationalNumber = phone.startsWith(dialCode)
+          ? phone.slice(dialCode.length)
+          : phone;
 
-          // remove dial code from full number
-          const national = phone.replace(dial, "").trim();
+        const formatted = `+${dialCode}-${nationalNumber}`;
 
-          // ✅ FORMAT WITH DASH
-          const formatted = `+${dial}-${national}`;
-
-          onChange(formatted);
-        }}
-        inputClass="!w-full !h-12 !rounded-xl !border !border-gray-300"
-        containerClass="w-full"
-      />
-    </div>
+        onChange(formatted);
+      }}
+      inputClass="!w-full !h-12 !rounded-xl !border !border-gray-300"
+      containerClass="w-full"
+    />
   );
 }
