@@ -144,7 +144,7 @@ const resend = async () => {
       });
 
       toast.success(response.message);
-      navigate("/");
+      navigate("/",{replace:true});
     } catch (err: any) {
       toast.error(err.response?.data?.message || "OTP verification failed");
     }
@@ -185,15 +185,15 @@ const resend = async () => {
                 </p>
 
                <div className="inline-flex flex-col items-center gap-1 mt-3 px-4 py-2 bg-gray-50 rounded-xl text-sm font-semibold">
-  <span>{mobileNumber}</span>
+              <span>{mobileNumber}</span>
 
-  {/* OTP hint */}
-  {process.env.NODE_ENV === "development" && responseOtp && (
-    <span className="text-xs text-red-500">
-      Dev OTP: {responseOtp}
-    </span>
-  )}
-</div>
+              {/* OTP hint */}
+              {process.env.NODE_ENV === "development" && responseOtp && (
+                <span className="text-xs text-red-500">
+                  Dev OTP: {responseOtp}
+                </span>
+              )}
+            </div>
               </div>
 
               {/* OTP Inputs */}
