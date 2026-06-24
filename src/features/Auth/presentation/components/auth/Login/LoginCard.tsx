@@ -21,7 +21,7 @@ const LoginCard = () => {
     try {
       const response = await login({ email, password });
       toast.success(response.message);
-      navigate('/');
+      navigate('/',{replace:true});
     } catch (err: any) {
       toast.error(err.response.data.message);
     }

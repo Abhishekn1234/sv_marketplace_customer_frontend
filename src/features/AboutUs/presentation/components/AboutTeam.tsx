@@ -1,24 +1,21 @@
 import { useLanguage } from "@/features/context/LanguageContext";
+import { aboutteammembers } from "../data/aboutteam";
+import { UserIcon } from "@/components/icons";
 
 export default function AboutTeam() {
-  const {t}=useLanguage();
-  const team = [
-    { name: "Sarah Chen", role: t.aboutpage.team.members.ceo },
-    { name: "Michael Rodriguez", role: t.aboutpage.team.members.cto },
-    { name: "Emily Thompson", role: t.aboutpage.team.members.cs },
-    { name: "David Park", role: t.aboutpage.team.members.ops },
-  ];
+  const {t,isRTLOrder}=useLanguage();
+  const team =aboutteammembers(t);
 
   return (
-    <section className="mb-8">
+    <section className="mb-8" dir={isRTLOrder?"rtl":""}>
 
       {/* Section Title */}
-      <h2 className="text-[32px] font-bold text-gray-900 text-center mb-8">
+      <h2 className="text-[32px] font-bold text-gray-900  mb-8">
         {t.aboutpage.team.title}
       </h2>
 
       {/* Grid */}
-      <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]">
+      <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]"dir={isRTLOrder?"rtl":""}>
         {team.map((member, index) => (
           <div
             key={index}
@@ -26,16 +23,7 @@ export default function AboutTeam() {
           >
             {/* Avatar */}
             <div className="w-[100px] h-[100px] rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-5">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="w-[50px] h-[50px] text-blue-600"
-              >
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+           <UserIcon className="h-16 w-16 text-blue-600" />
             </div>
 
             {/* Name */}

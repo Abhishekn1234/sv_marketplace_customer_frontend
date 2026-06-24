@@ -8,6 +8,7 @@ import ReactIcon from "@/components/icons/react.svg?react";
 import { QuickActionsIcon } from "./QuickActionsIcon";
 import { SecurityIcon } from "./SecurityIcon";
 import { PhoneIcon } from "./PhoneIcon";
+import SustainabilityIcon from "./SustanabilityIcon";
 import { SendIcon } from "./SendIcon";
 import { SuccessIcon } from "./SuccessIcon";
 import { ArrowLeftIcon } from "./ArrowLeft";
@@ -17,9 +18,14 @@ import { InfoIcon } from "./InfoIcon";
 import { BackArrowIcon } from "./BackArrowIcon";
 import { BillingIcon } from "./BillingIcon";
 import { HelpIcon } from "./HelpIcon";
+import TransparencyIcon from "./TransparencyIcon";
 import { PreferencesIcon } from "./PreferencesIcon";
 import { PrivacyIcon } from "./PrivacyIcon";
 import { LogoIcon } from "./LogoIcon";
+import QualityIcon from "./QualityIcon";
+import SafetyIcon from "./SafetyIcon";
+import CustomerIcon from "./CustomerIcon";
+import TrustIcon from "./TrustIcon";
 import { SaveIcon } from "./SaveIcon";
 import { PlusIcon } from "./PlusIcon";
 import { StarIcon } from "./StarIcon";
@@ -53,8 +59,14 @@ export {
   BackArrowIcon,
   BillingIcon,
   HelpIcon,
+ SustainabilityIcon,
+  TransparencyIcon,
   PreferencesIcon,
   PrivacyIcon,
+  CustomerIcon,
+  QualityIcon,
+  SafetyIcon,
+  TrustIcon,
   LogoIcon,
   SaveIcon,
   DangerZoneIcon,

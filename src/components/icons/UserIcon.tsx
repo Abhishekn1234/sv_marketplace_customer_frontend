@@ -1,6 +1,9 @@
 import React from "react";
 
-export function UserIcon(props?: React.SVGProps<SVGSVGElement>) {
+export function UserIcon({
+  className = "",
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +15,7 @@ export function UserIcon(props?: React.SVGProps<SVGSVGElement>) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      className={className}
       {...props}
     >
       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />

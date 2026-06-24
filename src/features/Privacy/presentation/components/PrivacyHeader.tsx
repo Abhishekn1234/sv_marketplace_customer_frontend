@@ -5,6 +5,7 @@ import NotificationButton from "./NotificationButton";
 import UserProfile from "./UserProfile";
 
 const PrivacyHeader: React.FC = () => {
+ 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4">

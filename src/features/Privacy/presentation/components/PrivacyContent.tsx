@@ -2,26 +2,23 @@
 
 import React from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { formattedHelpDate } from "@/features/Help/presentation/utils/formatdateforhelp";
 
 const PrivacyContent: React.FC = () => {
-  const { t } = useLanguage();
+  const { t ,isRTLOrder} = useLanguage();
 
-  const formattedDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+ 
 
   return (
-    <main className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-[100px] sm:pb-[120px]">
+    <main className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-[100px] sm:pb-[120px]" dir={isRTLOrder?"rtl":""}>
       
       {/* Header */}
-      <div className="text-center mb-8 sm:mb-12">
+      <div className="mb-8 sm:mb-12" dir={isRTLOrder?"text-right":"text-center"}>
         <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
           {t.privacy.title}
         </h1>
         <p className="text-xs sm:text-sm text-gray-500">
-          {t.privacy.lastUpdated}: {formattedDate}
+          {t.privacy.lastUpdated}: {formattedHelpDate}
         </p>
       </div>
 

@@ -1,9 +1,14 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function AboutHero() {
-  const {t}=useLanguage();
+  const {t,isRTLOrder}=useLanguage();
   return (
-    <div className="text-center mb-12">
+          <div
+        dir={isRTLOrder ? "rtl" : "ltr"}
+        className={`mb-12 ${
+          isRTLOrder ? "text-right" : "text-center"
+        }`}
+      >
       
       {/* Title */}
       <h1 className="text-[42px] font-bold text-gray-900 mb-4 tracking-[-0.02em]">
@@ -11,7 +16,7 @@ export default function AboutHero() {
       </h1>
 
       {/* Subtitle */}
-      <p className="text-[18px] text-gray-500 leading-relaxed max-w-2xl mx-auto">
+      <p className="text-[18px] text-gray-500 leading-relaxed max-w-7xl">
         {t.aboutpage.hero.subtitle}
       </p>
 

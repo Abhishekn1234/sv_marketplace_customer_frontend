@@ -12,6 +12,7 @@ interface CommonCardProps {
 
   type?:
     | "none"
+    |"darkblue"
     | "white"
     | "soft"
     | "dark"
@@ -44,6 +45,7 @@ export default function CommonCard({
     red: "bg-red-50 border border-red-200 shadow-sm",
     green: "bg-green-50 border border-green-200 shadow-sm",
     blue: "bg-blue-50 border border-blue-200 shadow-sm",
+    darkblue:"bg-blue-700 border border-blue-200 shadow-sm",
     white: "bg-white border border-gray-200 shadow-sm",
     soft: "bg-gray-50 border border-gray-100 shadow-sm",
     dark: "bg-gray-900 text-white border border-gray-800 shadow-md",
