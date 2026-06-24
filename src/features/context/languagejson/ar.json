@@ -6,6 +6,7 @@
     "highlight": "اللغة",
     "description": "خصص تجربتك للعثور على أفضل المساعدة لمنزلك باللغة التي تشعر بالراحة معها.",
     "questions": "هل لديك أسئلة؟",
+   
     "talkToTeam": "تحدث مع فريقنا"
   },
  
@@ -91,6 +92,9 @@
       "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
       "locationError": "تعذر الحصول على الموقع",
        "Work Description":"وصف العمل",
+         "Verifying Payment":"جاري التحقق من الدفع...",
+         "Select an option":"اختر خياراً",
+         "Please wait while we confirm your payment.":"يرجى الانتظار بينما نتحقق من دفعتك.",
       "save": "حفظ",
       "days":"أيام",
       "close": "إغلاق",

@@ -1,7 +1,8 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
 import { STEP_CONFIG } from "../utils/stepconfig";
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+// import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+import { getStepTime } from "./timemapping";
 
 interface Params {
   localBooking: LocalBooking;
@@ -33,14 +34,9 @@ export function buildJobTrackingSteps({
     const step = STEP_CONFIG.find((s) => s.key === currentStatus);
     if (!step) return [];
 
-    const activity = activityMap?.[step.key];
+    // const activity = activityMap?.[step.key];
 
-    const time =
-      activity?.createdAt
-        ? formatDates(activity.createdAt)
-        : localBooking.createdAt
-        ? formatDates(localBooking.createdAt)
-        : "Pending";
+   const time = getStepTime(step.key, activityMap, localBooking);
 
     return [
       {
@@ -64,14 +60,9 @@ export function buildJobTrackingSteps({
   );
 
   return filteredSteps.map((step, idx) => {
-    const activity = activityMap?.[step.key];
+    // const activity = activityMap?.[step.key];
 
-    const time =
-      activity?.createdAt
-        ? formatDates(activity.createdAt)
-        : step.key === "CREATED" && localBooking.createdAt
-        ? formatDates(localBooking.createdAt)
-        : "Pending";
+   const time = getStepTime(step.key, activityMap, localBooking);
 
     return {
       key: step.key,

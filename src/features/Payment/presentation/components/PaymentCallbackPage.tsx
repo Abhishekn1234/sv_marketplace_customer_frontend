@@ -12,103 +12,162 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import type { PaymentStatus } from "../../domain/entities/paymentstatus";
 
 export default function PaymentCallbackPage() {
-const navigate = useNavigate();
-const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const queryClient = useQueryClient();
-const verifyPayment = useVerifyPayment();
+  const queryClient = useQueryClient();
+  const verifyPayment = useVerifyPayment();
 
-const { t } = useLanguage();
+  const { t } = useLanguage();
 
-const called = useRef(false);
+  const called = useRef(false);
 
-useEffect(() => {
-const verify = async () => {
-if (called.current) return;
+  useEffect(() => {
+    const verify = async () => {
+      if (called.current) return;
+      called.current = true;
 
+      const params = new URLSearchParams(location.search);
 
-  called.current = true;
+      const stateData = (location.state ?? {}) as {
+        paymentId?: string;
+        transactionId?: string;
+        bookingId?: string;
+        status?: PaymentStatus;
+      };
 
-  const params = new URLSearchParams(location.search);
+      console.log("location.state =", stateData);
+      console.log("location.search =", location.search);
 
-  const paymentId = params.get("paymentId");
-  const sessionId = params.get("session_id");
-const rawStatus = params.get("status");
+      const paymentId =
+        stateData?.paymentId ||
+        params.get("paymentId") ||
+        "";
 
-const status: PaymentStatus =
-  rawStatus === "SUCCESS"
-    ? "SUCCESS"
-    : rawStatus === "FAILED"
-    ? "FAILED"
-    : "PENDING";
-  const bookingId = params.get("bookingId");
+      const transactionId =
+        stateData?.transactionId ||
+        params.get("session_id") ||
+        paymentId;
 
-  if (!paymentId) {
-    navigate("/bookings");
-    return;
-  }
+      const bookingId =
+        stateData?.bookingId ||
+        params.get("bookingId") ||
+        "";
 
-  try {
-    await verifyPayment.mutateAsync({
-      paymentId,
-      transactionId: sessionId || paymentId,
-      status,
-    });
+      const rawStatus =
+        stateData?.status ||
+        params.get("status");
 
-    queryClient.invalidateQueries({
-      queryKey: ["bookings"],
-    });
+      const status: PaymentStatus =
+        rawStatus === "SUCCESS" ||
+        rawStatus === "PAID" ||
+        rawStatus === "COMPLETED"
+          ? "SUCCESS"
+          : rawStatus === "FAILED"
+          ? "FAILED"
+          : "PENDING";
 
-    toast.success(t.paymentpage.verified);
+      if (!paymentId) {
+        navigate("/bookings", { replace: true });
+        return;
+      }
 
-    setTimeout(() => {
-      navigate("/jobcompleted", {
+      try {
+        const response = await verifyPayment.mutateAsync({
+          paymentId,
+          transactionId,
+          status,
+        });
 
-        state: {
-          bookingId,
-          paymentDone: true,
-        },
-      });
-    }, 1000);
-  } catch (error: any) {
-    toast.error(
-      error?.response?.data?.message ||
-        error?.message ||
-        t.paymentpage.failed
-    );
+        console.log("VERIFY SUCCESS:", response);
 
-    setTimeout(() => {
-      navigate("/bookings");
-    }, 1500);
-  }
-};
+        // =========================
+        // ✅ UPDATE SINGLE BOOKING CACHE
+        // =========================
+        queryClient.setQueryData(
+          ["bookings", bookingId],
+          (old: any) => {
+            if (!old) return old;
 
-verify();
+            return {
+              ...old,
+              paymentStatus: "PAID",
+              status: "PAID",
+              invoice: {
+                ...old.invoice,
+                status: "PAID",
+              },
+            };
+          }
+        );
 
+        // =========================
+        // ✅ UPDATE LIST CACHE
+        // =========================
+        queryClient.setQueryData(["booking-history"], (old: any) => {
+          if (!old) return old;
 
-}, [
-location.search,
-navigate,
-queryClient,
-verifyPayment,
-t,
-]);
+          return old.map((b: any) =>
+            b._id === bookingId
+              ? {
+                  ...b,
+                  paymentStatus: "PAID",
+                  status: "PAID",
+                  invoice: {
+                    ...b.invoice,
+                    status: "PAID",
+                  },
+                }
+              : b
+          );
+        });
 
-return ( <div className="min-h-screen flex justify-center items-center bg-slate-50"> <div className="bg-white shadow-xl rounded-3xl p-10 text-center w-full max-w-md">
+        toast.success(t.paymentpage.verified);
 
+        navigate("/jobcompleted", {
+          replace: true,
+          state: {
+            bookingId,
+            paymentDone: true,
+          },
+        });
+      } catch (error: any) {
+        console.error("VERIFY ERROR:", error);
+        console.error("VERIFY ERROR RESPONSE:", error?.response?.data);
 
-    <CommonSpinner size={40} />
+        toast.error(
+          error?.response?.data?.message ||
+            error?.message ||
+            t.paymentpage.failed
+        );
 
-    <h2 className="text-2xl font-bold mt-5">
-      Verifying Payment
-    </h2>
+        navigate("/bookings", { replace: true });
+      }
+    };
 
-    <p className="text-gray-500 mt-2">
-      Please wait while we confirm your payment.
-    </p>
-  </div>
-</div>
+    verify();
+  }, [
+    location.search,
+    location.state,
+    navigate,
+    queryClient,
+    verifyPayment,
+    t,
+  ]);
 
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-slate-50">
+      <div className="bg-white shadow-xl rounded-3xl p-10 text-center w-full max-w-md">
+        <CommonSpinner size={40} />
 
-);
+        <h2 className="text-2xl font-bold mt-5">
+         {t.common["Verifying Payment"]}
+        </h2>
+
+        <p className="text-gray-500 mt-2">
+          {t.common["Please wait while we confirm your payment."]}
+        </p>
+      </div>
+    </div>
+  );
 }

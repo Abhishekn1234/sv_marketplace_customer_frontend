@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export interface SelectOption {
   label: string;
@@ -11,7 +12,13 @@ export interface SelectOption {
 
 type Size = "sm" | "md" | "lg" | "xl";
 type Radius = "sm" | "md" | "lg" | "xl" | "full";
-type Variant = "default" | "primary" | "secondary" | "ghost";
+type Variant =
+  | "default"
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "white"
+  | "outline";
 
 interface SelectProps {
   options: SelectOption[];
@@ -42,16 +49,26 @@ const radiusStyles: Record<Radius, string> = {
 
 const variantStyles: Record<Variant, string> = {
   default: `
-    bg-gray-100
-    dark:bg-gray-800
+    bg-white
+    dark:bg-gray-900
     border-gray-200
     dark:border-gray-700
     text-gray-800
     dark:text-gray-100
     hover:bg-gray-50
-    dark:hover:bg-gray-700
-    hover:border-gray-300
-    dark:hover:border-gray-600
+    dark:hover:bg-gray-800
+  `,
+
+  white: `
+    bg-white
+    dark:bg-gray-900
+    border-gray-100
+    dark:border-gray-700
+    text-gray-900
+    dark:text-gray-100
+    hover:bg-gray-50
+    dark:hover:bg-gray-800
+    shadow-sm
   `,
 
   primary: `
@@ -59,6 +76,8 @@ const variantStyles: Record<Variant, string> = {
     border-blue-600
     text-white
     hover:bg-blue-700
+    dark:bg-blue-500
+    dark:hover:bg-blue-600
   `,
 
   secondary: `
@@ -74,11 +93,20 @@ const variantStyles: Record<Variant, string> = {
 
   ghost: `
     bg-transparent
-    border-gray-200
-    dark:border-gray-700
+    border-transparent
     text-gray-700
     dark:text-gray-300
     hover:bg-gray-100
+    dark:hover:bg-gray-800
+  `,
+
+  outline: `
+    bg-transparent
+    border-gray-300
+    dark:border-gray-600
+    text-gray-800
+    dark:text-gray-200
+    hover:bg-gray-50
     dark:hover:bg-gray-800
   `,
 };
@@ -87,12 +115,15 @@ export default function Select({
   options,
   value,
   onChange,
-  placeholder = "Select an option",
+  placeholder,
   className = "",
   size = "md",
   radius = "lg",
-  variant = "default",
+  variant = "white",
 }: SelectProps) {
+  const {t}=useLanguage();
+  const resolvedPlaceholder =
+  placeholder || t.common["Select an option"]
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState<string | undefined>(value);
 
@@ -174,7 +205,7 @@ export default function Select({
             </span>
           ) : (
             <span className="text-gray-500 dark:text-gray-400 truncate">
-              {placeholder}
+              {resolvedPlaceholder}
             </span>
           )}
         </span>

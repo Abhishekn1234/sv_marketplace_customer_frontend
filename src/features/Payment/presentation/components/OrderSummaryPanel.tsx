@@ -20,7 +20,7 @@ export default function OrderSummaryPanel({
   return (
     <div style={styles.panelLeft}>
       <div style={styles.secureBadge}>
-        <LockIcon />
+        <LockIcon color="blue" />
         {t.secureCheckout}
       </div>
 

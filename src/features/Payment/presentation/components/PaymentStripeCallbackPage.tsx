@@ -12,12 +12,13 @@ import SuccessSection from "@/features/JobCompleted/presentation/components/Succ
 import JobCompletedSummary from "@/features/JobCompleted/presentation/components/JobCompletedSummary";
 import JobCompletedActions from "@/features/JobCompleted/presentation/components/JobCompletedActions";
 import { useVerifyStripePayment } from "../hooks/useVerifyStripePayment";
-// import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
+ import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
+
 
 
 
 export default function PaymentStripeCallbackPage() {
-    // usePreventBackNavigation();
+    usePreventBackNavigation();
   const navigate = useNavigate();
   const { services } = useServices();
   const { t } = useLanguage();
@@ -27,7 +28,7 @@ export default function PaymentStripeCallbackPage() {
   const paymentId = searchParams.get("paymentId");
   const status = searchParams.get("status");
   const sessionId = searchParams.get("session_id");
-
+  
   const {
     data,
     isLoading,

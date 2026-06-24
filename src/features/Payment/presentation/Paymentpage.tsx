@@ -54,43 +54,42 @@ export default function PaymentPage() {
   }
 
   const handlePayment = () => {
-    if (!method) {
-      toast.error(`${t.paymentpage.pleaseSelectMethod}`);
-      return;
-    }
-    mutate(
-      { bookingId, paymentMethod: method as any },
-      {
-        onSuccess: (data) => {
-          if (method === "CASH") {
-            navigate("/payment/callback", {
-              state: {
-                paymentId:     data.paymentId,
-                transactionId: data.paymentId,
-                bookingId,
-                status:        "SUCCESS",
-              },
-            });
-            return;
-          }
-          if (data.paymentUrl) {
-            toast.success(`${t.paymentpage.redirecting}`);
-            window.location.href = data.paymentUrl;
-            return;
-          }
-          toast.error(`${t.paymentpage.paymentUrlNotFound}`);
-        },
-        onError: (error: any) => {
-          toast.error(
-            error?.response?.data?.message ||
-            error?.message ||
-            `${t.paymentpage.paymentFailed}`
-          );
-        },
-      }
-    );
-  };
+  console.log("Selected method:", method);
 
+  if (!method) {
+    toast.error(t.paymentpage.pleaseSelectMethod);
+    return;
+  }
+
+  mutate(
+    { bookingId, paymentMethod: method as any },
+    {
+      onSuccess: (data) => {
+        // console.log("Payment response:", data);
+        // console.log("Method:", method);
+
+        if (method === "CASH") {
+          // console.log("Navigating to callback page");
+
+          navigate("/payment/callback", {
+            state: {
+              paymentId: data.paymentId,
+              transactionId: data.paymentId,
+              bookingId,
+              status: "SUCCESS",
+            },
+          });
+
+          return;
+        }
+
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        }
+      },
+    }
+  );
+};
   // const showCardFields = SHOWS_CARD_FIELDS.includes(method);
 
 

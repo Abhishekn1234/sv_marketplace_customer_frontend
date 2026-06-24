@@ -1,21 +1,24 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const usePreventBackNavigation = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Create a history entry for the current page
-    window.history.pushState(
-      { preventBack: true },
-      "",
-      window.location.href
-    );
+    // Add a dummy history entry
+    window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-      // Immediately restore current page
-      window.history.pushState(
-        { preventBack: true },
-        "",
-        window.location.href
+      const leave = window.confirm(
+        "Are you sure you want to leave this page?"
       );
+
+      if (leave) {
+        navigate("/bookings", { replace: true });
+      } else {
+        // Re-add the current page to history
+        window.history.pushState(null, "", window.location.href);
+      }
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -23,5 +26,5 @@ export const usePreventBackNavigation = () => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [navigate]);
 };
