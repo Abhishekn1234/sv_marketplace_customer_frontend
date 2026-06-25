@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import Button from "../input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 type CommonModalProps = {
   open: boolean;
@@ -22,6 +23,7 @@ export default function CommonModal({
   footer,
   width = "max-w-lg",
 }: CommonModalProps) {
+  const {isRTLOrder}=useLanguage();
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -68,7 +70,10 @@ export default function CommonModal({
           {/* Header */}
           {title && (
             <div className="px-5 py-4 font-semibold text-lg flex items-center justify-between border-0">
-              <span>{title}</span>
+              <span  dir={isRTLOrder ? "rtl" : "ltr"}
+  className={`text-lg font-semibold ${
+    isRTLOrder ? "text-right" : "text-left"
+  }`}>{title}</span>
 
               <Button
                 onClick={onClose}
