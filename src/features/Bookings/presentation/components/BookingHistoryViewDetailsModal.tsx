@@ -42,7 +42,14 @@ export default function BookingHistoryViewDetailsModal({
  <CommonModal
   open={isOpen}
   onClose={onClose}
-  title={serviceName}
+   title={
+    <div
+      dir={isRTLOrder ? "rtl" : "ltr"}
+      className={isRTLOrder ? "text-right" : "text-left"}
+    >
+      {serviceName}
+    </div>
+  }
   width="max-w-2xl"
   footer={
     <Button

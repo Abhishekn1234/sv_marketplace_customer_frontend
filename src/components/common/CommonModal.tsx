@@ -6,7 +6,7 @@ import Button from "../input/Button";
 type CommonModalProps = {
   open: boolean;
   onClose: () => void;
-  title?: string;
+  title?: string |ReactNode;
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
