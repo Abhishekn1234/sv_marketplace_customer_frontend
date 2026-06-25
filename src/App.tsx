@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "./features/core/store/auth";
 import { initializeSocket } from "./features/core/Websocket/socket";
 import { useRegisterDeviceToken } from "./features/Notifications/presentation/hooks/useRegisterDeviceToken";
@@ -55,6 +55,14 @@ import PaymentStripeCallbackFailurePage from "./features/Payment/presentation/co
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
   useRegisterDeviceToken(Boolean(isLoggedIn && accessToken));
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 //  useBrowserNotifications();
   // =========================
@@ -95,11 +103,15 @@ function App() {
         <ScrollToTop />
         <NotificationNavigation />
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          theme="light"
-        />
+      <ToastContainer
+  position={isMobile ? "bottom-center" : "top-right"}
+  autoClose={3000}
+  theme="light"
+  toastStyle={{
+    width: isMobile ? "calc(100vw - 24px)" : "380px",
+    maxWidth: "100%",
+  }}
+/>
 
         <Routes>
           <Route

@@ -5,28 +5,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import Button from "@/components/input/Button";
-// import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 import { useBookingPayment } from "./hooks/useBookingPayment";
 import { useGetPaymentGateway } from "./hooks/useGetPaymentGateway";
 import { normalizeGateways } from "./utils/normalizedGateways";
 import { useLanguage } from "@/features/context/LanguageContext";
-// import { fmtCardNumber, fmtExpiry } from "./utils/cardinputformatters";
-// import { CheckIcon, LockIcon, ShieldIcon, ShieldSmallIcon } from "@/components/icons";
-// import { LineItem } from "./components/LineItem";
-import { styles } from "./components/styles/paymentcardstyle";
-// import { Input, Label } from "@/components/input";
-import { getMethodMeta} from "./utils/getpaymentmethoddata";
+import { getMethodMeta } from "./utils/getpaymentmethoddata";
 import PaymentMethodsPanel from "./components/PaymentMethodsPanel";
 import OrderSummaryPanel from "./components/OrderSummaryPanel";
-// SHOWS_CARD_FIELDS
+import { styles } from "./components/styles/paymentcardstyle";
+
 export default function PaymentPage() {
   const [method, setMethod] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
 
-  const { t, isRTLOrder } = useLanguage();  // ← pull isRTL from your language context
+  const { t, isRTLOrder } = useLanguage();
   const navigate = useNavigate();
   const { state } = useLocation();
   const { t: translations } = useLanguage();
@@ -54,111 +49,106 @@ export default function PaymentPage() {
   }
 
   const handlePayment = () => {
-  console.log("Selected method:", method);
-
-  if (!method) {
-    toast.error(t.paymentpage.pleaseSelectMethod);
-    return;
-  }
-
-  mutate(
-    { bookingId, paymentMethod: method as any },
-    {
-      onSuccess: (data) => {
-        // console.log("Payment response:", data);
-        // console.log("Method:", method);
-
-        if (method === "CASH") {
-          // console.log("Navigating to callback page");
-
-          navigate("/payment/callback", {
-            state: {
-              paymentId: data.paymentId,
-              transactionId: data.paymentId,
-              bookingId,
-              status: "SUCCESS",
-            },
-          });
-
-          return;
-        }
-
-        if (data.paymentUrl) {
-          window.location.href = data.paymentUrl;
-        }
-      },
+    if (!method) {
+      toast.error(t.paymentpage.pleaseSelectMethod);
+      return;
     }
+
+    mutate(
+      { bookingId, paymentMethod: method as any },
+      {
+        onSuccess: (data) => {
+          if (method === "CASH") {
+            navigate("/payment/callback", {
+              state: {
+                paymentId: data.paymentId,
+                transactionId: data.paymentId,
+                bookingId,
+                status: "SUCCESS",
+              },
+            });
+            return;
+          }
+          if (data.paymentUrl) {
+            window.location.href = data.paymentUrl;
+          }
+        },
+      }
+    );
+  };
+
+  const summaryPanel = (
+    <OrderSummaryPanel
+      t={t.paymentpage}
+      serviceName={serviceName}
+      bookingId={bookingId}
+      currency={currency}
+      price={price}
+    />
   );
-};
-  // const showCardFields = SHOWS_CARD_FIELDS.includes(method);
 
-
-
-
+  const methodsPanel = (
+    <PaymentMethodsPanel
+      t={t.paymentpage}
+      method={method}
+      setMethod={setMethod}
+      normalized={normalized}
+      METHOD_META={METHOD_META}
+      isLoading={isLoading}
+      cardNumber={cardNumber}
+      setCardNumber={setCardNumber}
+      expiry={expiry}
+      setExpiry={setExpiry}
+      cvv={cvv}
+      setCvv={setCvv}
+      currency={currency}
+      price={price}
+      isPending={isPending}
+      onPay={handlePayment}
+    />
+  );
 
   return (
-   <div style={{ ...styles.page}}>
-  <div style={styles.shell}>
-    {isRTLOrder ? (
-      <>
-        <PaymentMethodsPanel
-          t={t.paymentpage}
-          method={method}
-          setMethod={setMethod}
-          normalized={normalized}
-          METHOD_META={METHOD_META}
-          isLoading={isLoading}
-          cardNumber={cardNumber}
-          setCardNumber={setCardNumber}
-          expiry={expiry}
-          setExpiry={setExpiry}
-          cvv={cvv}
-          setCvv={setCvv}
-          currency={currency}
-          price={price}
-          isPending={isPending}
-          onPay={handlePayment}
-        />
+  <>
+    <style>{`
+      .payment-shell {
+        display: flex;
+        gap: 24px;
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px;
+        box-sizing: border-box;
+        align-items: flex-start;
+      }
 
-        <OrderSummaryPanel
-          t={t.paymentpage}
-          serviceName={serviceName}
-          bookingId={bookingId}
-          currency={currency}
-          price={price}
-        />
-      </>
-    ) : (
-      <>
-        <OrderSummaryPanel
-          t={t.paymentpage}
-          serviceName={serviceName}
-          bookingId={bookingId}
-          currency={currency}
-          price={price}
-        />
+      .payment-shell.ltr {
+        flex-direction: row;
+      }
 
-        <PaymentMethodsPanel
-          t={t.paymentpage}
-          method={method}
-          setMethod={setMethod}
-          normalized={normalized}
-          METHOD_META={METHOD_META}
-          isLoading={isLoading}
-          cardNumber={cardNumber}
-          setCardNumber={setCardNumber}
-          expiry={expiry}
-          setExpiry={setExpiry}
-          cvv={cvv}
-          setCvv={setCvv}
-          currency={currency}
-          price={price}
-          isPending={isPending}
-          onPay={handlePayment}
-        />
-      </>
-    )}
-  </div>
-</div>
-  );
+      .payment-shell.rtl {
+        flex-direction: row-reverse;
+      }
+
+      @media (max-width: 767px) {
+        .payment-shell,
+        .payment-shell.ltr,
+        .payment-shell.rtl {
+          flex-direction: column !important;
+          gap: 16px;
+          padding: 16px 12px;
+        }
+      }
+    `}</style>
+
+    <div style={styles.page}>
+      <div
+        className={`payment-shell ${isRTLOrder ? "rtl" : "ltr"}`}
+      >
+        {summaryPanel}
+        {methodsPanel}
+      </div>
+    </div>
+  </>
+);
 }
