@@ -114,25 +114,43 @@ function App() {
   }}
 />
 
-      <Routes>
-         <Route element={<DashboardLayout />}>
-         <Route path="/login" element={<LoginLayout />} />
+     <Routes>
+  {/* ==========================================
+      Invoice Page (No Dashboard Layout)
+  ========================================== */}
+  <Route element={<ProtectedRoute />}>
+    <Route element={<PreventBackNavigation />}>
+      <Route
+        path="/invoice/:id"
+        element={<InvoicePrintPage />}
+      />
+    </Route>
+  </Route>
+
+  {/* ==========================================
+      Dashboard Layout
+  ========================================== */}
+  <Route element={<DashboardLayout />}>
+    {/* Public Routes */}
+    <Route path="/login" element={<LoginLayout />} />
     <Route path="/register" element={<RegisterLayout />} />
     <Route path="/language" element={<LanguagePage />} />
     <Route path="/location" element={<LocationPage />} />
-    <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
-    <Route path="/verification" element={<VerificationPage />} />
-    <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
-
-    <Route element={<ProtectedRoute />}>
-    <Route element={<ProtectedRoute />}>
-  <Route element={<PreventBackNavigation />}>
     <Route
-      path="/invoice/:id"
-      element={<InvoicePrintPage />}
+      path="/forgot-password"
+      element={<ForgotPasswordLayout />}
     />
-  </Route>
-</Route>
+    <Route
+      path="/verification"
+      element={<VerificationPage />}
+    />
+    <Route
+      path="/cookiepolicy"
+      element={<CookiePolicyPage />}
+    />
+
+    {/* Protected Routes */}
+    <Route element={<ProtectedRoute />}>
       <Route index element={<WebsiteHome />} />
 
       <Route
@@ -235,25 +253,17 @@ function App() {
         element={<ServiceRating />}
       />
 
-      
-
       <Route
         path="changepassword"
         element={<ChangePasswordPage />}
       />
 
-      {/* Routes with Back Navigation Disabled */}
+    
       <Route element={<PreventBackNavigation />}>
-       
-
         <Route
           path="payment/callback"
           element={<PaymentCallbackPage />}
         />
-        <Route
-        path="jobcompleted"
-        element={<JobCompletedPage />}
-      />
 
         <Route
           path="payment/success"
@@ -264,13 +274,19 @@ function App() {
           path="payment/failure"
           element={<PaymentStripeCallbackFailurePage />}
         />
+
+        <Route
+          path="jobcompleted"
+          element={<JobCompletedPage />}
+        />
       </Route>
     </Route>
 
-    <Route path="*" element={<Navigate to="/" replace />} />
-         </Route>
-    
-
+    <Route
+      path="*"
+      element={<Navigate to="/" replace />}
+    />
+  </Route>
 </Routes>
       </LanguageProvider>
     </ThemeProvider>

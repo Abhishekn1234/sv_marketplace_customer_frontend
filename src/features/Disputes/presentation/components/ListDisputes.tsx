@@ -1,86 +1,65 @@
-import { useState } from "react";
-import CommonCard from "@/components/common/CommonCards";
-import { useGetDispute } from "../hooks/useGetDispute";
-import type { GetDisputesQueryParams } from "../../domain/entities/getdisputesparams";
-import { Input } from "@/components/input";
-import Button from "@/components/input/Button";
-import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useInfiniteDisputes } from "../hooks/useInfinteDisputes";
+import DisputesSearchBar from "./DisputesSearchBar";
+import DisputesList from "./DisputesLists";
+
+
 
 export default function ListDisputes() {
-  const [filters, setFilters] = useState<GetDisputesQueryParams>({
-    page: 1,
-    limit: 10,
-    sort: "createdAt:desc",
-    search: "",
-  });
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data, isLoading, isError } = useGetDispute(filters);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  if (isLoading) return <CommonSpinner/>;
-  if (isError) return <p>Failed to load disputes</p>;
+  // debounce
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 250);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteDisputes(debouncedSearch);
+
+  const items = data?.pages.flatMap((p) => p.data) ?? [];
+
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(handleIntersect, {
+      threshold: 0.1,
+    });
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [handleIntersect]);
 
   return (
-    <div className="space-y-4">
-      {/* 🔹 Simple filter UI (you can enhance later) */}
-      <div className="flex gap-3">
-        <Input
-          className="border p-2 rounded"
-          placeholder="Search..."
-          value={filters.search}
-          onChange={(value) =>
-            setFilters((prev) => ({
-              ...prev,
-              search: value,
-              page: 1, // reset page on search
-            }))
-          }
-        />
-      </div>
+    <div className="flex flex-col h-[70vh] sm:h-[620px] rounded-2xl bg-gray-50 overflow-hidden">
 
-      {/* 🔹 List */}
-      <div className="grid gap-3">
-        {data?.data.map((item) => (
-          <CommonCard key={item._id}>
-            <div className="p-3 space-y-1">
-              <h3 className="font-semibold">
-                Reason: {item.reason}
-              </h3>
+      <DisputesSearchBar search={search} setSearch={setSearch} />
 
-              <p className="text-sm text-gray-600">
-                {item.description}
-              </p>
+      <DisputesList
+        items={items}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        sentinelRef={sentinelRef}
+      />
 
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>Status: {item.status}</span>
-                <span>{new Date(item.createdAt).toLocaleString()}</span>
-              </div>
-            </div>
-          </CommonCard>
-        ))}
-      </div>
-
-      {/* 🔹 Pagination */}
-      <div className="flex gap-2 mt-4">
-        <Button
-          disabled={filters.page === 1}
-          onClick={() =>
-            setFilters((p) => ({ ...p, page: (p.page || 1) - 1 }))
-          }
-          className="px-3 py-1 border rounded"
-        >
-          Prev
-        </Button>
-
-        <Button
-          disabled={!data?.pagination?.hasNextPage}
-          onClick={() =>
-            setFilters((p) => ({ ...p, page: (p.page || 1) + 1 }))
-          }
-          className="px-3 py-1 border rounded"
-        >
-          Next
-        </Button>
-      </div>
     </div>
   );
 }

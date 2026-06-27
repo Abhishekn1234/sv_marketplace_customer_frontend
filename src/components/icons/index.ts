@@ -7,6 +7,8 @@ import ReactIcon from "@/components/icons/react.svg?react";
 // Custom Icons (TSX components)
 import { QuickActionsIcon } from "./QuickActionsIcon";
 import { SecurityIcon } from "./SecurityIcon";
+import { InboxIcon } from "./InboxIcon";
+import { SearchIcon } from "./SearchIcon";
 import { PhoneIcon } from "./PhoneIcon";
 import SustainabilityIcon from "./SustanabilityIcon";
 import { SendIcon } from "./SendIcon";
@@ -59,6 +61,8 @@ export {
   BackArrowIcon,
   BillingIcon,
   HelpIcon,
+  InboxIcon,
+  SearchIcon,
  SustainabilityIcon,
   TransparencyIcon,
   PreferencesIcon,

@@ -29,24 +29,24 @@ const ServiceRatingSection: FC<ServiceRatingSectionProps> = ({
         {t.serviceratingpage.rateService}
       </h2>
 
-      <div className="flex justify-center gap-3 mb-1">
-        {stars.map((star) => (
-          <Button
-            key={star}
-            type="button"
-            onClick={() => setServiceRating(star)}
-            className="w-32 h-32 sm:w-20 sm:h-20 transition-transform hover:scale-110"
-          >
-            <StarIcon
-              className={`w-full h-full transition-colors ${
-                star <= serviceRating
-                  ? "text-yellow-500 fill-yellow-500"
-                  : "text-gray-300 fill-gray-300"
-              }`}
-            />
-          </Button>
-        ))}
-      </div>
+     <div className="flex justify-center gap-2 sm:gap-3 mb-1">
+  {stars.map((star) => (
+    <Button
+      key={star}
+      type="button"
+      onClick={() => setServiceRating(star)}
+      className="p-0 bg-transparent shadow-none border-none hover:scale-110 transition-transform"
+    >
+      <StarIcon
+        className={`w-12 h-12 sm:w-20 sm:h-20 transition-colors ${
+          star <= serviceRating
+            ? "text-yellow-500 fill-yellow-500"
+            : "text-gray-300 fill-gray-300"
+        }`}
+      />
+    </Button>
+  ))}
+</div>
 
       <p className="text-sm sm:text-xs text-gray-500 mb-5">
         {labels?.[serviceRating - 1]}

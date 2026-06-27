@@ -14,6 +14,7 @@ import Select from "@/components/input/Select";
 import { languages } from "../../../../components/common/languages";
 import { Input } from "@/components/input";
 
+
 interface NavbarMobileProps {
   showSearch: boolean;
   showMobileSearch: boolean;
@@ -88,6 +89,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
                   <Icon className="w-4 h-4 shrink-0 text-gray-400" />
                   {item.label}
                 </Link>
+                
               );
             })}
 
@@ -117,6 +119,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
                 />
               </div>
             )}
+           
 
             {/* Mobile CTA button */}
             {rightButton && (
@@ -128,6 +131,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
                 {rightButton.label}
               </Link>
             )}
+           
           </nav>
         </div>
       )}
