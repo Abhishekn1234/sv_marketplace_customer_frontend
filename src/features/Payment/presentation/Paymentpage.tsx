@@ -60,6 +60,7 @@ export default function PaymentPage() {
         onSuccess: (data) => {
           if (method === "CASH") {
             navigate("/payment/callback", {
+              replace:true,
               state: {
                 paymentId: data.paymentId,
                 transactionId: data.paymentId,

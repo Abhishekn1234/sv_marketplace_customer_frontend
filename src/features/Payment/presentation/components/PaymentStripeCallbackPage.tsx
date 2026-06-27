@@ -12,14 +12,30 @@ import SuccessSection from "@/features/JobCompleted/presentation/components/Succ
 import JobCompletedSummary from "@/features/JobCompleted/presentation/components/JobCompletedSummary";
 import JobCompletedActions from "@/features/JobCompleted/presentation/components/JobCompletedActions";
 import { useVerifyStripePayment } from "../hooks/useVerifyStripePayment";
- import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
+// import useDisableBackButton from "@/components/common/usePreventBackNavigation";
+//  import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
+// import { useEffect } from "react";
 
 
 
 
 export default function PaymentStripeCallbackPage() {
-    usePreventBackNavigation();
+//   useEffect(() => {
+//   const handlePopState = () => {
+//     window.history.pushState(null, "", window.location.href);
+//   };
+
+//   // Push current page into history
+//   window.history.pushState(null, "", window.location.href);
+
+//   window.addEventListener("popstate", handlePopState);
+
+//   return () => {
+//     window.removeEventListener("popstate", handlePopState);
+//   };
+// }, []);
   const navigate = useNavigate();
+
   const { services } = useServices();
   const { t } = useLanguage();
 
@@ -40,7 +56,7 @@ export default function PaymentStripeCallbackPage() {
   );
 
   const booking = data?.bookingDetails;
-
+    // useDisableBackButton(true);
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

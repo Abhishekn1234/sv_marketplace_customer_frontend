@@ -1,24 +1,20 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-export const usePreventBackNavigation = () => {
-  const navigate = useNavigate();
-
+export default function useDisableBackButton(enabled: boolean = true): void {
   useEffect(() => {
-    // Add a dummy history entry
-    window.history.pushState(null, "", window.location.href);
+    if (!enabled) return;
+
+    window.history.pushState({}, "", window.location.pathname);
 
     const handlePopState = () => {
-      const leave = window.confirm(
-        "Are you sure you want to leave this page?"
-      );
+      // 1. Try to close the tab immediately when they click back
+      window.close();
 
-      if (leave) {
-        navigate("/bookings", { replace: true });
-      } else {
-        // Re-add the current page to history
-        window.history.pushState(null, "", window.location.href);
-      }
+      // 2. If window.close() fails (due to browser security rules), 
+      // redirect them to a blank page or a custom URL instead of leaving them stuck
+      setTimeout(() => {
+        window.location.href = "about:blank"; // or "https://google.com"
+      }, 100);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -26,5 +22,5 @@ export const usePreventBackNavigation = () => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [navigate]);
-};
+  }, [enabled]);
+}

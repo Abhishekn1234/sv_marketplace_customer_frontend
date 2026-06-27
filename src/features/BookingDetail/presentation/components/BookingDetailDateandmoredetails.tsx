@@ -15,7 +15,7 @@ import CommonCard from "@/components/common/CommonCards";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
-  
+   
  const { serviceId,serviceTierId } = useParams();
 const { services } = useServices();
 
