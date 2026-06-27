@@ -51,6 +51,7 @@ import ScrollToTop from "./ScrollToTop";
 import NotificationNavigation from "./NavigationNotification";
 import PaymentStripeCallbackPage from "./features/Payment/presentation/components/PaymentStripeCallbackPage";
 import PaymentStripeCallbackFailurePage from "./features/Payment/presentation/components/PaymentStripeCallbackFailurePage";
+import PreventBackNavigation from "./PreventNavgiation";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -113,120 +114,164 @@ function App() {
   }}
 />
 
-        <Routes>
-          <Route
-            path="/invoice/:id"
-            element={<InvoicePrintPage />}
-          />
+      <Routes>
+         <Route element={<DashboardLayout />}>
+         <Route path="/login" element={<LoginLayout />} />
+    <Route path="/register" element={<RegisterLayout />} />
+    <Route path="/language" element={<LanguagePage />} />
+    <Route path="/location" element={<LocationPage />} />
+    <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
+    <Route path="/verification" element={<VerificationPage />} />
+    <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
 
-          <Route element={<DashboardLayout />}>
-            <Route path="/login" element={<LoginLayout />} />
-            <Route path="/register" element={<RegisterLayout />} />
-            <Route
-              path="/language"
-              element={<LanguagePage />}
-            />
-            <Route
-              path="/location"
-              element={<LocationPage />}
-            />
-            <Route
-              path="/forgot-password"
-              element={<ForgotPasswordLayout />}
-            />
-            <Route
-              path="/verification"
-              element={<VerificationPage />}
-            />
-            <Route
-              path="/cookiepolicy"
-              element={<CookiePolicyPage />}
-            />
+    <Route element={<ProtectedRoute />}>
+    <Route element={<ProtectedRoute />}>
+  <Route element={<PreventBackNavigation />}>
+    <Route
+      path="/invoice/:id"
+      element={<InvoicePrintPage />}
+    />
+  </Route>
+</Route>
+      <Route index element={<WebsiteHome />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route index element={<WebsiteHome />} />
-              <Route
-                path="notifications"
-                element={<NotificationsPage />}
-              />
-              <Route
-                path="bookings"
-                element={<MyBookings />}
-              />
-              <Route path="profile" element={<Profile />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="help" element={<HelpPage />} />
-              <Route path="security" element={<SecurityPage />} />
-              <Route path="payment" element={<PaymentPage />} />
-              <Route
-                path="payment/callback"
-                element={<PaymentCallbackPage />}
-              />
-              <Route
-                path="disputes"
-                element={<ListDisputes />}
-              />
-              <Route
-                path="dispute/:bookingId"
-                element={<Disputepage />}
-              />
-              <Route
-                path="jobtracking/:bookingId"
-                element={<JobTrackingPage />}
-              />
-              <Route path="/payment/success"
-              element={<PaymentStripeCallbackPage/>}/>
-              <Route path="/payment/failure" element={<PaymentStripeCallbackFailurePage/>}/>
-              <Route
-                path="jobprogress/:bookingId"
-                element={<JobProgressPage />}
-              />
-              <Route
-                path="video-call/:workerId"
-                element={<VideoCallPage />}
-              />
-              <Route
-                path="message/:bookingId"
-                element={<WorkerChatPage />}
-              />
-              <Route path="chat" element={<AIChatPage />} />
-              <Route
-                path="privacy"
-                element={<PrivacyPolicyPage />}
-              />
-              <Route
-                path="confirmation/:bookingId"
-                element={<ConfirmationPage />}
-              />
-              <Route
-                path="servicetierselection/:id"
-                element={<ServiceTierSelectionPage />}
-              />
-              <Route
-                path="bookingdetail/:serviceId/:serviceTierId"
-                element={<BookingDetailPage />}
-              />
-              <Route
-                path="services/:id"
-                element={<ServiceDetailPage />}
-              />
-              <Route
-                path="servicerating/:bookingId"
-                element={<ServiceRating />}
-              />
-              <Route
-                path="jobcompleted"
-                element={<JobCompletedPage />}
-              />
-              <Route
-                path="changepassword"
-                element={<ChangePasswordPage />}
-              />
-            </Route>
+      <Route
+        path="notifications"
+        element={<NotificationsPage />}
+      />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
+      <Route
+        path="bookings"
+        element={<MyBookings />}
+      />
+
+      <Route
+        path="profile"
+        element={<Profile />}
+      />
+
+      <Route
+        path="about"
+        element={<AboutPage />}
+      />
+
+      <Route
+        path="help"
+        element={<HelpPage />}
+      />
+
+      <Route
+        path="security"
+        element={<SecurityPage />}
+      />
+
+      <Route
+        path="payment"
+        element={<PaymentPage />}
+      />
+
+      <Route
+        path="disputes"
+        element={<ListDisputes />}
+      />
+
+      <Route
+        path="dispute/:bookingId"
+        element={<Disputepage />}
+      />
+
+      <Route
+        path="jobtracking/:bookingId"
+        element={<JobTrackingPage />}
+      />
+
+      <Route
+        path="jobprogress/:bookingId"
+        element={<JobProgressPage />}
+      />
+
+      <Route
+        path="video-call/:workerId"
+        element={<VideoCallPage />}
+      />
+
+      <Route
+        path="message/:bookingId"
+        element={<WorkerChatPage />}
+      />
+
+      <Route
+        path="chat"
+        element={<AIChatPage />}
+      />
+
+      <Route
+        path="privacy"
+        element={<PrivacyPolicyPage />}
+      />
+
+      <Route
+        path="confirmation/:bookingId"
+        element={<ConfirmationPage />}
+      />
+
+      <Route
+        path="servicetierselection/:id"
+        element={<ServiceTierSelectionPage />}
+      />
+
+      <Route
+        path="bookingdetail/:serviceId/:serviceTierId"
+        element={<BookingDetailPage />}
+      />
+
+      <Route
+        path="services/:id"
+        element={<ServiceDetailPage />}
+      />
+
+      <Route
+        path="servicerating/:bookingId"
+        element={<ServiceRating />}
+      />
+
+      
+
+      <Route
+        path="changepassword"
+        element={<ChangePasswordPage />}
+      />
+
+      {/* Routes with Back Navigation Disabled */}
+      <Route element={<PreventBackNavigation />}>
+       
+
+        <Route
+          path="payment/callback"
+          element={<PaymentCallbackPage />}
+        />
+        <Route
+        path="jobcompleted"
+        element={<JobCompletedPage />}
+      />
+
+        <Route
+          path="payment/success"
+          element={<PaymentStripeCallbackPage />}
+        />
+
+        <Route
+          path="payment/failure"
+          element={<PaymentStripeCallbackFailurePage />}
+        />
+      </Route>
+    </Route>
+
+    <Route path="*" element={<Navigate to="/" replace />} />
+         </Route>
+    
+
+</Routes>
       </LanguageProvider>
     </ThemeProvider>
   );

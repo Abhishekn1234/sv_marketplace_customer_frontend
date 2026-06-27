@@ -75,7 +75,7 @@ useEffect(() => {
       const response = await verifyPayment.mutateAsync({
         paymentId,
         transactionId,
-        bookingId,
+        // bookingId,
         status,
       });
 

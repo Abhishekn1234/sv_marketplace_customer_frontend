@@ -12,6 +12,7 @@ import SuccessSection from "@/features/JobCompleted/presentation/components/Succ
 import JobCompletedSummary from "@/features/JobCompleted/presentation/components/JobCompletedSummary";
 import JobCompletedActions from "@/features/JobCompleted/presentation/components/JobCompletedActions";
 import { useVerifyStripePayment } from "../hooks/useVerifyStripePayment";
+
 // import useDisableBackButton from "@/components/common/usePreventBackNavigation";
 //  import { usePreventBackNavigation } from "@/components/common/usePreventBackNavigation";
 // import { useEffect } from "react";
@@ -34,6 +35,7 @@ export default function PaymentStripeCallbackPage() {
 //     window.removeEventListener("popstate", handlePopState);
 //   };
 // }, []);
+
   const navigate = useNavigate();
 
   const { services } = useServices();
@@ -57,6 +59,7 @@ export default function PaymentStripeCallbackPage() {
 
   const booking = data?.bookingDetails;
     // useDisableBackButton(true);
+ 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -112,7 +115,7 @@ export default function PaymentStripeCallbackPage() {
 
         <div className="flex justify-center pt-4">
           <Button
-            onClick={() => navigate("/bookings")}
+            onClick={() => navigate("/bookings", { replace: true })}
             className="px-6 py-3 bg-gray-900 text-white rounded-lg"
           >
             {t.paymentpage.goToBookings}

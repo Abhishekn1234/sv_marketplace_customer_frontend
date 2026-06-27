@@ -18,7 +18,7 @@ export default function ServiceDetailPage() {
   const [sortBy, setSortBy] = useState<SortKey>("Recommended");
 
   // 2. Run your custom side-effect hook here
-  // useDisableBackButton(true);
+  //  useDisableBackButton(true);
 
   return (
     <>

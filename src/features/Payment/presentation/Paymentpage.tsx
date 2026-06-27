@@ -71,7 +71,7 @@ export default function PaymentPage() {
             return;
           }
           if (data.paymentUrl) {
-            window.location.href = data.paymentUrl;
+            window.location.replace(data.paymentUrl);
           }
         },
       }

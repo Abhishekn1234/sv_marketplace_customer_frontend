@@ -4,23 +4,18 @@ export default function useDisableBackButton(enabled: boolean = true): void {
   useEffect(() => {
     if (!enabled) return;
 
-    window.history.pushState({}, "", window.location.pathname);
-
-    const handlePopState = () => {
-      // 1. Try to close the tab immediately when they click back
-      window.close();
-
-      // 2. If window.close() fails (due to browser security rules), 
-      // redirect them to a blank page or a custom URL instead of leaving them stuck
-      setTimeout(() => {
-        window.location.href = "about:blank"; // or "https://google.com"
-      }, 100);
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Modern browsers ignore the custom string and show a generic message,
+      // but we still need to preventDefault and set returnValue for compatibility.
+      event.preventDefault();
+      event.returnValue = "Your work will be lost."; 
+      return "Your work will be lost.";
     };
 
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [enabled]);
 }
