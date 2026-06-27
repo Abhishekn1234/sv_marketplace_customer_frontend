@@ -55,20 +55,19 @@ export function CancelConfirmationDialog({
   const [selectedType, setSelectedType] = useState("");
   const [reason, setReason] = useState("");
 
-  const handleConfirm = () => {
-    if (!selectedType) {
-      toast.error(t.jobtrackingpage.cancelBooking.selectPlaceholder);
-      return;
-    }
+const handleConfirm = () => {
+  if (!selectedType) {
+    toast.error(t.jobtrackingpage.cancelBooking.selectPlaceholder);
+    return;
+  }
 
-    // ✅ reason required ONLY for OTHER
-    if (selectedType === "OTHER" && !reason.trim()) {
-      toast.error(t.jobtrackingpage.cancelBooking.placeholder);
-      return;
-    }
+  if (selectedType === "OTHER" && !reason.trim()) {
+    toast.error(t.jobtrackingpage.cancelBooking.placeholder);
+    return;
+  }
 
-    onConfirm(selectedType, reason.trim());
-  };
+  onConfirm(selectedType, reason.trim());
+};
 
   return (
     <div className="w-full px-1">
@@ -105,7 +104,7 @@ export function CancelConfirmationDialog({
           )}
         </Label>
 
-        <Textarea
+                <Textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder={
@@ -115,14 +114,6 @@ export function CancelConfirmationDialog({
           }
           rows={5}
           disabled={selectedType !== "OTHER"}
-          className="
-            w-full rounded-2xl border border-gray-300
-            px-4 py-3 text-sm resize-none
-            placeholder:text-gray-400
-            focus:border-red-500 focus:ring-2 focus:ring-red-100
-            dark:bg-gray-900 dark:border-gray-700 dark:text-white
-            disabled:opacity-50 disabled:cursor-not-allowed
-          "
         />
       </div>
 
