@@ -54,17 +54,16 @@ export default function BookingHistoryViewDetailsModal({
     </Button>
   }
 >
-  <div
-    dir={isRTLOrder ? "rtl" : "ltr"}
-    className={isRTLOrder ? "text-right" : "text-left"}
-  >
-    {/* Subtitle */}
+  <div dir={isRTLOrder ? "rtl" : "ltr"}>
+
+    {/* Subtitle (NO text alignment change) */}
     <p className="text-sm text-gray-500 mb-6">
       {tierName} • {workerName}
     </p>
 
-    {/* Grid */}
+    {/* GRID — same structure, RTL-safe naturally */}
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
       <div>
         <span className="text-xs text-gray-500 font-medium">
           {t.invoice.bookingRef}
@@ -78,23 +77,30 @@ export default function BookingHistoryViewDetailsModal({
         <span className="text-xs text-gray-500 font-medium">
           {t.common.date}
         </span>
-        <p className="text-sm font-semibold">{bookingDate}</p>
+        <p className="text-sm font-semibold">
+          {bookingDate}
+        </p>
       </div>
 
       <div>
         <span className="text-xs text-gray-500 font-medium">
           {t.common.workedDuration}
         </span>
-        <p className="text-sm font-semibold">{duration}</p>
+        <p className="text-sm font-semibold">
+          {duration}
+        </p>
       </div>
 
       <div>
         <span className="text-xs text-gray-500 font-medium">
           {t.common.totalPaid}
         </span>
-        <p className="text-sm font-semibold">{price}</p>
+        <p className="text-sm font-semibold">
+          {price}
+        </p>
       </div>
 
+      {/* FULL WIDTH SECTION */}
       <div className="sm:col-span-2">
         <span className="text-xs text-gray-500 font-medium">
           {t.common["Work Description"]}
@@ -103,6 +109,7 @@ export default function BookingHistoryViewDetailsModal({
           {booking.workDescription ?? "-"}
         </p>
       </div>
+
     </div>
   </div>
 </CommonModal>
