@@ -7,11 +7,12 @@ import { useLanguage } from "@/features/context/LanguageContext";
 type CommonModalProps = {
   open: boolean;
   onClose: () => void;
-  title?: string |ReactNode;
+  title?: string | ReactNode;
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
   width?: string;
+  isRTLType?: boolean; // Controls title alignment only
 };
 
 export default function CommonModal({
@@ -22,8 +23,10 @@ export default function CommonModal({
   className = "",
   footer,
   width = "max-w-lg",
+  isRTLType = false,
 }: CommonModalProps) {
-  const {isRTLOrder}=useLanguage();
+  const { isRTLOrder } = useLanguage();
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -69,15 +72,23 @@ export default function CommonModal({
         >
           {/* Header */}
           {title && (
-            <div className="px-5 py-4 font-semibold text-lg flex items-center justify-between border-0">
-              <span  dir={isRTLOrder ? "rtl" : "ltr"}
-  className={`text-lg font-semibold ${
-    isRTLOrder ? "text-right" : "text-left"
-  }`}>{title}</span>
+            <div className="px-5 py-4 flex items-center justify-between border-0">
+              <span
+                dir={isRTLType ? "rtl" : isRTLOrder ? "rtl" : "ltr"}
+                className={`flex-1 text-lg font-semibold ${
+                  isRTLType
+                    ? "text-right"
+                    : isRTLOrder
+                    ? "text-right"
+                    : "text-left"
+                }`}
+              >
+                {title}
+              </span>
 
               <Button
                 onClick={onClose}
-                className="text-gray-500 hover:text-black"
+                className="text-gray-500 hover:text-black ml-2"
               >
                 ✕
               </Button>
