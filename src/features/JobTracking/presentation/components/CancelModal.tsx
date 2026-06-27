@@ -12,46 +12,46 @@ export function CancelConfirmationDialog({
   onConfirm: (type: string, reason: string) => void;
   onCancel: () => void;
 }) {
-    
-    const { t } = useLanguage();
-    const cancelTypes = [
-  {
-    value: "BOOKED_WRONG_SERVICE",
-    label: t.jobtrackingpage.cancelBooking.types.BOOKED_WRONG_SERVICE,
-  },
-  {
-    value: "BOOKED_BY_MISTAKE",
-    label: t.jobtrackingpage.cancelBooking.types.BOOKED_BY_MISTAKE,
-  },
-  {
-    value: "SCHEDULE_CHANGED",
-    label: t.jobtrackingpage.cancelBooking.types.SCHEDULE_CHANGED,
-  },
-  {
-    value: "PRICE_TOO_HIGH",
-    label: t.jobtrackingpage.cancelBooking.types.PRICE_TOO_HIGH,
-  },
-  {
-    value: "SERVICE_NO_LONGER_NEEDED",
-    label: t.jobtrackingpage.cancelBooking.types.SERVICE_NO_LONGER_NEEDED,
-  },
-  {
-    value: "OTHER",
-    label: t.jobtrackingpage.cancelBooking.types.OTHER,
-  },
-];
+  const { t } = useLanguage();
 
-const options: SelectOption[] = [
-  {
-    label: t.jobtrackingpage.cancelBooking.selectPlaceholder,
-    value: "",
-  },
+  const cancelTypes = [
+    {
+      value: "BOOKED_WRONG_SERVICE",
+      label: t.jobtrackingpage.cancelBooking.types.BOOKED_WRONG_SERVICE,
+    },
+    {
+      value: "BOOKED_BY_MISTAKE",
+      label: t.jobtrackingpage.cancelBooking.types.BOOKED_BY_MISTAKE,
+    },
+    {
+      value: "SCHEDULE_CHANGED",
+      label: t.jobtrackingpage.cancelBooking.types.SCHEDULE_CHANGED,
+    },
+    {
+      value: "PRICE_TOO_HIGH",
+      label: t.jobtrackingpage.cancelBooking.types.PRICE_TOO_HIGH,
+    },
+    {
+      value: "SERVICE_NO_LONGER_NEEDED",
+      label: t.jobtrackingpage.cancelBooking.types.SERVICE_NO_LONGER_NEEDED,
+    },
+    {
+      value: "OTHER",
+      label: t.jobtrackingpage.cancelBooking.types.OTHER,
+    },
+  ];
 
-  ...cancelTypes.map((type) => ({
-    label: type.label,
-    value: type.value,
-  })),
-];
+  const options: SelectOption[] = [
+    {
+      label: t.jobtrackingpage.cancelBooking.selectPlaceholder,
+      value: "",
+    },
+    ...cancelTypes.map((type) => ({
+      label: type.label,
+      value: type.value,
+    })),
+  ];
+
   const [selectedType, setSelectedType] = useState("");
   const [reason, setReason] = useState("");
 
@@ -61,8 +61,8 @@ const options: SelectOption[] = [
       return;
     }
 
-    // reason required except OTHER
-    if (selectedType !== "OTHER" && !reason.trim()) {
+    // ✅ reason required ONLY for OTHER
+    if (selectedType === "OTHER" && !reason.trim()) {
       toast.error(t.jobtrackingpage.cancelBooking.placeholder);
       return;
     }
@@ -72,6 +72,7 @@ const options: SelectOption[] = [
 
   return (
     <div className="w-full px-1">
+
       {/* SELECT */}
       <div className="mb-5">
         <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -82,7 +83,14 @@ const options: SelectOption[] = [
           placeholder={t.jobtrackingpage.cancelBooking.selectPlaceholder}
           options={options}
           value={selectedType}
-          onChange={(val) => setSelectedType(val)}
+          onChange={(val) => {
+            setSelectedType(val);
+
+            // ✅ clear reason when not OTHER
+            if (val !== "OTHER") {
+              setReason("");
+            }
+          }}
           className="w-full h-[48px]"
         />
       </div>
@@ -92,7 +100,7 @@ const options: SelectOption[] = [
         <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t.jobtrackingpage.cancelBooking.reason}
 
-          {selectedType !== "OTHER" && (
+          {selectedType === "OTHER" && (
             <span className="text-red-500 ml-1">*</span>
           )}
         </Label>
@@ -100,14 +108,20 @@ const options: SelectOption[] = [
         <Textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder={t.jobtrackingpage.cancelBooking.placeholder}
+          placeholder={
+            selectedType === "OTHER"
+              ? t.jobtrackingpage.cancelBooking.placeholder
+              : "Not required"
+          }
           rows={5}
+          disabled={selectedType !== "OTHER"}
           className="
             w-full rounded-2xl border border-gray-300
             px-4 py-3 text-sm resize-none
             placeholder:text-gray-400
             focus:border-red-500 focus:ring-2 focus:ring-red-100
             dark:bg-gray-900 dark:border-gray-700 dark:text-white
+            disabled:opacity-50 disabled:cursor-not-allowed
           "
         />
       </div>

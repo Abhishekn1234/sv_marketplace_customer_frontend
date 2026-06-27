@@ -11,7 +11,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import InvoiceModal from "./InvoiceModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
-import { useQueryClient } from "@tanstack/react-query";
+
 import CommonCard from "@/components/common/CommonCards";
 import CommonModal from "@/components/common/CommonModal";
 import { CancelConfirmationDialog } from "./CancelModal";
@@ -52,7 +52,7 @@ export default function JobTrackingNeedHelp({
   // NAV
   // -----------------------
   const helpNavigate = () => navigate("/help");
-const queryClient = useQueryClient();
+
   // -----------------------
   // CANCEL OPEN
   // -----------------------
@@ -71,44 +71,22 @@ const queryClient = useQueryClient();
   if (!booking?._id) return;
 
   try {
-    // ✅ 1. Call API
-    const updated = await cancelBooking.mutateAsync({
+    await cancelBooking.mutateAsync({
       bookingId: booking._id,
       cancelReason: reason,
       cancelReasonType,
     });
 
-    // ✅ 2. Update cache instantly
-    queryClient.setQueryData(["bookings"], (old: any[] = []) =>
-      old.map((b) =>
-        b._id === booking._id ? { ...b, ...updated } : b
-      )
-    );
-
-    queryClient.setQueryData(
-      ["booking", booking._id],
-      (old: any) => ({
-        ...old,
-        ...updated,
-      })
-    );
-
-    toast.success("Booking cancelled ✅");
-
-    // ✅ 3. Close modal
     setShowCancelModal(false);
-
-    // ✅ 4. Navigate immediately (NO setTimeout)
     navigate("/");
-
   } catch (err: any) {
-  toast.error(
-    err?.response?.data?.message ||
-    "Failed to cancel booking ❌"
-  );
+    toast.error(
+      err?.response?.data?.message ||
+        "Failed to cancel booking ❌"
+    );
 
-  setShowCancelModal(false);
-}
+    setShowCancelModal(false);
+  }
 };
 
   // -----------------------

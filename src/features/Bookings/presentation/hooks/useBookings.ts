@@ -17,6 +17,7 @@ import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookin
 import type { Booking } from "../../domain/entities/booking.types";
 import type { BookingPayload } from "../../domain/entities/bookingpayload.types";
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
+import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 
 import { getSocket } from "@/features/core/Websocket/socket";
 import { bookingKeys } from "@/features/Confirmation/presentation/utils/bookingkeys";
@@ -26,11 +27,10 @@ const getBookings = new GetBookingsUseCase(repo);
 const createBooking = new CreateBookingUseCase(repo);
 const cancelBooking = new CancelBookingUseCase(repo);
 
-// statuses that should NEVER stay in active list
-const CANCELLED_STATUSES = [
-  "WORKER_CANCELLED",
-  "CUSTOMER_CANCELLED",
-];
+// const CANCELLED_STATUSES: BookingStatus[] = [
+//   "WORKER_CANCELLED",
+//   "CUSTOMER_CANCELLED",
+// ];
 
 export const useBookings = () => {
   const queryClient = useQueryClient();
@@ -79,26 +79,18 @@ export const useBookings = () => {
 
       queryClient.setQueryData<Booking[]>(
         bookingKeys.all,
-        (old = []) => {
-          const updatedList = old.map((b) =>
+        (old = []) =>
+          old.map((b) =>
             String(b._id) === String(bookingId)
               ? { ...b, ...updatedBooking }
               : b
-          );
-
-          // 🚨 IMPORTANT: remove cancelled bookings immediately
-          return updatedList.filter(
-            (b) => !CANCELLED_STATUSES.includes(b.status)
-          );
-        }
+          )
       );
 
       queryClient.setQueryData(
         bookingKeys.detail(bookingId),
         (old: Booking | undefined) =>
-          old
-            ? { ...old, ...updatedBooking }
-            : updatedBooking
+          old ? { ...old, ...updatedBooking } : updatedBooking
       );
     };
 
@@ -130,12 +122,11 @@ export const useBookings = () => {
     },
   });
 
-  // ================= CANCEL BOOKING (FIXED) =================
+  // ================= CANCEL BOOKING =================
   const cancel = useMutation({
     mutationFn: (req: CancelBookingRequest) =>
       cancelBooking.execute(req),
 
-    // ✅ OPTIMISTIC UPDATE (NO INVALIDATE)
     onMutate: async (req) => {
       await queryClient.cancelQueries({
         queryKey: bookingKeys.all,
@@ -145,36 +136,57 @@ export const useBookings = () => {
         bookingKeys.all
       );
 
+      // ✅ ONLY optimistic update (NO FILTER)
       queryClient.setQueryData<Booking[]>(
         bookingKeys.all,
         (old = []) =>
           old.map((b) =>
-            String(b._id) === String(req.bookingId)
+            b._id === req.bookingId
               ? {
                   ...b,
-                  status: "CUSTOMER_CANCELLED",
+                  status: "CUSTOMER_CANCELLED" as BookingStatus,
                 }
               : b
           )
+      );
+
+      queryClient.setQueryData(
+        bookingKeys.detail(req.bookingId),
+        (old: Booking | undefined) =>
+          old
+            ? {
+                ...old,
+                status: "CUSTOMER_CANCELLED" as BookingStatus,
+              }
+            : old
       );
 
       return { previous };
     },
 
     onError: (_err, _req, context: any) => {
-      // rollback if fail
       if (context?.previous) {
         queryClient.setQueryData(
           bookingKeys.all,
           context.previous
         );
       }
+
+      toast.error("Failed to cancel booking ❌");
     },
 
-    onSuccess: (updated) => {
+    onSuccess: (updated, req) => {
       queryClient.setQueryData(
-        bookingKeys.detail(updated._id),
+        bookingKeys.detail(req.bookingId),
         updated
+      );
+
+      queryClient.setQueryData<Booking[]>(
+        bookingKeys.all,
+        (old = []) =>
+          old.map((b) =>
+            b._id === req.bookingId ? updated : b
+          )
       );
 
       toast.success("Booking cancelled");
