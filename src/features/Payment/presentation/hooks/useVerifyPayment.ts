@@ -1,11 +1,12 @@
-
 import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+
 import { BookingPaymentVerifyRepositoryImpl } from "../../data/repositories/BookingPaymentVerifyImpl";
 import { VerifyPaymentUseCase } from "../../domain/usecase/BookingPaymentVerifyUsecase";
 import type { VerifyPaymentResponse } from "../../domain/entities/verifypayment";
-import type { AxiosError } from "axios";
 import type { PaymentCallback } from "../../domain/entities/paymentcallback";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+
 interface ApiError {
   message: string;
 }
@@ -21,63 +22,86 @@ export const useVerifyPayment = () => {
     AxiosError<ApiError>,
     PaymentCallback
   >({
-    mutationFn: async (data: PaymentCallback) => {
-      return await useCase.execute(data);
+    mutationFn: (data) => useCase.execute(data),
+
+    onSuccess: (_response, variables) => {
+      toast.success("Payment Verified ✅");
+
+      // =========================
+      // UPDATE SINGLE BOOKING CACHE
+      // =========================
+      queryClient.setQueryData(
+        ["bookings", variables.bookingId],
+        (old: any) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            paymentStatus: "PAID",
+            status: "PAID",
+            invoice: {
+              ...old.invoice,
+              status: "PAID",
+            },
+          };
+        }
+      );
+
+      // =========================
+      // UPDATE BOOKING HISTORY CACHE
+      // =========================
+      queryClient.setQueryData(["booking-history"], (old: any) => {
+        if (!old) return old;
+
+        if (Array.isArray(old)) {
+          return old.map((booking: any) =>
+            booking._id === variables.bookingId
+              ? {
+                  ...booking,
+                  paymentStatus: "PAID",
+                  status: "PAID",
+                  invoice: {
+                    ...booking.invoice,
+                    status: "PAID",
+                  },
+                }
+              : booking
+          );
+        }
+
+        // Handles paginated response:
+        // { data: Booking[], total, page, ... }
+        if (old.data && Array.isArray(old.data)) {
+          return {
+            ...old,
+            data: old.data.map((booking: any) =>
+              booking._id === variables.bookingId
+                ? {
+                    ...booking,
+                    paymentStatus: "PAID",
+                    status: "PAID",
+                    invoice: {
+                      ...booking.invoice,
+                      status: "PAID",
+                    },
+                  }
+                : booking
+            ),
+          };
+        }
+
+        return old;
+      });
+
+      // Optional: invalidate other related queries
+      // queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      // queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
 
-   onSuccess: (_data, variables) => {
-  toast.success(`Payment Verified ✅ for paymentId: ${variables.paymentId}`);
-
-  // -------------------------
-  // 1️⃣ UPDATE SINGLE BOOKING
-  // -------------------------
-  queryClient.setQueryData(
-    ["bookings", variables.bookingId],
-    (oldData: any) => {
-      if (!oldData) return oldData;
-
-      return {
-        ...oldData,
-        paymentStatus: "PAID",
-        status: "PAID",
-        invoice: {
-          ...oldData.invoice,
-          status: "PAID",
-        },
-      };
-    }
-  );
-
-  // -------------------------
-  // 2️⃣ UPDATE BOOKING LIST
-  // -------------------------
-  queryClient.setQueryData(["booking-history"], (oldData: any) => {
-    if (!oldData) return oldData;
-
-    return oldData.map((booking: any) => {
-      if (booking._id !== variables.bookingId) return booking;
-
-      return {
-        ...booking,
-        paymentStatus: "PAID",
-        status: "PAID",
-        invoice: {
-          ...booking.invoice,
-          status: "PAID",
-        },
-      };
-    });
-  });
-},
-
     onError: (error, variables) => {
-      const msg =
-        error.response?.data?.message ||
-        error.message ||
-        "Unknown error";
-
       toast.error(
-        `Failed to verify payment for ${variables.paymentId}: ${msg}`
+        error.response?.data?.message ??
+          `Failed to verify payment for ${variables.paymentId}`
       );
     },
   });
