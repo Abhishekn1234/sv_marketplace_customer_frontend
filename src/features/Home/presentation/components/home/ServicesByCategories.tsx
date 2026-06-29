@@ -3,8 +3,9 @@ import { useServices } from "../../../../Bookings/presentation/hooks/useServices
 import type { Service } from "../../../../Bookings/domain/entities/service.types"
 import BookingServiceModal from "../../../../Bookings/presentation/components/bookings/BookServiceModal"
 import CommonCard from "@/components/common/CommonCards"
-import { Button } from "@/components/ui/button"
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner"
+import Button from "@/components/input/Button"
 
 export default function ServicesByCategory() {
   const { categories: categoryData = [], loading, error } = useServices();

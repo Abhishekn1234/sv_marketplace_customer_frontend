@@ -1,5 +1,6 @@
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/input/Button";
+
 
 interface BookingServiceFooterProps {
   selectedTiers: string[];

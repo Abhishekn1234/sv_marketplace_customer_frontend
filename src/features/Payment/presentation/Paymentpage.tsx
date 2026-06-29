@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Button from "@/components/input/Button";
 
 import { useBookingPayment } from "./hooks/useBookingPayment";
+import { useGetProcessingPaymentSession } from "./hooks/useGetProcessingPaymentSession";
 import { useGetPaymentGateway } from "./hooks/useGetPaymentGateway";
 import { normalizeGateways } from "./utils/normalizedGateways";
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -14,6 +15,17 @@ import { getMethodMeta } from "./utils/getpaymentmethoddata";
 import PaymentMethodsPanel from "./components/PaymentMethodsPanel";
 import OrderSummaryPanel from "./components/OrderSummaryPanel";
 import { styles } from "./components/styles/paymentcardstyle";
+import type { ProcessingPaymentSession } from "../domain/entities/processingpaymentsession";
+import type { PaymentInitial } from "../domain/entities/intiatepayment";
+
+const getSessionRedirectUrl = (session: ProcessingPaymentSession | null) =>
+  session?.paymentUrl ??
+  session?.checkoutUrl ??
+  session?.redirectUrl ??
+  session?.url;
+
+const getSessionId = (session: ProcessingPaymentSession | null) =>
+  session?.sessionId ?? session?.session_id;
 
 export default function PaymentPage() {
   const [method, setMethod] = useState("");
@@ -36,6 +48,12 @@ export default function PaymentPage() {
   const price       = Number(state?.price ?? 0);
   const currency    = state?.currency    ?? "SAR";
 
+  const {
+    data: processingSession,
+    isFetching: isProcessingSessionLoading,
+    refetch: refetchProcessingPaymentSession,
+  } = useGetProcessingPaymentSession(bookingId);
+
   const normalized = normalizeGateways(gateways ?? []);
 
   if (!bookingId) {
@@ -48,14 +66,52 @@ export default function PaymentPage() {
     );
   }
 
-  const handlePayment = () => {
+  const resumeProcessingSession = (
+    session: ProcessingPaymentSession | null
+  ) => {
+    const paymentUrl = getSessionRedirectUrl(session);
+
+    if (paymentUrl) {
+      window.location.replace(paymentUrl);
+      return true;
+    }
+
+    if (session?.paymentId) {
+      navigate("/payment/callback", {
+        replace: true,
+        state: {
+          paymentId: session.paymentId,
+          transactionId: session.transactionId ?? getSessionId(session),
+          bookingId: session.bookingId ?? bookingId,
+          status:
+            session.status === "PAID" || session.status === "COMPLETED"
+              ? "SUCCESS"
+              : "PENDING",
+        },
+      });
+      return true;
+    }
+
+    return false;
+  };
+
+  const handlePayment = async () => {
     if (!method) {
       toast.error(t.paymentpage.pleaseSelectMethod);
       return;
     }
 
+    const currentSession =
+      processingSession ??
+      (await refetchProcessingPaymentSession()).data ??
+      null;
+
+    if (resumeProcessingSession(currentSession)) {
+      return;
+    }
+
     mutate(
-      { bookingId, paymentMethod: method as any },
+      { bookingId, paymentMethod: method as PaymentInitial["paymentMethod"] },
       {
         onSuccess: (data) => {
           if (method === "CASH") {
@@ -104,7 +160,7 @@ export default function PaymentPage() {
       setCvv={setCvv}
       currency={currency}
       price={price}
-      isPending={isPending}
+      isPending={isPending || isProcessingSessionLoading}
       onPay={handlePayment}
     />
   );

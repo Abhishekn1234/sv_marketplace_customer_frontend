@@ -2,10 +2,9 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import type { Service } from "../../../domain/entities/service.types";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectValue,SelectTrigger } from "@/components/ui/select";
+
+import { Input, Label, Textarea } from "@/components/input";
+import Select from "@/components/input/Select";
 
 
 type BookingType = "INSTANT" | "SCHEDULED";
@@ -43,7 +42,7 @@ export default function BookingServiceForm({
   startDate,
   setStartDate,
   pricingMode,
-  setPricingMode,
+  // setPricingMode,
   estimatedHours,
   setEstimatedHours,
   estimatedDays,
@@ -79,18 +78,15 @@ export default function BookingServiceForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
        <div>
   <Label className="block font-medium mb-1">Booking Type *</Label>
-  <Select
-    value={bookingType}
-    onValueChange={(value) => setBookingType(value as BookingType)}
-  >
-    <SelectTrigger className="w-full p-2 border rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <SelectValue placeholder="Select Booking Type" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="INSTANT">Instant Booking (Start Now)</SelectItem>
-      <SelectItem value="SCHEDULED">Schedule for Later</SelectItem>
-    </SelectContent>
-  </Select>
+<Select
+  value={bookingType}
+  onChange={(value) => setBookingType(value as BookingType)}
+  options={[
+    { label: "Instant Booking (Start Now)", value: "INSTANT" },
+    { label: "Schedule for Later", value: "SCHEDULED" },
+  ]}
+  placeholder="Select Booking Type"
+/>
 </div>
         {bookingType === "SCHEDULED" && (
           <div>
@@ -113,25 +109,15 @@ export default function BookingServiceForm({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
   <Label className="block font-medium mb-1">Pricing Mode *</Label>
-  <Select
-    value={pricingMode}
-    onValueChange={(value) => {
-      setPricingMode(value as "HOURLY" | "PER_DAY");
-      if (value === "HOURLY") {
-        setEstimatedHours(1);
-      } else {
-        setEstimatedDays(1);
-      }
-    }}
-  >
-    <SelectTrigger className="w-full p-2 border rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <SelectValue placeholder="Select pricing mode" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="HOURLY">Hourly Rate</SelectItem>
-      <SelectItem value="PER_DAY">Daily Rate</SelectItem>
-    </SelectContent>
-  </Select>
+<Select
+  value={bookingType}
+  onChange={(value) => setBookingType(value as BookingType)}
+  options={[
+    { label: "Instant Booking (Start Now)", value: "INSTANT" },
+    { label: "Schedule for Later", value: "SCHEDULED" },
+  ]}
+  placeholder="Select Booking Type"
+/>
 </div>
 
         <div>
@@ -139,28 +125,34 @@ export default function BookingServiceForm({
             {pricingMode === "HOURLY" ? "Estimated Hours *" : "Estimated Days *"}
           </Label>
           <Input
-            type="number"
-            min={pricingMode === "HOURLY" ? 1 : 1}
-            value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
-            onChange={(e) => {
-              const value = Math.max(1, Number(e.target.value));
-              if (pricingMode === "HOURLY") {
-                setEstimatedHours(value);
-              } else {
-                setEstimatedDays(value);
-              }
-            }}
-            className="w-full p-2 border rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+  type="number"
+  min={1}
+  value={String(
+    pricingMode === "HOURLY" ? estimatedHours : estimatedDays
+  )}
+  onChange={(val) => {
+    const num = Math.max(1, Number(val || 1));
+
+    if (pricingMode === "HOURLY") {
+      setEstimatedHours(num);
+    } else {
+      setEstimatedDays(num);
+    }
+  }}
+  className="w-full p-2 border rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
         </div>
 
         <div>
           <Label className="block font-medium mb-1">Number of Workers *</Label>
-          <Input
+                    <Input
             type="number"
             min={1}
-            value={numberOfWorkers}
-            onChange={(e) => setNumberOfWorkers(Math.max(1, Number(e.target.value)))}
+            value={String(numberOfWorkers)}
+            onChange={(val) => {
+              const num = Math.max(1, Number(val || 1));
+              setNumberOfWorkers(num);
+            }}
             className="w-full p-2 border rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

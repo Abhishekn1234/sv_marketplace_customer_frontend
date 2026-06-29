@@ -1,9 +1,10 @@
 import { useCallback } from "react";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Badge } from "@/components/ui/badge";
+
+
+
 import CommonMap from "@/components/common/CommonMap";
 import { getCurrentLocation } from "@/features/utils/reverse";
+import { Badge, Label, RadioGroup } from "@/components/input";
 
 interface BookingServiceLocationProps {
   lat: number;
@@ -74,25 +75,17 @@ export default function BookingServiceLocation({
     <div className="space-y-4">
       <Label>Location *</Label>
 
-      <RadioGroup
+            <RadioGroup
+        name="locationMode"
         value={locationMode}
-        onValueChange={(val: "current" | "new") => handleLocationModeChange(val)}
-        className="flex flex-col sm:flex-row gap-4 mb-3"
-      >
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <RadioGroupItem value="current" disabled={isGeocoding} className="w-4 h-4 text-blue-600" />
-          <span className="text-gray-700">
-            Use Current Location {isGeocoding && locationMode === "current" && "(Detecting...)"}
-          </span>
-        </label>
-
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <RadioGroupItem value="new" disabled={isGeocoding} className="w-4 h-4 text-blue-600" />
-          <span className="text-gray-700">
-            Set New Location on Map {isGeocoding && locationMode === "new" && "(Updating...)"}
-          </span>
-        </label>
-      </RadioGroup>
+        onChange={(val) =>
+          handleLocationModeChange(val as "current" | "new")
+        }
+        options={[
+          { label: "Use Current Location", value: "current" },
+          { label: "Set New Location on Map", value: "new" },
+        ]}
+      />
 
       <div className="p-3 bg-blue-50 rounded-lg border border-gray-200 flex justify-between items-start">
         <div>

@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { getCurrentLocation } from "../../../../utils/reverse";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+
 import CommonMap from "@/components/common/CommonMap";
+import { Input, Label } from "@/components/input";
 
 interface LocationSelectorProps {
   lat: number;

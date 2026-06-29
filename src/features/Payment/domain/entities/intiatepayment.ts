@@ -15,3 +15,17 @@ export interface PaymentInitial {
   paymentFlowMode?: "ESCROW" | "DIRECT"; 
   initialAmount?: number;          
 }
+
+export interface PaymentInitiationResponse {
+  success?: boolean;
+  message?: string;
+  bookingId?: string;
+  paymentId?: string;
+  transactionId?: string;
+  sessionId?: string;
+  session_id?: string;
+  paymentUrl?: string;
+  checkoutUrl?: string;
+  redirectUrl?: string;
+  url?: string;
+}

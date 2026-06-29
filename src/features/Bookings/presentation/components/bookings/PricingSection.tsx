@@ -1,9 +1,9 @@
+import { Input, Label } from "@/components/input";
 import type { Service } from "../../../domain/entities/service.types";
 import type { ServiceTierRef } from "../../../domain/entities/servicetier.types";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import Button from "@/components/input/Button";
+import Select from "@/components/input/Select";
 
 interface Props {
   service: Service;
@@ -48,40 +48,51 @@ export default function PricingSection({
       <Label>Pricing</Label>
 
       {/* Pricing Mode Select */}
-      <Select value={pricingMode} onValueChange={(val: "HOURLY" | "PER_DAY") => setPricingMode(val)}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select pricing mode" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="HOURLY">Hourly</SelectItem>
-          <SelectItem value="PER_DAY">Per Day</SelectItem>
-        </SelectContent>
-      </Select>
-
+            <Select
+        value={pricingMode}
+        onChange={(val) =>
+          setPricingMode(val as "HOURLY" | "PER_DAY")
+        }
+        options={[
+          { label: "Hourly", value: "HOURLY" },
+          { label: "Per Day", value: "PER_DAY" },
+        ]}
+        placeholder="Select pricing mode"
+      />
       {/* Estimated Hours/Days Input */}
       <div className="grid grid-cols-2 gap-2">
         <div>
           <Label>{pricingMode === "HOURLY" ? "Estimated Hours" : "Estimated Days"}</Label>
-          <Input
-            type="number"
-            min={1}
-            value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
-            onChange={(e) => {
-              const val = Math.max(1, +e.target.value);
-              pricingMode === "HOURLY" ? setEstimatedHours(val) : setEstimatedDays(val);
-            }}
-          />
+         <Input
+  type="number"
+  min={1}
+  value={String(
+    pricingMode === "HOURLY" ? estimatedHours : estimatedDays
+  )}
+  onChange={(val) => {
+    const num = Math.max(1, Number(val || 1));
+
+    if (pricingMode === "HOURLY") {
+      setEstimatedHours(num);
+    } else {
+      setEstimatedDays(num);
+    }
+  }}
+/>
         </div>
 
         {/* Number of Workers Input */}
         <div>
           <Label>Number of Workers</Label>
-          <Input
-            type="number"
-            min={1}
-            value={numberOfWorkers}
-            onChange={(e) => setNumberOfWorkers(Math.max(1, +e.target.value))}
-          />
+                  <Input
+          type="number"
+          min={1}
+          value={String(numberOfWorkers)}
+          onChange={(val) => {
+            const num = Math.max(1, Number(val || 1));
+            setNumberOfWorkers(num);
+          }}
+        />
         </div>
       </div>
 
@@ -92,7 +103,7 @@ export default function PricingSection({
           return (
             <Button
               key={tier._id}
-              variant={selectedTiers.includes(tier._id) ? "default" : "outline"}
+              variant={selectedTiers.includes(tier._id) ? "ghost" : "primary"}
               onClick={() => toggleTier(tier._id)}
             >
               {tierInfo?.displayName ?? "Tier"}

@@ -1,10 +1,11 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { Label } from "@/components/ui/label";
+
+import { Input, Label, Textarea } from "@/components/input";
+import Select from "@/components/input/Select";
+
+
 
 interface BookingDetailsFormProps {
   workDescription: string;
@@ -58,15 +59,15 @@ export default function BookingDetailsForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label className="block font-medium mb-1">Booking Type *</Label>
-          <Select value={bookingType} onValueChange={(val) => setBookingType(val as any)}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select booking type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="INSTANT">Instant Booking</SelectItem>
-              <SelectItem value="SCHEDULED">Schedule for Later</SelectItem>
-            </SelectContent>
-          </Select>
+                  <Select
+            value={bookingType}
+            onChange={(val) => setBookingType(val as "INSTANT" | "SCHEDULED")}
+            options={[
+              { label: "Instant Booking", value: "INSTANT" },
+              { label: "Schedule for Later", value: "SCHEDULED" },
+            ]}
+            placeholder="Select booking type"
+          />
         </div>
 
         {bookingType === "SCHEDULED" && (
@@ -89,22 +90,23 @@ export default function BookingDetailsForm({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <Label className="block font-medium mb-1">Pricing Mode *</Label>
-          <Select
-            value={pricingMode}
-            onValueChange={(val) => {
-              setPricingMode(val as any);
-              if (val === "HOURLY") setEstimatedHours(1);
-              else setEstimatedDays(1);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select pricing mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="HOURLY">Hourly Rate</SelectItem>
-              <SelectItem value="PER_DAY">Daily Rate</SelectItem>
-            </SelectContent>
-          </Select>
+        <Select
+  value={pricingMode}
+  onChange={(val) => {
+    setPricingMode(val as "HOURLY" | "PER_DAY");
+
+    if (val === "HOURLY") {
+      setEstimatedHours(1);
+    } else {
+      setEstimatedDays(1);
+    }
+  }}
+  options={[
+    { label: "Hourly Rate", value: "HOURLY" },
+    { label: "Daily Rate", value: "PER_DAY" },
+  ]}
+  placeholder="Select pricing mode"
+/>
         </div>
 
         <div>
@@ -112,25 +114,36 @@ export default function BookingDetailsForm({
             {pricingMode === "HOURLY" ? "Estimated Hours *" : "Estimated Days *"}
           </Label>
           <Input
-            type="number"
-            min={1}
-            value={pricingMode === "HOURLY" ? estimatedHours : estimatedDays}
-            onChange={(e) => {
-              const value = Math.max(1, Number(e.target.value));
-              if (pricingMode === "HOURLY") setEstimatedHours(value);
-              else setEstimatedDays(value);
-            }}
-          />
+              type="number"
+              min={1}
+              value={
+                pricingMode === "HOURLY"
+                  ? String(estimatedHours)
+                  : String(estimatedDays)
+              }
+              onChange={(val) => {
+                const num = Math.max(1, Number(val || 1));
+
+                if (pricingMode === "HOURLY") {
+                  setEstimatedHours(num);
+                } else {
+                  setEstimatedDays(num);
+                }
+              }}
+            />
         </div>
 
         <div>
           <Label className="block font-medium mb-1">Number of Workers *</Label>
-          <Input
-            type="number"
-            min={1}
-            value={numberOfWorkers}
-            onChange={(e) => setNumberOfWorkers(Math.max(1, Number(e.target.value)))}
-          />
+                    <Input
+              type="number"
+              min={1}
+              value={String(numberOfWorkers)}
+              onChange={(value) => {
+                const num = Math.max(1, Number(value || 1));
+                setNumberOfWorkers(num);
+              }}
+            />
         </div>
       </div>
     </div>
