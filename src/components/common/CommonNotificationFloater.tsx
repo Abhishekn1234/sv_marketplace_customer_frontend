@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { Button } from "@/components/ui/button";
+import Button from "../input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";

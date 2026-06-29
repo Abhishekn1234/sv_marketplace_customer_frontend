@@ -1,4 +1,5 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/input";
+
 
 export default function LocationBadge() {
   return (

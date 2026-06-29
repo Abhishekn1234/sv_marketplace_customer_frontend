@@ -11,3 +11,4 @@ export * from "./Button";
 export * from "./RadioGroup";
 export * from "./SwitchToggle";
 export * from "./Image";
+export * from "./Badge";
