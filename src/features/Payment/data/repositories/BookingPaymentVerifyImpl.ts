@@ -2,6 +2,7 @@ import type { IBookingPaymentVerifyRepository } from "../../domain/repositories/
 import type {  VerifyPaymentResponse } from "../../domain/entities/verifypayment";
 import apiClient from "@/features/api/interceptor";
 import type { PaymentCallback } from "../../domain/entities/paymentcallback";
+import type { AxiosError } from "axios";
 
 export class BookingPaymentVerifyRepositoryImpl implements IBookingPaymentVerifyRepository {
   async verifyPayment(request: PaymentCallback): Promise<VerifyPaymentResponse> {
@@ -18,8 +19,11 @@ export class BookingPaymentVerifyRepositoryImpl implements IBookingPaymentVerify
 
       return { success: true, message: data.message || "Payment Verified" };
 
-    } catch (error: any) {
-      const message = error?.response?.data?.message ?? error.message ?? "Payment verification failed";
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const message =
+        axiosError.response?.data?.message ??
+        (error instanceof Error ? error.message : "Payment verification failed");
       throw new Error(message);
     }
   }

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { initializeSocket } from "@/features/core/Websocket/socket";
 import { useVerifyPayment } from "@/features/Payment/presentation/hooks/useVerifyPayment";
+import { useGetProcessingPaymentSession } from "@/features/Payment/presentation/hooks/useGetProcessingPaymentSession";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
@@ -16,9 +17,16 @@ import CommonCard from "@/components/common/CommonCards";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
-import Button from "@/components/input/Button";
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useTranslationMessages } from "../utils/translationMessages";
+import { getErrorMessage } from "../utils/geterrormessage";
+import { getSessionRedirectUrl } from "../utils/getsessionredirecturl";
+import { getSessionId } from "../utils/getsessionid";
+import JobTrackingHeader from "./JobTrackingHeader";
+import JobTrackingStepItem from "./JobTrackingStepItem";
+
+
 
 export default function JobTrackingTimeline({
   booking,
@@ -47,15 +55,12 @@ export default function JobTrackingTimeline({
   // ✅ Local state for instant socket updates - prevents reloading
   const [localBooking, setLocalBooking] = useState<Booking | null>(null);
  const translationMessages = useTranslationMessages();
-  // Initialize local state from prop (only once, no reloading)
-  useEffect(() => {
-    if (booking && !localBooking) {
-      setLocalBooking(booking);
-    }
-  }, [booking]);
   // console.log(localBooking,booking);
 
   const verifyPaymentMutation = useVerifyPayment();
+  const processingPaymentSessionQuery = useGetProcessingPaymentSession(
+    bookingId
+  );
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
 
@@ -68,10 +73,8 @@ export default function JobTrackingTimeline({
   }, [accessToken]);
 
 // ✅ Socket for real-time activity updates - now passes setLocalBooking for instant UI
-  if (!bookingId) return null;
-
       useSocketTimelineJobTracking({
-        bookingId,
+        bookingId: bookingId ?? "",
         setLocalBooking,
         navigate,
       });
@@ -127,7 +130,10 @@ const currentBooking = localBooking ?? booking;
           setOtpPurpose(translationMessages["Work Start OTP"]);
           setOtpModalOpen(true);
         },
-        onError: (err:any) => toast.error(err.response?.data?.message ||translationMessages["Failed Start OTP"]),
+        onError: (err) =>
+          toast.error(
+            getErrorMessage(err, translationMessages["Failed Start OTP"])
+          ),
       }
     );
   };
@@ -146,7 +152,71 @@ const currentBooking = localBooking ?? booking;
           setOtpPurpose(translationMessages["Work Completed OTP"]);
           setOtpModalOpen(true);
         },
-        onError: (err:any) => toast.error(err.response?.data?.message ||translationMessages["Failed Complete OTP"]),
+        onError: (err) =>
+          toast.error(
+            getErrorMessage(err, translationMessages["Failed Complete OTP"])
+          ),
+      }
+    );
+  };
+
+  const handleVerifyPayment = async () => {
+    if (!currentBooking?._id) return;
+
+    const session =
+      (await processingPaymentSessionQuery.refetch()).data ?? null;
+    const paymentUrl = getSessionRedirectUrl(session);
+
+    if (paymentUrl) {
+      window.location.replace(paymentUrl);
+      return;
+    }
+
+    const paymentId = session?.paymentId ?? currentBooking.paymentId;
+    const sessionId = getSessionId(session) ?? currentBooking.sessionId;
+
+    if (!paymentId) {
+      toast.error(translationMessages["Payment Verification Failed"]);
+      return;
+    }
+
+    verifyPaymentMutation.mutate(
+      {
+        bookingId: currentBooking._id,
+        paymentId,
+        status: "SUCCESS",
+        transactionId:
+          session?.transactionId ??
+          sessionId ??
+          currentBooking.transactionId ??
+          paymentId,
+        sessionId,
+        session_id: sessionId,
+      },
+      {
+        onSuccess: () => {
+          setLocalBooking((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: "PAID",
+                }
+              : prev
+          );
+
+          navigate("/jobcompleted", {
+            replace: true,
+            state: {
+              bookingId: currentBooking._id,
+              paymentDone: true,
+            },
+          });
+        },
+        onError: (err) => {
+          toast.error(
+            err?.message || translationMessages["Payment Verification Failed"]
+          );
+        },
       }
     );
   };
@@ -177,117 +247,37 @@ const currentBooking = localBooking ?? booking;
   // -----------------------------
    return (
     <CommonCard className="p-7">
-      <div className="flex justify-between mb-6">
-        <h2 className="text-lg font-bold">
-          {t.jobtrackingpage.sections.serviceProgress}
-        </h2>
-
-        <div className="px-3 py-1 bg-emerald-100 text-emerald-600 text-xs rounded-full">
-          {currentBooking.status}
-        </div>
-      </div>
+      <JobTrackingHeader
+        title={t.jobtrackingpage.sections.serviceProgress}
+        status={currentBooking.status}
+      />
 
       <div className="relative pl-10" ref={timelineRef}>
         <div className="absolute left-2 top-2 bottom-0 w-0.5 bg-gray-200" />
 
         {steps.map((step, idx) => (
-          <div key={idx} className="relative pb-7">
-            <div
-              className={`absolute -left-8 w-5 h-5 rounded-full ${
-                step.status === "completed"
-                  ? "bg-green-500"
-                  : step.status === "active"
-                  ? "bg-blue-600 animate-pulse active"
-                  : "bg-gray-300"
-              }`}
-            />
-
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="font-semibold">{step.title}</div>
-              <div className="text-sm text-gray-500">{step.time}</div>
-
-              {step.showStartOtpButton && (
-                <Button
-                  onClick={handleStartOtp}
-                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                 {t.jobtrackingpage.buttons.startWorkOtp}
-                </Button>
-              )}
-
-              {step.showCompleteOtpButton && (
-                <Button
-                  onClick={handleCompleteOtp}
-                  className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
-                >
-                  {t.jobtrackingpage.buttons.completeWorkOtp}
-                </Button>
-              )}
-
-              {step.showPaymentButton && (
-                <Button
-                  onClick={() =>
-                    navigate("/payment", {
-                      state: {
-                        bookingId: currentBooking._id,
-                        serviceName:
-                          currentBooking?.serviceId?.name ??
-                          currentBooking?.service?.name,
-                        price: computedPrice,
-                        currency: currentBooking.currency,
-                      },
-                    })
-                  }
-                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
-                >
-                  {t.jobtrackingpage.buttons.payNow}
-                </Button>
-              )}
-
-              {step.showVerifyButton && (
-                <Button
-                  onClick={() => {
-                    verifyPaymentMutation.mutate(
-                      {
-                        paymentId: currentBooking.paymentId,
-                        status: "SUCCESS",
-                        transactionId: currentBooking.transactionId ?? "",
-                      },
-                      {
-                        onSuccess: () => {
-                          navigate("/payment-callback", {
-                            state: {
-                              bookingId: currentBooking._id,
-                              status: "SUCCESS",
-                            },
-                          });
-                        },
-                        onError: (err:any) => {
-                          
-                          toast.error(err?.response?.data?.message || translationMessages["Payment Verification Failed"])
-
-                        },
-                      }
-                    );
-                  }}
-                  className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
-                >
-                  {t.jobtrackingpage.buttons.verifyPayment}
-                </Button>
-              )}
-
-              {step.showServiceRatingButton && (
-                <Button
-                  onClick={() =>
-                    navigate(`/servicerating/${currentBooking._id}`)
-                  }
-                  className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded"
-                >
-                  {t.jobtrackingpage.buttons.rateService}
-                </Button>
-              )}
-            </div>
-          </div>
+          <JobTrackingStepItem
+            key={idx}
+            step={step}
+            t={t}
+            onStartOtp={handleStartOtp}
+            onCompleteOtp={handleCompleteOtp}
+            onPayNow={() =>
+              navigate("/payment", {
+                state: {
+                  bookingId: currentBooking._id,
+                  serviceName: currentBooking?.serviceId?.name ?? currentBooking?.service?.name,
+                  price: computedPrice,
+                  currency: currentBooking.currency,
+                },
+              })
+            }
+            onVerifyPayment={handleVerifyPayment}
+            onRateService={() => navigate(`/servicerating/${currentBooking._id}`)}
+            isVerifyPending={
+              verifyPaymentMutation.isPending || processingPaymentSessionQuery.isFetching
+            }
+          />
         ))}
 
         <OtpModal

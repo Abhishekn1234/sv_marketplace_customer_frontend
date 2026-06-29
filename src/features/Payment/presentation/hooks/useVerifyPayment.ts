@@ -1,25 +1,46 @@
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
 
 import { BookingPaymentVerifyRepositoryImpl } from "../../data/repositories/BookingPaymentVerifyImpl";
 import { VerifyPaymentUseCase } from "../../domain/usecase/BookingPaymentVerifyUsecase";
 import type { VerifyPaymentResponse } from "../../domain/entities/verifypayment";
 import type { PaymentCallback } from "../../domain/entities/paymentcallback";
 
-interface ApiError {
-  message: string;
-}
-
 const repository = new BookingPaymentVerifyRepositoryImpl();
 const useCase = new VerifyPaymentUseCase(repository);
+
+type BookingCacheItem = {
+  _id?: string;
+  paymentStatus?: string;
+  status?: string;
+  invoice?: {
+    status?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+type PaginatedBookingCache = {
+  data?: BookingCacheItem[];
+  [key: string]: unknown;
+};
+
+const markBookingPaid = (booking: BookingCacheItem): BookingCacheItem => ({
+  ...booking,
+  paymentStatus: "PAID",
+  status: "PAID",
+  invoice: {
+    ...booking.invoice,
+    status: "PAID",
+  },
+});
 
 export const useVerifyPayment = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
     VerifyPaymentResponse,
-    AxiosError<ApiError>,
+    Error,
     PaymentCallback
   >({
     mutationFn: (data) => useCase.execute(data),
@@ -32,59 +53,36 @@ export const useVerifyPayment = () => {
       // =========================
       queryClient.setQueryData(
         ["bookings", variables.bookingId],
-        (old: any) => {
+        (old: BookingCacheItem | undefined) => {
           if (!old) return old;
 
-          return {
-            ...old,
-            paymentStatus: "PAID",
-            status: "PAID",
-            invoice: {
-              ...old.invoice,
-              status: "PAID",
-            },
-          };
+          return markBookingPaid(old);
         }
       );
 
       // =========================
       // UPDATE BOOKING HISTORY CACHE
       // =========================
-      queryClient.setQueryData(["booking-history"], (old: any) => {
+      queryClient.setQueryData(["booking-history"], (old: unknown) => {
         if (!old) return old;
 
         if (Array.isArray(old)) {
-          return old.map((booking: any) =>
+          return old.map((booking: BookingCacheItem) =>
             booking._id === variables.bookingId
-              ? {
-                  ...booking,
-                  paymentStatus: "PAID",
-                  status: "PAID",
-                  invoice: {
-                    ...booking.invoice,
-                    status: "PAID",
-                  },
-                }
+              ? markBookingPaid(booking)
               : booking
           );
         }
 
         // Handles paginated response:
         // { data: Booking[], total, page, ... }
-        if (old.data && Array.isArray(old.data)) {
+        const paginatedOld = old as PaginatedBookingCache;
+        if (paginatedOld.data && Array.isArray(paginatedOld.data)) {
           return {
-            ...old,
-            data: old.data.map((booking: any) =>
+            ...paginatedOld,
+            data: paginatedOld.data.map((booking) =>
               booking._id === variables.bookingId
-                ? {
-                    ...booking,
-                    paymentStatus: "PAID",
-                    status: "PAID",
-                    invoice: {
-                      ...booking.invoice,
-                      status: "PAID",
-                    },
-                  }
+                ? markBookingPaid(booking)
                 : booking
             ),
           };
@@ -100,7 +98,7 @@ export const useVerifyPayment = () => {
 
     onError: (error, variables) => {
       toast.error(
-        error.response?.data?.message ??
+        error.message ??
           `Failed to verify payment for ${variables.paymentId}`
       );
     },

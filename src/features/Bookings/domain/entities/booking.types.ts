@@ -65,13 +65,14 @@ export interface Booking {
   // ✅ Payment (IMPORTANT for verify flow)
   paymentId: string;
   transactionId?: string;
+  sessionId?: string;
 
   assignedWorkers?: AssignedWorker[];
 
   createdAt: string;
   updatedAt: string;
   activities?: {
-  [key: string]: any;
+  [key: string]: unknown;
   type: string;
   createdAt: string;
 }[];
