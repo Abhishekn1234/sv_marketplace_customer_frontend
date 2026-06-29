@@ -23,8 +23,9 @@ import { useTranslationMessages } from "../utils/translationMessages";
 import { getErrorMessage } from "../utils/geterrormessage";
 import { getSessionRedirectUrl } from "../utils/getsessionredirecturl";
 import { getSessionId } from "../utils/getsessionid";
-import JobTrackingHeader from "./JobTrackingHeader";
+
 import JobTrackingStepItem from "./JobTrackingStepItem";
+import JobTrackingHeaders from "./JobTrackingHeaders";
 
 
 
@@ -247,7 +248,7 @@ const currentBooking = localBooking ?? booking;
   // -----------------------------
    return (
     <CommonCard className="p-7">
-      <JobTrackingHeader
+      <JobTrackingHeaders
         title={t.jobtrackingpage.sections.serviceProgress}
         status={currentBooking.status}
       />
