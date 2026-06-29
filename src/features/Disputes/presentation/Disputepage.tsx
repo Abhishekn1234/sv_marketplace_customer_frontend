@@ -13,6 +13,7 @@ import { ArrowLeftIcon } from "@/components/icons";
 import Select from "@/components/input/Select";
 import { options } from "../domain/entities/reasontypes";
 import clsx from "clsx";
+import { handleApiError } from "@/components/common/ApiError";
 
 
 
@@ -67,13 +68,7 @@ export default function Disputepage() {
         // console.log("❌ Error full object:", err);
         // console.log("❌ Backend response:", err?.response?.data);
 
-        const message =
-          err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          err?.message ||
-          "Failed to create dispute";
-
-        toast.error(message);
+       handleApiError(err);
       }
     };
 

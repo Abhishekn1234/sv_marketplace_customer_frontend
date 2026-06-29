@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/core/store/auth";
 import { getCurrentLocation } from "@/features/utils/reverse";
+import { handleApiError } from "@/components/common/ApiError";
 
 export const useUpdateCurrentLocation = () => {
   const addAddress = useAuthStore((state) => state.addAddress);
@@ -59,7 +60,7 @@ export const useUpdateCurrentLocation = () => {
       toast.success("Location updated successfully!");
     } catch (err:any) {
       console.error(err);
-      toast.error(err.response?.data.message)
+      handleApiError(err);
     }
   };
 

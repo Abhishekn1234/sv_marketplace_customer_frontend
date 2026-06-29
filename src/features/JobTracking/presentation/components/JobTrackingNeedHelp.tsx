@@ -15,6 +15,7 @@ import type { Booking } from "@/features/Bookings/domain/entities/booking.types"
 import CommonCard from "@/components/common/CommonCards";
 import CommonModal from "@/components/common/CommonModal";
 import { CancelConfirmationDialog } from "./CancelModal";
+import { handleApiError } from "@/components/common/ApiError";
 
 export default function JobTrackingNeedHelp({
   booking,
@@ -85,7 +86,7 @@ export default function JobTrackingNeedHelp({
     setShowCancelModal(false);
     navigate("/");
   } catch (err: any) {
-    toast.error(err?.response?.data?.message);
+    handleApiError(err);
 
     setShowCancelModal(false);
   }

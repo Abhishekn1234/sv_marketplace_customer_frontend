@@ -6,6 +6,7 @@ import { Checkbox, Input, Label } from '@/components/input';
 import Button from '@/components/input/Button';
 import { ArrowRight } from '@/components/icons';
 import CommonSpinner from '@/components/common/CommonLoadingSpinner';
+import { handleApiError } from '@/components/common/ApiError';
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,7 @@ const LoginCard = () => {
       toast.success(response.message);
       navigate('/',{replace:true});
     } catch (err: any) {
-      toast.error(err.response.data.message);
+      handleApiError(err);
     }
   };
 

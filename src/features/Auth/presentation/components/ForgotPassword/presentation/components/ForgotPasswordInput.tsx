@@ -1,3 +1,4 @@
+import { handleApiError } from "@/components/common/ApiError";
 import { Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
 import React from "react";
@@ -26,7 +27,7 @@ export default function ForgotPasswordInput({
       toast.success("OTP sent to your email!");
       onNext(res.hash);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to send OTP");
+     handleApiError(err);
     }
   };
 

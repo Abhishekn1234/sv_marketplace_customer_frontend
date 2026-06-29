@@ -1,9 +1,10 @@
 import { useCallback } from "react";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { getCurrentLocation } from "../../../../utils/reverse";
 
 import CommonMap from "@/components/common/CommonMap";
 import { Input, Label } from "@/components/input";
+import { handleApiError } from "@/components/common/ApiError";
 
 interface LocationSelectorProps {
   lat: number;
@@ -40,7 +41,7 @@ export default function LocationSelector({
       setPlaceName(`Lat: ${location.lat.toFixed(5)}, Lng: ${location.lng.toFixed(5)}`);
       setLocationMode("current");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Unable to get location");
+     handleApiError(err);
     } finally {
       setIsGeocoding(false);
     }

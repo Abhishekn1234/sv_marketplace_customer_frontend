@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChangePasswordRepositoryImpl } from "../../data/repositories/ChangePasswordRepoImpl";
 import { UpdatePasswordUseCase } from "../../domain/usecase/UpdateChangePasswordUsecase";
+import { handleApiError } from "@/components/common/ApiError";
 
 export const useUpdatePassword = () => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ export const useUpdatePassword = () => {
 
       return result;
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message);
+     handleApiError(err);
       throw err;
     } finally {
       setLoading(false);

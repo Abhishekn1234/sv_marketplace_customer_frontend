@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import type { Location } from "../../domain/entities/location";
 import { ProfileRepoImpl } from "../../data/repositories/ProfileRepoImpl";
 import { UpdateLocationUsecase } from "../../domain/usecase/UpdateLocationUsecase";
-import {toast} from "react-toastify"
+// import {toast} from "react-toastify"
+import { handleApiError } from "@/components/common/ApiError";
 const profileRepo = new ProfileRepoImpl();
 const updateLocationUsecase = new UpdateLocationUsecase(profileRepo);
 
@@ -23,7 +24,7 @@ export const useUpdateLocation = () => {
         return result;
       } catch (err: any) {
         setError(err.message || "Failed to update location");
-        toast.error(err?.response?.data?.message)
+        handleApiError(err)
         return null;
       } finally {
         setLoading(false);

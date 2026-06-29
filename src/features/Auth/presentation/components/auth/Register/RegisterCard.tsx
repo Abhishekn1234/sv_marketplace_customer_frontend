@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
@@ -9,6 +9,7 @@ import { Input, Checkbox } from "@/components/input";
 import Button from "@/components/input/Button";
 import { ArrowRight, EyeIcon, EyeOffIcon } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { handleApiError } from "@/components/common/ApiError";
 
 const RegistrationCard = () => {
   const { t } = useLanguage();
@@ -64,7 +65,7 @@ const RegistrationCard = () => {
 
       navigate("/verification");
     } catch (err: any) {
-      toast.error(err.response.data.message);
+     handleApiError(err);
     } finally {
       setLoading(false);
     }

@@ -21,6 +21,7 @@ import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 
 import { getSocket } from "@/features/core/Websocket/socket";
 import { bookingKeys } from "@/features/Confirmation/presentation/utils/bookingkeys";
+import { handleApiError } from "@/components/common/ApiError";
 
 const repo = new BookingRepository();
 const getBookings = new GetBookingsUseCase(repo);
@@ -120,6 +121,9 @@ export const useBookings = () => {
       toast.success("Booking created");
       navigate(`/confirmation/${newBooking._id}`);
     },
+    onError(err:any){
+      handleApiError(err);
+    }
   });
 
   // ================= CANCEL BOOKING =================
@@ -176,11 +180,7 @@ export const useBookings = () => {
     );
   }
 
-  toast.error(
-    err?.response?.data?.message ||
-    err?.message ||
-    "Failed to cancel booking ❌"
-  );
+  handleApiError(err)
 },
 
   onSuccess: (updated, req) => {

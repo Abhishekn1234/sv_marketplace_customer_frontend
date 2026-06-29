@@ -2,6 +2,7 @@ import { useState } from "react";
 import { VerifyOtpMobileImpl } from "../../data/repositories/VerifyOtpMobile";
 import type { VerifyOtpMobile } from "../../domain/entities/verifyotpmobile";
 import { VerifyOtpMobileUseCase } from "../../domain/usecase/SendOtpEmailUsecase";
+import { handleApiError } from "@/components/common/ApiError";
 
 export const useVerifyOtpMobile = () => {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export const useVerifyOtpMobile = () => {
       setLoading(false);
       return result;
     } catch (err: any) {
-      setError(err.message || "OTP verification failed");
+      handleApiError(err);
       setLoading(false);
       throw err;
     }

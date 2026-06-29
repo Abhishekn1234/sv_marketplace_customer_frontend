@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {  Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
 import { EyeIcon, EyeOffIcon } from "@/components/icons";
+import { handleApiError } from "@/components/common/ApiError";
 
 interface Props {
   email: string;
@@ -35,7 +36,7 @@ export default function ForgotResetPassword({
       toast.success("Password reset successful!");
       onDone();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to reset password");
+      handleApiError(err);
     }
   };
 

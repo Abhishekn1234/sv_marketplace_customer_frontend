@@ -1,3 +1,4 @@
+import { handleApiError } from "@/components/common/ApiError";
 import { Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
 import React, { useState } from "react";
@@ -27,7 +28,7 @@ export default function ForgotPasswordVerify({
       toast.success("OTP verified!");
       onNext();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Invalid OTP");
+     handleApiError(err);
     }
   };
 

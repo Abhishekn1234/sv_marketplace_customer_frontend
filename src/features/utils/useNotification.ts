@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { getCurrentLocation} from "./reverse";
 import type { Location } from "./getdistance";
 import { haversineDistance } from "./getdistance";
+import { handleApiError } from "@/components/common/ApiError";
 const NOTIFY_INTERVAL = 60_000; 
 const MIN_DISTANCE_KM = 1;
 export const useNotification = () => {
@@ -51,7 +52,7 @@ export const useNotification = () => {
 
       watchIdRef.current = navigator.geolocation.watchPosition(
         handlePosition,
-        (err:any) => toast.error(err?.response?.data?.message),
+        (err:any) => handleApiError(err),
         { enableHighAccuracy: true }
       );
 

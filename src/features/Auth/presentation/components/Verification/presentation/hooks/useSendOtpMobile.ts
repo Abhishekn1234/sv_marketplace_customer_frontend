@@ -4,6 +4,7 @@ import type { SendOtpMobile } from "../../domain/entities/sendotpmobile";
 import { toast } from "react-toastify";
 import { SendOtpMobileRepoImpl } from "../../data/repositories/SendOtpMobile";
 import type { SendOtpMobileRepo } from "../../domain/repositories/SendOtpMobileRepo";
+import { handleApiError } from "@/components/common/ApiError";
 
 
 export const useSendOtpMobile = () => {
@@ -17,7 +18,7 @@ export const useSendOtpMobile = () => {
       toast.success("OTP sent successfully");
       return res;
     } catch (err: any) {
-      toast.error(err.response?.data.message || "Failed to send OTP");
+     handleApiError(err);
       throw err;
     } finally {
       setLoading(false);

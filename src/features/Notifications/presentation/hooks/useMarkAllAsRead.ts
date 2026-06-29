@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { NotificationRepositoryImpl } from "../../data/repositories/NotificationRepoImpl";
 import { MarkAllNotificationsReadUseCase } from "../../domain/usecases/MarkAllNotificationsReadUseCase";
+import { handleApiError } from "@/components/common/ApiError";
 
 export const useMarkAllAsRead = () => {
   const queryClient = useQueryClient();
@@ -56,10 +57,7 @@ export const useMarkAllAsRead = () => {
         "All notifications marked as read"
       );
     } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message ||
-          "Failed to mark notifications as read"
-      );
+      handleApiError(err);
     }
   }, [useCase, queryClient]);
 

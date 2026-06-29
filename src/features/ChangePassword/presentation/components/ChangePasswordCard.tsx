@@ -10,6 +10,7 @@ import { Input, Label } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
+import { handleApiError } from "@/components/common/ApiError";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function ChangePasswordCard() {
       toast.success("Password updated successfully 🎉");
       navigate(-1);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Something went wrong");
+     handleApiError(err);
     }
   };
 

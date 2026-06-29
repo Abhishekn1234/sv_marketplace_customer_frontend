@@ -10,6 +10,7 @@ import { useVerificationStore } from "@/features/core/store/usestep";
 import { useSendOtpMobile } from "../hooks/useSendOtpMobile";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import { handleApiError } from "@/components/common/ApiError";
 
 export default function VerificationTab() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -114,7 +115,7 @@ const resend = async () => {
       toast.success("OTP sent again");
     }
   } catch (err: any) {
-    toast.error(err.response?.data?.message || "Failed to resend OTP");
+    handleApiError(err);
   }
 };
   // // change phone
@@ -146,7 +147,7 @@ const resend = async () => {
       toast.success(response.message);
       navigate("/",{replace:true});
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "OTP verification failed");
+      handleApiError(err);
     }
   };
 
