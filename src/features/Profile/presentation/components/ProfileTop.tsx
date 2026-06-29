@@ -1,7 +1,7 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
-import { LogOutIcon } from "lucide-react";
-import { BackArrowIcon } from "@/components/icons";
+
+import { BackArrowIcon, LogoutIcon } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "@/components/input/Button";
@@ -50,7 +50,7 @@ export default function ProfileTop() {
           transition-all duration-200 whitespace-nowrap"
           rightIcon={
             <>
-               <LogOutIcon className="w-5 h-5" />
+               <LogoutIcon className="w-5 h-5" />
             </>
            
           }

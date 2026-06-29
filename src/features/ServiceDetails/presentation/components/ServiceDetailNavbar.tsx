@@ -1,11 +1,13 @@
 
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
-import { MapPin, ChevronDown, Search, User, Loader2 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import Button from "@/components/input/Button";
 import { Image, Input } from "@/components/input";
+import { ChevronDownIcon, MapPinIcon, SearchIcon, UserIcon } from "@/components/icons";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ServiceDetailNavbar() {
   const navigate = useNavigate();
@@ -103,9 +105,9 @@ export default function ServiceDetailNavbar() {
             }}
             className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm font-semibold text-gray-900 hover:border-blue-600 transition w-[260px] truncate"
           >
-            <MapPin className="w-4 h-4 text-blue-600" />
+            <MapPinIcon className="w-4 h-4 text-blue-600" />
             <span className="truncate">{homecustomer || "Select Location"}</span>
-            <ChevronDown className="w-4 h-4 text-gray-400" />
+            <ChevronDownIcon className="w-4 h-4 text-gray-400" />
           </button>
 
           {showDropdown && (
@@ -118,9 +120,9 @@ export default function ServiceDetailNavbar() {
                 className="w-full flex items-center gap-2 text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition disabled:opacity-60"
               >
                 {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                 <CommonSpinner/>
                 ) : (
-                  <MapPin className="w-4 h-4" />
+                  <MapPinIcon className="w-4 h-4" />
                 )}
                 Use Current Location
               </Button>
@@ -159,7 +161,7 @@ export default function ServiceDetailNavbar() {
 
         {/* Search */}
         <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl">
-          <Search className="w-4 h-4 text-gray-400" />
+          <SearchIcon className="w-4 h-4 text-gray-400" />
           <Input
             type="text"
             placeholder="Search services..."
@@ -186,7 +188,7 @@ export default function ServiceDetailNavbar() {
             </div>
           ) : (
             <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-              <User className="w-5 h-5 text-white" />
+              <UserIcon className="w-5 h-5 text-white" />
             </div>
           )}
 

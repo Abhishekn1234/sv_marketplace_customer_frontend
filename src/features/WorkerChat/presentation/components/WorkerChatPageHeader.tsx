@@ -1,8 +1,9 @@
 "use client";
 
+import { MoreVerticalIcon, PhoneIcon } from "@/components/icons";
 import { Image } from "@/components/input";
 import Button from "@/components/input/Button";
-import { Phone, MoreVertical } from "lucide-react";
+
 
 export default function WorkerChatPageHeader({
   worker,
@@ -52,11 +53,11 @@ export default function WorkerChatPageHeader({
       <div className="flex items-center gap-3">
 
         <Button className="p-2 rounded-full hover:bg-gray-100 transition">
-          <Phone className="w-5 h-5 text-gray-600" />
+          <PhoneIcon className="w-5 h-5 text-gray-600" />
         </Button>
 
         <Button className="p-2 rounded-full hover:bg-gray-100 transition">
-          <MoreVertical className="w-5 h-5 text-gray-600" />
+          <MoreVerticalIcon className="w-5 h-5 text-gray-600" />
         </Button>
 
       </div>

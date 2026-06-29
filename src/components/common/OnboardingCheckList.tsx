@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { X, CheckCircle2 } from "lucide-react";
 
 import Button from "../input/Button";
 import AppProgress from "./CommonAppProgress";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { CheckCircle2Icon, XIcon } from "../icons";
 
 export interface OnboardingStep {
   id: string;
@@ -69,7 +69,7 @@ const OnboardingChecklist: React.FC<Props> = ({
         </div>
 
         <Button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          <X className="w-4 h-4" />
+          <XIcon className="w-4 h-4" />
         </Button>
       </div>
 
@@ -96,7 +96,7 @@ const OnboardingChecklist: React.FC<Props> = ({
             >
               <div className="flex items-center gap-3">
                 {done ? (
-                  <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
+                  <CheckCircle2Icon className="w-6 h-6 text-green-500 shrink-0" />
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
                     {index + 1}

@@ -2,13 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+
 import Button from "@/components/input/Button";
 import {
   ArrowLeftIcon,
   PhoneIcon,
   MoreVerticalIcon,
   InfoIcon,
+  XIcon,
 } from "@/components/icons";
 import { Image } from "@/components/input";
 import Tooltip from "@/components/common/ToolTip";
@@ -144,7 +145,7 @@ export default function ChatHeader({ worker,bookingId }: { worker: Worker,bookin
     onClick={() => setInfoOpen(false)}
     className="absolute right-2 top-2 sm:right-3 sm:top-3 z-10 text-gray-500 hover:bg-white/80 hover:text-gray-900"
   >
-    <X size={18} />
+    <XIcon size={18} />
   </Button>
 
   {/* Header */}

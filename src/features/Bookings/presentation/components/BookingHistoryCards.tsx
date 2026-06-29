@@ -1,7 +1,7 @@
 "use client";
 
 import  CommonCard  from "@/components/common/CommonCards";
-import { Home } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
@@ -14,6 +14,7 @@ import { formatBookingDuration } from "../utils/formatduration";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
 import { useServices } from "../hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { HomeIcon } from "@/components/icons";
 
 
 interface BookingCardProps {
@@ -83,7 +84,7 @@ export default function BookingCard({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 rounded-xl flex items-center justify-center">
-            <Home className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
+            <HomeIcon className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
           </div>
           <div className="min-w-0">
             <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 truncate">

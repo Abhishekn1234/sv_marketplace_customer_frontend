@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { toast } from "react-toastify";
-import { Eye, EyeOff } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import { Input, Checkbox } from "@/components/input";
 import Button from "@/components/input/Button";
-import { ArrowRight } from "@/components/icons";
+import { ArrowRight, EyeIcon, EyeOffIcon } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 const RegistrationCard = () => {
@@ -144,9 +144,9 @@ const RegistrationCard = () => {
                   className="text-gray-500"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOffIcon className="w-5 h-5" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <EyeIcon className="w-5 h-5" />
                   )}
                 </button>
               }

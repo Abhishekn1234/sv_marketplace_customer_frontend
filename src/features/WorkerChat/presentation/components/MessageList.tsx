@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Check, CheckCheck } from "lucide-react";
+
 
 import { formatDateLabel } from "../utils/formatdateLabel";
 import { formatTime } from "../utils/formattime";
@@ -13,6 +13,7 @@ import { TypingIndicator } from "../utils/typeindicator";
 import MiniAvatar from "../utils/miniavatar";
 import CommonCard from "@/components/common/CommonCards";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { CheckCheckIcon, CheckIcon } from "@/components/icons";
 
 const getSenderId = (senderId: any) =>
   typeof senderId === "string"
@@ -238,16 +239,16 @@ export default function MessageList({
                           }
                         >
                           {msg.status === "sent" && (
-                            <Check size={12} />
+                            <CheckIcon  />
                           )}
 
                           {msg.status ===
                             "delivered" && (
-                            <CheckCheck size={12} />
+                            <CheckCheckIcon size={12} />
                           )}
 
                           {msg.status === "read" && (
-                            <CheckCheck size={12} />
+                            <CheckCheckIcon size={12} />
                           )}
                         </span>
                       )}

@@ -1,0 +1,10 @@
+import type { IconProps } from "./iconprops";
+
+export function BanknoteIcon(props: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" {...props}>
+      <rect x="2" y="6" width="20" height="12" rx="2"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+  );
+}

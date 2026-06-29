@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin } from "lucide-react";
+
 
 import { useAuthStore } from "@/features/core/store/auth";
 import { useUpdateCurrentLocation } from "@/features/Auth/presentation/components/Location/presentation/hooks/useCurrentlocation";
@@ -10,7 +10,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { Input } from "@/components/input";
 import OnboardingChecklist from "../../../../components/common/OnboardingCheckList";
-import { LogoIcon } from "@/components/icons";
+import { LogoIcon, MapPinIcon } from "@/components/icons";
 
 
 
@@ -167,7 +167,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
             "
             rightElement={
               !currentLocation ? (
-                <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                <MapPinIcon className="w-4 h-4 text-gray-400 shrink-0" />
               ) : null
             }
           />
@@ -215,7 +215,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
                 onClick={handleUseCurrentLocation}
                 className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 active:bg-blue-100 transition-colors rounded-none"
               >
-                <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+                <MapPinIcon className="w-4 h-4 text-blue-500 shrink-0" />
                 {t.navbar["Use current location"]}
               </Button>
             </div>

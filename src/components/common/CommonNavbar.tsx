@@ -2,17 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  BookOpen,
-  Info,
-  Shield,
-  HelpCircle,
-} from "lucide-react";
+
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import NavbarLeft from "../../features/Layout/components/Navabar/NavbarLeft";
 import NavbarRight from "../../features/Layout/components/Navabar/NavbarRight";
 import NavbarMobile from "../../features/Layout/components/Navabar/NavbarMobile";
+import { BookOpenIcon, HelpCircleIcon, InfoIcon, ShieldIcon } from "../icons";
 
 
 
@@ -70,10 +66,10 @@ const CommonNavbar: React.FC<NavbarProps> = ({
     jobTrackingPage;
 
   const navLinks = [
-    { icon: BookOpen, label: t.navbar.Bookings, to: "/bookings" },
-    { icon: Info, label: t.navbar.About, to: "/about" },
-    { icon: Shield, label: t.navbar.Privacy, to: "/privacy" },
-    { icon: HelpCircle, label: t.navbar.Help, to: "/help" },
+    { icon: BookOpenIcon, label: t.navbar.Bookings, to: "/bookings" },
+    { icon: InfoIcon, label: t.navbar.About, to: "/about" },
+    { icon: ShieldIcon, label: t.navbar.Privacy, to: "/privacy" },
+    { icon: HelpCircleIcon, label: t.navbar.Help, to: "/help" },
   ];
 
   // Close mobile menu on route change

@@ -1,6 +1,6 @@
+import { BellRing, CheckSquare, Square } from "@/components/icons";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { CheckSquare, Square, BellRing } from "lucide-react";
 
 interface NotificationHeaderProps {
   toggleSelectAll: () => void;

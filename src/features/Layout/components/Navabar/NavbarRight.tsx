@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, X, Menu } from "lucide-react";
+
 
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import { useAuthStore, useSearchStore } from "@/features/core/store/auth";
@@ -13,7 +13,7 @@ import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
 import { languages } from "../../../../components/common/languages";
 import Select from "@/components/input/Select";
-import { UserIcon } from "@/components/icons";
+import { MenuIcon, SearchIcon, UserIcon, XIcon } from "@/components/icons";
 import { Image } from "@/components/input"; // ✅ FIXED MISSING IMPORT
 
 interface NavbarRightProps {
@@ -96,7 +96,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
               size="md"
               radius="lg"
             />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
+            <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
           </div>
 
           {/* Mobile search toggle */}
@@ -106,9 +106,9 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
             aria-label="Toggle search"
           >
             {showMobileSearch ? (
-              <X className="w-5 h-5" />
+              <XIcon className="w-5 h-5" />
             ) : (
-              <Search className="w-5 h-5" />
+              <SearchIcon className="w-5 h-5" />
             )}
           </Button>
         </>
@@ -179,9 +179,9 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
         aria-expanded={mobileMenuOpen}
       >
         {mobileMenuOpen ? (
-          <X className="w-5 h-5" />
+          <XIcon className="w-5 h-5" />
         ) : (
-          <Menu className="w-5 h-5" />
+          <MenuIcon className="w-5 h-5" />
         )}
       </Button>
     </div>

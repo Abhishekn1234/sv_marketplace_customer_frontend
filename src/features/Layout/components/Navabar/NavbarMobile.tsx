@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, } from "lucide-react";
+
 
 import { useAuthStore } from "@/features/core/store/auth";
 import { useSearchStore } from "@/features/core/store/auth";
@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import Select from "@/components/input/Select";
 import { languages } from "../../../../components/common/languages";
 import { Input } from "@/components/input";
+import { SearchIcon } from "@/components/icons";
 
 
 interface NavbarMobileProps {
@@ -68,7 +69,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
               radius="lg"
               autoFocus
             />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       )}

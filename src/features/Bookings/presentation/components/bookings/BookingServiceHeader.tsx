@@ -1,6 +1,8 @@
-import { X } from "lucide-react";
+
+import { XIcon } from "@/components/icons";
 import type { Service } from "../../../domain/entities/service.types";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/input/Button";
+
 
 interface BookingServiceHeaderProps {
   service: Service;
@@ -21,7 +23,7 @@ export default function BookingServiceHeader({ service, onClose }: BookingServic
         variant="ghost"
         className=" "
       >
-        <X size={24} />
+        <XIcon size={24} />
       </Button>
     </div>
   );

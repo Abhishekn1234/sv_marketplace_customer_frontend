@@ -1,19 +1,25 @@
-// SVG Icons (from files)
+// SVG Icons
 import GoogleIcon from "@/components/icons/google.svg?react";
 import FacebookIcon from "@/components/icons/facebook.svg?react";
 import MoneyIcon from "@/components/icons/moneybill.svg?react";
 import ReactIcon from "@/components/icons/react.svg?react";
 
-// Custom Icons (TSX components)
+// Custom Icons
 import { QuickActionsIcon } from "./QuickActionsIcon";
+
 import { SecurityIcon } from "./SecurityIcon";
+import { CheckSquare } from "./CheckSquare";
+import { Square } from "./Square";
+import { BellRing } from "./BellRing";
 import { InboxIcon } from "./InboxIcon";
 import { SearchIcon } from "./SearchIcon";
 import { PhoneIcon } from "./PhoneIcon";
 import SustainabilityIcon from "./SustanabilityIcon";
+import { LogoutIcon } from "./LogoutIcon";
 import { SendIcon } from "./SendIcon";
 import { SuccessIcon } from "./SuccessIcon";
 import { ArrowLeftIcon } from "./ArrowLeft";
+import { ClockIcon } from "./ClockIcon";
 import { MoreVerticalIcon } from "./MoreVerticalIcon";
 import { VideoIcon } from "./VideoIcon";
 import { InfoIcon } from "./InfoIcon";
@@ -47,52 +53,97 @@ import { BookingIcon } from "./BookingIcon";
 import { CheckIcon } from "./CheckIcon";
 import { ShieldSmallIcon } from "./ShieldSmallIcon";
 import { NavigationGPSIcon } from "./NavigationIcon";
-// Export everything
+
+// Newly Added Icons
+import { BookOpenIcon } from "./BookOpenIcon";
+import { HelpCircleIcon } from "./HelpCircleIcon";
+import { XIcon } from "./XIcon";
+import { CheckCircle2Icon } from "./CheckCircle2Icon";
+import { ChevronDownIcon } from "./ChevronDownIcon";
+import { EyeIcon } from "./EyeIcon";
+import { EyeOffIcon } from "./EyeOffIcon";
+import { MapPinIcon } from "./MapPinIcon";
+import { CalendarIcon } from "./CalendarIcon";
+import { MenuIcon } from "./MenuIcon";
+import { BanknoteIcon } from "./BanknoteIcon";
+import { CreditCardIcon } from "./CreditCardIcon";
+import { SmartphoneIcon } from "./SmartphoneIcon";
+import { PencilIcon } from "./PencilIcon";
+import { CheckCheckIcon } from "./CheckCheckIcon";
+import { CircleIcon } from "./CircleIcon";
+export type { IconProps } from "./iconprops";
+
 export {
+  // SVG Icons
   GoogleIcon,
   FacebookIcon,
-  NavigationGPSIcon,
   MoneyIcon,
-  CheckIcon,
-  ShieldSmallIcon,
   ReactIcon,
+
+  // Existing Icons
   QuickActionsIcon,
   SecurityIcon,
+  CheckSquare,
+  Square,
+  BellRing,
+  ClockIcon,
+  InboxIcon,
+  SearchIcon,
+  PhoneIcon,
+  SustainabilityIcon,
+  SendIcon,
+  SuccessIcon,
+  ArrowLeftIcon,
+  MoreVerticalIcon,
+  VideoIcon,
+  InfoIcon,
   BackArrowIcon,
   BillingIcon,
   HelpIcon,
-  InboxIcon,
-  SearchIcon,
- SustainabilityIcon,
   TransparencyIcon,
   PreferencesIcon,
   PrivacyIcon,
-  CustomerIcon,
-  QualityIcon,
-  SafetyIcon,
-  TrustIcon,
   LogoIcon,
+  QualityIcon,
+  CircleIcon,
+  SafetyIcon,
+  CustomerIcon,
+  TrustIcon,
   SaveIcon,
+  PlusIcon,
+  StarIcon,
+  LogoutIcon,
+  SquareIcon,
   DangerZoneIcon,
   DeleteAccountIcon,
   EmailNotificationIcon,
   SmsNotificationIcon,
   TwoFactorAuthIcon,
-  PhoneIcon,
-  ArrowLeftIcon,
-  MoreVerticalIcon,
-  VideoIcon,
-  InfoIcon,
-  SendIcon,
-  ArrowRight,
-  SuccessIcon,
   ShieldIcon,
   LockIcon,
+  ArrowRight,
   UserIcon,
   HomeIcon,
   AboutIcon,
   BookingIcon,
-  PlusIcon,
-  SquareIcon,
-  StarIcon
+  CheckIcon,
+  ShieldSmallIcon,
+  NavigationGPSIcon,
+
+  // Newly Added Icons
+  BookOpenIcon,
+  HelpCircleIcon,
+  XIcon,
+  CheckCircle2Icon,
+  ChevronDownIcon,
+  EyeIcon,
+  EyeOffIcon,
+  MapPinIcon,
+  CalendarIcon,
+  MenuIcon,
+  BanknoteIcon,
+  CreditCardIcon,
+ SmartphoneIcon,
+  PencilIcon,
+  CheckCheckIcon,
 };

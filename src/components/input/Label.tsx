@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Label as UiLabel } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-export interface LabelProps extends React.ComponentProps<typeof UiLabel> {
+export interface LabelProps
+  extends React.LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
   optionalText?: React.ReactNode;
   hint?: React.ReactNode;
@@ -32,7 +32,7 @@ export function Label({
 
   return (
     <div className="space-y-1">
-      <UiLabel
+      <label
         className={cn(
           base,
           variant === "card" && cardStyle,
@@ -60,7 +60,7 @@ export function Label({
             <span className="shrink-0">{rightIcon}</span>
           )}
         </div>
-      </UiLabel>
+      </label>
 
       {error ? (
         <p className="text-xs font-medium text-red-600">{error}</p>

@@ -1,4 +1,4 @@
-import { Pencil, Star } from 'lucide-react';
+
 import { useState } from 'react';
 import { useProfile } from "../hooks/useProfile";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
@@ -12,6 +12,7 @@ import Button from '@/components/input/Button';
 import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 
 import CommonCard from '@/components/common/CommonCards';
+import { PencilIcon, StarIcon } from '@/components/icons';
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
@@ -100,7 +101,7 @@ export default function ProfileList() {
                     disabled:opacity-60
                   "
                 >
-                  <Pencil className="w-4 h-4 text-black" />
+                  <PencilIcon className="w-4 h-4 text-black" />
                 </Button>
               </FileInput>
             </div>
@@ -118,7 +119,7 @@ export default function ProfileList() {
 
           {/* Premium Badge */}
           <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full text-xs font-bold text-white uppercase tracking-wide">
-            <Star className="w-3.5 h-3.5" />
+            <StarIcon className="w-3.5 h-3.5" />
             {t.profilepage.premiumMember}
           </span>
 

@@ -6,7 +6,7 @@ import { useEffect, useState, useMemo } from "react";
 import BookingSummary from "./BookingSummary";
 import WhatsNext from "./WhatsNext";
 
-import { ArrowRight, Calendar, Home } from "lucide-react";
+
 import { statusMessageMap } from "../utils/statusmessagemapping";
 
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -14,7 +14,7 @@ import { useServices } from "@/features/Bookings/presentation/hooks/useServices"
 import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-import { SuccessIcon } from "@/components/icons";
+import { ArrowRight, CalendarIcon, HomeIcon, SuccessIcon } from "@/components/icons";
 
 export default function ConfirmationContent() {
   const navigate = useNavigate();
@@ -133,7 +133,7 @@ export default function ConfirmationContent() {
         >
           <span className="flex gap-3 justify-center items-center">
             {t.confirmationpage.trackJob}
-            <ArrowRight className="w-5" />
+            <ArrowRight  />
           </span>
         </Button>
 
@@ -141,12 +141,12 @@ export default function ConfirmationContent() {
 
         <div className="flex justify-center gap-8 mb-10 text-sm font-bold uppercase">
           <Link to="/" className="hover:text-blue-600 flex items-center gap-2">
-            <Home className="w-5" />
+            <HomeIcon className="w-5" />
             {t.confirmationpage.returnHome}
           </Link>
 
           <Link to="/bookings" className="hover:text-blue-600 flex items-center gap-2">
-            <Calendar className="w-5" />
+            <CalendarIcon className="w-5" />
             {t.confirmationpage.viewBookings}
           </Link>
         </div>

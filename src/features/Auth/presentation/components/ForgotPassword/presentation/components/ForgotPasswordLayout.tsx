@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { ArrowLeft } from "lucide-react";
+
 import ForgotPasswordInput from "./ForgotPasswordInput";
 import ForgotPasswordVerify from "./ForgotPasswordVerify";
 import ForgotResetPassword from "./ForgotResetPassword";
 import { useAuth } from "@/features/Auth/presentation/hooks/useAuth";
+import { ArrowLeftIcon } from "@/components/icons";
 
 
 
@@ -71,7 +72,7 @@ export default function ForgotPasswordLayout() {
     onClick={() => navigate("/login")}
     className="flex items-center gap-1 text-blue-600 font-bold hover:underline"
   >
-    <ArrowLeft size={16} />
+    <ArrowLeftIcon size={16} />
     Back to Login
   </button>
 </div>

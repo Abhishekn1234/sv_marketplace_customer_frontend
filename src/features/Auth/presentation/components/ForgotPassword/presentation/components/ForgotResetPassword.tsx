@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+
 import { toast } from "react-toastify";
-import { Input, Label } from "@/components/input";
+import {  Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
+import { EyeIcon, EyeOffIcon } from "@/components/icons";
 
 interface Props {
   email: string;
@@ -61,7 +62,7 @@ export default function ForgotResetPassword({
           onClick={() => setShowNewPassword((p) => !p)}
           className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
         >
-          {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showNewPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
         </Button>
       </div>
 
@@ -85,7 +86,7 @@ export default function ForgotResetPassword({
           onClick={() => setShowConfirmPassword((p) => !p)}
           className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
         >
-          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showConfirmPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
         </Button>
       </div>
 

@@ -1,11 +1,12 @@
 
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowRight, Calendar, Home } from "lucide-react";
+
 import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
 import { formatSmartDate } from "../utils/formatdatetime";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
+import { ArrowRight, CalendarIcon, HomeIcon } from "@/components/icons";
 
 export default function ConfirmationCard({ data, placeName }: any) {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function ConfirmationCard({ data, placeName }: any) {
         onClick={() => navigate(`/jobtracking/${data._id}`)}
         className="w-full h-12 bg-blue-600 text-white rounded-full mb-6 flex justify-center items-center gap-2"
       >
-        Track Job <ArrowRight className="w-5" />
+        Track Job <ArrowRight  />
       </Button>
 
       {/* Links */}
@@ -53,14 +54,14 @@ export default function ConfirmationCard({ data, placeName }: any) {
 
           <Link to="/" className="text-gray-900 hover:text-blue-600">
             <span className="flex gap-2">
-              <Home className="w-5" />
+              <HomeIcon className="w-5" />
               Return Home
             </span>
           </Link>
 
           <Link to="/bookings" className="text-gray-900 hover:text-blue-600">
             <span className="flex gap-2">
-              <Calendar className="w-5" />
+              <CalendarIcon className="w-5" />
               View All Bookings
             </span>
           </Link>

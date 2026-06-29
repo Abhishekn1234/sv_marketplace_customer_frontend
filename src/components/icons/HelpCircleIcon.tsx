@@ -1,0 +1,12 @@
+import type { IconProps } from "./iconprops";
+
+
+export function HelpCircleIcon(props: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" {...props}>
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 3-3 3"/>
+      <path d="M12 17h.01"/>
+    </svg>
+  );
+}

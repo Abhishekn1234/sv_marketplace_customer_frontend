@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { FilterKey, SortKey } from "../../domain/entities/filterkeys";
 import Button from "@/components/input/Button";
+import { ChevronDownIcon } from "@/components/icons";
 
 interface Props {
   activeFilter: FilterKey;
@@ -79,7 +80,7 @@ const sortOptions: SortKey[] = [
   className="flex items-center gap-2 text-gray-500 font-semibold text-sm hover:text-blue-600"
  rightIcon={
   <>
-    <ChevronDown
+    <ChevronDownIcon
     className={`w-4 h-4 transition-transform ${
       dropdownOpen ? "rotate-180" : ""
     }`}

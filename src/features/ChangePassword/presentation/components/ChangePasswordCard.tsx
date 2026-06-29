@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUpdatePassword } from "../hooks/usePassword";
 import { validatePassword } from "../utils/passwordvalidation";
-import { Eye, EyeOff } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { Input, Label } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
-import { ArrowLeftIcon } from "@/components/icons";
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
 
 export default function ChangePasswordCard() {
   const navigate = useNavigate();
@@ -100,9 +100,9 @@ export default function ChangePasswordCard() {
         `}
       >
         {showPassword[field] ? (
-          <Eye className="w-5 h-5" />
+          <EyeIcon className="w-5 h-5" />
         ) : (
-          <EyeOff className="w-5 h-5" />
+          <EyeOffIcon className="w-5 h-5" />
         )}
       </Button>
     </div>

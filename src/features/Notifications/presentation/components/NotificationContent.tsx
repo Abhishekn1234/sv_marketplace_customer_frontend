@@ -1,14 +1,11 @@
-import {
-  CheckCircle2,
-  Circle,
-  Bell,
-  Clock,
-} from "lucide-react";
+
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import { isToday, isYesterday } from "date-fns";
 import { getKey } from "../utils/notificationkeycontents";
+import { BellIcon } from "@/components/icons/BellIcon";
+import { CheckCircle2Icon, CircleIcon, ClockIcon } from "@/components/icons";
 
 export default function NotificationContent({
   notifications,
@@ -24,7 +21,7 @@ export default function NotificationContent({
         <div className="relative mb-6">
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-transparent flex items-center justify-center">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-slate-200 flex items-center justify-center">
-              <Bell className="w-6 h-6 sm:w-7 sm:h-7 text-slate-300" />
+              <BellIcon className="w-6 h-6 sm:w-7 sm:h-7 text-slate-300" />
             </div>
           </div>
         </div>
@@ -112,9 +109,9 @@ export default function NotificationContent({
                 className="p-0 h-fit hover:bg-transparent shrink-0 mt-1"
               >
                 {isSelected ? (
-                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 fill-blue-100" />
+                  <CheckCircle2Icon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 fill-blue-100" />
                 ) : (
-                  <Circle
+                  <CircleIcon
                     className={`
                       w-4 h-4 sm:w-5 sm:h-5 transition-colors
                       ${
@@ -167,7 +164,7 @@ export default function NotificationContent({
                   {/* Footer */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-3">
                     <span className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-slate-500 px-2 sm:px-3 py-1 rounded-full border border-slate-200">
-                      <Clock className="w-3 h-3" />
+                      <ClockIcon className="w-3 h-3" />
                       {displayDate}
                     </span>
 

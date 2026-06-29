@@ -1,18 +1,18 @@
-import { Banknote, CreditCard, Smartphone } from "lucide-react";
+import { BanknoteIcon, CreditCardIcon, SmartphoneIcon } from "@/components/icons";
 
 export const getIcon = (type: string) => {
   switch (type) {
     case "CARD":
-      return <CreditCard size={28} />;
+      return <CreditCardIcon size={28} />;
     case "UPI":
-      return <Smartphone size={28} />;
+      return <SmartphoneIcon size={28} />;
     case "CASH":
-      return <Banknote size={28} />;
+      return <BanknoteIcon size={28} />;
     case "WALLET":
-      return <Smartphone size={28} />;
+      return <SmartphoneIcon size={28} />;
     case "NET_BANKING":
-      return <CreditCard size={28} />;
+      return <CreditCardIcon size={28} />;
     default:
-      return <CreditCard size={28} />;
+      return <CreditCardIcon size={28} />;
   }
 };

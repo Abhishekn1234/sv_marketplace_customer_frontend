@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Bell } from "lucide-react";
+
 import { toast } from "react-toastify";
 
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -13,7 +13,7 @@ import NotificationContent from "./NotificationContent";
 
 import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-import { Button } from "@/components/ui/button";
+
 
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
@@ -22,6 +22,8 @@ import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import { useNotificationFilters } from "../utils/notificationfilterskeylanguages";
 import { useTheme } from "@/features/context/themeContext";
+import { BellIcon } from "@/components/icons/BellIcon";
+import Button from "@/components/input/Button";
 
 export default function NotificationCards() {
   const { t,isRTLOrder } = useLanguage();
@@ -145,7 +147,7 @@ const handleMarkAllAsRead = async () => {
     <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
-            <Bell className="w-5 h-5 text-white" />
+            <BellIcon className="w-5 h-5 text-white" />
           </div>
 
           <div>

@@ -1,12 +1,11 @@
 import { useState } from "react";
 
-import { MapPin } from "lucide-react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
 import { getCurrentLocation } from "@/features/utils/reverse";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
-import { NavigationGPSIcon } from "@/components/icons";
+import { MapPinIcon, NavigationGPSIcon } from "@/components/icons";
 
 type Props = {
   selected: "home" | "office" | null;
@@ -47,7 +46,7 @@ export default function LocationSearchInput({
   return (
     <>
       <div className="relative w-full max-w-xl">
-        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <MapPinIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
         <Input
           value={inputValue}
           onChange={(value) => setInputValue(value)}

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
+import { CheckIcon, ChevronDownIcon } from "../icons";
 
 export interface SelectOption {
   label: string;
@@ -210,7 +211,7 @@ export default function Select({
           )}
         </span>
 
-        <ChevronDown
+        <ChevronDownIcon
           className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
@@ -278,7 +279,7 @@ export default function Select({
                   </span>
 
                   {isSelected && (
-                    <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                    <CheckIcon  />
                   )}
                 </button>
               );
