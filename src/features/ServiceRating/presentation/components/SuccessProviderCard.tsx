@@ -99,27 +99,28 @@ export default function SuccessProviderCard() {
   return (
     <CommonCard className="max-w-xl mx-auto">
       {/* HEADER */}
-      <div className="text-center mb-8 px-4 sm:px-6">
-        <Image
-          src={
-            booking.assignedWorkers?.[0]?.worker?.profilePictureUrl ||
-            "https://via.placeholder.com/150"
-          }
-          alt={
-            booking.assignedWorkers?.[0]?.worker?.fullName || "Provider"
-          }
-          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
-        />
-
-        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 truncate">
-          {booking.assignedWorkers?.[0]?.worker?.fullName ||
-            "Provider Name"}
-        </h2>
-
-        <p className="text-sm sm:text-base md:text-lg text-gray-500 truncate">
-          {booking.service?.name || "Service Name"}
-        </p>
-      </div>
+     {/* HEADER */}
+{/* HEADER */}
+    <div className="text-center mb-6 sm:mb-8 px-2 sm:px-4">
+      <Image
+        src={
+          booking.assignedWorkers?.[0]?.worker?.profilePictureUrl ||
+          "https://via.placeholder.com/150"
+        }
+        alt={booking.assignedWorkers?.[0]?.worker?.fullName || "Provider"}
+        className="rounded-2xl border-4 border-gray-100 object-cover mx-auto mb-4"
+        style={{
+          width: "clamp(80px, 20vw, 128px)",
+          height: "clamp(80px, 20vw, 128px)",
+        }}
+      />
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+        {booking.assignedWorkers?.[0]?.worker?.fullName || "Provider Name"}
+      </h2>
+      <p className="text-sm sm:text-base text-gray-500 truncate">
+        {booking.service?.name || "Service Name"}
+      </p>
+    </div>
 
       {/* MODE */}
       <div className="text-center mb-4 text-sm text-gray-500">

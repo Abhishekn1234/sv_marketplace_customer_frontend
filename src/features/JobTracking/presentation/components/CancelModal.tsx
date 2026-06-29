@@ -55,24 +55,23 @@ export function CancelConfirmationDialog({
   const [selectedType, setSelectedType] = useState("");
   const [reason, setReason] = useState("");
 
-const handleConfirm = () => {
-  if (!selectedType) {
-    toast.error(t.jobtrackingpage.cancelBooking.selectPlaceholder);
-    return;
-  }
+  const handleConfirm = () => {
+    if (!selectedType) {
+      toast.error(t.jobtrackingpage.cancelBooking.selectPlaceholder);
+      return;
+    }
 
-  if (selectedType === "OTHER" && !reason.trim()) {
-    toast.error(t.jobtrackingpage.cancelBooking.placeholder);
-    return;
-  }
+    if (selectedType === "OTHER" && !reason.trim()) {
+      toast.error(t.jobtrackingpage.cancelBooking.placeholder);
+      return;
+    }
 
-  onConfirm(selectedType, reason.trim());
-};
+    onConfirm(selectedType, selectedType === "OTHER" ? reason.trim() : "");
+  };
 
   return (
     <div className="w-full px-1">
-
-      {/* SELECT */}
+      {/* Cancel Type */}
       <div className="mb-5">
         <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t.jobtrackingpage.cancelBooking.cancelType}
@@ -85,26 +84,25 @@ const handleConfirm = () => {
           onChange={(val) => {
             setSelectedType(val);
 
-            // ✅ clear reason when not OTHER
+            // Clear reason whenever a non-OTHER option is selected
             if (val !== "OTHER") {
               setReason("");
             }
           }}
-          className="w-full h-[48px]"
+          className="h-[48px] w-full"
         />
       </div>
 
-      {/* TEXTAREA */}
+      {/* Reason */}
       <div className="mb-6">
         <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t.jobtrackingpage.cancelBooking.reason}
-
           {selectedType === "OTHER" && (
-            <span className="text-red-500 ml-1">*</span>
+            <span className="ml-1 text-red-500">*</span>
           )}
         </Label>
 
-                <Textarea
+        <Textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder={
@@ -114,31 +112,26 @@ const handleConfirm = () => {
           }
           rows={5}
           disabled={selectedType !== "OTHER"}
+          className={`w-full ${
+            selectedType !== "OTHER"
+              ? "cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+              : ""
+          }`}
         />
       </div>
 
-      {/* BUTTONS */}
+      {/* Buttons */}
       <div className="flex justify-end gap-3 pt-2">
         <Button
           onClick={onCancel}
-          className="
-            min-w-[110px] h-[46px]
-            rounded-2xl border border-gray-300
-            bg-white text-gray-700
-            hover:bg-gray-100
-            dark:bg-gray-800 dark:border-gray-700 dark:text-white
-          "
+          className="min-w-[110px] h-[46px] rounded-2xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         >
           {t.jobtrackingpage.cancelBooking.cancel}
         </Button>
 
         <Button
           onClick={handleConfirm}
-          className="
-            min-w-[150px] h-[46px]
-            rounded-2xl bg-red-600 text-white
-            hover:bg-red-700
-          "
+          className="min-w-[150px] h-[46px] rounded-2xl bg-red-600 text-white hover:bg-red-700"
         >
           {t.jobtrackingpage.cancelBooking.confirm}
         </Button>

@@ -105,7 +105,7 @@ function App() {
         <NotificationNavigation />
 
       <ToastContainer
-  position={isMobile ? "bottom-center" : "top-right"}
+  position={isMobile ? "top-right" : "top-right"}
   autoClose={3000}
   theme="light"
   toastStyle={{

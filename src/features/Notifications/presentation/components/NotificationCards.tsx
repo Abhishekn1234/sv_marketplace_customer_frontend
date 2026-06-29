@@ -87,16 +87,16 @@ export default function NotificationCards() {
   }
 };
   const markSelectedAsRead = async () => {
-    if (!selected.length) return;
+  if (!selected.length) return;
+  const ids = [...selected];
+  setSelected([]);                          // clear first → no flash
+  await Promise.all(ids.map((id) => markAsRead(id)));
+};
 
-    await Promise.all(selected.map((id) => markAsRead(id)));
-    setSelected([]);
-  };
-
-  const handleMarkAllAsRead = async () => {
-    await markAllAsRead();
-    setSelected([]);
-  };
+const handleMarkAllAsRead = async () => {
+  setSelected([]);                          // clear first → no flash
+  await markAllAsRead();
+};
 
   const handleNotificationClick = (notification: any) => {
     const url = getNotificationTarget(notification);

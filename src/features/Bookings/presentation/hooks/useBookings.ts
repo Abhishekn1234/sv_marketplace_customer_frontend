@@ -124,74 +124,82 @@ export const useBookings = () => {
 
   // ================= CANCEL BOOKING =================
   const cancel = useMutation({
-    mutationFn: (req: CancelBookingRequest) =>
-      cancelBooking.execute(req),
+  mutationFn: (req: CancelBookingRequest) =>
+    cancelBooking.execute(req),
 
-    onMutate: async (req) => {
-      await queryClient.cancelQueries({
-        queryKey: bookingKeys.all,
-      });
+  onMutate: async (req) => {
+    await queryClient.cancelQueries({
+      queryKey: bookingKeys.all,
+    });
 
-      const previous = queryClient.getQueryData<Booking[]>(
-        bookingKeys.all
-      );
+    const previous = queryClient.getQueryData<Booking[]>(
+      bookingKeys.all
+    );
 
-      // ✅ ONLY optimistic update (NO FILTER)
-      queryClient.setQueryData<Booking[]>(
-        bookingKeys.all,
-        (old = []) =>
-          old.map((b) =>
-            b._id === req.bookingId
-              ? {
-                  ...b,
-                  status: "CUSTOMER_CANCELLED" as BookingStatus,
-                }
-              : b
-          )
-      );
-
-      queryClient.setQueryData(
-        bookingKeys.detail(req.bookingId),
-        (old: Booking | undefined) =>
-          old
+    // Optimistic update
+    queryClient.setQueryData<Booking[]>(
+      bookingKeys.all,
+      (old = []) =>
+        old.map((b) =>
+          b._id === req.bookingId
             ? {
-                ...old,
+                ...b,
                 status: "CUSTOMER_CANCELLED" as BookingStatus,
+                cancelReasonType: req.cancelReasonType,
+                cancelReason: req.cancelReason,
               }
-            : old
-      );
+            : b
+        )
+    );
 
-      return { previous };
-    },
+    queryClient.setQueryData(
+      bookingKeys.detail(req.bookingId),
+      (old: Booking | undefined) =>
+        old
+          ? {
+              ...old,
+              status: "CUSTOMER_CANCELLED" as BookingStatus,
+              cancelReasonType: req.cancelReasonType,
+              cancelReason: req.cancelReason,
+            }
+          : old
+    );
 
-    onError: (_err, _req, context: any) => {
-      if (context?.previous) {
-        queryClient.setQueryData(
-          bookingKeys.all,
-          context.previous
-        );
-      }
+    return { previous };
+  },
 
-      toast.error("Failed to cancel booking ❌");
-    },
+  onError: (err: any, _req, context: any) => {
+  if (context?.previous) {
+    queryClient.setQueryData(
+      bookingKeys.all,
+      context.previous
+    );
+  }
 
-    onSuccess: (updated, req) => {
-      queryClient.setQueryData(
-        bookingKeys.detail(req.bookingId),
-        updated
-      );
+  toast.error(
+    err?.response?.data?.message ||
+    err?.message ||
+    "Failed to cancel booking ❌"
+  );
+},
 
-      queryClient.setQueryData<Booking[]>(
-        bookingKeys.all,
-        (old = []) =>
-          old.map((b) =>
-            b._id === req.bookingId ? updated : b
-          )
-      );
+  onSuccess: (updated, req) => {
+    queryClient.setQueryData(
+      bookingKeys.detail(req.bookingId),
+      updated
+    );
 
-      toast.success("Booking cancelled");
-    },
-  });
+    queryClient.setQueryData<Booking[]>(
+      bookingKeys.all,
+      (old = []) =>
+        old.map((b) =>
+          b._id === req.bookingId ? updated : b
+        )
+    );
+
+    toast.success("Booking cancelled");
+  },
+});
 
   return {
     bookings: data,

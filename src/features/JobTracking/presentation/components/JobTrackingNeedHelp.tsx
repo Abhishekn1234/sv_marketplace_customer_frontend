@@ -70,20 +70,22 @@ export default function JobTrackingNeedHelp({
 ) => {
   if (!booking?._id) return;
 
+  const payload: any = {
+    bookingId: booking._id,
+    cancelReasonType,
+  };
+
+  if (cancelReasonType === "OTHER") {
+    payload.cancelReason = reason.trim();
+  }
+
   try {
-    await cancelBooking.mutateAsync({
-      bookingId: booking._id,
-      cancelReason: reason,
-      cancelReasonType,
-    });
+    await cancelBooking.mutateAsync(payload);
 
     setShowCancelModal(false);
     navigate("/");
   } catch (err: any) {
-    toast.error(
-      err?.response?.data?.message ||
-        "Failed to cancel booking ❌"
-    );
+    toast.error(err?.response?.data?.message);
 
     setShowCancelModal(false);
   }
