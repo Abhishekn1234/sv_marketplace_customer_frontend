@@ -150,7 +150,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
       {/* User controls */}
       {showUserControls && user && (
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <div ref={notificationRef}>
+          <div ref={notificationRef} className="hidden sm:block">
             <CommonNotificationFloater />
           </div>
 

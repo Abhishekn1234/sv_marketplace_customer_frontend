@@ -1,5 +1,4 @@
 import React from "react";
-
 import CommonSpinner from "../common/CommonLoadingSpinner";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "none";
@@ -11,7 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   loading?: boolean;
   radius?: ButtonRadius;
- icon?: boolean;
+  icon?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
@@ -31,9 +30,6 @@ export default function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  // const base =
-  //   "inline-flex items-center justify-center gap-2 font-medium transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed";
-
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700",
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
@@ -56,23 +52,24 @@ export default function Button({
     full: "rounded-full",
   };
 
-return (
-  <button
-    className={`
-      inline-flex items-center justify-center
-      gap-2 font-medium transition duration-200
-      disabled:opacity-60 disabled:cursor-not-allowed
-       ${icon ? "w-8 h-8 p-0" : sizes[size]}
-      ${radii[radius]}
-      ${variants[variant]}
-      ${fullWidth ? "w-full" : ""}
-      ${className}
-    `}
-    disabled={disabled || loading}
-    {...props}
-  >
-    {/* LEFT ICON */}
-        {loading ? (
+  return (
+    <button
+      className={`
+        inline-flex items-center justify-center
+        whitespace-nowrap
+        gap-2 font-medium transition duration-200
+        disabled:opacity-60 disabled:cursor-not-allowed
+        ${icon ? "w-8 h-8 p-0" : sizes[size]}
+        ${radii[radius]}
+        ${variants[variant]}
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {/* LEFT ICON / LOADER */}
+      {loading ? (
         <CommonSpinner size={16} />
       ) : (
         leftIcon && (
@@ -81,16 +78,17 @@ return (
           </span>
         )
       )}
-    {/* TEXT + RIGHT ICON WRAPPED TOGETHER */}
-    <span className="flex items-center gap-1 min-w-0">
-      <span className="truncate">{children}</span>
 
-      {!loading && rightIcon && (
-        <span className="shrink-0 flex items-center">
-          {rightIcon}
-        </span>
-      )}
-    </span>
-  </button>
-);
+      {/* CONTENT (TEXT + RIGHT ICON INLINE) */}
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">
+        {children}
+
+        {!loading && rightIcon && (
+          <span className="shrink-0 flex items-center">
+            {rightIcon}
+          </span>
+        )}
+      </span>
+    </button>
+  );
 }

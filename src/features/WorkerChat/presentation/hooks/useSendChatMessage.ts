@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 import { ChatRepositoryImpl } from "../../data/repositories/ChatRepositoryImpl";
 import { SendChatMessageUsecase } from "../../domain/usecase/SendChatMessageUsecase";
 import { CHAT_MESSAGES_KEY } from "./useGetChatMessages";
 
 import type { ChatMessage, SendChatMessagePayload } from "../../domain/entities/chat";
+import { handleApiError } from "@/components/common/ApiError";
 
 const repository = new ChatRepositoryImpl();
 const usecase = new SendChatMessageUsecase(repository);
@@ -45,10 +46,8 @@ export function useSendChatMessage() {
 );
     },
 
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to send message"
-      );
-    },
+   onError: (error) => {
+  handleApiError(error, "Failed to send chat message");
+},
   });
 }

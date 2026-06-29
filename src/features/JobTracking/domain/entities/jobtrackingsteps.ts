@@ -2,6 +2,7 @@ export type TrackingStep = {
   title: string;
   time: string;
   status: string;
+  key?:string;
   showStartOtpButton?: boolean;
   showCompleteOtpButton?: boolean;
   showPaymentButton?: boolean;

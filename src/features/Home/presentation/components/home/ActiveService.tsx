@@ -39,14 +39,7 @@ export default function ActiveService() {
     "CUSTOMER_CANCELLED",
   ];
 
-  const allowedStatuses = [
-    "IN_PROGRESS",
-    "ACCEPTED",
-    "WORKER_ACCEPTED",
-    "REQUESTED",
-    "WORK_COMPLETED_PENDING",
-    "ASSIGNED",
-  ];
+  
 
   // =========================
   // FILTER BOOKINGS
@@ -256,7 +249,7 @@ export default function ActiveService() {
           )}
 
           <div className="flex gap-3">
-            {allowedStatuses.includes(status) && (
+            {showTracking && (
               <>
                 <Button
                   onClick={() =>

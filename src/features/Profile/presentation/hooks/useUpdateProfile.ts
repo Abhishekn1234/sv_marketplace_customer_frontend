@@ -3,6 +3,7 @@ import { ProfileRepoImpl } from "../../data/repositories/ProfileRepoImpl";
 import { UpdateProfileUsecase } from "../../domain/usecase/UpdateProfileUsecase";
 import type { Profile } from "../../domain/entities/profile";
 import { toast } from "react-toastify";
+import { handleApiError } from "@/components/common/ApiError";
 export function useUpdateProfile() {
   const repo = new ProfileRepoImpl();
   const usecase = new UpdateProfileUsecase(repo);
@@ -18,8 +19,8 @@ export function useUpdateProfile() {
       queryClient.setQueryData(["profile"], updatedProfile);
       toast.success("Profile Updated successfully!");
     },
-    onError:(Error:any)=>{
-      toast.error(Error?.response?.data?.message);
-    }
+    onError: (error) => {
+      handleApiError(error, "Failed to update profile");
+    },
   });
 }

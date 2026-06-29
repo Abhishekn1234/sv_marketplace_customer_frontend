@@ -8,6 +8,7 @@ import type { ForgotPasswordRequest } from '../../domain/entities/forgotpassword
 import type { SendOTPRequest } from '../../domain/entities/sendotprequest.types';
 import type { LoginRequest } from '../../domain/entities/loginrequest.types';
 import type { RegisterRequest } from '../../domain/entities/registerrequest';
+import { handleApiError } from '@/components/common/ApiError';
 export const useAuth = () => {
   const setTokens = useAuthStore((state) => state.setTokens);
   const setUser = useAuthStore((state) => state.setUser);
@@ -28,7 +29,7 @@ export const useAuth = () => {
       // toast.success(res.message);
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Login failed ❌');
+      handleApiError(err);
     },
   });
 
@@ -39,7 +40,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Registration successful ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Registration failed ❌');
+      handleApiError(err);
     },
   });
 
@@ -50,7 +51,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'OTP sent successfully ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to send OTP ❌');
+    handleApiError(err);
     },
   });
 
@@ -61,7 +62,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'OTP verified ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'OTP verification failed ❌');
+      handleApiError(err);
     },
   });
 
@@ -72,7 +73,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Password reset link sent ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to send password reset link ❌');
+     handleApiError(err);
     },
   });
 
@@ -83,7 +84,7 @@ export const useAuth = () => {
       toast.success(res?.message || 'Password reset successful ✅');
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message  || 'Password reset failed ❌');
+     handleApiError(err);
     },
   });
 

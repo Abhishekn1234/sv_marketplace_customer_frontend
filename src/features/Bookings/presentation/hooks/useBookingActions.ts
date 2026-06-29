@@ -3,6 +3,7 @@ import { CancelRepository } from "../../data/repositories/CancelRepository";
 import { CancelBookingUseCase } from "../../domain/usecases/booking/CancelBookingUseCase";
 import type { CancelBookingRequest } from "../../domain/entities/cancelbookingrequest.types";
 import { toast } from "react-toastify";
+import { handleApiError } from "@/components/common/ApiError";
 
 interface UseBookingActionsProps {
   onSuccess?: () => void;
@@ -10,7 +11,7 @@ interface UseBookingActionsProps {
 }
 
 export const useBookingActions = (
-  { onSuccess, onError }: UseBookingActionsProps = {}
+  { onSuccess }: UseBookingActionsProps = {}
 ) => {
   const queryClient = useQueryClient();
 
@@ -56,9 +57,7 @@ export const useBookingActions = (
   },
 
   onError: (err: unknown) => {
-    const message =
-      err instanceof Error ? err.message : "Failed to cancel booking";
-    onError?.(message);
+    handleApiError(err);
   },
 });
 

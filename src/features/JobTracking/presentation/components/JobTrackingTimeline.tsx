@@ -20,12 +20,13 @@ import type { LocalBooking } from "../../domain/entities/loadbooking";
 
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useTranslationMessages } from "../utils/translationMessages";
-import { getErrorMessage } from "../utils/geterrormessage";
+// import { getErrorMessage } from "../utils/geterrormessage";
 import { getSessionRedirectUrl } from "../utils/getsessionredirecturl";
 import { getSessionId } from "../utils/getsessionid";
 
 import JobTrackingStepItem from "./JobTrackingStepItem";
 import JobTrackingHeaders from "./JobTrackingHeaders";
+import { handleApiError } from "@/components/common/ApiError";
 
 
 
@@ -132,9 +133,7 @@ const currentBooking = localBooking ?? booking;
           setOtpModalOpen(true);
         },
         onError: (err) =>
-          toast.error(
-            getErrorMessage(err, translationMessages["Failed Start OTP"])
-          ),
+         handleApiError(err,translationMessages["Failed Start OTP"])
       }
     );
   };
@@ -154,9 +153,7 @@ const currentBooking = localBooking ?? booking;
           setOtpModalOpen(true);
         },
         onError: (err) =>
-          toast.error(
-            getErrorMessage(err, translationMessages["Failed Complete OTP"])
-          ),
+          handleApiError(err,translationMessages["Failed Complete OTP"])
       }
     );
   };
@@ -214,9 +211,7 @@ const currentBooking = localBooking ?? booking;
           });
         },
         onError: (err) => {
-          toast.error(
-            err?.message || translationMessages["Payment Verification Failed"]
-          );
+         handleApiError(err,translationMessages["Payment Verification Failed"])
         },
       }
     );

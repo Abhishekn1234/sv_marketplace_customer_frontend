@@ -3,6 +3,7 @@ import { GenerateOtpImplement } from "../../data/repositories/GenerateotpImpl";
 import { GenerateotpCompleteUsecase } from "../../domain/usecase/Generateotpcompleteusecase";
 import type { GenerateotpRequest } from "../../domain/entities/generateotprequest";
 import { toast } from "react-toastify";
+import { handleApiError } from "@/components/common/ApiError";
 
 export function useGenerateOtpComplete() {
   const repo = new GenerateOtpImplement();
@@ -18,7 +19,7 @@ export function useGenerateOtpComplete() {
     },
     onError: (error:any) => {
       console.error("Failed to generate OTP", error);
-      toast.error(error?.response?.data?.message ||error.message);
+      handleApiError(error)
     },
   });
 }

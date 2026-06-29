@@ -23,12 +23,13 @@ export default function JobTrackingStepItem({
   isVerifyPending,
   t,
 }: Props) {
+
   const dotClass =
     step.status === "completed"
-      ? "bg-green-500"
+      ? "bg-green-400"
       : step.status === "active"
-      ? "bg-blue-600 animate-pulse active"
-      : "bg-gray-300";
+      ? "bg-blue-400 animate-pulse"
+      : "bg-gray-400";
 
   return (
     <div className="relative pb-7">
@@ -43,21 +44,29 @@ export default function JobTrackingStepItem({
             {t.jobtrackingpage.buttons.startWorkOtp}
           </Button>
         )}
+
         {step.showCompleteOtpButton && (
           <Button onClick={onCompleteOtp} className="mt-2 px-4 py-2 bg-green-600 text-white rounded">
             {t.jobtrackingpage.buttons.completeWorkOtp}
           </Button>
         )}
+
         {step.showPaymentButton && (
           <Button onClick={onPayNow} className="mt-2 px-4 py-2 bg-red-500 text-white rounded">
             {t.jobtrackingpage.buttons.payNow}
           </Button>
         )}
+
         {step.showVerifyButton && (
-          <Button onClick={onVerifyPayment} disabled={isVerifyPending} className="mt-2 px-4 py-2 bg-green-500 text-white rounded">
+          <Button
+            onClick={onVerifyPayment}
+            disabled={isVerifyPending}
+            className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+          >
             {t.jobtrackingpage.buttons.verifyPayment}
           </Button>
         )}
+
         {step.showServiceRatingButton && (
           <Button onClick={onRateService} className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded">
             {t.jobtrackingpage.buttons.rateService}

@@ -24,6 +24,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 
 import { useNavigate } from "react-router-dom";
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
+import { handleApiError } from "@/components/common/ApiError";
 
 interface Props {
   activeTab: string;
@@ -118,7 +119,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           setOtpPurpose("Work Start OTP");
           setOtpModalOpen(true);
         },
-        onError: (err:any) => toast.error(err?.response?.data?.message ||"Failed to generate Work Start OTP"),
+        onError: (err:any) => handleApiError(err)
       }
     );
   };
@@ -132,7 +133,7 @@ export default function BookingHistoryContents({ activeTab }: Props) {
           setOtpPurpose("Work Completed OTP");
           setOtpModalOpen(true);
         },
-        onError: (err:any) => toast.error(err?.response?.data?.message || "Failed to generate Work Completed OTP"),
+        onError: (err:any) => handleApiError(err),
       }
     );
   };

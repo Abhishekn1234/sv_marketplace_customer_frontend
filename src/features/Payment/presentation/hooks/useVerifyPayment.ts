@@ -5,6 +5,7 @@ import { BookingPaymentVerifyRepositoryImpl } from "../../data/repositories/Book
 import { VerifyPaymentUseCase } from "../../domain/usecase/BookingPaymentVerifyUsecase";
 import type { VerifyPaymentResponse } from "../../domain/entities/verifypayment";
 import type { PaymentCallback } from "../../domain/entities/paymentcallback";
+import { handleApiError } from "@/components/common/ApiError";
 
 const repository = new BookingPaymentVerifyRepositoryImpl();
 const useCase = new VerifyPaymentUseCase(repository);
@@ -97,10 +98,7 @@ export const useVerifyPayment = () => {
     },
 
     onError: (error, variables) => {
-      toast.error(
-        error.message ??
-          `Failed to verify payment for ${variables.paymentId}`
-      );
+     handleApiError(error,`Failed to verify payment for ${variables.paymentId}`)
     },
   });
 };

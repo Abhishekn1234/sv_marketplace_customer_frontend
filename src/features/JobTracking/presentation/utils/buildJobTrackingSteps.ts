@@ -1,7 +1,6 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/loadbooking";
 import { STEP_CONFIG } from "../utils/stepconfig";
-// import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import { getStepTime } from "./timemapping";
 
 interface Params {
@@ -17,32 +16,28 @@ export function buildJobTrackingSteps({
 
   const currentStatus = localBooking.status;
 
-  const hiddenSteps = [
+  const TERMINAL_STATUSES = [
     "WORKER_CANCELLED",
     "CUSTOMER_CANCELLED",
     "EXPIRED",
   ];
 
   const filteredSteps = STEP_CONFIG.filter(
-    (step) => !hiddenSteps.includes(step.key)
+    (step) => !TERMINAL_STATUSES.includes(step.key)
   );
 
-  const singleStepOnly = hiddenSteps;
-
-  // ❗ SHOW ONLY SINGLE STEP FOR TERMINAL STATUSES
-  if (singleStepOnly.includes(currentStatus)) {
+  // =========================
+  // TERMINAL STATE
+  // =========================
+  if (TERMINAL_STATUSES.includes(currentStatus)) {
     const step = STEP_CONFIG.find((s) => s.key === currentStatus);
     if (!step) return [];
-
-    // const activity = activityMap?.[step.key];
-
-   const time = getStepTime(step.key, activityMap, localBooking);
 
     return [
       {
         key: step.key,
         title: step.title,
-        time,
+        time: getStepTime(step.key, activityMap, localBooking),
         status: "active",
         showStartOtpButton: false,
         showCompleteOtpButton: false,
@@ -53,49 +48,58 @@ export function buildJobTrackingSteps({
     ];
   }
 
-  // NORMAL FLOW (WITHOUT CANCELLED/EXPIRED STEPS)
-  const currentStepIndex = Math.max(
-    filteredSteps.findIndex((s) => s.key === currentStatus),
-    0
+  // =========================
+  // FIND CURRENT INDEX (IMPORTANT FIX)
+  // =========================
+  const currentIndex = STEP_CONFIG.findIndex(
+    (s) => s.key === currentStatus
   );
 
-  return filteredSteps.map((step, idx) => {
-    // const activity = activityMap?.[step.key];
+  return filteredSteps.map((step) => {
+    const stepIndex = STEP_CONFIG.findIndex(
+      (s) => s.key === step.key
+    );
 
-   const time = getStepTime(step.key, activityMap, localBooking);
+    const time = getStepTime(step.key, activityMap, localBooking);
+
+    // =========================
+    // FINAL CORRECT STATE LOGIC
+    // =========================
+    const status =
+      stepIndex < currentIndex
+        ? "completed"
+        : stepIndex === currentIndex
+        ? "active"
+        : "pending";
 
     return {
       key: step.key,
       title: step.title,
       time,
+      status,
 
-      status:
-        idx < currentStepIndex
-          ? "completed"
-          : idx === currentStepIndex
-          ? "active"
-          : "pending",
-
+      // OTP FLOW
       showStartOtpButton:
         step.key === "WORKER_ACCEPTED" &&
-        localBooking.status === "WORKER_ACCEPTED",
+        currentStatus === "WORKER_ACCEPTED",
 
       showCompleteOtpButton:
         step.key === "WORK_COMPLETED_PENDING" &&
-        [
-          "WORK_COMPLETED_PENDING",
-          "WORK_COMPLETED_BY_WORKER",
-        ].includes(localBooking.status),
+        currentStatus === "WORK_COMPLETED_PENDING",
 
+      // PAYMENT FLOW
       showPaymentButton:
         step.key === "INVOICE_GENERATED" &&
-        ["INVOICE_GENERATED", "COMPLETED"].includes(localBooking.status),
+        currentStatus === "INVOICE_GENERATED",
 
       showVerifyButton:
         step.key === "PAYMENT_PENDING" &&
-        localBooking.status === "PAYMENT_PENDING",
+        currentStatus === "PAYMENT_PENDING",
 
-      showServiceRatingButton:  step.key==="PAID" && localBooking.status === "PAID",
+      // FINAL
+      showServiceRatingButton:
+        step.key === "PAID" &&
+        currentStatus === "PAID",
     };
   });
 }

@@ -3,9 +3,10 @@ import axios, {
   type AxiosError,
   type InternalAxiosRequestConfig,
 } from "axios";
-import { toast } from "sonner";
+
 import { apiUrl } from "./apiConfig";
 import { useAuthStore } from "../core/store/auth";
+import { toast } from "react-toastify";
 
 interface InternalAxiosRequestConfigWithMetadata
   extends InternalAxiosRequestConfig {

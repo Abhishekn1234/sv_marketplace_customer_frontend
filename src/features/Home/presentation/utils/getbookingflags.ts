@@ -3,9 +3,15 @@ export const getBookingFlags = (
   hasWorker?: boolean
 ) => {
   const safeStatus = status || "REQUESTED";
-  
-  const isAssigned =
-    safeStatus === "WORKER_ACCEPTED" && !!hasWorker;
+
+  const CANCELLED = [
+    "WORKER_CANCELLED",
+    "CUSTOMER_CANCELLED",
+  ];
+
+  const isCancelled = CANCELLED.includes(safeStatus);
+
+  const isAssigned = !!hasWorker;
 
   const isStarted = [
     "IN_PROGRESS",
@@ -13,7 +19,8 @@ export const getBookingFlags = (
     "COMPLETED",
   ].includes(safeStatus);
 
-  const showTracking = isAssigned || isStarted;
+  // ✅ FIX: allow all except cancelled
+  const showTracking = !isCancelled;
 
   const isPaid = safeStatus === "PAID";
 
