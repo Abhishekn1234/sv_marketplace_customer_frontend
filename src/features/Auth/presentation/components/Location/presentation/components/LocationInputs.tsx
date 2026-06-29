@@ -9,6 +9,7 @@ import LocationTypeSelector from "./LocationTypeSelector";
 import ConfirmLocationFooter from "./ConfirmLocationFooter";
 import { useAddLocation } from "../hooks/useAddLocation";
 import type { Address } from "../../domain/entities/updatelocation";
+import { handleApiError } from "@/components/common/ApiError";
 
 export default function LocationInputs() {
   const { user, updateUserLocation } = useAuthStore();
@@ -81,7 +82,7 @@ export default function LocationInputs() {
   navigate("/register");
 },
       onError: (error: any) => {
-       toast.error(error.response.data.message);
+      handleApiError(error);
         console.error(error);
       },
     });
