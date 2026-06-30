@@ -18,11 +18,12 @@ import {
 
 import { iconBase } from "@/components/common/iconbase";
 import Button from "@/components/input/Button";
+import { useLanguage } from "../context/LanguageContext";
 
 const BottomNav: React.FC = () => {
   const { user, accessToken } = useAuthStore();
   const navigate = useNavigate();
-
+ const{t}=useLanguage();
   const userPhoto = user?.profilePictureUrl;
 
   return (
@@ -42,29 +43,29 @@ const BottomNav: React.FC = () => {
       "
     >
       {/* Home */}
-      <NavItem ariaLabel="Home" tooltip="Home" onClick={() => navigate("/")}>
+      <NavItem ariaLabel="Home" tooltip={t.servicedetailpage.breadcrumb.Home} onClick={() => navigate("/")}>
         <HomeIcon className={clsx(iconBase, "text-blue-600")} />
       </NavItem>
 
       {/* About */}
-      <NavItem ariaLabel="About" tooltip="About" onClick={() => navigate("/about")}>
+      <NavItem ariaLabel="About" tooltip={t.navbar.About} onClick={() => navigate("/about")}>
         <AboutIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
       </NavItem>
 
       {accessToken ? (
         <>
           {/* Notifications */}
-          <NavItem ariaLabel="Notifications" tooltip="Notifications">
+          <NavItem ariaLabel="Notifications" tooltip={t.notificationpage.title}>
             <CommonNotificationFloater direction="up" />
           </NavItem>
 
           {/* Bookings */}
-          <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
+          <NavItem ariaLabel="Bookings" tooltip={t.navbar.Bookings} onClick={() => navigate("/bookings")}>
             <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
           </NavItem>
 
           {/* Profile */}
-                <NavItem ariaLabel="Profile" tooltip="Profile" onClick={() => navigate("/profile")}>
+                <NavItem ariaLabel="Profile" tooltip={t.profilepage.myProfile} onClick={() => navigate("/profile")}>
           {userPhoto ? (
             <div className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
               <Image
@@ -81,12 +82,12 @@ const BottomNav: React.FC = () => {
       ) : (
         <>
           {/* Bookings */}
-          <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
+          <NavItem ariaLabel="Bookings" tooltip={t.Bookingspage.title} onClick={() => navigate("/bookings")}>
             <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
           </NavItem>
 
           {/* Login */}
-          <NavItem ariaLabel="Login" tooltip="Login" onClick={() => navigate("/login")}>
+          <NavItem ariaLabel="Login" tooltip={t.loginRequired.login} onClick={() => navigate("/login")}>
             <LoginIcon className="w-5 h-5 text-blue-600" />
           </NavItem>
         </>
