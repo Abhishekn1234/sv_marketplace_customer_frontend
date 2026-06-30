@@ -17,7 +17,7 @@ import {
 } from "@/components/icons";
 
 import { iconBase } from "@/components/common/iconbase";
-import Button from "@/components/input/Button";
+// import Button from "@/components/input/Button";
 import { useLanguage } from "../context/LanguageContext";
 
 const BottomNav: React.FC = () => {
@@ -114,16 +114,16 @@ const NavItem: React.FC<NavItemProps> = ({
   const baseClass =
     "w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:scale-105 transition";
 
-  const content = (
-    <Button
-      aria-label={ariaLabel}
-      onClick={onClick}
-      className={baseClass}
-      type="button"
-    >
-      {children}
-    </Button>
-  );
+ const content = (
+  <div
+    role="button"
+    aria-label={ariaLabel}
+    onClick={onClick}
+    className={baseClass}
+  >
+    {children}
+  </div>
+);
 
   return (
     <div className="flex items-center justify-center">

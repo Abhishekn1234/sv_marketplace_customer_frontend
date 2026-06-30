@@ -22,16 +22,31 @@ export default function JobTrackingPage() {
   // REDIRECT HANDLING
   // =========================
   useEffect(() => {
-    if (!loading && !booking) {
-      toast.error("Booking not found or already finished");
+  if (!loading && !booking) {
+    toast.error("Booking not found or already finished");
 
-      const timer = setTimeout(() => {
-        navigate("/bookings");
-      }, 1200);
+    const timer = setTimeout(() => {
+      navigate("/bookings", { replace: true });
+    }, 800);
 
-      return () => clearTimeout(timer);
-    }
-  }, [loading, booking, navigate]);
+    return () => clearTimeout(timer);
+  }
+}, [loading, booking, navigate]);
+
+if (!loading && !booking) {
+  return (
+    <PageContainer>
+      <div className="text-center py-10">
+        <h2 className="text-lg font-semibold">
+          Booking not found
+        </h2>
+        <p className="text-sm text-gray-500 mt-2">
+          Redirecting to bookings...
+        </p>
+      </div>
+    </PageContainer>
+  );
+}
 
   // =========================
   // LOADING STATE

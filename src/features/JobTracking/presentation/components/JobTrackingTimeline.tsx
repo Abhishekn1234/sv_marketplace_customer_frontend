@@ -60,9 +60,13 @@ export default function JobTrackingTimeline({
   // console.log(localBooking,booking);
 
   const verifyPaymentMutation = useVerifyPayment();
+ 
   const processingPaymentSessionQuery = useGetProcessingPaymentSession(
-    bookingId
-  );
+  bookingId,
+  {
+    enabled: false, // IMPORTANT
+  }
+);
   const generateOtpMutation = useGenerateOtp();
   const generateCompletedOtpMutation = useGenerateOtpComplete();
 
@@ -158,64 +162,60 @@ const currentBooking = localBooking ?? booking;
     );
   };
 
-  const handleVerifyPayment = async () => {
-    if (!currentBooking?._id) return;
+ const handleVerifyPayment = async () => {
+  if (!currentBooking?._id) return;
 
-    const session =
-      (await processingPaymentSessionQuery.refetch()).data ?? null;
-    const paymentUrl = getSessionRedirectUrl(session);
+  const session =
+    (await processingPaymentSessionQuery.refetch()).data ?? null;
 
-    if (paymentUrl) {
-      window.location.replace(paymentUrl);
-      return;
-    }
+  const paymentUrl = getSessionRedirectUrl(session);
 
-    const paymentId = session?.paymentId ?? currentBooking.paymentId;
-    const sessionId = getSessionId(session) ?? currentBooking.sessionId;
+  if (paymentUrl) {
+    window.location.replace(paymentUrl);
+    return;
+  }
 
-    if (!paymentId) {
-      toast.error(translationMessages["Payment Verification Failed"]);
-      return;
-    }
+  const paymentId = session?.paymentId ?? currentBooking.paymentId;
+  const sessionId = getSessionId(session) ?? currentBooking.sessionId;
 
-    verifyPaymentMutation.mutate(
-      {
-        bookingId: currentBooking._id,
+  if (!paymentId) {
+    toast.error(translationMessages["Payment Verification Failed"]);
+    return;
+  }
+
+  verifyPaymentMutation.mutate(
+    {
+      bookingId: currentBooking._id,
+      paymentId,
+      status: "SUCCESS",
+      transactionId:
+        session?.transactionId ??
+        sessionId ??
+        currentBooking.transactionId ??
         paymentId,
-        status: "SUCCESS",
-        transactionId:
-          session?.transactionId ??
-          sessionId ??
-          currentBooking.transactionId ??
-          paymentId,
-        sessionId,
-        session_id: sessionId,
-      },
-      {
-        onSuccess: () => {
-          setLocalBooking((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  status: "PAID",
-                }
-              : prev
-          );
+      sessionId,
+      session_id: sessionId,
+    },
+    {
+      onSuccess: () => {
+        setLocalBooking((prev) =>
+          prev ? { ...prev, status: "PAID" } : prev
+        );
 
-          navigate("/jobcompleted", {
-            replace: true,
-            state: {
-              bookingId: currentBooking._id,
-              paymentDone: true,
-            },
-          });
-        },
-        onError: (err) => {
-         handleApiError(err,translationMessages["Payment Verification Failed"])
-        },
-      }
-    );
-  };
+        navigate("/jobcompleted", {
+          replace: true,
+          state: {
+            bookingId: currentBooking._id,
+            paymentDone: true,
+          },
+        });
+      },
+      onError: (err) => {
+        handleApiError(err, translationMessages["Payment Verification Failed"]);
+      },
+    }
+  );
+};
 
   // -----------------------------
   // SCROLL ACTIVE STEP
