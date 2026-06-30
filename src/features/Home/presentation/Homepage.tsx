@@ -11,9 +11,10 @@ import PromoCards from "./components/home/PromoCards";
 import CommonFaq from "@/components/common/CommonFaq";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useAuthStore } from "@/features/core/store/auth";
 export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
-
+  const { accessToken } = useAuthStore();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
  const{isRTLOrder}=useLanguage()
@@ -61,7 +62,7 @@ export default function WebsiteHome() {
             onChange={handleCategoryChange}
           />
 
-          <ActiveService />
+          {accessToken && <ActiveService />}
 
          
           <PopularService categories={filteredServices} />
@@ -69,10 +70,10 @@ export default function WebsiteHome() {
 
       
         <div className="flex flex-col gap-6">
-          <RecentServices />
+         {accessToken && <RecentServices />} 
           <SecurePayment />
           <SatisfactionGuarantee />
-          <PromoCards />
+         {accessToken && <PromoCards /> } 
         </div>
       </div>
 

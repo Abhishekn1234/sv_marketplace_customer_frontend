@@ -13,7 +13,7 @@ import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
 import { languages } from "../../../../components/common/languages";
 import Select from "@/components/input/Select";
-import { MenuIcon, SearchIcon, UserIcon, XIcon } from "@/components/icons";
+import { LoginIcon, MenuIcon, SearchIcon, UserIcon, XIcon } from "@/components/icons";
 import { Image } from "@/components/input"; // ✅ FIXED MISSING IMPORT
 
 interface NavbarRightProps {
@@ -51,7 +51,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
   setShowMobileSearch,
   navLinks,
 }) => {
-  const { user } = useAuthStore();
+  const { user,accessToken } = useAuthStore();
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { t } = useLanguage();
   const language = useAuthStore((state) => state.language);
@@ -115,7 +115,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
       )}
 
       {/* Language selector */}
-      {user && (
+     
         <div className="hidden sm:block">
           <Select
             value={language}
@@ -135,7 +135,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
             variant="default"
           />
         </div>
-      )}
+    
 
       {/* CTA button */}
       {rightButton && (
@@ -148,7 +148,8 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
       )}
 
       {/* User controls */}
-      {showUserControls && user && (
+          {showUserControls && (
+      accessToken && user ? (
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div ref={notificationRef} className="hidden sm:block">
             <CommonNotificationFloater />
@@ -169,7 +170,17 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
             }
           />
         </div>
-      )}
+      ) : (
+              <Button
+                onClick={() => navigate("/login")}
+                
+                className="h-10 rounded-xl  px-5 bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
+              >
+                <LoginIcon className="w-4 h-4"/>
+                {t.loginRequired.login}
+              </Button>
+            )
+          )}
 
       {/* Mobile hamburger */}
       <Button

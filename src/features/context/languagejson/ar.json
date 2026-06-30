@@ -9,6 +9,13 @@
    
     "talkToTeam": "تحدث مع فريقنا"
   },
+  "loginRequired":{ "bookinghistorytitle": "تسجيل الدخول مطلوب",
+      "loginbookingservicetitle": "تسجيل الدخول مطلوب",
+    "loginbookingservicedescription":
+      "يرجى تسجيل الدخول أو إنشاء حساب لحجز هذه الخدمة.",
+      "bookinghistorydescription": "لعرض سجل الحجوزات، يرجى تسجيل الدخول أو إنشاء حساب.",
+      "login": "تسجيل الدخول",
+      "signup": "إنشاء حساب"},
  
    "onboarding": {
     "title": "إكمال الإعداد",
@@ -92,6 +99,7 @@
       "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
       "locationError": "تعذر الحصول على الموقع",
        "Work Description":"وصف العمل",
+       "Select a Location":"اختر موقعاً",
          "Verifying Payment":"جاري التحقق من الدفع...",
          "Select an option":"اختر خياراً",
          "Please wait while we confirm your payment.":"يرجى الانتظار بينما نتحقق من دفعتك.",

@@ -8,6 +8,13 @@
     "questions": "कोई प्रश्न है?",
     "talkToTeam": "हमारी टीम से बात करें"
   },
+  "loginRequired":{"bookinghistorytitle": "लॉगिन आवश्यक है",
+      "bookinghistorydescription": "अपना बुकिंग इतिहास देखने के लिए कृपया लॉगिन करें या नया खाता बनाएं।",
+      "login": "लॉगिन",
+      "loginbookingservicetitle": "लॉगिन आवश्यक है",
+    "loginbookingservicedescription":
+      "इस सेवा को बुक करने के लिए कृपया लॉगिन या साइन अप करें।",
+      "signup": "साइन अप"},
   "onboarding": {
     "title": "सेटअप पूरा करें",
     "completedTitle": "आप तैयार हैं 🎉",
@@ -101,6 +108,7 @@
       "locationError": "लोकेशन प्राप्त नहीं कर सकते",
       "Select an option":"कोई विकल्प चुनें",
        "Work Description":"कार्य विवरण",
+       "Select a Location":"जगह चुनें",
          "Verifying Payment":"पेमेंट की पुष्टि की जा रही है...",
          "Please wait while we confirm your payment.":"कृपया प्रतीक्षा करें जब तक हम आपके भुगतान की पुष्टि करते हैं।",
       "save": "सेव करें",

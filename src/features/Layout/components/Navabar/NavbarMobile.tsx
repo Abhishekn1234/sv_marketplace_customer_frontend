@@ -45,7 +45,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
 }) => {
   const { searchTerm, setSearchTerm } = useSearchStore();
   const { t } = useLanguage();
-  const user = useAuthStore((state) => state.user);
+  // const user = useAuthStore((state) => state.user);
   const language = useAuthStore((state) => state.language);
   const setLanguage = useAuthStore((state) => state.setLanguage);
 
@@ -94,7 +94,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
               );
             })}
 
-            {user && (
+            
               <div className="border-t border-gray-100 mt-1 pt-2">
                 <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
                   {t.language.title}
@@ -119,7 +119,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({
                   variant="ghost"
                 />
               </div>
-            )}
+            
            
 
             {/* Mobile CTA button */}

@@ -131,14 +131,15 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
       </Button>
 
       {/* Back Button */}
-      {showBackButton && (
-        <Button
-          onClick={() => navigate(-1)}
-          className="px-2 sm:px-3 py-1.5 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap shrink-0"
-        >
-          {t.navbar.Back}
-        </Button>
-      )}
+      {/* Back Button - hidden on mobile */}
+        {showBackButton && (
+          <Button
+            onClick={() => navigate(-1)}
+            className="hidden sm:flex px-2 sm:px-3 py-1.5 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap shrink-0"
+          >
+            {t.navbar.Back}
+          </Button>
+        )}
 
       {/* Location picker */}
       {showLocationSection && (
@@ -157,7 +158,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
             value={currentLocation || ""}
             readOnly
             title={currentLocation || ""}
-            placeholder={!currentLocation ? "Select location" : ""}
+            placeholder={!currentLocation ? t.common["Select a Location"] : ""}
             className="
               cursor-pointer
               px-0 py-0
@@ -165,6 +166,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
               text-sm sm:text-base
               placeholder:text-gray-400
             "
+            
             rightElement={
               !currentLocation ? (
                 <MapPinIcon className="w-4 h-4 text-gray-400 shrink-0" />

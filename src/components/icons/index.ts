@@ -10,6 +10,7 @@ import { QuickActionsIcon } from "./QuickActionsIcon";
 import { SecurityIcon } from "./SecurityIcon";
 import { CheckSquare } from "./CheckSquare";
 import { Square } from "./Square";
+import { LoginIcon } from "./LoginIcon";
 import { BellRing } from "./BellRing";
 import { InboxIcon } from "./InboxIcon";
 import { SearchIcon } from "./SearchIcon";
@@ -100,6 +101,7 @@ export {
   BackArrowIcon,
   BillingIcon,
   HelpIcon,
+  LoginIcon,
   TransparencyIcon,
   PreferencesIcon,
   PrivacyIcon,

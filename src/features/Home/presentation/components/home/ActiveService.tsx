@@ -13,9 +13,11 @@ import { Image } from "@/components/input";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 
+
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
   const { t } = useLanguage();
+ 
   const navigate = useNavigate();
   const { services } = useServices();
 
@@ -122,6 +124,7 @@ export default function ActiveService() {
   const workerImage =
     firstWorker?.profilePictureUrl ||
     `https://ui-avatars.com/api/?name=${workerName}`;
+    
 
   // =========================
   // SERVICE NAME
@@ -183,6 +186,7 @@ export default function ActiveService() {
       </div>
     );
   }
+  
 
   return (
     <CommonCard className="hover:border-blue-500 transition-all">

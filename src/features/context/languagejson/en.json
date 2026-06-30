@@ -8,8 +8,18 @@
     "questions": "Questions?",
     "talkToTeam": "Talk to our team"
   },
+  "loginRequired": {
+     "bookinghistorytitle": "Login Required",
+      "bookinghistorydescription": "To view your booking history, kindly please login or sign up.",
+      "login": "Login",
+       "loginbookingservicetitle": "Login Required",
+    "loginbookingservicedescription":
+      "Kindly please login or sign up to book this service.",
+      "signup": "Sign Up"
+  },
  "common": {
       "geoNotSupported": "Geolocation is not supported",
+      "Select a Location":"Select a Location",
       "locationError": "Unable to get location",
       "Work Description":"Work Description",
         "Verifying Payment":"Verifying Payment",

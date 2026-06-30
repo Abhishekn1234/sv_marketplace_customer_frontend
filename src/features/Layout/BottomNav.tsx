@@ -1,22 +1,29 @@
 import React from "react";
 import clsx from "clsx";
-import { useAuthStore } from "../core/store/auth";
 import { useNavigate } from "react-router-dom";
+
+import { useAuthStore } from "../core/store/auth";
+
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import Tooltip from "@/components/common/ToolTip";
+import { Image } from "@/components/input";
+
 import {
   HomeIcon,
   AboutIcon,
   BookingIcon,
+  LoginIcon,
   UserIcon,
 } from "@/components/icons";
-import { Image } from "@/components/input";
-import Tooltip from "@/components/common/ToolTip";
+
 import { iconBase } from "@/components/common/iconbase";
+import Button from "@/components/input/Button";
 
 const BottomNav: React.FC = () => {
-  const { user } = useAuthStore();
-  const userphoto = user?.profilePictureUrl;
+  const { user, accessToken } = useAuthStore();
   const navigate = useNavigate();
+
+  const userPhoto = user?.profilePictureUrl;
 
   return (
     <nav
@@ -25,7 +32,7 @@ const BottomNav: React.FC = () => {
         fixed bottom-6 left-1/2 -translate-x-1/2
         w-[90%] sm:w-auto
         flex items-center justify-around sm:justify-center
-        gap-1 sm:gap-2
+        gap-2 sm:gap-3
         bg-white/95 backdrop-blur-md
         px-3 py-2 sm:px-4
         rounded-3xl
@@ -34,45 +41,56 @@ const BottomNav: React.FC = () => {
         z-[100]
       "
     >
+      {/* Home */}
       <NavItem ariaLabel="Home" tooltip="Home" onClick={() => navigate("/")}>
         <HomeIcon className={clsx(iconBase, "text-blue-600")} />
       </NavItem>
 
+      {/* About */}
       <NavItem ariaLabel="About" tooltip="About" onClick={() => navigate("/about")}>
         <AboutIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
       </NavItem>
 
-      <NavItem ariaLabel="Notifications" tooltip="Notifications">
-        <CommonNotificationFloater direction="up" />
-      </NavItem>
+      {accessToken ? (
+        <>
+          {/* Notifications */}
+          <NavItem ariaLabel="Notifications" tooltip="Notifications">
+            <CommonNotificationFloater direction="up" />
+          </NavItem>
 
-      <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
-        <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
-      </NavItem>
+          {/* Bookings */}
+          <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
+            <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
+          </NavItem>
 
-      <NavItem ariaLabel="Profile" tooltip="Profile">
-        <div
-          onClick={() => navigate("/profile")}
-          className="w-full h-full flex items-center justify-center"
-        >
-          {userphoto ? (
-            <Image
-              src={userphoto}
-              alt="Profile"
-              className="
-                w-9 h-9 sm:w-10 sm:h-10
-                rounded-xl object-cover
-                border-2 border-transparent
-                transition-all duration-200
-                group-hover:border-blue-600
-                group-hover:scale-110
-              "
-            />
+          {/* Profile */}
+                <NavItem ariaLabel="Profile" tooltip="Profile" onClick={() => navigate("/profile")}>
+          {userPhoto ? (
+            <div className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
+              <Image
+                src={userPhoto}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover block"
+              />
+            </div>
           ) : (
             <UserIcon className={clsx(iconBase, "text-gray-500")} />
           )}
-        </div>
-      </NavItem>
+        </NavItem>
+        </>
+      ) : (
+        <>
+          {/* Bookings */}
+          <NavItem ariaLabel="Bookings" tooltip="Bookings" onClick={() => navigate("/bookings")}>
+            <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
+          </NavItem>
+
+          {/* Login */}
+          <NavItem ariaLabel="Login" tooltip="Login" onClick={() => navigate("/login")}>
+            <LoginIcon className="w-5 h-5 text-blue-600" />
+          </NavItem>
+        </>
+      )}
     </nav>
   );
 };
@@ -92,26 +110,18 @@ const NavItem: React.FC<NavItemProps> = ({
   tooltip,
   onClick,
 }) => {
-  const baseClass = clsx(`
-    group relative
-    w-11 h-11 sm:w-10 sm:h-10
-    flex items-center justify-center
-    rounded-xl
-    transition-all duration-200
-    hover:bg-gray-100
-    hover:-translate-y-0.5
-    focus:outline-none
-    cursor-pointer
-  `);
+  const baseClass =
+    "w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:scale-105 transition";
 
-  const content = onClick ? (
-    <button aria-label={ariaLabel} onClick={onClick} className={baseClass}>
+  const content = (
+    <Button
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className={baseClass}
+      type="button"
+    >
       {children}
-    </button>
-  ) : (
-    <div aria-label={ariaLabel} className={baseClass}>
-      {children}
-    </div>
+    </Button>
   );
 
   return (
@@ -126,6 +136,5 @@ const NavItem: React.FC<NavItemProps> = ({
     </div>
   );
 };
-
 
 export default BottomNav;

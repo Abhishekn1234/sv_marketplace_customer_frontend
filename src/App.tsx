@@ -131,162 +131,68 @@ function App() {
       Dashboard Layout
   ========================================== */}
   <Route element={<DashboardLayout />}>
-    {/* Public Routes */}
-    <Route path="/login" element={<LoginLayout />} />
-    <Route path="/register" element={<RegisterLayout />} />
-    <Route path="/language" element={<LanguagePage />} />
-    <Route path="/location" element={<LocationPage />} />
-    <Route
-      path="/forgot-password"
-      element={<ForgotPasswordLayout />}
-    />
-    <Route
-      path="/verification"
-      element={<VerificationPage />}
-    />
-    <Route
-      path="/cookiepolicy"
-      element={<CookiePolicyPage />}
-    />
+  {/* =========================
+      PUBLIC ROUTES
+  ========================= */}
+  <Route path="/" element={<WebsiteHome />} />
 
-    {/* Protected Routes */}
-    <Route element={<ProtectedRoute />}>
-      <Route index element={<WebsiteHome />} />
+  <Route path="/login" element={<LoginLayout />} />
+  <Route path="/register" element={<RegisterLayout />} />
+  <Route path="/language" element={<LanguagePage />} />
+  <Route path="/location" element={<LocationPage />} />
+  <Route path="/forgot-password" element={<ForgotPasswordLayout />} />
+  <Route path="/verification" element={<VerificationPage />} />
+  <Route path="/cookiepolicy" element={<CookiePolicyPage />} />
+   <Route path="/security" element={<SecurityPage/>}/>
+  {/* Public pages */}
+  <Route path="/about" element={<AboutPage />} />
+  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+  <Route path="/help" element={<HelpPage />} />
 
-      <Route
-        path="notifications"
-        element={<NotificationsPage />}
-      />
+  <Route path="/bookings" element={<MyBookings />} />
+  <Route path="/services/:id" element={<ServiceDetailPage />} />
+  <Route
+    path="/servicetierselection/:id"
+    element={<ServiceTierSelectionPage />}
+  />
+  <Route
+    path="/bookingdetail/:serviceId/:serviceTierId"
+    element={<BookingDetailPage />}
+  />
 
-      <Route
-        path="bookings"
-        element={<MyBookings />}
-      />
+  {/* =========================
+      PROTECTED ROUTES
+  ========================= */}
+  <Route element={<ProtectedRoute />}>
+    <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/profile" element={<Profile />} />
 
-      <Route
-        path="profile"
-        element={<Profile />}
-      />
+    <Route path="/payment" element={<PaymentPage />} />
 
-      <Route
-        path="about"
-        element={<AboutPage />}
-      />
+    <Route path="/disputes" element={<ListDisputes />} />
+    <Route path="/dispute/:bookingId" element={<Disputepage />} />
 
-      <Route
-        path="help"
-        element={<HelpPage />}
-      />
+    <Route path="/jobtracking/:bookingId" element={<JobTrackingPage />} />
+    <Route path="/jobprogress/:bookingId" element={<JobProgressPage />} />
 
-      <Route
-        path="security"
-        element={<SecurityPage />}
-      />
+    <Route path="/video-call/:workerId" element={<VideoCallPage />} />
+    <Route path="/message/:bookingId" element={<WorkerChatPage />} />
+    <Route path="/chat" element={<AIChatPage />} />
 
-      <Route
-        path="payment"
-        element={<PaymentPage />}
-      />
+    <Route path="/confirmation/:bookingId" element={<ConfirmationPage />} />
+    <Route path="/servicerating/:bookingId" element={<ServiceRating />} />
+    <Route path="/changepassword" element={<ChangePasswordPage />} />
 
-      <Route
-        path="disputes"
-        element={<ListDisputes />}
-      />
-
-      <Route
-        path="dispute/:bookingId"
-        element={<Disputepage />}
-      />
-
-      <Route
-        path="jobtracking/:bookingId"
-        element={<JobTrackingPage />}
-      />
-
-      <Route
-        path="jobprogress/:bookingId"
-        element={<JobProgressPage />}
-      />
-
-      <Route
-        path="video-call/:workerId"
-        element={<VideoCallPage />}
-      />
-
-      <Route
-        path="message/:bookingId"
-        element={<WorkerChatPage />}
-      />
-
-      <Route
-        path="chat"
-        element={<AIChatPage />}
-      />
-
-      <Route
-        path="privacy"
-        element={<PrivacyPolicyPage />}
-      />
-
-      <Route
-        path="confirmation/:bookingId"
-        element={<ConfirmationPage />}
-      />
-
-      <Route
-        path="servicetierselection/:id"
-        element={<ServiceTierSelectionPage />}
-      />
-
-      <Route
-        path="bookingdetail/:serviceId/:serviceTierId"
-        element={<BookingDetailPage />}
-      />
-
-      <Route
-        path="services/:id"
-        element={<ServiceDetailPage />}
-      />
-
-      <Route
-        path="servicerating/:bookingId"
-        element={<ServiceRating />}
-      />
-
-      <Route
-        path="changepassword"
-        element={<ChangePasswordPage />}
-      />
-
-    
-      <Route element={<PreventBackNavigation />}>
-        <Route
-          path="payment/callback"
-          element={<PaymentCallbackPage />}
-        />
-
-        <Route
-          path="payment/success"
-          element={<PaymentStripeCallbackPage />}
-        />
-
-        <Route
-          path="payment/failure"
-          element={<PaymentStripeCallbackFailurePage />}
-        />
-
-        <Route
-          path="jobcompleted"
-          element={<JobCompletedPage />}
-        />
-      </Route>
+    <Route element={<PreventBackNavigation />}>
+      <Route path="/payment/callback" element={<PaymentCallbackPage />} />
+      <Route path="/payment/success" element={<PaymentStripeCallbackPage />} />
+      <Route path="/payment/failure" element={<PaymentStripeCallbackFailurePage />} />
+      <Route path="/jobcompleted" element={<JobCompletedPage />} />
     </Route>
-
-    <Route
-      path="*"
-      element={<Navigate to="/" replace />}
-    />
   </Route>
+
+  <Route path="*" element={<Navigate to="/" replace />} />
+</Route>
 </Routes>
       </LanguageProvider>
     </ThemeProvider>

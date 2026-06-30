@@ -12,10 +12,11 @@ import { Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
+import LoginRequired from "@/components/common/LoginRequired";
 
 export default function BookingDetailDateandmoredetails() {
   const { createBooking } = useBookings();
-   
+   const [showLoginModal, setShowLoginModal] = useState(false);
  const { serviceId,serviceTierId } = useParams();
 const { services } = useServices();
 
@@ -23,7 +24,7 @@ const selectedService = services?.find(
   (s: any) => s._id === serviceId
 );
 // console.log("Selected Service in BookingDetailDateandmoredetails:", selectedService);
-  const { current_location } = useAuthStore();
+  const { current_location,accessToken } = useAuthStore();
   const {t}=useLanguage();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
@@ -81,6 +82,11 @@ const selectedService = services?.find(
         [basePrice, vatRate]
       );
  const handleBooking = async () => {
+  if (!accessToken) {
+   setShowLoginModal(true);
+   return;
+  }
+
   try {
     setLoading(true);
 
@@ -394,6 +400,12 @@ const selectedService = services?.find(
       t.bookingdetailpage.confirmBooking
     )}
   </Button>
+{showLoginModal && (
+   <LoginRequired
+    title={t.loginRequired.loginbookingservicetitle}
+    description={t.loginRequired.loginbookingservicedescription}
+    />
+)}
 </CommonCard>
   );
 }
