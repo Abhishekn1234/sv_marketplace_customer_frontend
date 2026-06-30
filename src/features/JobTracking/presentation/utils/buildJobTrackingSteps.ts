@@ -83,9 +83,12 @@ export function buildJobTrackingSteps({
         step.key === "WORKER_ACCEPTED" &&
         currentStatus === "WORKER_ACCEPTED",
 
-      showCompleteOtpButton:
+            showCompleteOtpButton:
         step.key === "WORK_COMPLETED_PENDING" &&
-        currentStatus === "WORK_COMPLETED_PENDING",
+        (
+          currentStatus === "WORK_COMPLETED_BY_WORKER" ||
+          currentStatus === "WORK_COMPLETED_PENDING"
+        ),
 
       // PAYMENT FLOW
       showPaymentButton:
