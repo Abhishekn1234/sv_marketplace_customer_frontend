@@ -27,16 +27,16 @@ export interface BookingHistory {
   sessionId?:string;
   serviceId: string;
   serviceTierId: string;
-  assignedWorkers?:AssignedWorker[];
+  assignedWorkers?: AssignedWorker[];
   bookingType: "SCHEDULED" | "INSTANT";
-  status: string;
+  status: BookingStatus;
 
   pricingMode: "HOURLY" | "PER_DAY";
   currency: string;
   amount: number;
 
   commissionValue: number;
-  commissionType: string;
+  commissionType: "PERCENTAGE" | "FIXED";
   commissionAmount: number;
 
   numberOfWorkers: number;
