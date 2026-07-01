@@ -2,6 +2,7 @@ import { formatDates } from "@/features/Home/presentation/utils/formatdatestring
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/localbooking";
 
+
 const TIME_FALLBACK_MAP: Record<string, string[]> = {
   WORK_STARTED: ["WORK_STARTED", "IN_PROGRESS"],
   IN_PROGRESS: ["WORK_STARTED", "IN_PROGRESS"],
@@ -19,7 +20,6 @@ export function getStepTime(stepKey: string, activityMap: Record<string, Activit
     }
   }
 
-  // special fallback for first step
   if (stepKey === "CREATED" && localBooking.createdAt) {
     return formatDates(localBooking.createdAt);
   }

@@ -24,7 +24,7 @@ const { t } = useLanguage();
     setTimeout(() => window.print(), 500);
   }, []);
 
-  if (!booking || !invoice) return <p>No invoice data</p>;
+  if (!booking || !invoice) return null;
 
   const worker = booking.assignedWorkers?.[0]?.worker;
 

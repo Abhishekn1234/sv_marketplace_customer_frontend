@@ -1,5 +1,6 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/localbooking";
+
 import { STEP_CONFIG } from "../utils/stepconfig";
 import { getStepTime } from "./timemapping";
 
@@ -48,23 +49,21 @@ export function buildJobTrackingSteps({
     ];
   }
 
-  // =========================
-  // FIND CURRENT INDEX (IMPORTANT FIX)
-  // =========================
+  const normalizedStatus =
+    currentStatus === "WORK_COMPLETE_OTP_GENERATED"
+      ? "WORK_COMPLETED_PENDING"
+      : currentStatus === "WORK_START_OTP_GENERATED"
+      ? "WORKER_ACCEPTED"
+      : currentStatus;
+
   const currentIndex = STEP_CONFIG.findIndex(
-    (s) => s.key === currentStatus
+    (s) => s.key === normalizedStatus
   );
 
   return filteredSteps.map((step) => {
-    const stepIndex = STEP_CONFIG.findIndex(
-      (s) => s.key === step.key
-    );
-
+    const stepIndex = STEP_CONFIG.findIndex((s) => s.key === step.key);
     const time = getStepTime(step.key, activityMap, localBooking);
 
-    // =========================
-    // FINAL CORRECT STATE LOGIC
-    // =========================
     const status =
       stepIndex < currentIndex
         ? "completed"
@@ -81,28 +80,28 @@ export function buildJobTrackingSteps({
       // OTP FLOW
       showStartOtpButton:
         step.key === "WORKER_ACCEPTED" &&
-        currentStatus === "WORKER_ACCEPTED",
+        normalizedStatus === "WORKER_ACCEPTED",
 
-            showCompleteOtpButton:
+      showCompleteOtpButton:
         step.key === "WORK_COMPLETED_PENDING" &&
         (
-          currentStatus === "WORK_COMPLETED_BY_WORKER" ||
-          currentStatus === "WORK_COMPLETED_PENDING"
+          normalizedStatus === "WORK_COMPLETED_BY_WORKER" ||
+          normalizedStatus === "WORK_COMPLETED_PENDING"
         ),
 
       // PAYMENT FLOW
       showPaymentButton:
         step.key === "INVOICE_GENERATED" &&
-        currentStatus === "INVOICE_GENERATED",
+        normalizedStatus === "INVOICE_GENERATED",
 
       showVerifyButton:
         step.key === "PAYMENT_PENDING" &&
-        currentStatus === "PAYMENT_PENDING",
+        normalizedStatus === "PAYMENT_PENDING",
 
       // FINAL
       showServiceRatingButton:
         step.key === "PAID" &&
-        currentStatus === "PAID",
+        normalizedStatus === "PAID",
     };
   });
 }

@@ -8,6 +8,8 @@ import { useGetProcessingPaymentSession } from "@/features/Payment/presentation/
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
+import type { BookingStatus as BookingStatusType } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { useGenerateOtpComplete } from "@/features/Generateotp/presentation/hooks/useGenerateOtpComplete";
 import { useGenerateOtp } from "@/features/Generateotp/presentation/hooks/useGenerateOtp";
 import { toast } from "react-toastify";
@@ -15,8 +17,7 @@ import OtpModal from "@/components/common/CommonOtpModal";
 import { getActivityMap } from "../utils/activitymap";
 import CommonCard from "@/components/common/CommonCards";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
-import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
-import type { LocalBooking } from "../../domain/entities/localbooking";
+
 
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useTranslationMessages } from "../utils/translationMessages";
@@ -27,6 +28,8 @@ import { getSessionId } from "../utils/getsessionid";
 import JobTrackingStepItem from "./JobTrackingStepItem";
 import JobTrackingHeaders from "./JobTrackingHeaders";
 import { handleApiError } from "@/components/common/ApiError";
+import type { LocalBooking } from "../../domain/entities/localbooking";
+import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 
 
 
@@ -42,7 +45,7 @@ export default function JobTrackingTimeline({
  const toLocalBooking = (booking: Booking): LocalBooking => {
   return {
     ...booking,
-    activities: booking.activities ?? [], // IMPORTANT FIX
+    activities: booking.activities ?? [], 
   };
 };
   const { t } = useLanguage();
@@ -87,7 +90,7 @@ export default function JobTrackingTimeline({
 
   // ✅ Use localBooking (merged with socket updates) for instant UI display
   // Falls back to booking prop if no socket updates yet
-const currentBooking = localBooking ?? booking;
+   const currentBooking = localBooking ?? booking;
   // -----------------------------
   // ACTIVITY MAP
   // -----------------------------
@@ -98,18 +101,40 @@ const currentBooking = localBooking ?? booking;
   // -----------------------------
   // STEPS
   // -----------------------------
+  const displayStatus = useMemo<BookingStatusType>(() => {
+    if (!currentBooking) return BookingStatus.REQUESTED;
+
+    if (!otpModalOpen) {
+      if (currentBooking.status === "WORK_START_OTP_GENERATED") {
+        return BookingStatus.WORKER_ACCEPTED;
+      }
+
+      if (currentBooking.status === "WORK_COMPLETE_OTP_GENERATED") {
+        return BookingStatus.WORK_COMPLETED_PENDING;
+      }
+    }
+
+    return currentBooking.status;
+  }, [currentBooking, otpModalOpen]);
+
   const safeBooking = useMemo(() => {
-  if (!currentBooking) return null;
-  return toLocalBooking(currentBooking);
-}, [currentBooking]);
+    if (!currentBooking) return null;
+
+    return {
+      ...toLocalBooking(currentBooking),
+      status: displayStatus,
+    };
+  }, [currentBooking, displayStatus]);
+
   const steps = useMemo(() => {
-  if (!safeBooking) return [];
+    if (!safeBooking) return [];
 
   return buildJobTrackingSteps({
     localBooking: safeBooking,
     activityMap,
   });
 }, [safeBooking, activityMap]);
+
 
   // -----------------------------
   // PRICE
@@ -135,6 +160,12 @@ const currentBooking = localBooking ?? booking;
           setOtpData(data?.otp ?? "");
           setOtpPurpose(translationMessages["Work Start OTP"]);
           setOtpModalOpen(true);
+          setLocalBooking((prev) => {
+            const bookingToUpdate = prev ?? currentBooking;
+            return bookingToUpdate
+              ? { ...bookingToUpdate, status: "WORKER_ACCEPTED" }
+              : prev;
+          });
         },
         onError: (err) =>
          handleApiError(err,translationMessages["Failed Start OTP"])
@@ -155,6 +186,12 @@ const currentBooking = localBooking ?? booking;
           setOtpData(data?.otp ?? "");
           setOtpPurpose(translationMessages["Work Completed OTP"]);
           setOtpModalOpen(true);
+          setLocalBooking((prev) => {
+            const bookingToUpdate = prev ?? currentBooking;
+            return bookingToUpdate
+              ? { ...bookingToUpdate, status: "WORK_COMPLETED_PENDING" }
+              : prev;
+          });
         },
         onError: (err) =>
           handleApiError(err,translationMessages["Failed Complete OTP"])
@@ -243,10 +280,10 @@ const currentBooking = localBooking ?? booking;
   // -----------------------------
    return (
     <CommonCard className="p-7">
-      <JobTrackingHeaders
+    <JobTrackingHeaders
         title={t.jobtrackingpage.sections.serviceProgress}
-        status={currentBooking.status}
-      />
+        status={displayStatus}
+    />
 
       <div className="relative pl-10" ref={timelineRef}>
         <div className="absolute left-2 top-2 bottom-0 w-0.5 bg-gray-200" />
@@ -262,7 +299,7 @@ const currentBooking = localBooking ?? booking;
               navigate("/payment", {
                 state: {
                   bookingId: currentBooking._id,
-                  serviceName: currentBooking?.service?.name ?? currentBooking?.serviceId,
+                  serviceName: currentBooking?.serviceId ?? currentBooking?.service?.name,
                   price: computedPrice,
                   currency: currentBooking.currency,
                 },

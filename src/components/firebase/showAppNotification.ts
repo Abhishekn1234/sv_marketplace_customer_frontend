@@ -17,8 +17,24 @@ export const showAppNotification = async ({
   notificationId,
   type = "CHAT_MESSAGE",
 }: AppNotificationParams) => {
+  const normalizePath = (path: string) => {
+    try {
+      return new URL(path, window.location.origin).pathname;
+    } catch {
+      return path;
+    }
+  };
+
+  try {
+    const current = normalizePath(window.location.pathname);
+    const target = normalizePath(url || "");
+
+    if (current === target) {
+      return;
+    }
+  } catch {
+  }
   if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-    console.warn("Notifications are not supported in this browser");
     return;
   }
 
@@ -29,7 +45,6 @@ export const showAppNotification = async ({
   }
 
   if (permission !== "granted") {
-    console.warn("Notification permission is not granted");
     return;
   }
 
@@ -53,7 +68,6 @@ export const showAppNotification = async ({
         notificationId: tag,
       },
     } as NotificationOptions);
-  } catch (error) {
-    console.error("Failed to show app notification:", error);
+  } catch {
   }
 };

@@ -153,6 +153,7 @@ const selectedService = services?.find(
         coordinates: [lng, lat] as [number, number],
       },
     };
+    // console.log("Booking Payload:", payload);
 
     await createBooking.mutateAsync(payload);
   } catch (error: any) {
