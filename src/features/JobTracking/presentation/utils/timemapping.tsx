@@ -1,6 +1,6 @@
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
-import type { LocalBooking } from "../../domain/entities/loadbooking";
+import type { LocalBooking } from "../../domain/entities/localbooking";
 
 const TIME_FALLBACK_MAP: Record<string, string[]> = {
   WORK_STARTED: ["WORK_STARTED", "IN_PROGRESS"],

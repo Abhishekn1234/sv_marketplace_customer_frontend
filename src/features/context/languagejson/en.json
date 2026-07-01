@@ -19,6 +19,7 @@
   },
  "common": {
       "geoNotSupported": "Geolocation is not supported",
+      "hours":"Hours",
       "Select a Location":"Select a Location",
       "locationError": "Unable to get location",
       "Work Description":"Work Description",

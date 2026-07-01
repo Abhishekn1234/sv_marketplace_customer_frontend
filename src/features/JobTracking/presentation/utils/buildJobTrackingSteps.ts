@@ -1,5 +1,5 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
-import type { LocalBooking } from "../../domain/entities/loadbooking";
+import type { LocalBooking } from "../../domain/entities/localbooking";
 import { STEP_CONFIG } from "../utils/stepconfig";
 import { getStepTime } from "./timemapping";
 

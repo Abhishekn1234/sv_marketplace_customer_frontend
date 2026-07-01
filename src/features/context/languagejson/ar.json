@@ -99,6 +99,7 @@
       "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
       "locationError": "تعذر الحصول على الموقع",
        "Work Description":"وصف العمل",
+       "hours":"ساعات",
        "Select a Location":"اختر موقعاً",
          "Verifying Payment":"جاري التحقق من الدفع...",
          "Select an option":"اختر خياراً",

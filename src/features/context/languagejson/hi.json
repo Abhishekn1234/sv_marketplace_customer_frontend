@@ -106,6 +106,7 @@
  "common": {
       "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
       "locationError": "लोकेशन प्राप्त नहीं कर सकते",
+      "hours":"घंटे",
       "Select an option":"कोई विकल्प चुनें",
        "Work Description":"कार्य विवरण",
        "Select a Location":"जगह चुनें",

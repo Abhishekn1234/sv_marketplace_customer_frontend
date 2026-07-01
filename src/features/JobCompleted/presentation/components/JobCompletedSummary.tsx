@@ -2,51 +2,77 @@ import { useServices } from "@/features/Bookings/presentation/hooks/useServices"
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import CommonCard from "@/components/common/CommonCards";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
-export default function JobCompletedSummary({ booking }: any) {
+export default function JobCompletedSummary({
+  booking,
+}: {
+  booking: Booking;
+}) {
   const { serviceTiers, services } = useServices();
   const { t, isRTLOrder } = useLanguage();
 
-  const serviceName =
-    booking.serviceId?.name ?? booking.service?.name;
+  // Service
+  const serviceId =
+    typeof booking.serviceId === "string"
+      ? booking.serviceId
+      : booking.serviceId?._id;
 
   const service =
-    serviceName ??
-    services.find((s) => s._id === booking.serviceId)?.name;
+    booking.service?.name ??
+    (typeof booking.serviceId === "object"
+      ? booking.serviceId?.name
+      : services.find((s) => s._id === serviceId)?.name) ??
+    "—";
 
-  const pricingTier = serviceTiers?.find(
-    (tier) =>
-      String(tier._id) === String(booking?.serviceTierId) ||
-      String(tier.tierId) === String(booking?.serviceTierId)
-  );
+  // Service Tier
+  const serviceTierId =
+    typeof booking.serviceTierId === "string"
+      ? booking.serviceTierId
+      : booking.serviceTierId?._id;
 
-  const tierName = pricingTier?.displayName || "—";
+  const tierName =
+    booking.serviceTier?.displayName ??
+    serviceTiers?.find(
+      (tier) =>
+        String(tier._id) === String(serviceTierId) ||
+        String(tier.tierId) === String(serviceTierId)
+    )?.displayName ??
+    "—";
 
-  const price = booking?.totalCost;
-  const currency = booking?.currency || "SAR";
+  const price =
+    booking.actualValues?.finalAmount?.toFixed(2) ??
+    booking.finalAmount?.toFixed(2) ??
+    booking.totalCost?.toFixed(2) ??
+    "0.00";
+
+  const currency = booking.currency || "SAR";
 
   const summaryItems = [
-  {
-    label: t.jobcompletedpage.serviceType,
-    value: service,
-  },
-  {
-    label: t.jobcompletedpage.serviceTier,
-    value: tierName,
-  },
-  {
-    label: t.jobcompletedpage.date,
-    value:
-      formatDates(
-        booking?.schedule?.startDateTime
-      ) || "N/A",
-    isLTR: true,
-  },
-  {
-    label: t.jobcompletedpage.duration,
-    value: booking.schedule?.estimatedHours,
-  },
-];
+    {
+      label: t.jobcompletedpage.serviceType,
+      value: service,
+    },
+    {
+      label: t.jobcompletedpage.serviceTier,
+      value: tierName,
+    },
+    {
+      label: t.jobcompletedpage.date,
+      value: booking.schedule?.startDateTime
+        ? formatDates(booking.schedule.startDateTime)
+        : "N/A",
+      isLTR: true,
+    },
+    {
+      label: t.jobcompletedpage.duration,
+      value: booking.schedule?.estimatedHours
+        ? `${booking.schedule.estimatedHours} ${
+            t.common.hours ?? "Hours"
+          }`
+        : "—",
+    },
+  ];
 
   const displayItems = isRTLOrder
     ? [
@@ -59,7 +85,7 @@ export default function JobCompletedSummary({ booking }: any) {
 
   return (
     <CommonCard>
-      {/* HEADER */}
+      {/* Header */}
       <div
         className={`flex justify-between mb-6 ${
           isRTLOrder ? "flex-row-reverse" : ""
@@ -70,11 +96,11 @@ export default function JobCompletedSummary({ booking }: any) {
         </h2>
 
         <span className="text-emerald-600 font-semibold">
-          {booking?.status}
+          {booking.status}
         </span>
       </div>
 
-      {/* GRID */}
+      {/* Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {displayItems.map((item, index) => (
           <div
@@ -83,36 +109,32 @@ export default function JobCompletedSummary({ booking }: any) {
               isRTLOrder ? "flex-row-reverse" : ""
             }`}
           >
-            <div className="text-xs text-gray-500">
-              {item.label}
-            </div>
+            <div className="text-xs text-gray-500">{item.label}</div>
 
-                        <div
-                dir={item.isLTR ? "ltr" : undefined}
-                style={
-                  item.isLTR
-                    ? {
-                        direction: "ltr",
-                        unicodeBidi: "plaintext",
-                      }
-                    : undefined
-                }
-                className={`font-semibold break-words ${
-                  item.isLTR && isRTLOrder
-                    ? "text-right"
-                    : ""
-                }`}
-              >
-                {item.value}
-              </div>
+            <div
+              dir={item.isLTR ? "ltr" : undefined}
+              style={
+                item.isLTR
+                  ? {
+                      direction: "ltr",
+                      unicodeBidi: "plaintext",
+                    }
+                  : undefined
+              }
+              className={`font-semibold break-words ${
+                item.isLTR && isRTLOrder ? "text-right" : ""
+              }`}
+            >
+              {item.value}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* DIVIDER */}
+      {/* Divider */}
       <div className="h-px bg-gray-200 my-6" />
 
-      {/* TOTAL */}
+      {/* Total */}
       <div
         className={`flex justify-between items-center ${
           isRTLOrder ? "flex-row-reverse" : ""
@@ -122,18 +144,18 @@ export default function JobCompletedSummary({ booking }: any) {
           {t.common.totalPaid}
         </span>
 
-            <span
-        dir="ltr"
-        style={{
-          direction: "ltr",
-          unicodeBidi: "plaintext",
-        }}
-        className={`text-emerald-600 font-bold ${
-          isRTLOrder ? "text-left" : ""
-        }`}
-      >
-        {currency} {price}
-      </span>
+        <span
+          dir="ltr"
+          style={{
+            direction: "ltr",
+            unicodeBidi: "plaintext",
+          }}
+          className={`text-emerald-600 font-bold ${
+            isRTLOrder ? "text-left" : ""
+          }`}
+        >
+          {currency} {price}
+        </span>
       </div>
     </CommonCard>
   );

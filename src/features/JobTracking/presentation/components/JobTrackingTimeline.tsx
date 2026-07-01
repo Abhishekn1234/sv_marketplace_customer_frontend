@@ -16,7 +16,7 @@ import { getActivityMap } from "../utils/activitymap";
 import CommonCard from "@/components/common/CommonCards";
 import { useSocketTimelineJobTracking } from "../utils/useSocketTimelineJobTracking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
-import type { LocalBooking } from "../../domain/entities/loadbooking";
+import type { LocalBooking } from "../../domain/entities/localbooking";
 
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useTranslationMessages } from "../utils/translationMessages";
@@ -262,7 +262,7 @@ const currentBooking = localBooking ?? booking;
               navigate("/payment", {
                 state: {
                   bookingId: currentBooking._id,
-                  serviceName: currentBooking?.serviceId?.name ?? currentBooking?.service?.name,
+                  serviceName: currentBooking?.service?.name ?? currentBooking?.serviceId,
                   price: computedPrice,
                   currency: currentBooking.currency,
                 },
