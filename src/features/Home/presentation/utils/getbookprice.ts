@@ -1,8 +1,16 @@
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 export const getBookingPrice = (booking: Booking) => {
-  const pricingTiers = booking.serviceId?.pricingTiers;
-  const selectedTierId = booking.serviceTierId?._id;
+  const service =
+    typeof booking.serviceId === "object"
+      ? booking.serviceId
+      : booking.service;
+
+  const pricingTiers = service?.pricingTiers;
+  const selectedTierId =
+    typeof booking.serviceTierId === "object"
+      ? booking.serviceTierId._id
+      : booking.serviceTierId ?? booking.serviceTier?._id;
 
   if (!pricingTiers || !selectedTierId) return booking.amount;
 

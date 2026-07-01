@@ -62,7 +62,11 @@ const RecentServices: React.FC = () => {
 
     return bookings
       .filter((b) => {
-        const serviceId = String(b.serviceId?._id ?? b.serviceId ?? "");
+        const serviceId = String(
+          typeof b.serviceId === "object"
+            ? b.serviceId._id
+            : b.serviceId ?? ""
+        );
         const hasService = serviceMap.has(serviceId);
 
         const isNotCancelled = !CANCELLED_STATUSES.has(b.status);
@@ -101,7 +105,9 @@ const RecentServices: React.FC = () => {
     >
       {validBookings.map((booking) => {
         const serviceId = String(
-          booking.serviceId?._id ?? booking.serviceId ?? ""
+          typeof booking.serviceId === "object"
+            ? booking.serviceId._id
+            : booking.serviceId ?? ""
         );
 
         const service = serviceMap.get(serviceId);

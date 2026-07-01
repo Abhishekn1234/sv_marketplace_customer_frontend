@@ -44,15 +44,21 @@ export const useBookings = () => {
     isError,
   } = useQuery<Booking[]>({
     queryKey: bookingKeys.all,
-    queryFn: async () => {
+    queryFn: async (): Promise<Booking[]> => {
       const res = await getBookings.execute();
       const list = res?.bookings ?? [];
 
       return Array.isArray(list)
         ? list.map((b) => ({
             ...b,
-            service: b.serviceId,
-            serviceTier: b.serviceTierId,
+            service:
+              b.service ??
+              (typeof b.serviceId === "object" ? b.serviceId : undefined),
+            serviceTier:
+              b.serviceTier ??
+              (typeof b.serviceTierId === "object"
+                ? b.serviceTierId
+                : undefined),
           }))
         : [];
     },

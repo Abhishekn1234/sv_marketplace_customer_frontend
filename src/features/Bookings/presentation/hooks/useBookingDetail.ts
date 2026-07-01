@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useBookings } from "./useBookings";
+import type { Booking } from "../../domain/entities/booking.types";
 
 export const useBookingDetail = (id?: string) => {
   const { bookings, loading } = useBookings();
@@ -11,7 +12,7 @@ export const useBookingDetail = (id?: string) => {
       return undefined; // 👈 still loading data
     }
 
-    return bookings.find((b) => b._id === id || b._id === id);
+    return bookings.find((b: Booking) => b._id === id) as Booking | undefined;
   }, [bookings, id]);
 
   return {

@@ -7,13 +7,14 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/useGenerateInvoice";
 import { useNavigate } from "react-router-dom";
 import CommonModal from "@/components/common/CommonModal";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 interface Props {
   services: any[];
   categories: any[];
   serviceTiers?: any[];
   open: boolean;
-  booking?: any;
+  booking?: Booking;
   onClose: () => void;
 }
 
@@ -29,43 +30,68 @@ export default function InvoiceModal({
 
   if (!open || !booking) return null;
 
-  const serviceName =
-    booking.serviceId?.name ?? booking.service?.name;
+  // Normalize serviceId
+  const serviceId =
+    typeof booking.serviceId === "string"
+      ? booking.serviceId
+      : booking.serviceId?._id;
 
+  // Service name
   const service =
-    serviceName ??
-    services.find((s) => s._id === booking.serviceId)?.name;
+    booking.service?.name ??
+    (typeof booking.serviceId === "object"
+      ? booking.serviceId?.name
+      : services.find((s) => s._id === serviceId)?.name) ??
+    "-";
 
-  const serviceTier = serviceTiers?.find(
-    (tier: any) => tier._id === booking?.serviceTierId
-  );
+  // Normalize serviceTierId
+  const serviceTierId =
+    typeof booking.serviceTierId === "string"
+      ? booking.serviceTierId
+      : booking.serviceTierId?._id;
+
+  const serviceTier =
+    booking.serviceTier ??
+    serviceTiers?.find(
+      (tier: any) =>
+        tier._id === serviceTierId ||
+        tier.tierId === serviceTierId
+    );
 
   const serviceTierName = serviceTier?.displayName ?? "-";
 
   const invoiceData = invoice ?? null;
 
   const workedDuration =
-    booking?.pricingMode === "HOURLY"
+    booking.pricingMode === "HOURLY"
       ? formatWorkHours(
           invoiceData?.actualWorkHours ??
-            booking?.actualWorkHours ??
+            booking.actualWorkHours ??
             0
         )
       : `${
           invoiceData?.actualWorkDays ??
-          booking?.actualWorkDays ??
+          booking.actualWorkDays ??
           0
         } ${t.common.days}`;
 
-  const rate = Number(booking?.amount || 0);
-  const vatAmount = Number(booking?.vatAmount || 0);
-  const finalAmount = Number(booking?.totalCost || 0);
+  const rate = Number(booking.amount ?? 0);
+  const vatAmount = Number(booking.vatAmount ?? 0);
+
+  const finalAmount = Number(
+    booking.actualValues?.finalAmount ??
+      booking.finalAmount ??
+      booking.totalCost ??
+      0
+  );
 
   const currency =
-    invoiceData?.currency ?? booking?.currency ?? "SAR";
+    invoiceData?.currency ??
+    booking.currency ??
+    "SAR";
 
   const handleExport = () => {
-    navigate(`/invoice/${booking?._id}`, {
+    navigate(`/invoice/${booking._id}`, {
       state: {
         booking,
         invoice,
@@ -116,18 +142,17 @@ export default function InvoiceModal({
         dir={isRTLOrder ? "rtl" : "ltr"}
         className={isRTLOrder ? "text-right" : "text-left"}
       >
-        {/* INVOICE INFO */}
         <div className="space-y-2 text-sm">
           <p>
             <b>{t.common.invoiceNo}:</b>{" "}
             <span dir="ltr">
-              {invoice?.invoiceNumber || "-"}
+              {invoice?.invoiceNumber ?? "-"}
             </span>
           </p>
 
           <p>
             <b>{t.common.status}:</b>{" "}
-            {invoice?.status || "-"}
+            {invoice?.status ?? "-"}
           </p>
 
           <p>
@@ -140,7 +165,6 @@ export default function InvoiceModal({
           </p>
         </div>
 
-        {/* WORK DETAILS */}
         <div className="border rounded-lg p-4 mt-4">
           <h4 className="font-semibold mb-3">
             {t.invoice.workDetails}
@@ -150,13 +174,13 @@ export default function InvoiceModal({
             <div className="flex justify-between">
               <span>{t.common.workers}</span>
               <span dir="ltr">
-                {booking?.numberOfWorkers}
+                {booking.numberOfWorkers}
               </span>
             </div>
 
             <div className="flex justify-between">
               <span>{t.common.pricingMode}</span>
-              <span>{booking?.pricingMode}</span>
+              <span>{booking.pricingMode}</span>
             </div>
 
             <div className="flex justify-between">
@@ -164,7 +188,7 @@ export default function InvoiceModal({
 
               <span dir="ltr">
                 {rate.toFixed(2)} {currency}
-                {booking?.pricingMode === "HOURLY"
+                {booking.pricingMode === "HOURLY"
                   ? "/hour"
                   : "/day"}
               </span>
@@ -180,7 +204,6 @@ export default function InvoiceModal({
           </div>
         </div>
 
-        {/* PAYMENT SUMMARY */}
         <div className="border rounded-lg p-4 mt-4 bg-gray-50">
           <h4 className="font-semibold mb-3">
             {t.common.payment}

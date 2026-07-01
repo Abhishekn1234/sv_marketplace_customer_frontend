@@ -8,6 +8,7 @@ import JobProgressHeader from "./components/JobProgressHeader";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSocketJobProgressActivities } from "./hooks/useJobProgressSocket";
 import { useBookingDetail } from "@/features/Bookings/presentation/hooks/useBookingDetail";
+import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useLanguage } from "@/features/context/LanguageContext";
 
@@ -21,7 +22,7 @@ export default function JobProgressPage() {
     useBookingDetail(bookingId);
 
   // ✅ local state for socket merging
-  const [localBooking, setLocalBooking] = useState<any>(null);
+  const [localBooking, setLocalBooking] = useState<Booking | null>(null);
 
   const booking = localBooking ?? baseBooking;
 
