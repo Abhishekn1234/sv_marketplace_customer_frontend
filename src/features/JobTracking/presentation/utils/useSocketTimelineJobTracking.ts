@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { getSocket } from "@/features/core/Websocket/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookingEvents } from "@/components/common/BookingEvents";
+import { resolveTimelineStatus } from "./resolveTimelineStatus";
 
 
 interface Props {
@@ -126,9 +127,11 @@ export function useSocketTimelineJobTracking({
         data?.status ??
         booking?.status;
 
+      const resolvedStatus = resolveTimelineStatus(mappedStatus, booking);
+
       const updatedBooking = {
         ...booking,
-        status: mappedStatus,
+        status: resolvedStatus,
         activities: booking.activities || [],
       };
 

@@ -30,6 +30,7 @@ import JobTrackingHeaders from "./JobTrackingHeaders";
 import { handleApiError } from "@/components/common/ApiError";
 import type { LocalBooking } from "../../domain/entities/localbooking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
+import { resolveTimelineStatus } from "../utils/resolveTimelineStatus";
 
 
 
@@ -105,13 +106,7 @@ export default function JobTrackingTimeline({
     if (!currentBooking) return BookingStatus.REQUESTED;
 
     if (!otpModalOpen) {
-      if (currentBooking.status === "WORK_START_OTP_GENERATED") {
-        return BookingStatus.WORKER_ACCEPTED;
-      }
-
-      if (currentBooking.status === "WORK_COMPLETE_OTP_GENERATED") {
-        return BookingStatus.WORK_COMPLETED_PENDING;
-      }
+      return resolveTimelineStatus(currentBooking.status, currentBooking) as BookingStatusType;
     }
 
     return currentBooking.status;
