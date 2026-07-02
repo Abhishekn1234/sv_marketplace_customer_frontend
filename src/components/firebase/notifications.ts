@@ -135,7 +135,7 @@ export async function initOnMessage(
   }
 
   onMessage(messaging, async (payload) => {
-    console.log("FOREGROUND:", payload);
+    // console.log("FOREGROUND:", payload);
 
     const data = payload.data || {};
     const type = (data.type || "").toString().toUpperCase();
@@ -164,7 +164,7 @@ export async function initOnMessage(
       currentPath === `/message/${bookingId}`;
       
     if (isSamePage || isInsideBooking) {
-      console.log("Notification skipped (user already on page)", { currentPath, targetPath, type, bookingId });
+      // console.log("Notification skipped (user already on page)", { currentPath, targetPath, type, bookingId });
       return;
     }
 

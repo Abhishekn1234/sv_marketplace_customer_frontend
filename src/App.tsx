@@ -6,9 +6,7 @@ import "leaflet/dist/leaflet.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-import { useEffect } from "react";
 import { useAuthStore } from "./features/core/store/auth";
-import { initializeSocket } from "./features/core/Websocket/socket";
 import { useRegisterDeviceToken } from "./features/Notifications/presentation/hooks/useRegisterDeviceToken";
 
 import ScrollToTop from "./ScrollToTop";
@@ -20,12 +18,6 @@ function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
   useRegisterDeviceToken(Boolean(isLoggedIn && accessToken));
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (isLoggedIn && accessToken) {
-      initializeSocket(accessToken);
-    }
-  }, [isLoggedIn, accessToken]);
 
   return (
     <ThemeProvider>
