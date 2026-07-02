@@ -5,7 +5,7 @@ import type {
   LastLocations,
   Address,
 } from "@/features/Auth/presentation/components/Location/domain/entities/updatelocation";
-import { disconnectSocket } from "../Websocket/socket";
+import { initializeSocket, disconnectSocket } from "../Websocket/socket";
 
 export type Theme = "light" | "dark";
 
@@ -116,6 +116,10 @@ export const useAuthStore = create<AuthState>()(
       /* ---------------- AUTH ---------------- */
       setTokens: (accessToken, refreshToken) => {
         set({ accessToken, refreshToken, isLoggedIn: true });
+
+        if (accessToken) {
+          initializeSocket(accessToken);
+        }
       },
       setPrevLocation: (loc: { lat: number; lng: number }) =>
   set({

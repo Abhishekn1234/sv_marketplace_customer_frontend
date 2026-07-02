@@ -18,12 +18,14 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useNotifications } from "@/features/Notifications/presentation/hooks/useNotifications";
 import { useMarkNotificationRead } from "@/features/Notifications/presentation/hooks/useMarkNotificationRead";
 import { useMarkAllAsRead } from "../hooks/useMarkAllAsRead";
+import { useUnreadCount } from "../hooks/useUnreadCount";
 
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import { useNotificationFilters } from "../utils/notificationfilterskeylanguages";
 import { useTheme } from "@/features/context/themeContext";
 import { BellIcon } from "@/components/icons/BellIcon";
 import Button from "@/components/input/Button";
+
 
 export default function NotificationCards() {
   const { t,isRTLOrder } = useLanguage();
@@ -55,10 +57,13 @@ export default function NotificationCards() {
     [notifications]
   );
 
-  const { mutateAsync: markAsRead } = useMarkNotificationRead();
-  const { markAllAsRead } = useMarkAllAsRead();
+  // Real unread count from backend (e.g. 75)
+  const { count: unreadCount } = useUnreadCount();
 
- const toggleSelect = (id: string) => {
+  const { mutateAsync: markAsRead } = useMarkNotificationRead();
+const { markAllAsRead } = useMarkAllAsRead();
+
+  const toggleSelect = (id: string) => {
   const target = notifications.find(
     (n: any) => (n._id || n.id) === id
   );
@@ -157,9 +162,9 @@ const handleMarkAllAsRead = async () => {
           </div>
         </div>
 
-        {unreadNotifications.length > 0 && (
+        {unreadCount > 0 && (
           <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-            {unreadNotifications.length} {t.notificationpage.unread}
+            {unreadCount} {t.notificationpage.unread}
           </div>
         )}
       </div>
@@ -210,7 +215,7 @@ const handleMarkAllAsRead = async () => {
         <NotificationHeader
           toggleSelectAll={toggleSelectAll}
           selected={selected}
-          total={unreadNotifications.length}
+          total={unreadCount}
           markAllAsRead={handleMarkAllAsRead}
           markSelectedAsRead={markSelectedAsRead}
         />
