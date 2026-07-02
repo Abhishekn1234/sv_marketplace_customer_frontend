@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
-type ServiceCategoryItem = {
-  name: string;
-  [key: string]: unknown;
-};
+import type { Category } from "@/features/Bookings/domain/entities/category.types";
 
-export function useServiceCategoryFilter(apiResponse?: ServiceCategoryItem[]) {
+export function useServiceCategoryFilter(apiResponse?: Category[]) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [filteredServices, setFilteredServices] = useState<ServiceCategoryItem[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Category[]>([]);
+
 
   useEffect(() => {
     if (apiResponse) {
@@ -38,7 +36,7 @@ export function useServiceCategoryFilter(apiResponse?: ServiceCategoryItem[]) {
     setFilteredServices(filtered);
   };
 
-  const handleSearchResults = (services: ServiceCategoryItem[]) => {
+  const handleSearchResults = (services: Category[]) => {
     setFilteredServices(services);
   };
 
