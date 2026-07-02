@@ -11,9 +11,11 @@ interface CommonMapProps {
   onLocationChange: (lat: number, lng: number) => void | Promise<void>;
 }
 
-// Fix leaflet marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+
 L.Icon.Default.mergeOptions({
+
   iconRetinaUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
   iconUrl:
@@ -30,7 +32,6 @@ export default function CommonMap({
   locationMode,
   onLocationChange,
 }: CommonMapProps) {
-  // Marker component to handle map clicks
   function LocationMarker({
     lat,
     lng,

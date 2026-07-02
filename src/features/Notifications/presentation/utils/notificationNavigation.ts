@@ -30,7 +30,6 @@ export function getNotificationTarget(
     notification.payload ||
     notification.metadata ||
     {};
-    console.log(data);
 
   const type = (notification.type || "").toString().toUpperCase();
 

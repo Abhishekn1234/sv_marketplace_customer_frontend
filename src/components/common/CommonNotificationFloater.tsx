@@ -34,8 +34,8 @@ export default function CommonNotificationFloater({
       unreadOnly: false,
     });
 
-  // auto fetch all pages
   useEffect(() => {
+
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
@@ -61,9 +61,10 @@ export default function CommonNotificationFloater({
       await markAsRead(id);
       navigate(target);
       setOpen(false);
-    } catch (error) {
-      console.error("Failed to mark notification as read", error);
+    } catch {
+      setOpen(false);
     }
+
   };
 
   useEffect(() => {
@@ -110,11 +111,10 @@ export default function CommonNotificationFloater({
 
           direction === "up" ? "bottom-full mb-3" : "top-full mt-3",
 
-          // mobile center
           "left-1/2 -translate-x-1/2",
 
-          // desktop RTL/LTR alignment
           isRTL
+
             ? "sm:left-0 sm:right-auto sm:translate-x-0"
             : "sm:right-0 sm:left-auto sm:translate-x-0"
         )}
@@ -192,5 +192,7 @@ export default function CommonNotificationFloater({
         </div>
       )}
     </div>
+
   );
 }
+

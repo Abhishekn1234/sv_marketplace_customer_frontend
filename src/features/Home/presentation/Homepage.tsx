@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import ServiceSearch from "./components/home/SearchInput";
 import RecentServices from "./components/home/RecentServices";
 import CategoryPills from "./components/home/CategoryPills";
@@ -12,68 +11,52 @@ import CommonFaq from "@/components/common/CommonFaq";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useAuthStore } from "@/features/core/store/auth";
+import { useServiceCategoryFilter } from "./hooks/useServiceCategoryFilter";
+
 export default function WebsiteHome() {
   const { data: apiResponse, isLoading, error } = useServiceCategory();
   const { accessToken } = useAuthStore();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [filteredServices, setFilteredServices] = useState<any[]>([]);
- const{isRTLOrder}=useLanguage()
+  const { isRTLOrder } = useLanguage();
+  const {
+    activeCategory,
+    categories,
+    filteredServices,
+    handleCategoryChange,
+    handleSearchResults,
+  } = useServiceCategoryFilter(apiResponse);
 
-  useEffect(() => {
-    if (apiResponse) {
-      setFilteredServices(apiResponse);
-    }
-  }, [apiResponse]);
-    // console.log(apiResponse)
-  const categories = apiResponse?.map((c: { name: string }) => c.name) ?? [];
+  if (isLoading) {
+    return (
+      <div>
+        <CommonSpinner size={20} />
+      </div>
+    );
+  }
 
-  const handleCategoryChange = (categoryName: string) => {
-    setActiveCategory(categoryName);
-
-    if (!apiResponse) return;
-
-    if (categoryName === "All") {
-      setFilteredServices(apiResponse);
-    } else {
-      const filtered = apiResponse.filter(
-        (category: { name: string }) => category.name === categoryName
-      );
-      setFilteredServices(filtered);
-    }
-  };
-
-  if (isLoading) return <div><CommonSpinner size={20}/></div>;
-  if (error) return <div>Error loading categories</div>;
+  if (error) {
+    return <div>Error loading categories</div>;
+  }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10" dir={`${isRTLOrder?"rtl":""}`}>
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
-       
+    <div className="mx-auto max-w-7xl px-4 py-10" dir={isRTLOrder ? "rtl" : undefined}>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
         <div className="flex flex-col gap-6">
-          <ServiceSearch
-            services={apiResponse ?? []}
-            onSearchResults={setFilteredServices}
-          />
-
-          
+          <ServiceSearch services={apiResponse ?? []} onSearchResults={handleSearchResults} />
           <CategoryPills
-            categories={["All", ...categories]}
+            categories={categories}
             activeCategory={activeCategory}
             onChange={handleCategoryChange}
           />
 
           {accessToken && <ActiveService />}
-
-         
           <PopularService categories={filteredServices} />
         </div>
 
-      
         <div className="flex flex-col gap-6">
-         {accessToken && <RecentServices />} 
+          {accessToken && <RecentServices />}
           <SecurePayment />
           <SatisfactionGuarantee />
-         {accessToken && <PromoCards /> } 
+          {accessToken && <PromoCards />}
         </div>
       </div>
 

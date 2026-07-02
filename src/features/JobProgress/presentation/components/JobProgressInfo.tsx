@@ -30,7 +30,6 @@ export function JobProgressInfo({ booking }: any) {
   const pricingMode = booking?.pricingMode;
   const estimatedHours = booking?.schedule?.estimatedHours ?? 0;
   const estimatedDays = booking?.actualWorkDays ?? 0;
-  console.log(booking);
   let basePrice = 0;
   if (pricingMode === "HOURLY") {
     basePrice = estimatedHours ? total / estimatedHours : total;

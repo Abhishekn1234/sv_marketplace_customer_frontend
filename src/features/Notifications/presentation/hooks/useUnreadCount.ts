@@ -13,8 +13,6 @@ export const useUnreadCount = () => {
     refetchOnWindowFocus: false,
   });
 
-  console.log("Unread Count Query:", query.data);
-
   return {
     count: query.data ?? 0,
     loading: query.isLoading,

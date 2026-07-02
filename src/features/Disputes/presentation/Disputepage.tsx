@@ -31,20 +31,16 @@ export default function Disputepage() {
     
       if (!bookingId) {
         toast.error("Booking ID is missing");
-        console.log("❌ Missing bookingId");
         return;
       }
 
       if (!reasonType) {
         toast.error("Please select a reason type");
-        console.log("❌ Missing reasonType");
         return;
       }
 
-    
       if (!description || description.trim().length < 10) {
         toast.error("Please enter a valid description");
-        console.log("❌ Invalid description");
         return;
       }
 
@@ -54,21 +50,12 @@ export default function Disputepage() {
         bookingId,
       };
 
-      console.log("🚀 Submitting dispute payload:", payload);
-
       try {
-        const res = await createDisputeMutation.mutateAsync(payload);
-
-        console.log("✅ Success response:", res);
-
+        await createDisputeMutation.mutateAsync(payload);
         toast.success("Dispute created successfully");
-
         navigate("/bookings");
       } catch (err: any) {
-        // console.log("❌ Error full object:", err);
-        // console.log("❌ Backend response:", err?.response?.data);
-
-       handleApiError(err);
+        handleApiError(err);
       }
     };
 
