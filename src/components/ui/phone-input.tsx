@@ -20,8 +20,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-/* ---------------- TYPES ---------------- */
-
 type PhoneInputProps = Omit<
   React.ComponentProps<"input">,
   "onChange" | "value" | "ref"
@@ -30,8 +28,6 @@ type PhoneInputProps = Omit<
     onChange?: (value: RPNInput.Value) => void;
   };
 
-/* ---------------- MAIN COMPONENT ---------------- */
-
 const PhoneInput = React.forwardRef<
   React.ElementRef<typeof RPNInput.default>,
   PhoneInputProps
@@ -39,13 +35,13 @@ const PhoneInput = React.forwardRef<
   return (
     <RPNInput.default
       ref={ref}
-      className={cn("flex", className)}
+      className={cn("flex w-full items-stretch", className)}
       flagComponent={FlagComponent}
       countrySelectComponent={CountrySelect}
       inputComponent={InputComponent}
       smartCaret={false}
       value={value || undefined}
-      onChange={(val) => onChange?.((val || "") as RPNInput.Value)}
+      onChange={(value) => onChange?.((value || "") as RPNInput.Value)}
       {...props}
     />
   );
@@ -53,25 +49,25 @@ const PhoneInput = React.forwardRef<
 
 PhoneInput.displayName = "PhoneInput";
 
-/* ---------------- INPUT ---------------- */
-
 const InputComponent = React.forwardRef<
   HTMLInputElement,
   React.ComponentProps<"input">
->(({ className, ...props }, ref) => (
-  <input
-    ref={ref}
-    className={cn(
-      "flex h-10 w-full rounded-r-lg border border-input bg-background px-3 py-2 text-sm",
-      className
-    )}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  return (
+    <input
+      ref={ref}
+      className={cn(
+        "flex h-11 w-full rounded-l-none rounded-r-xl border border-l-0 border-input bg-background px-3 text-sm shadow-sm",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  );
+});
 
 InputComponent.displayName = "InputComponent";
-
-/* ---------------- COUNTRY SELECT ---------------- */
 
 type CountryEntry = {
   label: string;
@@ -96,27 +92,30 @@ const CountrySelect = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
-      <PopoverTrigger>
+          <PopoverTrigger>
         <Button
           type="button"
           variant="outline"
           disabled={disabled}
-          className="flex gap-1 rounded-r-none border-r-0 px-3"
+          className={cn(
+            "h-11 rounded-r-none rounded-l-xl border-r-0 px-3",
+            "flex items-center gap-2 shrink-0"
+          )}
         >
           <FlagComponent
             country={selectedCountry}
             countryName={selectedCountry}
           />
-          <ChevronsUpDown className="ml-1 size-4 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[320px] p-0">
         <Command>
           <CommandInput
+            placeholder="Search country..."
             value={search}
             onValueChange={setSearch}
-            placeholder="Search country..."
           />
 
           <CommandList>
@@ -132,12 +131,9 @@ const CountrySelect = ({
                       countryName={label}
                       selectedCountry={selectedCountry}
                       onChange={onChange}
-                      onClose={() => {
-                        // IMPORTANT: prevents cmdk focus crash
-                        requestAnimationFrame(() => {
-                          setOpen(false);
-                        });
-                      }}
+                      onClose={() =>
+                        requestAnimationFrame(() => setOpen(false))
+                      }
                     />
                   ) : null
                 )}
@@ -149,8 +145,6 @@ const CountrySelect = ({
     </Popover>
   );
 };
-
-/* ---------------- OPTION (FIXED CRASH HERE) ---------------- */
 
 interface CountrySelectOptionProps extends RPNInput.FlagProps {
   selectedCountry: RPNInput.Country;
@@ -167,11 +161,10 @@ const CountrySelectOption = ({
 }: CountrySelectOptionProps) => {
   return (
     <CommandItem
-      className="gap-2"
+      className="gap-3"
       onSelect={() => {
         onChange(country);
 
-        // FIX: delay prevents react-phone-number-input focus crash
         requestAnimationFrame(() => {
           onClose();
         });
@@ -179,34 +172,33 @@ const CountrySelectOption = ({
     >
       <FlagComponent country={country} countryName={countryName} />
 
-      <span className="flex-1 text-sm">{countryName}</span>
+      <span className="flex-1">{countryName}</span>
 
-      <span className="text-sm text-muted-foreground">
+      <span className="text-muted-foreground">
         +{RPNInput.getCountryCallingCode(country)}
       </span>
 
       <CheckIcon
         className={cn(
-          "ml-auto size-4",
-          country === selectedCountry ? "opacity-100" : "opacity-0"
+          "ml-auto h-4 w-4",
+          selectedCountry === country ? "opacity-100" : "opacity-0"
         )}
       />
     </CommandItem>
   );
 };
 
-/* ---------------- FLAG ---------------- */
-
-const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
+const FlagComponent = ({
+  country,
+  countryName,
+}: RPNInput.FlagProps) => {
   const Flag = flags[country];
 
   return (
-    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-muted">
+    <span className="flex h-5 w-7 items-center justify-center overflow-hidden rounded-sm">
       {Flag && <Flag title={countryName} />}
     </span>
   );
 };
-
-/* ---------------- EXPORT ---------------- */
 
 export { PhoneInput };

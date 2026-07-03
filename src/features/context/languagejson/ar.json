@@ -99,6 +99,7 @@
   },
  "common": {
       "geoNotSupported": "تحديد الموقع الجغرافي غير مدعوم",
+      "Not Assigned":"لم يتم التعيين",
       "locationError": "تعذر الحصول على الموقع",
        "Work Description":"وصف العمل",
        "hours":"ساعات",
@@ -187,6 +188,11 @@
     "breadcrumb": {
       "Home": "الرئيسية"
     },
+    "Starting from": "يبدأ من",
+    "Select Service": "اختر الخدمة",
+    "Select": "اختر",
+    "Instant": "فوري",
+    "Premium": "مميز",
     "filters": {
       "All Services": "جميع الخدمات",
       "Popular": "الأكثر شيوعًا",

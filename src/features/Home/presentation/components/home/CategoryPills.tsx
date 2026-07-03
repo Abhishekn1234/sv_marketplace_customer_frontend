@@ -20,7 +20,7 @@ const CategoryPills: React.FC<Props> = ({
         return (
           <Button
             key={name}
-            variant="none"
+            variant="ghost"
             onClick={() => onChange(name)}
             className={`
               px-6 py-2.5 rounded-full

@@ -176,23 +176,16 @@ export default function BookingDetailAddress() {
   </div>
 </CommonCard>
       {/* Modal */}
-    <CommonModal
+   <CommonModal
   open={isOpen}
   onClose={() => setIsOpen(false)}
   title={t.bookingdetailpage["Update Home Address"]}
-  width="max-w-md"
+  width="sm:max-w-md"
   footer={
     <>
       <Button
         onClick={() => setIsOpen(false)}
-        className="
-          px-4
-          py-2
-          text-sm
-          font-semibold
-          text-gray-600
-          hover:text-gray-900
-        "
+        className="py-2 text-sm font-semibold text-gray-600 hover:text-gray-900"
       >
         {t.bookingdetailpage.Cancel}
       </Button>
@@ -200,54 +193,30 @@ export default function BookingDetailAddress() {
       <Button
         onClick={handleSave}
         disabled={loadingLocation}
-        className="
-          rounded-xl
-          bg-blue-600
-          px-5
-          py-2
-          text-sm
-          font-semibold
-          text-white
-          transition
-          hover:bg-blue-700
-          disabled:opacity-50
-        "
+        className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
       >
         {loadingLocation
           ? t.bookingdetailpage["Getting location..."]
-          :t.bookingdetailpage.Save}
+          : t.bookingdetailpage.Save}
       </Button>
     </>
   }
 >
-  <div>
-    <Input
-      type="text"
-      value={homeAddress}
-      onChange={(value) =>
-        setHomeAddress(value)
-      }
-      placeholder={t.bookingdetailpage["Type your home address..."]}
-      className="
-        mb-2
-        w-full
-        rounded-xl
-        border
-        border-gray-200
-        p-3
-        text-sm
-        outline-none
-        transition-all
-        focus:border-blue-600
-        focus:ring-4
-        focus:ring-blue-100
-      "
-    />
+  <Input
+    type="text"
+    value={homeAddress}
+    onChange={(value) => setHomeAddress(value)}
+    placeholder={t.bookingdetailpage["Type your home address..."]}
+    className="mb-2 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none transition-all focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
+  />
 
-    <p className="text-xs text-gray-400">
-     {t.bookingdetailpage["Location will be captured from your current position"]}
-    </p>
-  </div>
+  <p className="text-xs text-gray-400">
+    {
+      t.bookingdetailpage[
+        "Location will be captured from your current position"
+      ]
+    }
+  </p>
 </CommonModal>
     </>
   );

@@ -1,4 +1,3 @@
-
 import { formatSmartDate } from "@/features/Confirmation/presentation/utils/formatdatetime";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import { formatBookingDuration } from "../utils/formatduration";
@@ -17,15 +16,14 @@ export default function BookingHistoryViewDetailsModal({
   isOpen,
   onClose,
 }: Props) {
-  const { t,isRTLOrder } = useLanguage();
+  const { t, isRTLOrder } = useLanguage();
 
-  if (!isOpen || !booking) return null;
+  if (!booking) return null;
 
-  // Safe values
   const serviceName = booking.service?.name ?? "Service Details";
-  const tierName = booking.serviceTier?.displayName ?? "Tier";
+  const tierName = booking.serviceTier?.displayName ?? "-";
   const workerName =
-    booking?.assignedWorkers?.[0]?.worker?.fullName ?? "Not Assigned";
+    booking.assignedWorkers?.[0]?.worker?.fullName ?? t.common["Not Assigned"];
 
   const bookingDate = booking.schedule?.startDateTime
     ? formatSmartDate(booking.schedule.startDateTime)
@@ -34,84 +32,90 @@ export default function BookingHistoryViewDetailsModal({
   const duration = formatBookingDuration(booking);
 
   const price =
-    booking.amount !== undefined
-      ? `${booking.currency} ${booking?.totalCost?.toFixed(2)}`
+    booking.totalCost != null
+      ? `${booking.currency} ${booking.totalCost.toFixed(2)}`
       : "-";
 
   return (
- <CommonModal
-  open={isOpen}
-  onClose={onClose}
-  title={serviceName}
-  isRTLType={isRTLOrder}
-  width="max-w-2xl"
-  footer={
-    <Button
-      onClick={onClose}
-      className="px-5 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 transition"
+    <CommonModal
+      open={isOpen}
+      onClose={onClose}
+      title={serviceName}
+      isRTLType={isRTLOrder}
+      width="sm:max-w-3xl"
+      footer={
+        <Button
+          onClick={onClose}
+          className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200"
+        >
+          {t.common.close}
+        </Button>
+      }
     >
-      {t.common.close}
-    </Button>
-  }
->
-  <div dir={isRTLOrder ? "rtl" : "ltr"}>
+      <div
+        dir={isRTLOrder ? "rtl" : "ltr"}
+        className="space-y-6"
+      >
+        {/* Subtitle */}
+        <div className="border-b pb-4">
+          <p className="text-sm text-gray-500">
+            <span className="font-medium">{tierName}</span>
+            {" • "}
+            <span>{workerName}</span>
+          </p>
+        </div>
 
-    {/* Subtitle (NO text alignment change) */}
-    <p className="text-sm text-gray-500 mb-6">
-      {tierName} • {workerName}
-    </p>
+        {/* Details */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t.invoice.bookingRef}
+            </p>
+            <p className="break-all text-sm font-medium text-gray-900">
+              {booking._id ?? "-"}
+            </p>
+          </div>
 
-    {/* GRID — same structure, RTL-safe naturally */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t.common.date}
+            </p>
+            <p className="text-sm font-medium text-gray-900">
+              {bookingDate}
+            </p>
+          </div>
 
-      <div>
-        <span className="text-xs text-gray-500 font-medium">
-          {t.invoice.bookingRef}
-        </span>
-        <p className="text-sm font-semibold break-all">
-          {booking._id ?? "-"}
-        </p>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t.common.workedDuration}
+            </p>
+            <p className="text-sm font-medium text-gray-900">
+              {duration}
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t.common.totalPaid}
+            </p>
+            <p className="text-lg font-bold text-blue-600">
+              {price}
+            </p>
+          </div>
+
+          <div className="space-y-2 sm:col-span-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t.common["Work Description"]}
+            </p>
+
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <p className="text-sm leading-6 text-gray-700">
+                {booking.workDescription ?? "-"}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div>
-        <span className="text-xs text-gray-500 font-medium">
-          {t.common.date}
-        </span>
-        <p className="text-sm font-semibold">
-          {bookingDate}
-        </p>
-      </div>
-
-      <div>
-        <span className="text-xs text-gray-500 font-medium">
-          {t.common.workedDuration}
-        </span>
-        <p className="text-sm font-semibold">
-          {duration}
-        </p>
-      </div>
-
-      <div>
-        <span className="text-xs text-gray-500 font-medium">
-          {t.common.totalPaid}
-        </span>
-        <p className="text-sm font-semibold">
-          {price}
-        </p>
-      </div>
-
-      {/* FULL WIDTH SECTION */}
-      <div className="sm:col-span-2">
-        <span className="text-xs text-gray-500 font-medium">
-          {t.common["Work Description"]}
-        </span>
-        <p className="text-sm font-semibold">
-          {booking.workDescription ?? "-"}
-        </p>
-      </div>
-
-    </div>
-  </div>
-</CommonModal>
+    </CommonModal>
   );
 }

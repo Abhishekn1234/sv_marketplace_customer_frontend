@@ -6,7 +6,8 @@ import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useSe
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-
+import CommonCard from "@/components/common/CommonCards";
+import { ArrowLeftIcon, CheckIcon, StarIcon } from "@/components/icons";
 export default function ServiceTierSelectionContent() {
   const navigate = useNavigate();
   const {data:categories}=useServiceCategory();
@@ -125,7 +126,7 @@ export default function ServiceTierSelectionContent() {
           onClick={() => navigate(-1)}
           leftIcon={
             <>
-             <ArrowLeft />
+             <ArrowLeftIcon />
             </>
           }
           className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline"
@@ -153,10 +154,12 @@ function TierCard({
   description,
   prices,
   features,
+
   recommended,
   selected,
   onSelect,
 }: TierCardProps) {
+ const{t}=useLanguage();
   return (
     <div
       onClick={onSelect}
@@ -199,17 +202,19 @@ function TierCard({
       </div>
 
       <ul className="flex-1 mb-8 space-y-3">
-        {features.map((feature, index) => (
-          <li
-            key={index}
-            className={`flex items-start gap-3 text-sm font-medium ${
-              feature.included ? "text-gray-600" : "text-gray-400 opacity-60"
-            }`}
-          >
-            <CheckIcon included={feature.included} />
-            {feature.text}
-          </li>
-        ))}
+       {features.map((feature, index) => (
+        <li
+          key={index}
+          className={`flex items-start gap-3 text-sm font-medium ${
+            feature.included
+              ? "text-gray-600"
+              : "text-gray-400 opacity-60"
+          }`}
+        >
+          <CheckIcon included={feature.included} />
+          {feature.text}
+        </li>
+      ))}
       </ul>
 
       <Button
@@ -219,42 +224,9 @@ function TierCard({
             : "border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
         }`}
       >
-        {selected ? `Selected : ${name}` : `Select ${name}`}
+        {selected ? `${t.notificationpage.selected} : ${name}` : `${t.servicedetailpage.Select} ${name}`}
       </Button>
     </div>
   );
 }
 
-function CheckIcon({ included }: { included: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      className={`w-5 h-5 mt-0.5 ${
-        included ? "text-blue-600" : "text-gray-300"
-      }`}
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  );
-}
-
-
-function ArrowLeft() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current" fill="none" strokeWidth={2}>
-      <path d="M19 12H5" />
-      <path d="M12 19l-7-7 7-7" />
-    </svg>
-  );
-}

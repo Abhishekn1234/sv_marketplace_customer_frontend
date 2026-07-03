@@ -1,53 +1,51 @@
-"use client";
-
-import React from "react";
+import {
+  Progress,
+  ProgressIndicator,
+  ProgressLabel,
+  ProgressTrack,
+  ProgressValue,
+} from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface AppProgressProps {
-  value: number; // 0 - 100
-  height?: number;
-  color?: string; // tailwind color class (optional)
-  showLabel?: boolean;
+  value: number;
   label?: string;
+  showLabel?: boolean;
   className?: string;
+  trackClassName?: string;
+  indicatorClassName?: string;
 }
 
-const AppProgress: React.FC<AppProgressProps> = ({
+export default function AppProgress({
   value,
-  height = 6,
-  color = "bg-blue-600",
+  label = "Progress",
   showLabel = false,
-  label,
-  className = "",
-}) => {
-  const safeValue = Math.min(100, Math.max(0, value));
-
+  className,
+  trackClassName,
+  indicatorClassName,
+}: AppProgressProps) {
   return (
-    <div className={`w-full ${className}`}>
-      {/* Header */}
+    <Progress
+      value={value}
+      className={cn("w-full", className)}
+    >
       {showLabel && (
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-xs font-medium text-gray-600">
-            {label || "Progress"}
-          </span>
-          <span className="text-xs text-gray-500">
-            {Math.round(safeValue)}%
-          </span>
-        </div>
+        <>
+          <ProgressLabel>{label}</ProgressLabel>
+          <ProgressValue />
+        </>
       )}
 
-      {/* Track */}
-      <div
-        className="w-full bg-gray-200 rounded-full overflow-hidden"
-        style={{ height }}
+      <ProgressTrack
+        className={cn("h-2 rounded-full", trackClassName)}
       >
-        {/* Fill */}
-        <div
-          className={`${color} h-full transition-all duration-500 ease-out rounded-full`}
-          style={{ width: `${safeValue}%` }}
+        <ProgressIndicator
+          className={cn(
+            "rounded-full bg-primary transition-all duration-300",
+            indicatorClassName
+          )}
         />
-      </div>
-    </div>
+      </ProgressTrack>
+    </Progress>
   );
-};
-
-export default AppProgress;
+}

@@ -109,6 +109,7 @@
  "common": {
       "geoNotSupported": "जियोलोकेशन समर्थित नहीं है",
       "locationError": "लोकेशन प्राप्त नहीं कर सकते",
+      "Not Assigned":"असाइन नहीं किया गया",
       "hours":"घंटे",
       "Select an option":"कोई विकल्प चुनें",
        "Work Description":"कार्य विवरण",
@@ -186,6 +187,11 @@
     "breadcrumb": {
       "Home": "होम"
     },
+    "Select Service": "सेवा चुनें",
+    "Select": "चुनें",
+    "Premium": "प्रीमियम", 
+    "Starting from": "से शुरू",
+    "Instant": "तुरंत",
     "filters": {
       "All Services": "सभी सेवाएं",
       "Popular": "लोकप्रिय",

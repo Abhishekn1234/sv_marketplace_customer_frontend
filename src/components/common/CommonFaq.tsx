@@ -53,6 +53,7 @@ export default function CommonFaq() {
       h-14
       
       bg-green-500
+      
       rounded-full
       flex
       items-center
@@ -95,6 +96,7 @@ export default function CommonFaq() {
     rounded-full
     bg-blue-600
     text-white
+    hover:text-blue-700
     shadow-xl
     transition-all
     duration-300

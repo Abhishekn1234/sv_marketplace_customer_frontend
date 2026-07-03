@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { TickIcon } from "../icons/TickIcon";
+import DividerIcon from "../icons/DividerIcon";
 
 interface FooterProps {
   features?: { label: string }[];       // List of feature labels
@@ -47,10 +49,10 @@ const Footer: React.FC<FooterProps> = ({
         {features.map((feature, idx) => (
           <React.Fragment key={feature.label}>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500">
-              <CheckIcon color={iconColor} />
+              <TickIcon color={iconColor} />
               <span>{feature.label}</span>
             </div>
-            {showDivider && idx !== features.length - 1 && <Divider />}
+            {showDivider && idx !== features.length - 1 && <DividerIcon />}
           </React.Fragment>
         ))}
       </div>
@@ -66,17 +68,4 @@ const Footer: React.FC<FooterProps> = ({
 export default Footer;
 
 // ✅ Subcomponents
-const CheckIcon: React.FC<{ color?: string }> = ({ color = "text-amber-500" }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={`w-5 h-5 ${color}`}
-  >
-    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
 
-const Divider = () => <div className="hidden sm:block w-px h-4 bg-gray-200" />;

@@ -6,7 +6,8 @@ import CustomQuote from "./GetCustomQuote";
 import { Image } from "@/components/input";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-
+import CommonCard from "@/components/common/CommonCards";
+import { useLanguage } from "@/features/context/LanguageContext";
 interface Props {
   activeFilter: string;
   sortBy: string;
@@ -16,7 +17,7 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
   const { id } = useParams();
   const { searchTerm } = useSearchStore();
   const navigate = useNavigate();
-
+  const{t}=useLanguage();
   const { data: apiResponse, isPending, error } = useServiceCategory();
 
   // ✅ Flatten services from categories
@@ -119,75 +120,73 @@ export default function ServiceDetailCards({ activeFilter, sortBy }: Props) {
         const price = getPrice(service);
 
         return (
-          <div
-            key={service._id}
-            className={`relative bg-white border-2 rounded-[20px] p-6 flex flex-col cursor-pointer transition-all duration-300 ${
-              isPremium
-                ? "border-yellow-500 shadow-[0_4px_16px_rgba(245,158,11,0.1)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.2)]"
-                : "border-gray-200 hover:border-blue-600 hover:shadow-xl hover:-translate-y-1"
-            }`}
-          >
-            {isPremium && (
-              <span className="absolute top-4 right-4 px-3 py-1 bg-yellow-500 text-white text-[11px] font-bold uppercase tracking-wide rounded-full">
-                Premium
+                <CommonCard
+          key={service._id}
+          className={`group relative h-full cursor-pointer overflow-hidden rounded-[20px] border-2 transition-all duration-300 ${
+            isPremium
+              ? "border-yellow-500 shadow-[0_4px_16px_rgba(245,158,11,0.1)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.2)]"
+              : "border-gray-200 hover:-translate-y-1 hover:border-blue-600 hover:shadow-xl"
+          }`}
+          contentClassName="flex h-full flex-col p-6"
+        >
+          {isPremium && (
+            <span className="absolute right-4 top-4 rounded-full bg-yellow-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+             {t.servicedetailpage.Premium}
+            </span>
+          )}
+
+          <div className="mb-5 flex items-start justify-between">
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-[14px] shadow-sm ${
+                isPremium
+                  ? "bg-yellow-100 text-yellow-500"
+                  : "bg-blue-100 text-blue-600"
+              }`}
+            >
+              <Image
+                src={service.iconUrl}
+                alt={service.name}
+                className="h-7 w-7"
+              />
+            </div>
+
+            {isInstant && (
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-blue-600">
+               {t.servicedetailpage.Instant}
               </span>
             )}
-
-            <div className="flex justify-between items-start mb-5">
-              <div
-                className={`w-14 h-14 rounded-[14px] flex items-center justify-center shadow-sm ${
-                  isPremium
-                    ? "bg-yellow-100 text-yellow-500"
-                    : "bg-blue-100 text-blue-600"
-                }`}
-              >
-                <Image
-                  src={service.iconUrl}
-                  alt={service.name}
-                  className="w-7 h-7"
-                />
-              </div>
-
-              {isInstant && (
-                <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[11px] font-bold uppercase tracking-wide rounded-full">
-                  Instant
-                </span>
-              )}
-            </div>
-
-            <h3 className="text-[20px] font-bold text-gray-900 mb-2">
-              {service.name}
-            </h3>
-
-            <p className="text-[14px] text-gray-500 leading-[1.6] mb-5 flex-1">
-              {service.description}
-            </p>
-
-            <div className="flex justify-between items-center pt-5 border-t-2 border-gray-200">
-              <div>
-                <div className="text-[12px] font-bold uppercase tracking-wide text-gray-400 mb-1">
-                  Starting from
-                </div>
-
-                <div className="text-[22px] font-bold text-gray-900">
-                  {service.currency} {price}
-
-                  <span className="text-sm font-medium text-gray-500 ml-1">
-                    {tier?.HOURLY ? "/hr" : tier?.PER_DAY ? "/day" : ""}
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                onClick={() =>
-                  navigate(`/servicetierselection/${service._id}`)
-                }
-                className="px-6 py-[10px] bg-blue-600 text-white text-[14px] font-bold rounded-full transition-all duration-200 hover:bg-blue-700"
-              >
-                Select
-              </Button>
-            </div>
           </div>
+
+          <h3 className="mb-2 text-xl font-bold text-gray-900">
+            {service.name}
+          </h3>
+
+          <p className="mb-5 flex-1 text-sm leading-6 text-gray-500">
+            {service.description}
+          </p>
+
+          <div className="mt-auto flex items-center justify-between border-t-2 border-gray-200 pt-5">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+                {t.servicedetailpage["Starting from"]}
+              </p>
+
+              <div className="text-[22px] font-bold text-gray-900">
+                {service.currency} {price}
+                <span className="ml-1 text-sm font-medium text-gray-500">
+                  {tier?.HOURLY ? "/hr" : tier?.PER_DAY ? "/day" : ""}
+                </span>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => navigate(`/servicetierselection/${service._id}`)}
+              className="rounded-full bg-blue-600 px-6 py-[10px] text-sm font-bold text-white hover:bg-blue-700"
+            >
+             {t.servicedetailpage.Select}
+            </Button>
+          </div>
+        </CommonCard>
         );
       })}
 

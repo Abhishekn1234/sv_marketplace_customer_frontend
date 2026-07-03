@@ -4,7 +4,7 @@ import CategoryPills from "./components/home/CategoryPills";
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import ActiveService from "./components/home/ActiveService";
 import PopularService from "./components/home/PopularService";
-import SecurePayment from "./components/home/RecentPayment";
+import SecurePayment from "./components/home/SecurePayment";
 import SatisfactionGuarantee from "./components/home/SatisificationGuarantte";
 import PromoCards from "./components/home/PromoCards";
 import CommonFaq from "@/components/common/CommonFaq";

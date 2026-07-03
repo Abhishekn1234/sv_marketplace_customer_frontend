@@ -20,6 +20,7 @@
  "common": {
       "geoNotSupported": "Geolocation is not supported",
       "hours":"Hours",
+      "Not Assigned":"Not Assigned",
       "Select a Location":"Select a Location",
       "locationError": "Unable to get location",
       "Work Description":"Work Description",
@@ -158,6 +159,11 @@
     "breadcrumb": {
       "Home": "Home"
     },
+    "Select Service":"Select Service",
+     "Starting from":"Starting from",
+     "Instant":"Instant",
+     "Select":"Select",
+     "Premium":"Premium",
     "filters": {
       "All Services": "All Services",
       "Popular": "Popular",
