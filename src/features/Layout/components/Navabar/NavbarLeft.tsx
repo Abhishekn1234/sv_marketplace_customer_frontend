@@ -116,12 +116,13 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
       {/* Logo */}
       <Button
         onClick={() => navigate("/")}
+        variant="ghost"
         leftIcon={
           <>
           <LogoIcon />
           </>
         }
-        className="flex items-center gap-2 cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+        
         aria-label="Go to home"
       >
        
@@ -184,7 +185,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
                   notificationRef.current?.scrollIntoView({
                     behavior: "smooth",
                   }),
-          actionLabel: step.id === "location" ? "Use" : "View",
+          actionLabel: step.id === "location" ? t.onboarding.use : t.onboarding.view,
         }))}
         completion={stepCompletion}
         onClose={dismissOnboarding}

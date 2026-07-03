@@ -1,53 +1,58 @@
-import React from "react";
+import { RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface RadioProps
+  extends Omit<
+    React.ComponentProps<typeof RadioGroupItem>,
+    "children"
+  > {
   label?: React.ReactNode;
   containerClassName?: string;
   labelClassName?: string;
-
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
 export function Radio({
   label,
-  containerClassName = "",
-  labelClassName = "",
+  containerClassName,
+  labelClassName,
   leftIcon,
   rightIcon,
+  className,
   ...props
 }: RadioProps) {
   return (
-    <label
-      className={`flex items-center gap-2 cursor-pointer ${containerClassName}`}
-    >
-      {/* LEFT ICON */}
-      {leftIcon && (
-        <span className="flex items-center shrink-0">
-          {leftIcon}
-        </span>
+    <Label
+      className={cn(
+        "flex items-center gap-2 cursor-pointer",
+        containerClassName
       )}
+    >
+      {leftIcon}
 
-      {/* RADIO INPUT */}
-      <input
-        type="radio"
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+      <RadioGroupItem
+        className={className}
         {...props}
       />
 
-      {/* LABEL */}
       {label && (
-        <span className={`text-sm text-gray-900 ${labelClassName}`}>
+        <span
+          className={cn(
+            "text-sm text-gray-900",
+            labelClassName
+          )}
+        >
           {label}
         </span>
       )}
 
-      {/* RIGHT ICON */}
       {rightIcon && (
-        <span className="flex items-center shrink-0 ml-auto">
+        <span className="ml-auto">
           {rightIcon}
         </span>
       )}
-    </label>
+    </Label>
   );
 }

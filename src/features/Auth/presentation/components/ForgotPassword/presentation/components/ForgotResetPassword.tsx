@@ -5,15 +5,16 @@ import {  Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
 import { EyeIcon, EyeOffIcon } from "@/components/icons";
 import { handleApiError } from "@/components/common/ApiError";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   email: string;
-  resetPassword: (data: { email: string; password: string }) => Promise<void>;
+  resetPassword: (data: {  password: string }) => Promise<void>;
   onDone: () => void;
 }
 
 export default function ForgotResetPassword({
-  email,
+  // email,
   resetPassword,
   onDone,
 }: Props) {
@@ -21,19 +22,19 @@ export default function ForgotResetPassword({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const{t}=useLanguage();
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword)
-      return toast.error("Passwords do not match");
+      return toast.error(t.forgotPassword.errors.passwordMismatch);
 
     if (newPassword.length < 8)
-      return toast.error("Password must be at least 8 characters");
+      return toast.error(t.forgotPassword.errors.passwordLength);
 
     try {
-      await resetPassword({ email, password: newPassword });
-      toast.success("Password reset successful!");
+      await resetPassword({ password: newPassword });
+      toast.success(t.forgotPassword.success.passwordReset);
       onDone();
     } catch (err: any) {
       handleApiError(err);
@@ -46,7 +47,7 @@ export default function ForgotResetPassword({
       {/* New Password */}
       <div className="relative">
         <Label className="block text-sm font-semibold text-black mb-2">
-          New Password
+          {t.forgotPassword.newPasswordLabel}
         </Label>
 
         <Input
@@ -54,41 +55,47 @@ export default function ForgotResetPassword({
           value={newPassword}
           onChange={(value) => setNewPassword(value)}
           className="w-full h-12 px-4 pr-10 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
-          placeholder="Enter new password"
-          required
-        />
-
-        <Button
+          placeholder={t.forgotPassword.descReset}
+          rightElement={
+             <Button
           type="button"
           onClick={() => setShowNewPassword((p) => !p)}
-          className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
+          className="absolute  right-1 text-gray-500 hover:text-gray-700"
         >
           {showNewPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
         </Button>
+          }
+          required
+        />
+
+       
       </div>
 
       {/* Confirm Password */}
       <div className="relative">
         <Label className="block text-sm font-semibold text-black mb-2">
-          Confirm Password
+          {t.forgotPassword.confirmPasswordLabel}
         </Label>
 
         <Input
           type={showConfirmPassword ? "text" : "password"}
           value={confirmPassword}
           onChange={(value) => setConfirmPassword(value)}
-          className="w-full h-12 px-4 pr-10 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
-          placeholder="Confirm new password"
-          required
-        />
-
-        <Button
+          rightElement={
+            <Button
           type="button"
           onClick={() => setShowConfirmPassword((p) => !p)}
-          className="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
+          className="absolute right-1  text-gray-500 hover:text-gray-700"
         >
           {showConfirmPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
         </Button>
+          }
+          className="w-full h-12 px-4 pr-10 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+          placeholder={t.forgotPassword.confirmPasswordPlaceholder}
+          required
+        />
+
+        
       </div>
 
       {/* Submit Button */}
@@ -96,7 +103,7 @@ export default function ForgotResetPassword({
         type="submit"
         className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-md transition hover:bg-blue-700 hover:-translate-y-0.5"
       >
-        Reset Password
+        {t.forgotPassword.resetPassword}
       </Button>
     </form>
   );

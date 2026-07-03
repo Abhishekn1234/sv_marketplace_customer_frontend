@@ -1,39 +1,58 @@
-import React, { useState } from "react";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface ImageProps
+  extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallback?: React.ReactNode;
   wrapperClassName?: string;
 }
 
-export function Image({
-  src,
-  alt = "image",
-  className = "",
-  wrapperClassName = "",
-  fallback,
-  ...props
-}: ImageProps) {
-  const [error, setError] = useState(false);
+export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
+  (
+    {
+      src,
+      alt = "image",
+      className,
+      wrapperClassName,
+      fallback,
+      onError,
+      ...props
+    },
+    ref
+  ) => {
+    const [error, setError] = React.useState(false);
 
-  if (!src || error) {
+    if (!src || error) {
+      return (
+        <div
+          className={cn(
+            "flex items-center justify-center bg-gray-100",
+            wrapperClassName
+          )}
+        >
+          {fallback ?? (
+            <span className="text-xs text-gray-400">
+              No Image
+            </span>
+          )}
+        </div>
+      );
+    }
+
     return (
-      <div
-        className={`flex items-center justify-center bg-gray-100 ${wrapperClassName}`}
-      >
-        {fallback ?? (
-          <span className="text-xs text-gray-400">No Image</span>
-        )}
-      </div>
+      <img
+        ref={ref}
+        src={src}
+        alt={alt}
+        className={cn(className)}
+        onError={(e) => {
+          setError(true);
+          onError?.(e);
+        }}
+        {...props}
+      />
     );
   }
+);
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setError(true)}
-      className={className}
-      {...props}
-    />
-  );
-}
+Image.displayName = "Image";

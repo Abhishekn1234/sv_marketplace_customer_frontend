@@ -2,6 +2,15 @@
 
 import type { ReactNode } from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { cn } from "@/lib/utils";
+
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 interface CommonCardProps {
   children: ReactNode;
@@ -12,7 +21,7 @@ interface CommonCardProps {
 
   type?:
     | "none"
-    |"darkblue"
+    | "darkblue"
     | "white"
     | "soft"
     | "dark"
@@ -40,63 +49,64 @@ export default function CommonCard({
   const isRTL = forceRTL ? true : forceLTR ? false : isRTLOrder;
 
   const typeStyles = {
-    none: "bg-transparent border-0 shadow-none",
-    orange: "bg-orange-50 border border-orange-200 shadow-sm",
-    red: "bg-red-50 border border-red-200 shadow-sm",
-    green: "bg-green-50 border border-green-200 shadow-sm",
-    blue: "bg-blue-50 border border-blue-200 shadow-sm",
-    darkblue:"bg-blue-700 border border-blue-200 shadow-sm",
-    white: "bg-white border border-gray-200 shadow-sm",
-    soft: "bg-gray-50 border border-gray-100 shadow-sm",
-    dark: "bg-gray-900 text-white border border-gray-800 shadow-md",
+    none: "border-0 shadow-none bg-transparent",
+    orange: "bg-orange-50 border-orange-200",
+    red: "bg-red-50 border-red-200",
+    green: "bg-green-50 border-green-200",
+    blue: "bg-blue-50 border-blue-200",
+    darkblue: "bg-blue-700 text-white border-blue-800",
+    white: "bg-white border-gray-200",
+    soft: "bg-gray-50 border-gray-100",
+    dark: "bg-gray-900 text-white border-gray-800",
   };
 
   return (
-    <div
+    <Card
       onClick={onClick}
       dir={isRTL ? "rtl" : "ltr"}
-      className={`
-        rounded-xl
-        p-4 sm:p-5
-        transition
-
-        ${typeStyles[type]}
-
-        ${onClick ? "cursor-pointer hover:shadow-md" : ""}
-
-        ${className}
-      `}
+      className={cn(
+        "transition",
+        "rounded-xl shadow-sm",
+        onClick && "cursor-pointer hover:shadow-md",
+        typeStyles[type],
+        className
+      )}
     >
       {/* HEADER */}
       {title && (
-        <div
-          className={`mb-3 text-sm font-semibold ${
-            type === "dark" ? "text-white" : "text-gray-800"
-          } ${isRTL ? "text-right" : "text-left"}`}
-        >
-          {title}
-        </div>
+        <CardHeader className={cn("pb-2", isRTL ? "text-right" : "text-left")}>
+          <CardTitle
+            className={cn(
+              type === "dark" || type === "darkblue"
+                ? "text-white"
+                : "text-gray-800",
+              "text-sm font-semibold"
+            )}
+          >
+            {title}
+          </CardTitle>
+        </CardHeader>
       )}
 
-      {/* BODY */}
-      <div className={isRTL ? "text-right" : "text-left"}>
+      {/* CONTENT */}
+      <CardContent className={cn(isRTL ? "text-right" : "text-left")}>
         {children}
-      </div>
+      </CardContent>
 
       {/* FOOTER */}
       {footer && (
-        <div
-          className={`mt-4 pt-3 border-t ${
+        <CardFooter
+          className={cn(
+            "border-t pt-3",
             type === "dark"
               ? "border-gray-700"
-              : "border-gray-100"
-          } ${
+              : "border-gray-100",
             isRTL ? "text-right" : "text-left"
-          }`}
+          )}
         >
           {footer}
-        </div>
+        </CardFooter>
       )}
-    </div>
+    </Card>
   );
 }

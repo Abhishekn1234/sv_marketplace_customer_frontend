@@ -17,6 +17,9 @@
       "signup": "साइन अप"},
   "onboarding": {
     "title": "सेटअप पूरा करें",
+    "use": "इस्तेमाल करें",
+    "view": "देखें",
+
     "completedTitle": "आप तैयार हैं 🎉",
     "completedSubtitle": "सेटअप पूरा हो गया, जल्द ही बंद होगा…",
     "progressLabel": "सेटअप प्रगति",
@@ -208,10 +211,66 @@
       "continue": "शेड्यूल पर जारी रखें"
     }
   },
+  "loginCard": {
+    "title": "वापसी पर स्वागत है",
+    "subtitle": "अपने डैशबोर्ड तक पहुंचने के लिए अपनी जानकारी दर्ज करें",
+    "emailLabel": "ईमेल पता",
+    "emailPlaceholder": "name@homeease.com",
+    "passwordLabel": "पासवर्ड",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "मुझे लॉग इन रखें",
+    "continue": "जारी रखें",
+    "secureAccess": "सुरक्षित प्रवेश",
+    "newToPlatform": "हमारे प्रीमियम नेटवर्क में नए हैं?",
+    "joinAsPartner": "पार्टनर बनें"
+  },
+  "forgotPassword": {
+      "titleEmail": "पासवर्ड भूल गए",
+      "titleOtp": "OTP दर्ज करें",
+      "titleReset": "पासवर्ड रीसेट करें",
+
+      "descEmail": "रीसेट कोड प्राप्त करने के लिए अपना ईमेल दर्ज करें",
+      "descOtp": "अपने ईमेल पर भेजा गया OTP दर्ज करें",
+      "descReset": "अपना नया पासवर्ड दर्ज करें",
+
+      "emailLabel": "ईमेल पता",
+      "emailPlaceholder": "john@example.com",
+      "otpLabel": "OTP दर्ज करें",
+      "otpPlaceholder": "6 अंकों का OTP दर्ज करें",
+
+      "newPasswordLabel": "नया पासवर्ड",
+      "confirmPasswordLabel": "पासवर्ड की पुष्टि करें",
+
+      "sendOtp": "OTP भेजें",
+      "verifyOtp": "OTP सत्यापित करें",
+      "resetPassword": "पासवर्ड रीसेट करें",
+
+      "backToLogin": "लॉगिन पर वापस जाएं",
+       "confirmPasswordPlaceholder": "नए पासवर्ड की पुष्टि करें",
+      "errors": {
+        "enterEmail": "कृपया अपना ईमेल दर्ज करें",
+        "otpInvalid": "मान्य 6 अंकों का OTP दर्ज करें",
+        "passwordMismatch": "पासवर्ड मेल नहीं खा रहे हैं",
+        "passwordLength": "पासवर्ड कम से कम 8 अक्षर का होना चाहिए"
+      },
+
+      "success": {
+        "otpSent": "OTP आपके ईमेल पर भेज दिया गया है!",
+        "otpVerified": "OTP सत्यापित हो गया!",
+        "passwordReset": "पासवर्ड सफलतापूर्वक बदल दिया गया!"
+      }
+    },
    "bookingdetailpage":{
      "backToServices": "सेवाओं पर वापस जाएं",
       "title": "बुकिंग विवरण",
       "vatRate": "वैट दर",
+      "Cancel":"रद्द करें",
+      "Save":"सहेजें",
+      "Getting location...":"स्थान प्राप्त कर रहे हैं...",
+      "Type your home address...":"अपना होम पता टाइप करें...",
+      "Update Home Address":"होम पता अपडेट करें",
+      "Location will be captured from your current position": "स्थान आपके वर्तमान स्थान से कैप्चर किया जाएगा",
       "number of Workers needed": "आवश्यक श्रमिकों की संख्या",
        "Apartment, street, building...":"अपार्टमेंट, सड़क, इमारत...",
        "e.g. Focus on kitchen cabinets, be careful with the glass table...":"जैसे, किचन कैबिनेट पर ध्यान दें, कांच की मेज़ का ध्यान रखें...",

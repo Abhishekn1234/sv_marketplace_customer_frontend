@@ -1,33 +1,59 @@
-
+import * as React from "react";
+import {
+  RadioGroup as ShadcnRadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface RadioOption {
   label: string;
   value: string;
 }
 
-interface RadioGroupProps {
+interface RadioGroupProps
+  extends Omit<
+    React.ComponentProps<typeof ShadcnRadioGroup>,
+    "value" | "onValueChange" | "onChange"
+  > {
   name: string;
   options: RadioOption[];
   value: string;
   onChange: (val: string) => void;
 }
-
-export function RadioGroup({ name, options, value, onChange }: RadioGroupProps) {
+export function RadioGroup({
+  name,
+  options,
+  value,
+  onChange,
+  className,
+  ...props
+}: RadioGroupProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <ShadcnRadioGroup
+      value={value}
+      onValueChange={onChange}
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    >
       {options.map((opt) => (
-        <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
-          <input
-            type="radio"
-            name={name}
+        <div
+          key={opt.value}
+          className="flex items-center gap-2"
+        >
+          <RadioGroupItem
+            id={`${name}-${opt.value}`}
             value={opt.value}
-            checked={value === opt.value}
-            onChange={() => onChange(opt.value)}
-            className="accent-blue-600"
           />
-          {opt.label}
-        </label>
+
+          <Label
+            htmlFor={`${name}-${opt.value}`}
+            className="cursor-pointer text-sm font-normal"
+          >
+            {opt.label}
+          </Label>
+        </div>
       ))}
-    </div>
+    </ShadcnRadioGroup>
   );
 }

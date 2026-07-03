@@ -20,6 +20,8 @@
    "onboarding": {
     "title": "إكمال الإعداد",
     "completedTitle": "تم الإعداد بالكامل 🎉",
+      "use": "استخدم",
+    "view": "عرض",
     "completedSubtitle": "اكتمل الإعداد، سيتم الإغلاق قريبًا…",
     "progressLabel": "تقدم الإعداد",
     "stepCount": "تم إكمال {{done}} من أصل {{total}} خطوة",
@@ -210,9 +212,65 @@
       "continue": "المتابعة إلى الجدولة"
     }
   },
+   "loginCard": {
+    "title": "مرحبًا بعودتك",
+    "subtitle": "أدخل بياناتك للوصول إلى لوحة التحكم",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "name@homeease.com",
+    "passwordLabel": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "تذكرني",
+    "continue": "متابعة",
+    "secureAccess": "وصول آمن",
+    "newToPlatform": "جديد على شبكتنا المميزة؟",
+    "joinAsPartner": "انضم كشريك"
+  },
+    "forgotPassword": {
+      "titleEmail": "نسيت كلمة المرور",
+      "titleOtp": "أدخل رمز التحقق",
+      "titleReset": "إعادة تعيين كلمة المرور",
+
+      "descEmail": "أدخل بريدك الإلكتروني لاستلام رمز إعادة التعيين",
+      "descOtp": "أدخل رمز OTP المرسل إلى بريدك",
+      "descReset": "أدخل كلمة المرور الجديدة",
+
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "john@example.com",
+      "otpLabel": "أدخل OTP",
+      "otpPlaceholder": "أدخل رمز مكون من 6 أرقام",
+       "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+      "newPasswordLabel": "كلمة المرور الجديدة",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+
+      "sendOtp": "إرسال OTP",
+      "verifyOtp": "تحقق من OTP",
+      "resetPassword": "إعادة تعيين",
+
+      "backToLogin": "العودة إلى تسجيل الدخول",
+
+      "errors": {
+        "enterEmail": "يرجى إدخال البريد الإلكتروني",
+        "otpInvalid": "أدخل رمز OTP صحيح مكون من 6 أرقام",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين",
+        "passwordLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل"
+      },
+
+      "success": {
+        "otpSent": "تم إرسال OTP إلى بريدك!",
+        "otpVerified": "تم التحقق من OTP!",
+        "passwordReset": "تم تغيير كلمة المرور بنجاح!"
+      }
+    },
   "bookingdetailpage":{
      "backToServices": "العودة إلى الخدمات",
      "title": "تفاصيل الحجز",
+     "Update Home Address": "تحديث عنوان المنزل",
+     "Cancel": "إلغاء",
+     "Getting location...": "جارٍ الحصول على الموقع...",
+    "Save": "حفظ",
+    "Type your home address...": "اكتب عنوان منزلك...",
+    "Location will be captured from your current position": "سيتم التقاط الموقع من موقعك الحالي",
       "vatRate": "ضريبة القيمة المضافة",
     "serviceSummary": "ملخص الخدمة",
     "serviceType": "نوع الخدمة",

@@ -13,7 +13,7 @@ export default function PrefeneceandNotifications() {
   const [email, setEmail] = useState(true);
   const [sms, setSms] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
-  const { t } = useLanguage();
+  const { t,isRTLOrder } = useLanguage();
 
   const settings = [
     {
@@ -52,45 +52,37 @@ export default function PrefeneceandNotifications() {
       <div className="flex flex-col gap-4">
 
         {settings.map((item, index) => (
-          <div
-            key={index}
-            className="
-              flex flex-col sm:flex-row sm:items-center sm:justify-between
-              gap-4 p-4 sm:p-5
-              bg-gray-50 border border-gray-200 rounded-2xl
-              transition-all duration-200
-              hover:border-blue-500 hover:bg-white
-            "
-          >
-
-            {/* Left */}
-            <div className="flex items-start sm:items-center gap-4">
-
-              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border border-gray-200 rounded-xl shrink-0">
-                <item.icon className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-blue-600" />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold text-gray-900">
-                  {item.label}
-                </span>
-
-                <span className="text-xs sm:text-[13px] text-gray-500">
-                  {item.desc}
-                </span>
-              </div>
-
+         <div
+          key={index}
+          dir={isRTLOrder ? "rtl" : "ltr"}
+          className="
+            flex items-center justify-between
+            gap-4 p-4 sm:p-5
+            bg-gray-50 border border-gray-200 rounded-2xl
+            hover:border-blue-500 hover:bg-white
+          "
+        >
+          {/* LEFT SIDE */}
+          <div className={`flex items-center gap-4 ${isRTLOrder ? "flex-row-reverse" : ""}`}>
+            <div className="w-10 h-10 flex items-center justify-center bg-white border rounded-xl">
+              <item.icon className="w-5 h-5 text-blue-600" />
             </div>
 
-            {/* Toggle */}
-            <div className="">
-              <Toggle
-                enabled={item.state}
-                setEnabled={item.setState}
-              />
+            <div className={isRTLOrder ? "text-right" : "text-left"}>
+              <div className="text-sm font-semibold text-gray-900">
+                {item.label}
+              </div>
+              <div className="text-xs text-gray-500">
+                {item.desc}
+              </div>
             </div>
-
           </div>
+
+          {/* RIGHT SIDE */}
+          <div className="shrink-0">
+            <Toggle enabled={item.state} setEnabled={item.setState} />
+          </div>
+        </div>
         ))}
 
       </div>

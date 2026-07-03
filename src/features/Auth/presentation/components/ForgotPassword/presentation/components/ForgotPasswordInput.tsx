@@ -1,11 +1,13 @@
 import { handleApiError } from "@/components/common/ApiError";
 import { Input, Label } from "@/components/input";
 import Button from "@/components/input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 import React from "react";
 import { toast } from "react-toastify";
 
 interface Props {
   email: string;
+ 
   setEmail: (val: string) => void;
   onNext: (hash: string) => void;
   forgotPassword: (data: { email: string }) => Promise<{ hash: string }>;
@@ -14,34 +16,40 @@ interface Props {
 export default function ForgotPasswordInput({
   email,
   setEmail,
+
   onNext,
   forgotPassword,
 }: Props) {
+  const {t}=useLanguage();
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) return toast.error("Please enter your email");
+    // ✅ FIXED HERE
+    if (!email)
+      return toast.error(t.forgotPassword.errors.enterEmail);
 
     try {
       const res = await forgotPassword({ email });
-      toast.success("OTP sent to your email!");
+
+      toast.success(t.forgotPassword.success.otpSent);
+
       onNext(res.hash);
     } catch (err: any) {
-     handleApiError(err);
+      handleApiError(err);
     }
   };
 
   return (
     <form onSubmit={handleSendOTP} className="space-y-6">
-      
+
       <div>
         <Label className="block text-sm font-semibold text-black mb-2">
-          Email Address
+          {t.forgotPassword.emailLabel}
         </Label>
 
         <Input
           type="email"
-          placeholder="john@example.com"
+          placeholder={t.forgotPassword.emailPlaceholder}
           value={email}
           onChange={(value) => setEmail(value)}
           required
@@ -53,7 +61,7 @@ export default function ForgotPasswordInput({
         type="submit"
         className="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold shadow-md transition hover:bg-blue-700 hover:-translate-y-0.5"
       >
-        Send OTP
+        {t.forgotPassword.sendOtp}
       </Button>
     </form>
   );

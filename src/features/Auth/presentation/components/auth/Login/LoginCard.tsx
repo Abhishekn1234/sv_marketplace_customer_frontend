@@ -4,16 +4,17 @@ import { toast } from 'react-toastify';
 import { useAuth } from '@/features/Auth/presentation/hooks/useAuth';
 import { Checkbox, Input, Label } from '@/components/input';
 import Button from '@/components/input/Button';
-import { ArrowRight } from '@/components/icons';
+import { ArrowRight, EyeIcon, EyeOffIcon } from '@/components/icons';
 import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 import { handleApiError } from '@/components/common/ApiError';
+import { useLanguage } from '@/features/context/LanguageContext';
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const {t}=useLanguage();
   const navigate = useNavigate();
   const { login, loading } = useAuth();
 
@@ -36,10 +37,10 @@ const LoginCard = () => {
       {/* Header */}
       <div className="text-center mb-8 flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-          Welcome Back
+          {t.loginCard.title}
         </h1>
         <span className="text-sm font-medium text-gray-500">
-          Enter your credentials to access your dashboard
+         {t.loginCard.subtitle}
         </span>
       </div>
 
@@ -48,11 +49,11 @@ const LoginCard = () => {
         {/* Email */}
         <div>
           <Label className="block text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
-            Email Address
+           {t.loginCard.emailLabel}
           </Label>
           <Input
             type="email"
-            placeholder="name@homeease.com"
+            placeholder={t.loginCard.emailPlaceholder}
             value={email}
             onChange={(value) => setEmail(value)}
             required
@@ -61,70 +62,55 @@ const LoginCard = () => {
         </div>
 
         {/* Password */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <Label className="text-xs font-bold uppercase tracking-wide text-gray-400">
-              Password
-            </Label>
-            <Link
-              to="/forgot-password"
-              className="text-xs font-bold text-blue-600 hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <div className="relative">
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
-              value={password}
-              onChange={(value) => setPassword(value)}
-              required
-              className="w-full px-4 h-13 text-gray-900 text-sm border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 pr-12 outline-none"
-            />
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <Label className="text-xs font-bold uppercase tracking-wide text-gray-400">
+            {t.loginCard.passwordLabel}
+          </Label>
+
+          <Link
+            to="/forgot-password"
+            className="text-xs font-bold text-blue-600 hover:underline"
+          >
+            {t.loginCard.forgotPassword}
+          </Link>
+        </div>
+
+  {/* INPUT WRAPPER */}
+      <div className="relative">
+        <Input
+          type={showPassword ? "text" : "password"}
+          placeholder={t.loginCard.passwordPlaceholder}
+          value={password}
+          onChange={(value) => setPassword(value)}
+         rightElement={
             <Button
               type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
               onClick={() => setShowPassword(!showPassword)}
+              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-blue-600"
             >
-              {showPassword ? (
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                  <path d="M1 1l22 22"/>
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
+              {showPassword ? <EyeIcon size={5} /> : <EyeOffIcon  size={5}/>}
             </Button>
-          </div>
-        </div>
+          }
+          required
+          className="w-full px-4 h-13 pr-12 text-gray-900 text-sm border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none"
+        />
+
+      
+       
+      </div>
+    </div>
 
         {/* Remember me */}
         <div className="flex items-center gap-2.5">
-          <Checkbox
-            type="checkbox"
+                    <Checkbox
             id="remember"
             checked={rememberMe}
-            onChange={(value) => setRememberMe(value)}
-            className="w-4 h-4 accent-blue-600 cursor-pointer"
+            onChange={setRememberMe}
+            className="w-4 h-4 cursor-pointer"
           />
           <Label htmlFor="remember" className="text-gray-600 font-medium cursor-pointer">
-            Keep me logged in
+           {t.loginCard.rememberMe}
           </Label>
         </div>
 
@@ -144,7 +130,7 @@ const LoginCard = () => {
       <CommonSpinner size={15} color='white'/>
     ) : (
       <>
-        <span>Continue</span>
+        <span>{t.loginCard.continue}</span>
 
      
       </>
@@ -157,7 +143,7 @@ const LoginCard = () => {
       <div className="flex items-center gap-4 my-6">
         <div className="flex-1 h-px bg-gray-200"></div>
         <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
-          Secure Access
+         {t.loginCard.secureAccess}
         </span>
         <div className="flex-1 h-px bg-gray-200"></div>
       </div>
@@ -183,12 +169,12 @@ const LoginCard = () => {
 
       {/* Footer link */}
       <p className="text-center text-gray-500 text-sm font-medium">
-        New to our premium network?{' '}
+       {t.loginCard.newToPlatform}{' '}
         <Link
           to="/register"
           className="text-yellow-500 font-bold hover:underline"
         >
-          Join as a Partner
+         {t.loginCard.joinAsPartner}
         </Link>
       </p>
     </div>

@@ -1,8 +1,12 @@
 import * as React from "react";
+import { Label as ShadcnLabel } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 export interface LabelProps
-  extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  extends Omit<
+    React.ComponentProps<typeof ShadcnLabel>,
+    "children"
+  > {
   required?: boolean;
   optionalText?: React.ReactNode;
   hint?: React.ReactNode;
@@ -11,6 +15,8 @@ export interface LabelProps
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   variant?: "default" | "card";
+
+  children?: React.ReactNode;
 }
 
 export function Label({
@@ -28,11 +34,11 @@ export function Label({
   const base = "text-sm font-semibold text-gray-900";
 
   const cardStyle =
-    "flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 border";
+    "flex items-center justify-between px-5 py-4 rounded-2xl border cursor-pointer transition-all duration-300";
 
   return (
     <div className="space-y-1">
-      <label
+      <ShadcnLabel
         className={cn(
           base,
           variant === "card" && cardStyle,
@@ -41,11 +47,17 @@ export function Label({
         {...props}
       >
         <div className="flex items-center gap-2">
-          {leftIcon && <span className="shrink-0">{leftIcon}</span>}
+          {leftIcon && (
+            <span className="shrink-0">
+              {leftIcon}
+            </span>
+          )}
 
           <span>
             {children}
-            {required && <span className="ml-1 text-red-600">*</span>}
+            {required && (
+              <span className="ml-1 text-red-600">*</span>
+            )}
           </span>
         </div>
 
@@ -57,15 +69,21 @@ export function Label({
           )}
 
           {rightIcon && (
-            <span className="shrink-0">{rightIcon}</span>
+            <span className="shrink-0">
+              {rightIcon}
+            </span>
           )}
         </div>
-      </label>
+      </ShadcnLabel>
 
       {error ? (
-        <p className="text-xs font-medium text-red-600">{error}</p>
+        <p className="text-xs font-medium text-red-600">
+          {error}
+        </p>
       ) : hint ? (
-        <p className="text-xs text-gray-500">{hint}</p>
+        <p className="text-xs text-gray-500">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

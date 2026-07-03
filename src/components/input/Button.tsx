@@ -1,16 +1,23 @@
 import React from "react";
+import { Button as ShadcnButton } from "@/components/ui/button";
 import CommonSpinner from "../common/CommonLoadingSpinner";
+import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "none";
 type ButtonSize = "sm" | "md" | "lg";
 type ButtonRadius = "sm" | "md" | "lg" | "full" | "none";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps
+  extends Omit<
+    React.ComponentProps<typeof ShadcnButton>,
+    "variant" | "size"
+  > {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
   radius?: ButtonRadius;
-  icon?: boolean;
+  icon?: boolean;        // legacy
+  iconOnly?: boolean;    // NEW FIX
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
@@ -18,30 +25,36 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function Button({
   children,
-  variant = "none",
+  variant = "ghost",
   size = "md",
-  loading = false,
   radius = "md",
+  loading = false,
   leftIcon,
   rightIcon,
-  fullWidth = false,
+  fullWidth,
+  iconOnly,
   disabled,
-  icon,
-  className = "",
+  className,
   ...props
 }: ButtonProps) {
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700",
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
     danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "bg-transparent hover:bg-gray-100 text-gray-800",
-    none: "",
+    ghost: "bg-transparent text-gray-800 hover:bg-gray-100",
+    none: "text-inherit hover:text-inherit",
   };
 
   const sizes = {
-    sm: "text-sm px-3 py-1.5",
-    md: "text-sm px-4 py-2",
-    lg: "text-base px-5 py-3",
+    sm: "text-sm px-3 py-1.5 h-9",
+    md: "text-sm px-4 py-2 h-10",
+    lg: "text-base px-5 py-3 h-12",
+  };
+
+  const iconSizes = {
+    sm: "h-8 w-8 p-0",
+    md: "h-9 w-9 p-0",
+    lg: "h-10 w-10 p-0",
   };
 
   const radii = {
@@ -53,42 +66,27 @@ export default function Button({
   };
 
   return (
-    <button
-      className={`
-        inline-flex items-center justify-center
-        whitespace-nowrap
-        gap-2 font-medium transition duration-200
-        disabled:opacity-60 disabled:cursor-not-allowed
-        ${icon ? "w-8 h-8 p-0" : sizes[size]}
-        ${radii[radius]}
-        ${variants[variant]}
-        ${fullWidth ? "w-full" : ""}
-        ${className}
-      `}
+    <ShadcnButton
       disabled={disabled || loading}
+      className={cn(
+        variants[variant],
+        !iconOnly && sizes[size],
+        iconOnly && iconSizes[size],
+        radii[radius],
+        fullWidth && "w-full",
+        className
+      )}
       {...props}
     >
-      {/* LEFT ICON / LOADER */}
       {loading ? (
         <CommonSpinner size={16} />
       ) : (
-        leftIcon && (
-          <span className="shrink-0 flex items-center">
-            {leftIcon}
-          </span>
-        )
+        <>
+          {leftIcon}
+          {!iconOnly && children}
+          {!iconOnly && rightIcon}
+        </>
       )}
-
-      {/* CONTENT (TEXT + RIGHT ICON INLINE) */}
-      <span className="inline-flex items-center gap-1 whitespace-nowrap">
-        {children}
-
-        {!loading && rightIcon && (
-          <span className="shrink-0 flex items-center">
-            {rightIcon}
-          </span>
-        )}
-      </span>
-    </button>
+    </ShadcnButton>
   );
 }

@@ -9,6 +9,7 @@ import type { SendOTPRequest } from '../../domain/entities/sendotprequest.types'
 import type { LoginRequest } from '../../domain/entities/loginrequest.types';
 import type { RegisterRequest } from '../../domain/entities/registerrequest';
 import { handleApiError } from '@/components/common/ApiError';
+import { handleSuccess } from '@/components/common/ApiSuccess';
 export const useAuth = () => {
   const setTokens = useAuthStore((state) => state.setTokens);
   const setUser = useAuthStore((state) => state.setUser);
@@ -37,7 +38,7 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: (req: RegisterRequest) => AuthRepository.register(req),
     onSuccess: (res: any) => {
-      toast.success(res?.message || 'Registration successful ✅');
+     handleSuccess(res);
     },
     onError: (err: any) => {
       handleApiError(err);
@@ -70,7 +71,7 @@ export const useAuth = () => {
   const forgotPasswordMutation = useMutation({
     mutationFn: (req: ForgotPasswordRequest) => AuthRepository.forgotPassword(req),
     onSuccess: (res: any) => {
-      toast.success(res?.message || 'Password reset link sent ✅');
+     handleSuccess(res);
     },
     onError: (err: any) => {
      handleApiError(err);

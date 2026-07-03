@@ -183,11 +183,67 @@
       "continue": "Continue to Schedule"
     }
   },
+    "loginCard": {
+    "title": "Welcome Back",
+    "subtitle": "Enter your credentials to access your dashboard",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@homeease.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Keep me logged in",
+    "continue": "Continue",
+    "secureAccess": "Secure Access",
+    "newToPlatform": "New to our premium network?",
+    "joinAsPartner": "Join as a Partner"
+  },
+  "forgotPassword": {
+      "titleEmail": "Forgot Password",
+      "titleOtp": "Enter OTP",
+      "titleReset": "Reset Password",
+
+      "descEmail": "Enter your email to receive a reset code",
+      "descOtp": "Enter the OTP sent to your email",
+      "descReset": "Enter your new password",
+
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "john@example.com",
+      "otpLabel": "Enter OTP",
+      "otpPlaceholder": "Enter 6-digit OTP",
+
+      "newPasswordLabel": "New Password",
+      "confirmPasswordLabel": "Confirm Password",
+
+      "sendOtp": "Send OTP",
+      "verifyOtp": "Verify OTP",
+      "resetPassword": "Reset Password",
+
+      "backToLogin": "Back to Login",
+       "confirmPasswordPlaceholder":"Enter your new confirm password",
+      "errors": {
+        "enterEmail": "Please enter your email",
+        "otpInvalid": "Enter a valid 6-digit OTP",
+        "passwordMismatch": "Passwords do not match",
+        "passwordLength": "Password must be at least 8 characters"
+      },
+
+      "success": {
+        "otpSent": "OTP sent to your email!",
+        "otpVerified": "OTP verified!",
+        "passwordReset": "Password reset successful!"
+      }
+    },
    "bookingdetailpage":{
     "backToServices": "Back to Services",
     "number of Workers needed":"Number Of Workers Needed",
     "title": "Booking Details",
     "vatRate": "VAT Rate",
+    "Update Home Address": "Update Home Address",
+    "Cancel": "Cancel",
+    "Save": "Save",
+    "Type your home address...": "Type your home address...",
+    "Getting location...": "Getting location...",
+    "Location will be captured from your current position":"Location will be captured from your current position",
     "serviceSummary": "Service Summary",
     "serviceType": "Service Type",
     "serviceProfessional": "Service Professional",
@@ -427,6 +483,9 @@
 },
 "onboarding": {
     "title": "Complete setup",
+        "use": "Use",
+    "view": "View",
+
     "completedTitle": "You're all set! 🎉",
     "completedSubtitle": "Setup complete, closing shortly…",
     "progressLabel": "Setup Progress",

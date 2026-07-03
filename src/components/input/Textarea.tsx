@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Field } from "./Field";
-import { textareaClassName } from "./inputStyles";
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  extends React.ComponentProps<typeof ShadcnTextarea> {
   label?: React.ReactNode;
   helperText?: React.ReactNode;
   error?: React.ReactNode;
@@ -15,12 +15,16 @@ export interface TextareaProps
 
   autoResize?: boolean;
   maxHeight?: number;
+
   rightElement?: React.ReactNode;
   inputWrapperClassName?: string;
   rightElementClassName?: string;
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  TextareaProps
+>(
   (
     {
       id,
@@ -34,6 +38,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
       autoResize = false,
       maxHeight = 120,
+
       rightElement,
       inputWrapperClassName,
       rightElementClassName,
@@ -43,15 +48,21 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const innerRef = React.useRef<HTMLTextAreaElement | null>(null);
+    const innerRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useImperativeHandle(ref, () => innerRef.current!);
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChange = (
+      e: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
       if (autoResize && innerRef.current) {
         const el = innerRef.current;
+
         el.style.height = "auto";
-        el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
+        el.style.height = `${Math.min(
+          el.scrollHeight,
+          maxHeight
+        )}px`;
       }
 
       onChange?.(e);
@@ -66,35 +77,36 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         required={required}
         containerClassName={containerClassName}
         labelClassName={labelClassName}
+      >
+        <div
+          className={cn(
+            "relative w-full",
+            inputWrapperClassName
+          )}
         >
-          <div
-            className={cn(
-              "relative flex w-full items-end px-3 py-1 transition-all duration-150",
-              inputWrapperClassName
-            )}
-          >
-          <textarea
+          <ShadcnTextarea
             ref={innerRef}
             id={id}
             required={required}
             rows={1}
-            aria-invalid={Boolean(error) || undefined}
+            aria-invalid={!!error}
             onChange={handleChange}
             className={cn(
-              "flex-1 resize-none bg-transparent outline-none",
-              "text-sm sm:text-base leading-5",
-              "min-h-[36px] max-h-[120px]",
-              "overflow-y-auto",
-              "placeholder:text-gray-400",
-              "pr-12", // space for send button
-              textareaClassName,
+              autoResize &&
+                "resize-none overflow-y-auto min-h-[40px]",
+              rightElement && "pr-12",
               className
             )}
             {...props}
           />
 
           {rightElement && (
-            <div className={cn("absolute bottom-2 right-5 flex items-center", rightElementClassName)}>
+            <div
+              className={cn(
+                "absolute right-3 bottom-3 flex items-center",
+                rightElementClassName
+              )}
+            >
               {rightElement}
             </div>
           )}

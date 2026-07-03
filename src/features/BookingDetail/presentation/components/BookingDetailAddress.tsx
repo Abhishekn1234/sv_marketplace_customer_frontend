@@ -179,7 +179,7 @@ export default function BookingDetailAddress() {
     <CommonModal
   open={isOpen}
   onClose={() => setIsOpen(false)}
-  title="Update Home Address"
+  title={t.bookingdetailpage["Update Home Address"]}
   width="max-w-md"
   footer={
     <>
@@ -194,7 +194,7 @@ export default function BookingDetailAddress() {
           hover:text-gray-900
         "
       >
-        Cancel
+        {t.bookingdetailpage.Cancel}
       </Button>
 
       <Button
@@ -214,8 +214,8 @@ export default function BookingDetailAddress() {
         "
       >
         {loadingLocation
-          ? "Getting location..."
-          : "Save"}
+          ? t.bookingdetailpage["Getting location..."]
+          :t.bookingdetailpage.Save}
       </Button>
     </>
   }
@@ -227,7 +227,7 @@ export default function BookingDetailAddress() {
       onChange={(value) =>
         setHomeAddress(value)
       }
-      placeholder="Type your home address..."
+      placeholder={t.bookingdetailpage["Type your home address..."]}
       className="
         mb-2
         w-full
@@ -245,8 +245,7 @@ export default function BookingDetailAddress() {
     />
 
     <p className="text-xs text-gray-400">
-      Location will be captured from your
-      current position
+     {t.bookingdetailpage["Location will be captured from your current position"]}
     </p>
   </div>
 </CommonModal>

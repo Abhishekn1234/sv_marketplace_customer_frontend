@@ -1,14 +1,25 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
+import { Input } from "@/components/ui/input";
 
-interface FileInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface FileInputProps
+  extends Omit<
+    React.ComponentProps<typeof Input>,
+    "type" | "onChange"
+  > {
   onFileChange: (file: File) => void;
-  children?: React.ReactNode; // For the trigger button
+  children?: React.ReactNode;
 }
 
-export function FileInput({ onFileChange, children, ...props }: FileInputProps) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+export function FileInput({
+  onFileChange,
+  children,
+  ...props
+}: FileInputProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInternalFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInternalFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       onFileChange(file);
@@ -21,8 +32,22 @@ export function FileInput({ onFileChange, children, ...props }: FileInputProps) 
 
   return (
     <>
-      <input type="file" ref={fileInputRef} onChange={handleInternalFileChange} className="hidden" {...props} />
-      {children && <div onClick={handleClick}>{children}</div>}
+      <Input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        onChange={handleInternalFileChange}
+        {...props}
+      />
+
+      {children && (
+        <div
+          onClick={handleClick}
+          className="cursor-pointer"
+        >
+          {children}
+        </div>
+      )}
     </>
   );
 }

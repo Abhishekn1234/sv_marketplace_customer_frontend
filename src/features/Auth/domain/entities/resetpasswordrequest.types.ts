@@ -1,4 +1,4 @@
 export interface ResetPasswordRequest {
-  email: string;
+  email?: string;
   password: string; 
 }

@@ -1,22 +1,28 @@
 import * as React from "react";
+import { Badge as ShadcnBadge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+type BadgeVariant =
+  | "default"
+  | "primary"
+  | "secondary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "outline";
+
+type BadgeSize = "sm" | "md" | "lg";
+
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?:
-    | "default"
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger"
-    | "outline";
-
-  size?: "sm" | "md" | "lg";
-
+  extends Omit<
+    React.ComponentProps<typeof ShadcnBadge>,
+    "variant"
+  > {
+  variant?: BadgeVariant;
+  size?: BadgeSize;
+  rounded?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  rounded?: boolean;
 }
 
 export function Badge({
@@ -36,7 +42,7 @@ export function Badge({
     success: "bg-green-100 text-green-700",
     warning: "bg-yellow-100 text-yellow-700",
     danger: "bg-red-100 text-red-700",
-    outline: "border border-gray-300 text-gray-700 bg-transparent",
+    outline: "border border-gray-300 bg-transparent text-gray-700",
   };
 
   const sizes = {
@@ -46,12 +52,12 @@ export function Badge({
   };
 
   return (
-    <span
+    <ShadcnBadge
       className={cn(
-        "inline-flex items-center gap-1 font-medium whitespace-nowrap",
-        rounded ? "rounded-full" : "rounded-md",
         variants[variant],
         sizes[size],
+        rounded ? "rounded-full" : "rounded-md",
+        "inline-flex items-center gap-1 font-medium whitespace-nowrap",
         className
       )}
       {...props}
@@ -59,7 +65,7 @@ export function Badge({
       {leftIcon}
       {children}
       {rightIcon}
-    </span>
+    </ShadcnBadge>
   );
 }
 

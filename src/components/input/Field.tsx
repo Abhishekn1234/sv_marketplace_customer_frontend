@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
   fieldErrorClassName,
@@ -30,10 +31,15 @@ export function Field({
   return (
     <div className={containerClassName}>
       {label && (
-        <label htmlFor={id} className={cn(fieldLabelClassName, labelClassName)}>
+        <Label
+          htmlFor={id}
+          className={cn(fieldLabelClassName, labelClassName)}
+        >
           {label}
-          {required && <span className="ml-1 text-red-600">*</span>}
-        </label>
+          {required && (
+            <span className="ml-1 text-red-600">*</span>
+          )}
+        </Label>
       )}
 
       {children}

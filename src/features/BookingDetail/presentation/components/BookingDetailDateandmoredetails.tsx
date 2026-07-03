@@ -8,7 +8,7 @@ import { getCurrentLocation} from "@/features/utils/reverse";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
-import { Textarea } from "@/components/input";
+import { Input, Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
@@ -27,7 +27,7 @@ const selectedService = services?.find(
   const { current_location,accessToken } = useAuthStore();
   const {t}=useLanguage();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
-  const [selectedTime, setSelectedTime] = useState<number | null>(null);
+  const [selectedTime, setSelectedTime] = useState("");
   const [duration, setDuration] = useState(1);
   const[numberOfWorkers]=useState(1);
   // setNumberOfWorkers
@@ -56,7 +56,7 @@ const selectedService = services?.find(
     setPageStart((prev) => Math.min(prev + datesPerPage, allDates.length - datesPerPage));
 
 
-  const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
+  // const times = ["08:00 AM", "10:00 AM", "12:30 PM", "03:00 PM", "05:00 PM", "06:30 PM"];
       const selectedPricing = selectedService?.pricingTiers?.[0]; 
       // ✅ replace this with .find(...) if multiple tiers exist
 
@@ -104,13 +104,9 @@ const selectedService = services?.find(
     const selectedDateObj = new Date(today);
     selectedDateObj.setDate(today.getDate() + selectedDate);
 
-    const [time, modifier] = times[selectedTime].split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
+   const [hours, minutes] = selectedTime.split(":").map(Number);
 
-    if (modifier === "PM" && hours !== 12) hours += 12;
-    if (modifier === "AM" && hours === 12) hours = 0;
-
-    selectedDateObj.setHours(hours, minutes, 0, 0);
+selectedDateObj.setHours(hours, minutes, 0, 0);
 
     if (selectedDateObj.getTime() <= new Date().getTime()) {
       setLoading(false);
@@ -239,24 +235,12 @@ const selectedService = services?.find(
     </h2>
 
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-  {times.map((time, index) => (
-    <div
-      key={index}
-      onClick={() => setSelectedTime(index)}
-      className={`flex cursor-pointer items-center justify-center rounded-xl border-2 p-4 text-sm font-semibold transition-all
-        ${
-          selectedTime === index
-            ? "border-blue-600 bg-blue-600 text-white shadow-lg"
-            : "border-gray-200 bg-white hover:border-blue-600"
-        }
-      `}
-    >
-      {/* FORCE CORRECT TIME ORDER */}
-      <span dir="ltr" className="inline-block">
-        {time}
-      </span>
-    </div>
-  ))}
+  <Input
+  type="time"
+  value={selectedTime}
+  onChange={(value) => setSelectedTime(value)}
+  className="border rounded-lg p-3 w-full"
+/>
 </div>
   </div>
 
@@ -279,9 +263,9 @@ const selectedService = services?.find(
           {duration}
         </span>
 
-        <span className="ml-2 text-sm font-semibold text-gray-500">
-          Hours
-        </span>
+            <span className="ml-2 text-sm font-semibold text-gray-500">
+        {duration === 1 ? "Hour" : "Hours"}
+      </span>
       </div>
 
       <Button
@@ -346,7 +330,7 @@ const selectedService = services?.find(
     <div className="mb-2 flex justify-between text-sm">
       <span>
         {t.bookingdetailpage.basePrice}
-        ({duration} hrs)
+        ({duration} {duration === 1 ? "Hour" : "Hours"})
       </span>
 
       <span>

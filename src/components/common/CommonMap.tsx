@@ -2,6 +2,7 @@ import { useMapEvents, Marker, MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+
 interface CommonMapProps {
   lat: number;
   lng: number;

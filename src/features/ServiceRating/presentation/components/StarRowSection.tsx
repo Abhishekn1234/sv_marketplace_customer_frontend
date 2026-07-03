@@ -25,7 +25,8 @@ export const StarRowSection: FC<{
              w-12 h-12
             sm:w-14 sm:h-14
             md:w-14 md:h-14
-            lg:w-16 lg:h-16
+            lg:w-17 lg:h-17
+            cursor-pointer
           "
         >
           <StarIcon

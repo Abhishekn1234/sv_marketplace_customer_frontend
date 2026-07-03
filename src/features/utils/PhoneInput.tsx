@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import PhoneInputLib, { type PhoneInputProps } from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import "react-phone-input-2/"; 
 
 /* ---------------- TYPES ---------------- */
 
@@ -22,8 +22,6 @@ interface InputProps
   variant?: Variant;
   size?: Size;
   radius?: Radius;
-
-  /** important */
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
 }
 
@@ -45,16 +43,8 @@ const radiusStyles: Record<Radius, string> = {
 };
 
 const variantStyles: Record<Variant, string> = {
-  default: `
-    border border-gray-300
-    bg-white
-    focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-  `,
-  unstyled: `
-    bg-gray-100
-    border border-transparent
-    focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-  `,
+  default: "border border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100",
+  unstyled: "bg-gray-100 border border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100",
 };
 
 /* ---------------- PHONE WRAPPER ---------------- */
@@ -97,9 +87,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={containerClassName}>
         {/* LABEL */}
         {label && (
-          <label
-            className={`block text-sm font-semibold mb-2 ${labelClassName}`}
-          >
+          <label className={`block text-sm font-semibold mb-2 ${labelClassName}`}>
             {label}
           </label>
         )}
@@ -120,6 +108,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                   ${className}
                 `,
               }}
+              // Note: react-phone-input-2 injects its own wrapper styles. 
+              // To make it layout correctly, you often need to unstyle its container:
+              containerStyle={{ width: "100%" }}
             />
           ) : (
             /* ---------------- NORMAL INPUT ---------------- */

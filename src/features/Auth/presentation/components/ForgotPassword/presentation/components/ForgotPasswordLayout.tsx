@@ -7,13 +7,15 @@ import ForgotPasswordVerify from "./ForgotPasswordVerify";
 import ForgotResetPassword from "./ForgotResetPassword";
 import { useAuth } from "@/features/Auth/presentation/hooks/useAuth";
 import { ArrowLeftIcon } from "@/components/icons";
+import Button from "@/components/input/Button";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 
 export default function ForgotPasswordLayout() {
   const navigate = useNavigate();
   const { forgotPassword, verifyOTP, resetPassword } = useAuth();
-
+  const{t}=useLanguage();
   const [step, setStep] = useState<"email" | "otp" | "reset">("email");
   const [email, setEmail] = useState("");
   const [hash, setHash] = useState("");
@@ -28,19 +30,20 @@ export default function ForgotPasswordLayout() {
 
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900">
-              {step === "email" && "Forgot Password"}
-              {step === "otp" && "Enter OTP"}
-              {step === "reset" && "Reset Password"}
+              {step === "email" && t.forgotPassword.titleEmail}
+              {step === "otp" && t.forgotPassword.titleOtp}
+              {step === "reset" && t.forgotPassword.titleReset}
             </h1>
             <p className="text-gray-600">
-              {step === "email" && "Enter your email to receive a reset code"}
-              {step === "otp" && "Enter the OTP sent to your email"}
-              {step === "reset" && "Enter your new password"}
+              {step === "email" && t.forgotPassword.descEmail}
+              {step === "otp" && t.forgotPassword.descOtp}
+              {step === "reset" && t.forgotPassword.descReset}
             </p>
           </div>
 
           {step === "email" && (
             <ForgotPasswordInput
+               
               email={email}
               setEmail={setEmail}
               forgotPassword={forgotPassword}
@@ -56,6 +59,9 @@ export default function ForgotPasswordLayout() {
               hash={hash}
               verifyOTP={verifyOTP}
               onNext={() => setStep("reset")}
+              onResend={() => {
+              setStep("email"); 
+            }}
             />
           )}
 
@@ -68,13 +74,13 @@ export default function ForgotPasswordLayout() {
           )}
 
         <div className="mt-6 flex justify-center">
-  <button
+  <Button
     onClick={() => navigate("/login")}
     className="flex items-center gap-1 text-blue-600 font-bold hover:underline"
   >
     <ArrowLeftIcon size={16} />
-    Back to Login
-  </button>
+    {t.forgotPassword.backToLogin}
+  </Button>
 </div>
         </div>
       </div>
