@@ -10,14 +10,14 @@ export default function BookingDetailPage(){
         // useDisableBackButton();
     return(
         <>
-        <div
-  dir={isRTLOrder ? "rtl" : "ltr"}
-  className={isRTLOrder ? "text-right" : "text-left"}
->
-  <BookingDetailBreadCrumb />
-  <BookingDetailHeader />
-</div>
-<CommonFaq/>
+                <div
+        dir={isRTLOrder ? "rtl" : "ltr"}
+        className={isRTLOrder ? "text-right" : "text-left"}
+        >
+        <BookingDetailBreadCrumb />
+        <BookingDetailHeader />
+        </div>
+        <CommonFaq/>
        
         </>
     )

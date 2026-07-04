@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { ArrowLeftIcon, ArrowRight } from "@/components/icons";
@@ -27,6 +27,14 @@ export default function BookingDetailDateSelector({
     });
   }, []);
 
+  // Default to today (index 0) if nothing has been selected yet.
+  useEffect(() => {
+    if (selectedDate === null) {
+      onSelectDate(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const datesPerPage = 7;
   const [pageStart, setPageStart] = useState(0);
   const visibleDates = allDates.slice(pageStart, pageStart + datesPerPage);
@@ -38,6 +46,14 @@ export default function BookingDetailDateSelector({
       Math.min(prev + datesPerPage, allDates.length - datesPerPage)
     );
 
+  const dateCardClass = (globalIndex: number) =>
+    `flex h-[72px] sm:h-[80px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 transition
+    ${
+      selectedDate === globalIndex
+        ? "border-blue-600 bg-blue-600 text-white shadow-lg"
+        : "border-gray-200 bg-white hover:border-blue-600"
+    }`;
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -45,42 +61,47 @@ export default function BookingDetailDateSelector({
           {t.bookingdetailpage.selectDate}
         </h2>
 
-        <div className="flex gap-2">
+        <div className="hidden gap-2 sm:flex">
           <Button
             onClick={handlePrev}
-            variant="ghost"
+            variant="none"
             disabled={pageStart === 0}
-            className="rounded-lg bg-amber-50 p-2 hover:bg-gray-100 disabled:opacity-50"
+            className="h-9 w-9 rounded-lg border bg-white disabled:opacity-40"
           >
-            <ArrowLeftIcon className="text-black"/>
+            <ArrowLeftIcon className="text-black" />
           </Button>
-
           <Button
             onClick={handleNext}
+            variant="none"
             disabled={pageStart + datesPerPage >= allDates.length}
-            className="rounded-lg bg-amber-50 p-2 hover:bg-gray-100 disabled:opacity-50"
+            className="h-9 w-9 rounded-lg border bg-white disabled:opacity-40"
           >
-            <ArrowRight size={10} className="text-black"/>
+            <ArrowRight size={10} className="text-black" />
           </Button>
         </div>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto">
+      <div className="grid grid-cols-2 gap-3 sm:hidden">
+        {allDates.map((item, globalIndex) => (
+          <div
+            key={globalIndex}
+            onClick={() => onSelectDate(globalIndex)}
+            className={dateCardClass(globalIndex)}
+          >
+            <span className="text-xs font-bold uppercase">{item.day}</span>
+            <span className="text-2xl font-black">{item.date}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden gap-3 overflow-x-auto sm:flex">
         {visibleDates.map((item, index) => {
           const globalIndex = pageStart + index;
-
           return (
             <div
               key={globalIndex}
               onClick={() => onSelectDate(globalIndex)}
-              className={`flex h-[80px] min-w-[72px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 transition
-
-              ${
-                selectedDate === globalIndex
-                  ? "border-blue-600 bg-blue-600 text-white shadow-lg"
-                  : "border-gray-200 bg-white hover:border-blue-600"
-              }
-            `}
+              className={`min-w-[72px] ${dateCardClass(globalIndex)}`}
             >
               <span className="text-xs font-bold uppercase">{item.day}</span>
               <span className="text-2xl font-black">{item.date}</span>

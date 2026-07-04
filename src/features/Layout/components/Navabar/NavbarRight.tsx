@@ -146,7 +146,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
               value: lang.code,
               icon: <span className="text-lg">{lang.flag}</span>,
             }))}
-            size="sm"
+            size="lg"
             variant="default"
           />
         </div>

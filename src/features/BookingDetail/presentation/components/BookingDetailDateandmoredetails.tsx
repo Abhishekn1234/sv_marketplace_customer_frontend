@@ -144,6 +144,7 @@ export default function BookingDetailDateandmoredetails() {
         selectedTime={selectedTime}
         onSelectTime={setSelectedTime}
         duration={duration}
+        selectedDate={selectedDate}
         onIncreaseDuration={increaseDuration}
         onDecreaseDuration={decreaseDuration}
       />

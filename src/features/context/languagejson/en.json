@@ -19,6 +19,8 @@
       "signup": "Sign Up"
   },
  "common": {
+  "selected":"Selected",
+  "not selected":"Not Selected",
   "otp": {
     "title": "One-Time Password",
     "description": "Use the OTP below to complete your verification.",
