@@ -171,7 +171,7 @@ export default function ActiveService() {
   if (loading) {
     return (
       <div className="rounded-2xl p-6 text-center text-gray-500">
-        <CommonSpinner size={20} />
+        <CommonSpinner size={20} center />
       </div>
     );
   }

@@ -136,7 +136,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
         {showBackButton && (
           <Button
             onClick={() => navigate(-1)}
-            className="hidden sm:flex px-2 sm:px-3 py-1.5 bg-gray-50 border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap shrink-0"
+            className="hidden sm:flex px-2 sm:px-3 py-1.5 bg-gray-50 text-black border rounded-xl text-sm font-semibold hover:border-blue-600 hover:bg-blue-50 transition whitespace-nowrap shrink-0"
           >
             {t.navbar.Back}
           </Button>
