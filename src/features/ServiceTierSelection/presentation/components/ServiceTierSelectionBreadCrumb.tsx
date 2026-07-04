@@ -30,7 +30,7 @@ export default function ServiceTierSelectionBreadCrumb() {
       <nav className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 mb-6">
         <Button
           onClick={() => navigate(-1)}
-          className="hover:text-blue-600 transition-colors cursor-pointer"
+          className="hover:text-blue-600 transition-colors cursor-pointer text-black"
         >
           {t.servicetierselectionpage.steps.service}
         </Button>
@@ -41,7 +41,7 @@ export default function ServiceTierSelectionBreadCrumb() {
 
         <ChevronRightIcon/>
 
-        <span className="text-gray-400">{t.servicetierselectionpage.steps.schedule}</span>
+        <span className="text-black">{t.servicetierselectionpage.steps.schedule}</span>
       </nav>
 
       {/* Service Badge */}
