@@ -1,6 +1,6 @@
 "use client";
 
-import  CommonCard  from "@/components/common/CommonCards";
+import CommonCard from "@/components/common/CommonCards";
 
 import { useNavigate } from "react-router-dom";
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
@@ -16,7 +16,6 @@ import { useServices } from "../hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { HomeIcon } from "@/components/icons";
 
-
 interface BookingCardProps {
   booking: BookingHistory;
   onViewDetails: (booking: BookingHistory) => void;
@@ -24,28 +23,25 @@ interface BookingCardProps {
   onGenerateStartOtp: (bookingId: string) => void;
   onGenerateCompletedOtp: (bookingId: string) => void;
   onInvoiceClick: (booking: BookingHistory) => void;
-  onVerifyPayment: (data:PaymentCallback) => void;
-
+  onVerifyPayment: (data: PaymentCallback) => void;
 }
 
 export default function BookingCard({
   booking,
   onViewDetails,
-  // onPayNow,
   onGenerateStartOtp,
   onGenerateCompletedOtp,
   onInvoiceClick,
   onVerifyPayment,
-
 }: BookingCardProps) {
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
-  const {services}=useServices();
-  const{t,isRTLOrder}=useLanguage();
-  // console.log(booking);
+  const { services } = useServices();
+  const { t, isRTLOrder } = useLanguage();
+
   const handleActionButtonClick = () => {
     if (!clickable) return;
-    
+
     switch (booking.status) {
       case "IN_PROGRESS":
       case "REQUESTED":
@@ -60,14 +56,14 @@ export default function BookingCard({
       case "WORK_COMPLETED_PENDING":
         onGenerateCompletedOtp(booking._id);
         break;
-          case "PAYMENT_PENDING":
+      case "PAYMENT_PENDING":
         if (booking?.paymentId) {
-        onVerifyPayment({
-          bookingId:booking._id,
-          paymentId: booking.paymentId,
-          status: "SUCCESS",
-          sessionId: booking.sessionId,
-        });
+          onVerifyPayment({
+            bookingId: booking._id,
+            paymentId: booking.paymentId,
+            status: "SUCCESS",
+            sessionId: booking.sessionId,
+          });
         }
         break;
       case "PAID":
@@ -79,25 +75,26 @@ export default function BookingCard({
   };
 
   return (
-    <CommonCard  className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
+    <CommonCard className="w-full max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 rounded-xl flex items-center justify-center">
-            <HomeIcon className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3 sm:flex-1 sm:gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 sm:h-14 sm:w-14">
+            <HomeIcon className="h-5 w-5 text-blue-600 sm:h-7 sm:w-7" />
           </div>
-          <div className="min-w-0">
-            <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 truncate">
+          <div className="min-w-0 flex-1">
+            <h3 className="break-words text-[14px] font-semibold text-gray-900 sm:truncate sm:text-[16px]">
               {booking.service?.name ?? "Service Name"}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-500 break-words leading-tight">
+            <p className="break-words text-xs text-gray-500 sm:truncate sm:text-sm">
               {booking.serviceTier?.displayName ?? "Tier"} •{" "}
               {booking.assignedWorkers?.[0]?.worker?.fullName ?? "Not assigned"}
             </p>
           </div>
         </div>
+
         <span
-          className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wide whitespace-nowrap ${
+          className={`inline-block w-fit shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide sm:px-3 sm:text-xs ${
             statusStyles[booking.status as BookingStatus]
           }`}
         >
@@ -106,27 +103,34 @@ export default function BookingCard({
       </div>
 
       {/* Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl mb-5">
-        <div>
+      <div className="mb-5 grid grid-cols-1 gap-3 rounded-xl bg-gray-50 p-4 sm:grid-cols-3 sm:gap-4">
+        <div className="min-w-0">
           <span className="text-xs text-gray-500">{t.common.date}</span>
-          <p  dir={isRTLOrder ? "ltr" : undefined}
-            className="text-sm sm:text-base font-semibold">
+          <p
+            dir={isRTLOrder ? "ltr" : undefined}
+            className="break-words text-sm font-semibold sm:truncate sm:text-base"
+          >
             {formatDates(booking.schedule?.startDateTime)}
           </p>
         </div>
-        <div>
-          <span className="text-xs text-gray-500">{t.confirmationpage.bookingSummary.duration}</span>
-                    <p
+
+        <div className="min-w-0">
+          <span className="text-xs text-gray-500">
+            {t.confirmationpage.bookingSummary.duration}
+          </span>
+          <p
             dir={isRTLOrder ? "ltr" : undefined}
-            className="text-sm sm:text-base font-semibold"
+            className="break-words text-sm font-semibold sm:truncate sm:text-base"
           >
             {formatBookingDuration(booking)}
           </p>
         </div>
-        <div>
+
+        <div className="min-w-0">
           <span className="text-xs text-gray-500">{t.paymentpage.bookingId}</span>
-          {/* <p className="text-sm sm:text-base font-semibold truncate">{booking._id}</p> */}
-          <p className="text-sm sm:text-base font-semibold truncate">{booking.bookingCode}</p>
+          <p className="break-words text-sm font-semibold sm:truncate sm:text-base">
+            {booking.bookingCode}
+          </p>
         </div>
       </div>
 
@@ -137,10 +141,10 @@ export default function BookingCard({
         clickable={clickable}
         onActionClick={handleActionButtonClick}
         onViewDetails={() => onViewDetails(booking)}
-            onPayNow={() => {
+        onPayNow={() => {
           const finalPrice = booking?.totalCost;
-        const serviceName =
-          services.find(s => s._id === booking.serviceId)?.name || "Service";
+          const serviceName =
+            services.find((s) => s._id === booking.serviceId)?.name || "Service";
           navigate("/payment", {
             state: {
               bookingId: booking._id,
@@ -152,9 +156,8 @@ export default function BookingCard({
         }}
         onCheckProgress={() => navigate(`/jobprogress/${booking._id}`)}
         onInvoiceClick={() => onInvoiceClick(booking)}
-         navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}
+        navigatetodispute={(booking) => navigate(`/dispute/${booking._id}`)}
       />
     </CommonCard>
   );
 }
-

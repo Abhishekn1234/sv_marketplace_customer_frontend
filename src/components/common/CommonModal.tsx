@@ -38,9 +38,11 @@ export default function CommonModal({
 
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
-      <DialogContent className={`${width} p-0 ${className}`}>
+      <DialogContent
+        className={`flex max-h-[85vh] flex-col gap-0 p-0 ${width} ${className}`}
+      >
         {title && (
-          <DialogHeader className="border-b px-6 py-4">
+          <DialogHeader className="shrink-0 border-b px-6 py-4">
             <DialogTitle
               dir={isRTL ? "rtl" : "ltr"}
               className={isRTL ? "text-right" : "text-left"}
@@ -50,12 +52,10 @@ export default function CommonModal({
           </DialogHeader>
         )}
 
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
-          {children}
-        </div>
+        <div className="overflow-y-auto px-6 py-5">{children}</div>
 
         {footer && (
-          <DialogFooter className="px-6 py-4">
+          <DialogFooter className="border-t-0.5 px-4 ">
             {footer}
           </DialogFooter>
         )}

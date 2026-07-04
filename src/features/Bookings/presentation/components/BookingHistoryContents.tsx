@@ -189,22 +189,22 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
       {filteredBookings.map((booking) => (
-        <BookingCard
-  key={booking._id}
-  booking={booking}
-  onViewDetails={(b) => {
-    setSelectedBooking(b);
-    setModalOpen(true);
-  }}
-  onPayNow={(bookingId) => {
-    setPaymentBookingId(bookingId);
-    setPaymentModalOpen(true);
-  }}
-  onGenerateStartOtp={handleGenerateStartOtp}
-  onGenerateCompletedOtp={handleGenerateCompletedOtp}
-  onInvoiceClick={handleInvoiceClick}
-  onVerifyPayment={handleVerifyPayment}
-/>
+              <BookingCard
+        key={booking._id}
+        booking={booking}
+        onViewDetails={(b) => {
+          setSelectedBooking(b);
+          setModalOpen(true);
+        }}
+        onPayNow={(bookingId) => {
+          setPaymentBookingId(bookingId);
+          setPaymentModalOpen(true);
+        }}
+        onGenerateStartOtp={handleGenerateStartOtp}
+        onGenerateCompletedOtp={handleGenerateCompletedOtp}
+        onInvoiceClick={handleInvoiceClick}
+        onVerifyPayment={handleVerifyPayment}
+      />
       ))}
 
       {/* infinite scroll trigger */}
@@ -212,7 +212,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
 
       {isFetchingNextPage && (
         <div className="text-center py-4 text-gray-500">
-         <CommonSpinner className="text-red-50"/>
+         <CommonSpinner className="text-red-50" center/>
         </div>
       )}
 

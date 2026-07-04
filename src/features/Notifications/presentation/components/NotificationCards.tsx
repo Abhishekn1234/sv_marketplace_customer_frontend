@@ -25,6 +25,7 @@ import { useNotificationFilters } from "../utils/notificationfilterskeylanguages
 import { useTheme } from "@/features/context/themeContext";
 import { BellIcon } from "@/components/icons/BellIcon";
 import Button from "@/components/input/Button";
+import { Badge } from "@/components/input";
 
 
 export default function NotificationCards() {
@@ -163,9 +164,10 @@ const handleMarkAllAsRead = async () => {
         </div>
 
         {unreadCount > 0 && (
-          <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-            {unreadCount} {t.notificationpage.unread}
-          </div>
+          <Badge className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+               {unreadCount} {t.notificationpage.unread}
+          </Badge>
+          
         )}
       </div>
 

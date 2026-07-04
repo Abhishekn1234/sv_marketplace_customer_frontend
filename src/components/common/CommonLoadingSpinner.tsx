@@ -3,6 +3,7 @@
 interface CommonSpinnerProps {
   size?: number;
   className?: string;
+  center?: boolean;
 
   color?:
     | "slate"
@@ -35,6 +36,7 @@ export default function CommonSpinner({
   size = 40,
   className = "",
   color = "blue",
+  center = false,
 }: CommonSpinnerProps) {
   const colorClasses = {
     slate: "border-slate-600",
@@ -68,7 +70,7 @@ export default function CommonSpinner({
     white: "border-white",
   };
 
-  return (
+  const spinner = (
     <div
       className={`
         animate-spin
@@ -78,10 +80,17 @@ export default function CommonSpinner({
         ${colorClasses[color]}
         ${className}
       `}
-      style={{
-        width: size,
-        height: size,
-      }}
+      style={{ width: size, height: size }}
     />
   );
+
+ if (center) {
+  return (
+    <div className="flex items-center justify-center w-full">
+      {spinner}
+    </div>
+  );
+}
+
+  return spinner;
 }

@@ -87,30 +87,32 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
       {/* Desktop search */}
       {showSearch && (
         <>
-         <div className="hidden md:flex items-center relative">
-            <Input
-              value={searchTerm}
-              onChange={(value) => setSearchTerm(value)}
-              placeholder={t.navbar.SearchPlaceholder}
-              rightElement={
-                searchTerm ? (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
-                    aria-label="Clear search"
-                  >
-                    <XIcon className="h-4 w-4" />
-                  </button>
-                ) : null
-              }
-              className="w-36 bg-white pl-9 pr-9 text-sm lg:w-56 xl:w-64"
-              size="md"
-              radius="lg"
-            />
+         <div className="relative hidden md:flex items-center">
+ 
+          <Input
+            value={searchTerm}
+            onChange={(value) => setSearchTerm(value)}
+            leftElement={<SearchIcon className="w-5 h-5 text-gray-400" />}
+            placeholder={t.navbar.SearchPlaceholder}
+            className="w-36 bg-white pl-10 pr-10 text-sm lg:w-56 xl:w-64"
+            size="md"
+            radius="lg"
+             rightElement={
+              searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  <XIcon className="h-4 w-4" />
+                </button>
+              )
+            }
+          />
 
-            <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" />
-          </div>
+         
+        </div>
 
           {/* Mobile search toggle */}
           <Button

@@ -28,7 +28,7 @@ export default function WebsiteHome() {
   if (isLoading) {
     return (
       <div>
-        <CommonSpinner size={20} />
+        <CommonSpinner size={20} center/>
       </div>
     );
   }

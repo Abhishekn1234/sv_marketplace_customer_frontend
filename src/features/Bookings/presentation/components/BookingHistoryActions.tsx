@@ -95,7 +95,8 @@ export function BookingActions({
       {showPrimaryAction && (
         <Button
           onClick={onActionClick}
-          className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition ${
+          variant="ghost"
+          className={`px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-black hover:bg-gray-50 transition ${
             !clickable ? "cursor-not-allowed opacity-60" : ""
           }`}
           disabled={!clickable}

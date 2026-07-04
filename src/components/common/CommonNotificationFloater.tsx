@@ -89,7 +89,7 @@ export default function CommonNotificationFloater({
         variant="ghost"
         size="lg"
         className={clsx(
-          "relative flex items-center justify-center",
+          "relative flex items-center justify-center text-black",
           direction === "down" && "hidden sm:flex"
         )}
       >
@@ -131,7 +131,7 @@ export default function CommonNotificationFloater({
                 setOpen(false);
               }}
               variant="ghost"
-              className="text-xs"
+              className="text-xs text-black"
             >
               {t.navbar["Show All"]}
             </Button>
@@ -185,7 +185,7 @@ export default function CommonNotificationFloater({
 
             {isFetchingNextPage && (
               <div className="p-3 text-center text-xs text-gray-500">
-                <CommonSpinner color="blue" />
+                <CommonSpinner color="blue" center />
               </div>
             )}
           </div>

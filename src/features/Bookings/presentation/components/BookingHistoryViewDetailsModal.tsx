@@ -4,6 +4,7 @@ import { formatBookingDuration } from "../utils/formatduration";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import CommonModal from "@/components/common/CommonModal";
+import { Hash, CalendarDays, Clock, Wallet, FileText, UserRound } from "lucide-react";
 
 interface Props {
   booking: BookingHistory | null;
@@ -52,59 +53,49 @@ export default function BookingHistoryViewDetailsModal({
         </Button>
       }
     >
-      <div
-        dir={isRTLOrder ? "rtl" : "ltr"}
-        className="space-y-6"
-      >
+      <div dir={isRTLOrder ? "rtl" : "ltr"} className="space-y-6">
         {/* Subtitle */}
-        <div className="border-b pb-4">
-          <p className="text-sm text-gray-500">
-            <span className="font-medium">{tierName}</span>
-            {" • "}
-            <span>{workerName}</span>
-          </p>
+        <div className="flex items-center gap-2 border-b pb-4 text-sm text-gray-500">
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+            {tierName}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <UserRound className="h-3.5 w-3.5" />
+            {workerName}
+          </span>
         </div>
 
         {/* Details */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {t.invoice.bookingRef}
-            </p>
-            <p className="break-all text-sm font-medium text-gray-900">
-              {booking._id ?? "-"}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <DetailField
+            icon={<Hash className="h-4 w-4" />}
+            label={t.invoice.bookingRef}
+            value={booking._id ?? "-"}
+            valueClassName="break-all"
+          />
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {t.common.date}
-            </p>
-            <p className="text-sm font-medium text-gray-900">
-              {bookingDate}
-            </p>
-          </div>
+          <DetailField
+            icon={<CalendarDays className="h-4 w-4" />}
+            label={t.common.date}
+            value={bookingDate}
+          />
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {t.common.workedDuration}
-            </p>
-            <p className="text-sm font-medium text-gray-900">
-              {duration}
-            </p>
-          </div>
+          <DetailField
+            icon={<Clock className="h-4 w-4" />}
+            label={t.common.workedDuration}
+            value={duration}
+          />
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {t.common.totalPaid}
-            </p>
-            <p className="text-lg font-bold text-blue-600">
-              {price}
-            </p>
-          </div>
+          <DetailField
+            icon={<Wallet className="h-4 w-4" />}
+            label={t.common.totalPaid}
+            value={price}
+            valueClassName="text-lg font-bold text-blue-600"
+          />
 
           <div className="space-y-2 sm:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <FileText className="h-3.5 w-3.5" />
               {t.common["Work Description"]}
             </p>
 
@@ -117,5 +108,27 @@ export default function BookingHistoryViewDetailsModal({
         </div>
       </div>
     </CommonModal>
+  );
+}
+
+function DetailField({
+  icon,
+  label,
+  value,
+  valueClassName = "text-sm font-medium text-gray-900",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        {icon}
+        {label}
+      </p>
+      <p className={valueClassName}>{value}</p>
+    </div>
   );
 }

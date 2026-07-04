@@ -111,7 +111,7 @@ export default function BookingDetailNotesAndSummary({
         "
       >
         {loading ? (
-          <CommonSpinner size={15} color="white" />
+          <CommonSpinner size={15} color="white" center />
         ) : (
           t.bookingdetailpage.confirmBooking
         )}

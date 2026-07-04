@@ -186,7 +186,7 @@ const RegistrationCard = () => {
             className="w-full h-14 rounded-full bg-blue-600 text-white font-semibold"
           >
             {loading ? (
-              <CommonSpinner size={20} color="white" />
+              <CommonSpinner size={20} color="white" center />
             ) : (
               <span>{t.register.submit}</span>
             )}

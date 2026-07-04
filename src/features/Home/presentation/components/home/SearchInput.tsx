@@ -1,5 +1,7 @@
 
+import { SearchIcon, XIcon } from "@/components/icons";
 import { Input } from "@/components/input";
+import Button from "@/components/input/Button";
 import type { Category } from "@/features/Bookings/domain/entities/category.types";
 import { useLanguage } from "@/features/context/LanguageContext";
 
@@ -47,17 +49,19 @@ const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
           aria-label="Search services"
           value={query}
           onChange={(value) => setQuery(value)}
-         leftElement={
-              <svg
-                className="w-5 h-5 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
+           leftElement={
+             <SearchIcon className="w-5 h-5" />
+            }
+                        rightElement={
+              query ? (
+                <Button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="p-1 text-gray-400 hover:text-gray-600"
+                >
+                  <XIcon className="w-5 h-5" />
+                </Button>
+              ) : null
             }
           className="
             w-full h-[56px]

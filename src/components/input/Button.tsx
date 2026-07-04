@@ -41,7 +41,7 @@ export default function Button({
     primary: "bg-blue-600 text-white hover:bg-blue-700",
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
     danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "bg-transparent text-gray-800 hover:bg-gray-100",
+    ghost: "bg-transparent text-gray-100 hover:bg-gray-100",
     none: "text-inherit hover:text-inherit",
   };
 
@@ -79,7 +79,7 @@ export default function Button({
       {...props}
     >
       {loading ? (
-        <CommonSpinner size={16} />
+        <CommonSpinner size={16} center />
       ) : (
         <>
           {leftIcon}

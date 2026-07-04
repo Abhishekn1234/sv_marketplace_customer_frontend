@@ -127,7 +127,7 @@ const LoginCard = () => {
  >
   <span className="inline-flex items-center gap-2 whitespace-nowrap">
     {loading ? (
-      <CommonSpinner size={15} color='white'/>
+      <CommonSpinner size={15} color='white' center/>
     ) : (
       <>
         <span>{t.loginCard.continue}</span>

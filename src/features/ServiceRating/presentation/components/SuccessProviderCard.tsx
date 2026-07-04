@@ -81,7 +81,7 @@ export default function SuccessProviderCard() {
   }, [review]);
 
   // ---------------- LOADING
-  if (isLoading || reviewLoading) return <CommonSpinner />;
+  if (isLoading || reviewLoading) return <CommonSpinner  center/>;
   if (!booking)
     return <div>{t.serviceratingpage.bookingNotFound}</div>;
 

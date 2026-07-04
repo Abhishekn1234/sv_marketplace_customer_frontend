@@ -67,7 +67,7 @@ export default function Disputepage() {
         <Button
          
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base"
+          className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base text-black"
           leftIcon={<ArrowLeftIcon className="w-4 h-4" />}
         >
           
