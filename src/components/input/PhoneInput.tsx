@@ -1,30 +1,34 @@
-import * as RPNInput from "react-phone-number-input";
-import { PhoneInput as ShadcnPhoneInput } from "@/components/ui/phone-input";
+import "react-international-phone/style.css";
+
+import { PhoneInput as IntlPhoneInput } from "react-international-phone";
 import { useLanguage } from "@/features/context/LanguageContext";
 
-interface PhoneInputProps {
+interface Props {
   value: string;
   onChange: (value: string) => void;
-  country?: RPNInput.Country;
+  defaultCountry?: string;
 }
 
 export function PhoneInput({
   value,
   onChange,
-  country = "IN",
-}: PhoneInputProps) {
+  defaultCountry = "in",
+}: Props) {
   const { isRTLOrder } = useLanguage();
 
   return (
-    <div dir={isRTLOrder ? "rtl" : "ltr"}>
-      <ShadcnPhoneInput
-        defaultCountry={country}
-        international
-        value={(value as RPNInput.Value) || undefined}
-        onChange={(phone) => {
-          onChange(phone || "");
+    <div dir={isRTLOrder ? "rtl" : "ltr"} className="w-full">
+          <IntlPhoneInput
+        value={value}
+        onChange={onChange}
+        forceDialCode
+        inputClassName="!w-full !h-11 !rounded-r-xl !border !border-l-0"
+        countrySelectorStyleProps={{
+          buttonClassName: "!h-11 !rounded-l-xl !border",
+          dropdownStyleProps: {
+            className: "!z-50",
+          },
         }}
-        className="w-full"
       />
     </div>
   );

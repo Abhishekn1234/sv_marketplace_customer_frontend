@@ -1,13 +1,12 @@
-import React, { useRef } from "react";
-import { Input } from "@/components/ui/input";
+import React, { useId } from "react";
 
 interface FileInputProps
   extends Omit<
-    React.ComponentProps<typeof Input>,
+    React.InputHTMLAttributes<HTMLInputElement>,
     "type" | "onChange"
   > {
   onFileChange: (file: File) => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function FileInput({
@@ -15,39 +14,32 @@ export function FileInput({
   children,
   ...props
 }: FileInputProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const id = useId();
 
-  const handleInternalFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
       onFileChange(file);
-    }
-  };
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
+      // Allow selecting the same file again
+      e.target.value = "";
+    }
   };
 
   return (
     <>
-      <Input
-        ref={fileInputRef}
+      <input
+        id={id}
         type="file"
-        className="hidden"
-        onChange={handleInternalFileChange}
+        hidden
+        onChange={handleChange}
         {...props}
       />
 
-      {children && (
-        <div
-          onClick={handleClick}
-          className="cursor-pointer"
-        >
-          {children}
-        </div>
-      )}
+      <label htmlFor={id} className="cursor-pointer">
+        {children}
+      </label>
     </>
   );
-}
+} 

@@ -9,6 +9,8 @@ import CommonCard from "@/components/common/CommonCards";
 import BookingDetailDateSelector from "./BookingDetailDateSelector";
 import BookingDetailTimeAndDuration from "./BookingDetailTimeDuration";
 import BookingDetailNotesAndSummary from "./BookingDetailNoteSummary";
+import { handleApiError } from "@/components/common/ApiError";
+import { parseTime } from "../utils/parseTime";
 
 
 
@@ -65,18 +67,16 @@ export default function BookingDetailDateandmoredetails() {
         return toast.error("Please select a date");
       }
 
-      if (selectedTime === null) {
+      if (!selectedTime) {
         setLoading(false);
         return toast.error("Please select a time");
       }
-
       const today = new Date();
       const selectedDateObj = new Date(today);
       selectedDateObj.setDate(today.getDate() + selectedDate);
 
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-
-      selectedDateObj.setHours(hours, minutes, 0, 0);
+    const { hours, minutes } = parseTime(selectedTime);
+     selectedDateObj.setHours(hours, minutes, 0, 0);
 
       if (selectedDateObj.getTime() <= new Date().getTime()) {
         setLoading(false);
@@ -122,7 +122,7 @@ export default function BookingDetailDateandmoredetails() {
 
       await createBooking.mutateAsync(payload);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message);
+      handleApiError(error)
     } finally {
       // ✅ ALWAYS stop loader
       setLoading(false);
