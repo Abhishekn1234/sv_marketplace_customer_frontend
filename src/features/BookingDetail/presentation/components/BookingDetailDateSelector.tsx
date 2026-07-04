@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { ArrowLeftIcon, ArrowRight } from "@/components/icons";
 
 interface BookingDateSelectorProps {
   selectedDate: number | null;
@@ -47,18 +48,19 @@ export default function BookingDetailDateSelector({
         <div className="flex gap-2">
           <Button
             onClick={handlePrev}
+            variant="ghost"
             disabled={pageStart === 0}
-            className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200 disabled:opacity-50"
+            className="rounded-lg bg-amber-50 p-2 hover:bg-gray-100 disabled:opacity-50"
           >
-            ←
+            <ArrowLeftIcon className="text-black"/>
           </Button>
 
           <Button
             onClick={handleNext}
             disabled={pageStart + datesPerPage >= allDates.length}
-            className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200 disabled:opacity-50"
+            className="rounded-lg bg-amber-50 p-2 hover:bg-gray-100 disabled:opacity-50"
           >
-            →
+            <ArrowRight size={10} className="text-black"/>
           </Button>
         </div>
       </div>
