@@ -74,12 +74,12 @@ const OnboardingChecklist: React.FC<Props> = ({
       </div>
 
       {/* PROGRESS */}
-      <AppProgress
+            <AppProgress
         value={progress}
-        height={6}
-        color="bg-blue-600"
         showLabel
         label={t.onboarding.progressLabel}
+        trackClassName="h-1.5"
+        indicatorClassName="bg-blue-600"
       />
 
       {/* STEPS */}

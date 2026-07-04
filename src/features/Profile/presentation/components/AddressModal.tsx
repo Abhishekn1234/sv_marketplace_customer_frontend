@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
-import { Input, Radio } from "@/components/input";
+import { Input, Radio, RadioGroup } from "@/components/input";
 import Button from "@/components/input/Button";
 import CommonModal from "@/components/common/CommonModal";
 import { useLanguage } from "@/features/context/LanguageContext";
@@ -59,20 +59,22 @@ export default function AddressModal({ open, onClose }: AddressModalProps) {
       <div className="flex gap-4 mb-6">
 
         {["home", "office"].map((type) => (
-          <Radio
-            key={type}
-            label={type}
-            containerClassName={`
-              flex-1 flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition mb-4
-              ${
-                selectedType === type
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-200"
-              }
-            `}
-            checked={selectedType === type}
-            onChange={() => setSelectedType(type as "home" | "office")}
-          />
+                  <RadioGroup
+          name="addressType"
+          value={selectedType}
+          onChange={(value) => setSelectedType(value as "home" | "office")}
+          className="flex flex-row gap-4 mb-6"
+          options={[
+            {
+              label: "Home",
+              value: "home",
+            },
+            {
+              label: "Office",
+              value: "office",
+            },
+          ]}
+        />
         ))}
 
       </div>
