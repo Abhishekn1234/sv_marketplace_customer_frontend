@@ -73,10 +73,23 @@ import { PencilIcon } from "./PencilIcon";
 import { CheckCheckIcon } from "./CheckCheckIcon";
 import { CircleIcon } from "./CircleIcon";
 export type { IconProps } from "./iconprops";
-
+import { TickIcon } from "./TickIcon";
+import DividerIcon from "./DividerIcon";
+import {CopyIcon} from "./CopyIcon";
+import { ShieldCheckIcon } from "./ShieldCheckIcon";
+import { MinusIcon } from "./MinusIcon";
+import { ColumnsIcon } from "./ColumnsIcon";
+import { ChevronRightIcon } from "./ChevronRightIcon";
 export {
   // SVG Icons
   GoogleIcon,
+  ColumnsIcon,
+  ChevronRightIcon,
+  ShieldCheckIcon,
+  TickIcon,
+  MinusIcon,
+  CopyIcon,
+  DividerIcon,
   FacebookIcon,
   MoneyIcon,
   ReactIcon,

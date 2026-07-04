@@ -252,7 +252,7 @@ export default function JobTrackingWorkerDetails({
           )}
 
           <Button
-            className="w-full border py-2 rounded-lg"
+            className="w-full border-accent-foreground py-2 rounded-lg "
             onClick={() =>
               navigate(
                 `/message/${booking?._id}`

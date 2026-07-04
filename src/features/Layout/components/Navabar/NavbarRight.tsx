@@ -87,16 +87,29 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
       {/* Desktop search */}
       {showSearch && (
         <>
-          <div className="hidden md:flex items-center relative">
+         <div className="hidden md:flex items-center relative">
             <Input
               value={searchTerm}
               onChange={(value) => setSearchTerm(value)}
               placeholder={t.navbar.SearchPlaceholder}
-              className="pl-9 bg-white w-36 lg:w-56 xl:w-64 text-sm"
+              rightElement={
+                searchTerm ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                    aria-label="Clear search"
+                  >
+                    <XIcon className="h-4 w-4" />
+                  </button>
+                ) : null
+              }
+              className="w-36 bg-white pl-9 pr-9 text-sm lg:w-56 xl:w-64"
               size="md"
               radius="lg"
             />
-            <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
+
+            <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" />
           </div>
 
           {/* Mobile search toggle */}

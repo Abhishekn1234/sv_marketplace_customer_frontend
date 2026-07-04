@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
+import {  ChevronRightIcon, ColumnsIcon } from "@/components/icons";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
@@ -34,11 +35,11 @@ export default function ServiceTierSelectionBreadCrumb() {
           {t.servicetierselectionpage.steps.service}
         </Button>
 
-        <Chevron />
+        <ChevronRightIcon />
 
         <span className="text-gray-900 font-semibold">{t.servicetierselectionpage.steps.selectTier}</span>
 
-        <Chevron />
+        <ChevronRightIcon/>
 
         <span className="text-gray-400">{t.servicetierselectionpage.steps.schedule}</span>
       </nav>
@@ -47,17 +48,7 @@ export default function ServiceTierSelectionBreadCrumb() {
       <div className="flex justify-center">
         <div className="inline-flex items-center gap-3 px-4 py-2 bg-white border-2 border-gray-200 rounded-full shadow-sm">
           <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              className="w-4 h-4 text-blue-600"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M9 3v18" />
-              <path d="M15 3v18" />
-            </svg>
+           <ColumnsIcon/>
           </div>
 
           <span className="text-sm font-bold text-gray-900">
@@ -69,16 +60,3 @@ export default function ServiceTierSelectionBreadCrumb() {
   );
 }
 
-function Chevron() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      className="w-4 h-4 text-gray-400"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}

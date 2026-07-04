@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "@/features/core/store/auth";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { AddressInput,Radio } from "@/components/input";
+import { AddressInput,Radio, RadioGroup } from "@/components/input";
 import Button from "@/components/input/Button";
 import CommonCard from "@/components/common/CommonCards";
 
@@ -151,17 +151,24 @@ export default function SavedAddress() {
           <CommonCard className="space-y-4 bg-gray-50">
 
             <div className="flex gap-6">
-              <Radio
-                label={t.profilepage.home}
-                checked={selectedType === "home"}
-                onChange={() => setSelectedType("home")}
-              />
-
-              <Radio
-                label={t.profilepage.office}
-                checked={selectedType === "office"}
-                onChange={() => setSelectedType("office")}
-              />
+                              <RadioGroup
+                  name="addressType"
+                  value={selectedType}
+                  onChange={(value) =>
+                    setSelectedType(value as "home" | "office")
+                  }
+                  options={[
+                    {
+                      label: t.profilepage.home,
+                      value: "home",
+                    },
+                    {
+                      label: t.profilepage.office,
+                      value: "office",
+                    },
+                  ]}
+                  className="flex flex-row gap-6"
+                />
             </div>
 
             <AddressInput

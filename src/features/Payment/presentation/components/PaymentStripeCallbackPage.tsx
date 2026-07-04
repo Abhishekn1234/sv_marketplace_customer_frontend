@@ -116,7 +116,7 @@ export default function PaymentStripeCallbackPage() {
         <div className="flex justify-center pt-4">
           <Button
             onClick={() => navigate("/bookings", { replace: true })}
-            className="px-6 py-3 bg-gray-900 text-white rounded-lg"
+            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:text-blue-400"
           >
             {t.paymentpage.goToBookings}
           </Button>

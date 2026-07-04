@@ -23,7 +23,6 @@ export default function JobTrackingStepItem({
   isVerifyPending,
   t,
 }: Props) {
-
   const dotClass =
     step.status === "completed"
       ? "bg-green-400"
@@ -31,47 +30,75 @@ export default function JobTrackingStepItem({
       ? "bg-blue-400 animate-pulse"
       : "bg-gray-400";
 
+const buttonClass =
+  "mt-3 flex w-full sm:w-fit items-center justify-center px-4 py-2 rounded-md text-center text-sm font-medium text-white transition-colors duration-200 whitespace-normal break-words";
   return (
     <div className="relative pb-7">
-      <div className={`absolute -left-8 w-5 h-5 rounded-full ${dotClass}`} />
+      {/* Timeline Dot */}
+      <div
+        className={`absolute -left-8 h-5 w-5 rounded-full ${dotClass}`}
+      />
 
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="font-semibold">{step.title}</div>
-        <div className="text-sm text-gray-500">{step.time}</div>
+      {/* Content */}
+      <div className="rounded-lg bg-gray-50 p-4 shadow-sm">
+        <h3 className="text-base font-semibold text-gray-900">
+          {step.title}
+        </h3>
 
-        {step.showStartOtpButton && (
-          <Button onClick={onStartOtp} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">
-            {t.jobtrackingpage.buttons.startWorkOtp}
-          </Button>
-        )}
+        <p className="mt-1 text-sm text-gray-500">
+          {step.time}
+        </p>
 
-        {step.showCompleteOtpButton && (
-          <Button onClick={onCompleteOtp} className="mt-2 px-4 py-2 bg-green-600 text-white rounded">
-            {t.jobtrackingpage.buttons.completeWorkOtp}
-          </Button>
-        )}
+        {/* Action Buttons */}
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          {step.showStartOtpButton && (
+            <Button
+              onClick={onStartOtp}
+              className={`${buttonClass} bg-blue-600 hover:bg-blue-700`}
+            >
+              {t.jobtrackingpage.buttons.startWorkOtp}
+            </Button>
+          )}
 
-        {step.showPaymentButton && (
-          <Button onClick={onPayNow} className="mt-2 px-4 py-2 bg-red-500 text-white rounded">
-            {t.jobtrackingpage.buttons.payNow}
-          </Button>
-        )}
+          {step.showCompleteOtpButton && (
+            <Button
+              onClick={onCompleteOtp}
+              className={`${buttonClass} bg-green-600 hover:bg-green-700`}
+            >
+              {t.jobtrackingpage.buttons.completeWorkOtp}
+            </Button>
+          )}
 
-        {step.showVerifyButton && (
-          <Button
-            onClick={onVerifyPayment}
-            disabled={isVerifyPending}
-            className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
-          >
-            {t.jobtrackingpage.buttons.verifyPayment}
-          </Button>
-        )}
+          {step.showPaymentButton && (
+            <Button
+              onClick={onPayNow}
+              className={`${buttonClass} bg-red-500 hover:bg-red-600`}
+            >
+              {t.jobtrackingpage.buttons.payNow}
+            </Button>
+          )}
 
-        {step.showServiceRatingButton && (
-          <Button onClick={onRateService} className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded">
-            {t.jobtrackingpage.buttons.rateService}
-          </Button>
-        )}
+          {step.showVerifyButton && (
+            <Button
+              onClick={onVerifyPayment}
+              disabled={isVerifyPending}
+              className={`${buttonClass} bg-emerald-600 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60`}
+            >
+              {isVerifyPending
+                ? t.common?.loading || "Verifying..."
+                : t.jobtrackingpage.buttons.verifyPayment}
+            </Button>
+          )}
+
+          {step.showServiceRatingButton && (
+            <Button
+              onClick={onRateService}
+              className={`${buttonClass} bg-yellow-500 hover:bg-yellow-600`}
+            >
+              {t.jobtrackingpage.buttons.rateService}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

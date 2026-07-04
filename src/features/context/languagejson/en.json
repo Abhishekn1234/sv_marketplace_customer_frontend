@@ -18,6 +18,15 @@
       "signup": "Sign Up"
   },
  "common": {
+  "otp": {
+    "title": "One-Time Password",
+    "description": "Use the OTP below to complete your verification.",
+    "warning": "Do not share this OTP with anyone.",
+    "copied": "Copied to clipboard!",
+    "copy": "Copy OTP"
+   },
+   "/hr":"/hr",
+   "/day":"/days",
       "geoNotSupported": "Geolocation is not supported",
       "hours":"Hours",
       "Not Assigned":"Not Assigned",
@@ -181,6 +190,7 @@
       "selectTier": "Select Tier",
       "schedule": "Schedule"
     },
+    "Recommended":"Recommended",
     "title": "Choose Your Service Level",
     "description": "Select the tier that best fits your home's needs. All plans include our 100% satisfaction guarantee.",
     "Prices may vary based on your home's square footage.":"Prices may vary based on your home's square footage.",

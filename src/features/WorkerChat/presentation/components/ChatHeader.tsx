@@ -138,15 +138,7 @@ export default function ChatHeader({ worker,bookingId }: { worker: Worker,bookin
   className="mx-4"
 >
   {/* Close Button */}
-  <Button
-    icon
-    variant="ghost"
-    radius="full"
-    onClick={() => setInfoOpen(false)}
-    className="absolute right-2 top-2 sm:right-3 sm:top-3 z-10 text-gray-500 hover:bg-white/80 hover:text-gray-900"
-  >
-    <XIcon size={18} />
-  </Button>
+ 
 
   {/* Header */}
   <div className="flex flex-col items-center bg-gradient-to-b from-blue-50 to-white px-4 sm:px-5 pb-5 pt-6 sm:pt-7">
@@ -214,7 +206,7 @@ export default function ChatHeader({ worker,bookingId }: { worker: Worker,bookin
       {t.common.close}
     </Button>
   </div>
-</CommonModal>
+   </CommonModal>
      }
      
     </div>

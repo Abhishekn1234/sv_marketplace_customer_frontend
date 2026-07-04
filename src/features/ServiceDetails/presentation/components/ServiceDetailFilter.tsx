@@ -63,7 +63,7 @@ const sortOptions: SortKey[] = [
               className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200
                 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg"
+                    ? "bg-blue-600 text-white shadow-lg hover:text-blue-400"
                     : "bg-white text-gray-900 border-2 border-gray-200 hover:border-blue-600"
                 }`}
             >

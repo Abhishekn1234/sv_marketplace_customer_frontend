@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formattedHelpDate } from "../utils/formatdateforhelp";
-
+import CommonCard from "@/components/common/CommonCards";
 const HelpContent: React.FC = () => {
   const { t, isRTLOrder } = useLanguage();
 

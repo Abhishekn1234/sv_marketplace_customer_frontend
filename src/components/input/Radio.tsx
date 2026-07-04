@@ -15,6 +15,7 @@ interface RadioProps
 }
 
 export function Radio({
+  id,
   label,
   containerClassName,
   labelClassName,
@@ -24,35 +25,33 @@ export function Radio({
   ...props
 }: RadioProps) {
   return (
-    <Label
+    <div
       className={cn(
-        "flex items-center gap-2 cursor-pointer",
+        "flex items-center gap-2",
         containerClassName
       )}
     >
       {leftIcon}
 
       <RadioGroupItem
+        id={id}
         className={className}
         {...props}
       />
 
       {label && (
-        <span
+        <Label
+          htmlFor={id}
           className={cn(
-            "text-sm text-gray-900",
+            "cursor-pointer text-sm text-gray-900",
             labelClassName
           )}
         >
           {label}
-        </span>
+        </Label>
       )}
 
-      {rightIcon && (
-        <span className="ml-auto">
-          {rightIcon}
-        </span>
-      )}
-    </Label>
+      {rightIcon && <span className="ml-auto">{rightIcon}</span>}
+    </div>
   );
 }

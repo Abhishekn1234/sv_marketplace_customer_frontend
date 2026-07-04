@@ -261,18 +261,20 @@ export default function ActiveService() {
                       `/jobtracking/${booking._id}`
                     )
                   }
-                  className="flex-1 h-12 bg-blue-600 text-white rounded-xl"
+                  variant="none"
+                  className="flex-1 h-12 bg-blue-600 text-white rounded-xl hover:text-white cursor-pointer"
                 >
                   {t.home.Track}
                 </Button>
 
                 <Button
-                  className="flex-1 h-12 border text-blue-600 rounded-xl"
+                  className="flex-1 h-12 border-accent-foreground text-blue-600 rounded-xl"
                   onClick={() =>
                     navigate(
                       `/message/${booking?._id}`
                     )
                   }
+                  variant="ghost"
                 >
                   {t.home.Chat}
                 </Button>
