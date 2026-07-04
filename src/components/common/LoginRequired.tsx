@@ -29,14 +29,8 @@ export default function LoginRequired({
     dir={isRTLOrder ? "rtl" : "ltr"}
     className="relative flex flex-col items-center text-center"
   >
-    {/* Close Button */}
-    <Button
-      onClick={() => navigate("/")}
-      variant="ghost"
-     
-    >
-      <XIcon size={20} />
-    </Button>
+   
+   
 
     {/* Icon */}
     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-100">
