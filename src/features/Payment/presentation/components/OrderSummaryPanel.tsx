@@ -5,18 +5,26 @@ import { styles } from "./styles/paymentcardstyle";
 interface Props {
   t: any;
   serviceName: string;
+  vatAmount:number;
+  taxableAmount:number;
   bookingId: string;
+  bookingCode:string;
   currency: string;
   price: number;
 }
+
 
 export default function OrderSummaryPanel({
   t,
   serviceName,
   bookingId,
+  taxableAmount,
+  vatAmount,
+  bookingCode,
   currency,
   price,
 }: Props) {
+  // console.log(bookingCode);
   return (
     <div style={styles.panelLeft}>
       <div style={styles.secureBadge}>
@@ -28,7 +36,7 @@ export default function OrderSummaryPanel({
         <p style={styles.leftLabel}>{t.bookingSummary}</p>
         <p style={styles.serviceName}>{serviceName}</p>
         <p style={styles.bookingId}>
-          {t.bookingId}: {bookingId}
+          {t.bookingId}: {bookingId} {bookingCode}
         </p>
       </div>
 
@@ -47,11 +55,11 @@ export default function OrderSummaryPanel({
       <div style={styles.lineItems}>
         <LineItem
           label={t.serviceFee}
-          value={`${currency} ${(price / 1.15).toFixed(2)}`}
+          value={`${currency} ${taxableAmount}`}
         />
         <LineItem
           label={t.vat}
-          value={`${currency} ${(price - price / 1.15).toFixed(2)}`}
+          value={`${currency} ${vatAmount}`}
         />
         <LineItem
           label={t.total}

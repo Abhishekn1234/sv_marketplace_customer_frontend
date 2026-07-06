@@ -32,7 +32,7 @@ export default function ProfileList() {
   if (isLoading) {
     return (
       <div className="text-center py-10">
-        <CommonSpinner />
+        <CommonSpinner center />
       </div>
     );
   }

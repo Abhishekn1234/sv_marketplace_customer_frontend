@@ -38,6 +38,7 @@ interface SelectProps {
   placeholder?: string;
 
   className?: string;
+    contentClassName?: string;
 
   size?: Size;
   radius?: Radius;
@@ -56,6 +57,7 @@ export default function Select({
   size = "md",
   radius = "lg",
   variant = "white",
+  contentClassName
   // disabled,
 }: SelectProps) {
   const { t } = useLanguage();
@@ -114,16 +116,15 @@ export default function Select({
         <SelectValue placeholder={resolvedPlaceholder} />
       </SelectTrigger>
 
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem
-            key={option.value}
-            value={option.value}
-          >
+     <SelectContent className={contentClassName}>
+       {options.map((option) => (
+    <SelectItem key={option.value} value={option.value}>
+        <div className="flex items-center gap-3">
             {option.icon}
             <span>{option.label}</span>
-          </SelectItem>
-        ))}
+        </div>
+    </SelectItem>
+))}
       </SelectContent>
     </ShadcnSelect>
   );

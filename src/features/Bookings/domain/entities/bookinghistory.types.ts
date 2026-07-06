@@ -1,17 +1,13 @@
 
-import type { AssignedWorker } from "./assignedworkers.type";
-import type { BookingSchedule } from "./bookingschedule.types";
 import type { BookingStatus } from "./bookingstatus.types";
-import type { Service } from "./service.types";
-import type { ServiceTierRef } from "./servicetier.types";
-import type { Geopoint } from "./geopoint.types";
-import type { GenerateInvoice } from "@/features/Generateotp/domain/entities/generateinvoice";
 
-export interface BookingHistoryResponse{
-  data:BookingHistory[];
-  pagination:BookingHistoryPagination
+import { Booking } from "./booking.types";
 
+export interface BookingHistoryResponse {
+  data: BookingHistory[];
+  pagination: BookingHistoryPagination;
 }
+
 export interface BookingHistoryQueryParams {
   page?: number;
   limit?: number;
@@ -19,54 +15,50 @@ export interface BookingHistoryQueryParams {
   search?: string;
   status?: BookingStatus;
 }
-export interface BookingHistory {
-  _id: string;
-  userId: string;
-  bookingCode?:string;
-  price?:number;
-  sessionId?:string;
-  serviceId: string;
-  serviceTierId: string;
-  assignedWorkers?: AssignedWorker[];
-  bookingType: "SCHEDULED" | "INSTANT";
-  status: BookingStatus;
 
-  pricingMode: "HOURLY" | "PER_DAY";
-  currency: string;
+
+
+export type BookingHistory = Booking;
+
+export interface BookingTaxLine {
+  name: string;
+  taxType: string;
+  rate: number;
+  taxableAmount: number;
   amount: number;
+}
 
-  commissionValue: number;
-  commissionType: "PERCENTAGE" | "FIXED";
+export interface BookingAppliedDiscount {
+  id?: string;
+  code?: string;
+  name?: string;
+  type?: string;
+  value?: number;
+  amount?: number;
+}
+
+export interface BookingAmountSummary {
+  workHours: number;
+  workDays: number;
+  noOfWorkers: number;
+
+  amount: number;
+  serviceFee: number;
+  discountAmount: number;
+
+  taxableAmount: number;
+
+  vatRate: number;
+  vatAmount: number;
+
+  taxLines: BookingTaxLine[];
+
   commissionAmount: number;
-
-  numberOfWorkers: number;
   workerPoolAmount: number;
 
-  workDescription: string;
+  finalAmount: number;
 
-  isFinalized: boolean;
-  memberDiscount: number;
-  serviceFee: number;
-
-  location: Geopoint;
-
-  schedule?: BookingSchedule;
-  finalAmount?: number;
-  totalCost?:number;
-  startedAt?: string;
-  completedAt?: string;
-  invoice?:GenerateInvoice;
-
-  actualWorkDays?: number;
-  actualWorkHours?: number;
-
-  invoiceId?: string;
-  paymentId?:string;
-  service: Service;
-  serviceTier: ServiceTierRef;
-
-  createdAt: string;
-  updatedAt: string;
+  appliedDiscounts: BookingAppliedDiscount[];
 }
 
 export interface BookingHistoryPagination {

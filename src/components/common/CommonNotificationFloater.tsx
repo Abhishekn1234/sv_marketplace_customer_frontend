@@ -24,6 +24,7 @@ export default function CommonNotificationFloater({
 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const bellRef = useRef<HTMLButtonElement>(null);
 
   const { t, isRTLOrder: isRTL } = useLanguage();
 
@@ -67,24 +68,29 @@ export default function CommonNotificationFloater({
 
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as Node;
+
+    // Ignore clicks on the bell itself — its own onClick handles toggling
+    if (bellRef.current?.contains(target)) return;
+
+    if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+      setOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+   }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Button */}
       <Button
+        ref={bellRef}
         onClick={() => setOpen((prev) => !prev)}
         variant="ghost"
         size="lg"

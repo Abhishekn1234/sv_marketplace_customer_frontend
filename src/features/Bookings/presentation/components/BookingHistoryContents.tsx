@@ -162,7 +162,7 @@ const handleVerifyPayment = (data: PaymentCallback) => {
   if (isLoading) {
     return (
       <>
-      <CommonSpinner/>
+      <CommonSpinner center/>
       </>
     );
   }

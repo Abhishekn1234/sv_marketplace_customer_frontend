@@ -4,6 +4,7 @@ export const getIcon = (type: string) => {
   switch (type) {
     case "CARD":
       return <CreditCardIcon size={28} />;
+  
     case "UPI":
       return <SmartphoneIcon size={28} />;
     case "CASH":

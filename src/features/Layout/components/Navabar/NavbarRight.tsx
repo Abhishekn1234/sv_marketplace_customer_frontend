@@ -141,6 +141,7 @@ const NavbarRight: React.FC<NavbarRightProps> = ({
               if (!selectedLanguage) return;
               handleChange(selectedLanguage.code, selectedLanguage.label);
             }}
+             contentClassName="min-w-[180px]"
             options={languages.map((lang) => ({
               label: lang.label,
               value: lang.code,

@@ -41,12 +41,15 @@ export default function PaymentPage() {
   const METHOD_META = getMethodMeta(translations.paymentpage.paymentMethods);
 
   const { mutate, isPending } = useBookingPayment();
+  
   const { data: gateways, isLoading } = useGetPaymentGateway();
-
-  const bookingId   = state?.bookingId   ?? "";
+  const bookingCode=state?.bookingCode??"Booking Code"
+  const  bookingId   = state?.bookingId   ?? "";
   const serviceName = state?.serviceName ?? "Service";
   const price       = Number(state?.price ?? 0);
   const currency    = state?.currency    ?? "SAR";
+  const taxableAmount=state?.taxableAmount;
+  const vatAmount=state?.vatAmount;
 
   const {
     data: processingSession,
@@ -136,7 +139,10 @@ export default function PaymentPage() {
 
   const summaryPanel = (
     <OrderSummaryPanel
+    bookingCode={bookingCode}
       t={t.paymentpage}
+      taxableAmount={taxableAmount}
+      vatAmount={vatAmount}
       serviceName={serviceName}
       bookingId={bookingId}
       currency={currency}

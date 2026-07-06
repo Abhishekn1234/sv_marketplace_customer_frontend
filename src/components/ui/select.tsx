@@ -51,15 +51,20 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
-      className={cn(
-        "group flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all",
-        "hover:border-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-        "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400",
-        "data-[size=default]:h-10",
-        "data-[size=sm]:h-9",
-        className
-      )}
+    className={cn(
+  "group flex w-full items-center justify-between",
+  "rounded-xl",
+  "border border-gray-300",
+  "bg-white",
+  "px-3",
+  "shadow-sm",
+  "transition-all",
+  "hover:border-gray-400",
+  "focus:ring-2 focus:ring-primary/20 focus:border-primary",
+  "data-[size=default]:h-11",
+  "data-[size=sm]:h-9",
+  className
+)}
       {...props}
     >
       {children}
@@ -75,6 +80,7 @@ function SelectTrigger({
 
 function SelectContent({
   className,
+  
   children,
   side = "bottom",
   sideOffset = 6,
@@ -99,12 +105,18 @@ function SelectContent({
         align={align}
         alignOffset={alignOffset}
         alignItemWithTrigger={alignItemWithTrigger}
-        className="z-50"
+        className="z-[100]"
       >
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "z-50 max-h-60 min-w-[var(--anchor-width)] overflow-auto rounded-md border border-gray-200 bg-white shadow-lg",
+            "w-[var(--anchor-width)]",
+            "overflow-hidden",
+            "rounded-xl",
+            "border",
+            "border-gray-200",
+            "bg-white",
+            "shadow-xl",
             "animate-in fade-in-0 zoom-in-95 duration-150",
             className
           )}
@@ -112,7 +124,14 @@ function SelectContent({
         >
           <SelectScrollUpButton />
 
-          <SelectPrimitive.List className="p-1">
+          <SelectPrimitive.List
+            className="
+              max-h-64
+              overflow-y-auto
+              overscroll-contain
+              p-1
+            "
+          >
             {children}
           </SelectPrimitive.List>
 
@@ -148,9 +167,12 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-gray-700 outline-none",
-        "hover:bg-blue-50 hover:text-blue-700",
-        "data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-700",
+        "relative flex h-10 w-full cursor-pointer items-center rounded-lg px-3 text-sm",
+        "text-gray-700",
+        "transition-colors",
+        "hover:bg-gray-100",
+        "data-[highlighted]:bg-blue-50",
+        "data-[highlighted]:text-blue-700",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -162,9 +184,7 @@ function SelectItem({
 
       <SelectPrimitive.ItemIndicator
         render={
-          <span className="absolute right-3 flex items-center justify-center">
-            <CheckIcon className="h-4 w-4 text-blue-600" />
-          </span>
+          <CheckIcon className="h-4 w-4 text-blue-600" />
         }
       />
     </SelectPrimitive.Item>

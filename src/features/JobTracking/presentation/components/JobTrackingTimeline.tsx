@@ -92,6 +92,7 @@ export default function JobTrackingTimeline({
   // ✅ Use localBooking (merged with socket updates) for instant UI display
   // Falls back to booking prop if no socket updates yet
    const currentBooking = localBooking ?? booking;
+  //  console.log(currentBooking);
   // -----------------------------
   // ACTIVITY MAP
   // -----------------------------
@@ -134,13 +135,12 @@ export default function JobTrackingTimeline({
   // -----------------------------
   // PRICE
   // -----------------------------
-  const computedPrice = useMemo(() => {
-    return (
-      currentBooking?.invoice?.finalAmount ??
-      currentBooking?.totalCost ??
-      0
-    );
-  }, [currentBooking]);
+  const computedPrice = useMemo(
+  () =>
+    (currentBooking?.taxableAmount ?? 0) +
+    (currentBooking?.vatAmount ?? 0),
+  [currentBooking]
+);
 
   // -----------------------------
   // OTP START
@@ -291,9 +291,13 @@ export default function JobTrackingTimeline({
             onStartOtp={handleStartOtp}
             onCompleteOtp={handleCompleteOtp}
             onPayNow={() =>
+              
               navigate("/payment", {
                 state: {
                   bookingId: currentBooking._id,
+                  taxableAmount:currentBooking.taxableAmount,
+                  vatAmount:currentBooking?.vatAmount,
+                  bookingCode:currentBooking.bookingCode,
                   serviceName: currentBooking?.serviceId ?? currentBooking?.service?.name,
                   price: computedPrice,
                   currency: currentBooking.currency,

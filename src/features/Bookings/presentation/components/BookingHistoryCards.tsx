@@ -148,6 +148,9 @@ export default function BookingCard({
           navigate("/payment", {
             state: {
               bookingId: booking._id,
+              taxableAmount:booking.taxableAmount,
+              bookingCode:booking.bookingCode,
+              vatAmount:booking.vatAmount,
               serviceName: serviceName,
               price: Number(finalPrice).toFixed(2),
               currency: booking.currency ?? "SAR",

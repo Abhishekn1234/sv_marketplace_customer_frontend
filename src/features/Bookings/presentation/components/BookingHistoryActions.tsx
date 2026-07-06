@@ -16,6 +16,9 @@ interface BookingActionsProps {
   onViewDetails: () => void;
   onPayNow: (data: {
   bookingId: string;
+  bookingCode?:string;
+  vatAmount?:number;
+  taxableAmount?:number;
   serviceName: string;
   price: number;
   currency: string;
@@ -121,8 +124,11 @@ export function BookingActions({
           if (shouldPayNow) {
             onPayNow({
               bookingId: booking._id,
+              bookingCode:booking?.bookingCode,
               serviceName: booking.service?.name ?? "Service",
               price: booking?.totalCost ?? 0,
+              taxableAmount:booking?.taxableAmount,
+              vatAmount:booking?.vatAmount,
               currency: booking.currency ?? "SAR",
             });
           } else {

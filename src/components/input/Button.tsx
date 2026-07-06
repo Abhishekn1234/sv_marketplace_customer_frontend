@@ -49,7 +49,7 @@ export default function Button({
     secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300",
     danger: "bg-red-600 text-white hover:bg-red-700",
     ghost:
-      "bg-transparent text-black hover:bg-gray-100 hover:text-blue-600",
+      "bg-transparent text-black hover:bg-gray-100 hover:text-blue-200",
     none: "text-inherit hover:text-inherit",
 
     // ✅ NEW OUTLINE VARIANT

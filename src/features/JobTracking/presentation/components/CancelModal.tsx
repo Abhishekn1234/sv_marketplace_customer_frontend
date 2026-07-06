@@ -41,16 +41,10 @@ export function CancelConfirmationDialog({
     },
   ];
 
-  const options: SelectOption[] = [
-    {
-      label: t.jobtrackingpage.cancelBooking.selectPlaceholder,
-      value: "",
-    },
-    ...cancelTypes.map((type) => ({
-      label: type.label,
-      value: type.value,
-    })),
-  ];
+  const options = cancelTypes.map(type => ({
+    label: type.label,
+    value: type.value,
+}));
 
   const [selectedType, setSelectedType] = useState("");
   const [reason, setReason] = useState("");

@@ -68,7 +68,7 @@ export default function PaymentMethodsPanel({
 
       {isLoading ? (
         <div style={styles.spinnerWrap}>
-          <CommonSpinner size={36} />
+          <CommonSpinner size={36}  center/>
         </div>
       ) : (
         <div style={styles.methodsGrid}>
@@ -127,7 +127,7 @@ export default function PaymentMethodsPanel({
         </div>
       )}
 
-      {showCardFields && (
+      {/* {showCardFields && (
         <div style={styles.cardFields}>
           <div style={styles.fieldGroup}>
             <Label style={styles.fieldLabel}>
@@ -186,7 +186,7 @@ export default function PaymentMethodsPanel({
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       <Button
         disabled={!method || isPending}

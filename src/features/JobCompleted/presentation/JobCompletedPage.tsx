@@ -35,7 +35,7 @@ export default function JobCompletedPage() {
   }, [bookingId, bookings]);
 
   if (!booking) {
-    return <CommonSpinner/>;
+    return <CommonSpinner center/>;
   }
 
   return (

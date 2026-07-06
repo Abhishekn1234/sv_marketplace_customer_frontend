@@ -52,19 +52,22 @@ export const Textarea = React.forwardRef<
 
     React.useImperativeHandle(ref, () => innerRef.current!);
 
+    const resize = React.useCallback(() => {
+      if (!autoResize || !innerRef.current) return;
+
+      const el = innerRef.current;
+      el.style.height = "auto";
+      el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+    }, [autoResize, maxHeight]);
+
+    React.useEffect(() => {
+      resize();
+    }, [props.value, resize]);
+
     const handleChange = (
       e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-      if (autoResize && innerRef.current) {
-        const el = innerRef.current;
-
-        el.style.height = "auto";
-        el.style.height = `${Math.min(
-          el.scrollHeight,
-          maxHeight
-        )}px`;
-      }
-
+      resize();
       onChange?.(e);
     };
 
@@ -88,13 +91,11 @@ export const Textarea = React.forwardRef<
             ref={innerRef}
             id={id}
             required={required}
-            rows={1}
             aria-invalid={!!error}
             onChange={handleChange}
             className={cn(
-              autoResize &&
-                "resize-none overflow-y-auto min-h-[40px]",
-              rightElement && "pr-12",
+              autoResize && "resize-none overflow-y-auto",
+              rightElement && "pr-10",
               className
             )}
             {...props}

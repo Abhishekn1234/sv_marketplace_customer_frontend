@@ -21,6 +21,8 @@
  "common": {
   "selected":"Selected",
   "not selected":"Not Selected",
+  "hour":"Hour",
+  "day":"Day",
   "otp": {
     "title": "One-Time Password",
     "description": "Use the OTP below to complete your verification.",

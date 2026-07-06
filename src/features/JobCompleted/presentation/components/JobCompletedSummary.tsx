@@ -3,6 +3,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
 import CommonCard from "@/components/common/CommonCards";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { formatWorkHours } from "@/features/Bookings/presentation/utils/formathours";
 
 export default function JobCompletedSummary({
   booking,
@@ -47,32 +48,45 @@ export default function JobCompletedSummary({
     "0.00";
 
   const currency = booking.currency || "SAR";
+   const isHourly = booking.pricingMode === "HOURLY";
+    const isPerDay = booking.pricingMode === "PER_DAY";
 
-  const summaryItems = [
-    {
-      label: t.jobcompletedpage.serviceType,
-      value: service,
-    },
-    {
-      label: t.jobcompletedpage.serviceTier,
-      value: tierName,
-    },
-    {
-      label: t.jobcompletedpage.date,
-      value: booking.schedule?.startDateTime
-        ? formatDates(booking.schedule.startDateTime)
-        : "N/A",
-      isLTR: true,
-    },
-    {
-      label: t.jobcompletedpage.duration,
-      value: booking.schedule?.estimatedHours
-        ? `${booking.schedule.estimatedHours} ${
-            t.common.hours ?? "Hours"
+    const workHours = booking.actualValues?.workHours ?? 0;
+    const workDays = booking.actualValues?.workDays ?? 0;
+
+    const duration = isHourly
+      ? workHours > 0
+        ? formatWorkHours(workHours)
+        : "—"
+      : isPerDay
+        ? `${workDays} ${
+            workDays === 1
+              ? (t.common.day ?? "Day")
+              : (t.common.days ?? "Days")
           }`
-        : "—",
-    },
-  ];
+        : "—";
+
+    const summaryItems = [
+      {
+        label: t.jobcompletedpage.serviceType,
+        value: service,
+      },
+      {
+        label: t.jobcompletedpage.serviceTier,
+        value: tierName,
+      },
+      {
+        label: t.jobcompletedpage.date,
+        value: booking.schedule?.startDateTime
+          ? formatDates(booking.schedule.startDateTime)
+          : "N/A",
+        isLTR: true,
+      },
+      {
+        label: t.jobcompletedpage.duration,
+        value: duration,
+      },
+    ];
 
   const displayItems = isRTLOrder
     ? [
