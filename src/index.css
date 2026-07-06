@@ -1,7 +1,61 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+.phone-input-wrapper,
+.react-international-phone-input-container {
+  width: 100%;
+}
 
+/* Main field */
+
+.react-international-phone-input-container {
+  display: flex;
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #fff;
+  transition: all .2s ease;
+}
+
+.react-international-phone-input-container:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 15%);
+}
+
+/* Country button */
+
+.react-international-phone-country-selector-button {
+  width: 58px;
+  border: 0 !important;
+  border-right: 1px solid #e5e7eb !important;
+  background: white !important;
+  border-radius: 12px 0 0 12px !important;
+}
+
+/* Input */
+
+.react-international-phone-input {
+  flex: 1;
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-size: 14px;
+  padding: 0 14px;
+  height: 100%;
+}
+
+/* Dropdown */
+
+.react-international-phone-country-selector-dropdown {
+  z-index: 99999 !important;
+  border-radius: 12px;
+  overflow: auto;
+  box-shadow:
+    0 10px 25px rgb(0 0 0 / 12%);
+}
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

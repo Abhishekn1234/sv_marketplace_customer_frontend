@@ -38,7 +38,7 @@ const ServiceReviewSection: FC<ServiceReviewSectionProps> = ({
 
       <Button
         onClick={onSubmit}
-        className="w-full h-12 sm:h-14 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95 transition-all"
+        className="w-full h-12 sm:h-14 bg-blue-600 text-white  hover:text-blue-200 text-sm sm:text-base font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95 transition-all"
       >
         {t.serviceratingpage.submitReview}
       </Button>

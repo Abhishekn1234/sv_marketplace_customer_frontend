@@ -1,6 +1,6 @@
 import "react-international-phone/style.css";
-
 import { PhoneInput as IntlPhoneInput } from "react-international-phone";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
@@ -17,17 +17,23 @@ export function PhoneInput({
   const { isRTLOrder } = useLanguage();
 
   return (
-    <div dir={isRTLOrder ? "rtl" : "ltr"} className="w-full">
-          <IntlPhoneInput
+    <div dir={isRTLOrder ? "rtl" : "ltr"} className="phone-input-wrapper">
+      <IntlPhoneInput
         value={value}
-        onChange={onChange}
-        forceDialCode
-        inputClassName="!w-full !h-11 !rounded-r-xl !border !border-l-0"
-        countrySelectorStyleProps={{
-          buttonClassName: "!h-11 !rounded-l-xl !border",
-          dropdownStyleProps: {
-            className: "!z-50",
-          },
+        defaultCountry={defaultCountry}
+        onChange={(phone, meta) => {
+          const dialCode = `+${meta.country.dialCode}`;
+
+          if (phone === dialCode && value) {
+            const parsed = parsePhoneNumberFromString(value);
+
+            if (parsed) {
+              onChange(`${dialCode}${parsed.nationalNumber}`);
+              return;
+            }
+          }
+
+          onChange(phone);
         }}
       />
     </div>

@@ -20,7 +20,7 @@ export default function ProfileUpdate() {
     email: "",
     phone: "",
   });
-
+ 
   /* ---------------- LOAD PROFILE ---------------- */
   useEffect(() => {
     if (profile) {
@@ -57,6 +57,7 @@ export default function ProfileUpdate() {
     );
 
     form.append("email", formData.email);
+    
     form.append("phone", formData.phone);
 
     updateProfile(form, {
@@ -123,7 +124,7 @@ export default function ProfileUpdate() {
               type="submit"
               disabled={isPending}
               rightIcon={<SaveIcon className="w-5 h-5" />}
-              className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 hover:text-white text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isPending ? t.profilepage.saving : t.profilepage.saveChanges}
             </Button>

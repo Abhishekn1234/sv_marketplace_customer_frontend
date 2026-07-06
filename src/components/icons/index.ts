@@ -80,10 +80,21 @@ import { ShieldCheckIcon } from "./ShieldCheckIcon";
 import { MinusIcon } from "./MinusIcon";
 import { ColumnsIcon } from "./ColumnsIcon";
 import { ChevronRightIcon } from "./ChevronRightIcon";
+
+import { HashIcon } from "./HashIcon";
+import { WalletIcon } from "./WalletIcon";
+import { FileTextIcon } from "./FileTextIcon";
+import { UserRoundIcon } from "./UserRoundIcon";
+import { CalendarDaysIcon } from "./CalendarDaysIcon";
 export {
   // SVG Icons
   GoogleIcon,
+  HashIcon,
   ColumnsIcon,
+  CalendarDaysIcon,
+  UserRoundIcon,
+  WalletIcon,
+  FileTextIcon,
   ChevronRightIcon,
   ShieldCheckIcon,
   TickIcon,

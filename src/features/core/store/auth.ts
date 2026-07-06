@@ -6,7 +6,7 @@ import type {
   Address,
 } from "@/features/Auth/presentation/components/Location/domain/entities/updatelocation";
 import { initializeSocket, disconnectSocket } from "../Websocket/socket";
-
+import {nanoid}from "nanoid";
 export type Theme = "light" | "dark";
 
 /* ---------------- SEARCH STATE (if still needed separately) ---------------- */
@@ -157,7 +157,7 @@ export const useAuthStore = create<AuthState>()(
       addAddress: (type, value) =>
         set((state) => {
           const newAddress: Address = {
-            id: Date.now().toString(),
+          id: nanoid(),
             type,
             value,
           };
@@ -186,7 +186,7 @@ export const useAuthStore = create<AuthState>()(
             : [
                 ...state.current_location.addresses,
                 {
-                  id: Date.now().toString(),
+                  id: nanoid(),
                   type,
                   value,
                 },

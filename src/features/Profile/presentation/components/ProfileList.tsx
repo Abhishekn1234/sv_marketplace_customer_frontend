@@ -85,25 +85,20 @@ export default function ProfileList() {
                 </div>
               )}
 
-              <FileInput accept="image/*" onFileChange={handleFileChange}>
-                <Button
-                  disabled={isPending}
-                  className="
-                    absolute bottom-0 right-0
-                    w-10 h-10
-                    rounded-full
-                    border-2 border-gray-200
-                    shadow-md
-                    bg-white
-                    flex items-center justify-center
-                    hover:bg-gray-100
-                    transition-all
-                    disabled:opacity-60
-                  "
-                >
-                  <PencilIcon className="w-4 h-4 text-black" />
-                </Button>
-              </FileInput>
+             <FileInput accept="image/*" onFileChange={handleFileChange}>
+              <div
+                className="
+                  absolute bottom-0 right-0
+                  w-10 h-10 rounded-full
+                  border-2 border-gray-200
+                  shadow-md bg-white
+                  flex items-center justify-center
+                  cursor-pointer
+                "
+              >
+                <PencilIcon className="w-4 h-4" />
+              </div>
+            </FileInput>
             </div>
           </div>
 

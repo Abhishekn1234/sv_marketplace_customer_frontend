@@ -129,7 +129,7 @@ export function BookingActions({
             onViewDetails();
           }
         }}
-        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:text-blue-200 hover:bg-blue-700 transition"
       >
         {shouldPayNow
           ? t.Bookingspage.Actions.payNow

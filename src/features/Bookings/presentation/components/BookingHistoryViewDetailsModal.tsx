@@ -4,13 +4,18 @@ import { formatBookingDuration } from "../utils/formatduration";
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import CommonModal from "@/components/common/CommonModal";
-import { Hash, CalendarDays, Clock, Wallet, FileText, UserRound } from "lucide-react";
+
+import { BookingHistoryDetailField as DetailField } from "./BookingHistoryDetailField";
+import { BookingHistoryCallableContact } from "./BookingHistoryCallableContact";
+import { CalendarDaysIcon, ClockIcon, FileTextIcon, HashIcon, WalletIcon } from "@/components/icons";
 
 interface Props {
   booking: BookingHistory | null;
   isOpen: boolean;
   onClose: () => void;
 }
+
+
 
 export default function BookingHistoryViewDetailsModal({
   booking,
@@ -23,8 +28,13 @@ export default function BookingHistoryViewDetailsModal({
 
   const serviceName = booking.service?.name ?? "Service Details";
   const tierName = booking.serviceTier?.displayName ?? "-";
+
+  const customerName = booking.assignedWorkers?.[0]?.worker?.fullName ?? t.common["Not Assigned"];
+  const customerPhone = booking.assignedWorkers?.[0]?.worker?.phone;
+
   const workerName =
     booking.assignedWorkers?.[0]?.worker?.fullName ?? t.common["Not Assigned"];
+  const workerPhone = booking.assignedWorkers?.[0]?.worker?.phone;
 
   const bookingDate = booking.schedule?.startDateTime
     ? formatSmartDate(booking.schedule.startDateTime)
@@ -47,7 +57,7 @@ export default function BookingHistoryViewDetailsModal({
       footer={
         <Button
           onClick={onClose}
-          className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200"
+          className="rounded-lg bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200"
         >
           {t.common.close}
         </Button>
@@ -55,51 +65,61 @@ export default function BookingHistoryViewDetailsModal({
     >
       <div dir={isRTLOrder ? "rtl" : "ltr"} className="space-y-6">
         {/* Subtitle */}
-        <div className="flex items-center gap-2 border-b pb-4 text-sm text-gray-500">
-          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+        <div className="flex flex-wrap items-center gap-3 border-b border-gray-100 pb-5">
+          <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold tracking-wide text-blue-700 ring-1 ring-inset ring-blue-100">
             {tierName}
           </span>
-          <span className="flex items-center gap-1.5">
-            <UserRound className="h-3.5 w-3.5" />
-            {workerName}
-          </span>
+
+         
+
+          <span className="text-gray-300">•</span>
+
+          <BookingHistoryCallableContact name={workerName} phone={workerPhone} />
         </div>
 
         {/* Details */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <DetailField
-            icon={<Hash className="h-4 w-4" />}
-            label={t.invoice.bookingRef}
-            value={booking._id ?? "-"}
-            valueClassName="break-all"
-          />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+            <DetailField
+              icon={<HashIcon className="h-4 w-4" />}
+              label={t.invoice.bookingRef}
+              value={booking.bookingCode ?? "-"}
+              valueClassName="break-all font-mono text-xs"
+            />
+          </div>
 
-          <DetailField
-            icon={<CalendarDays className="h-4 w-4" />}
-            label={t.common.date}
-            value={bookingDate}
-          />
+          <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+            <DetailField
+              icon={<CalendarDaysIcon className="h-4 w-4" />}
+              label={t.common.date}
+              value={bookingDate}
+            />
+          </div>
 
-          <DetailField
-            icon={<Clock className="h-4 w-4" />}
-            label={t.common.workedDuration}
-            value={duration}
-          />
+          <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+            <DetailField
+              icon={<ClockIcon className="h-4 w-4" />}
+              label={t.common.workedDuration}
+              value={duration}
+            />
+          </div>
 
-          <DetailField
-            icon={<Wallet className="h-4 w-4" />}
-            label={t.common.totalPaid}
-            value={price}
-            valueClassName="text-lg font-bold text-blue-600"
-          />
+          {/* Price gets its own visual weight since it's the number people scan for */}
+          <div className="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700/80">
+              <WalletIcon className="h-4 w-4" />
+              {t.common.totalPaid}
+            </div>
+            <span className="text-lg font-bold text-blue-700">{price}</span>
+          </div>
 
           <div className="space-y-2 sm:col-span-2">
             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              <FileText className="h-3.5 w-3.5" />
+              <FileTextIcon className="h-3.5 w-3.5" />
               {t.common["Work Description"]}
             </p>
 
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
               <p className="text-sm leading-6 text-gray-700">
                 {booking.workDescription ?? "-"}
               </p>
@@ -108,27 +128,5 @@ export default function BookingHistoryViewDetailsModal({
         </div>
       </div>
     </CommonModal>
-  );
-}
-
-function DetailField({
-  icon,
-  label,
-  value,
-  valueClassName = "text-sm font-medium text-gray-900",
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  valueClassName?: string;
-}) {
-  return (
-    <div className="space-y-1">
-      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-        {icon}
-        {label}
-      </p>
-      <p className={valueClassName}>{value}</p>
-    </div>
   );
 }
