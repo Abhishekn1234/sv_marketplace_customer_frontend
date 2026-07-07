@@ -10,12 +10,13 @@ import { getBookingButtonConfig } from "../utils/bookingstatusbuttonmap";
 import { formatStatus } from "../../../../components/utils/formatstatusmap";
 import { statusStyles } from "../utils/statusmap";
 import { BookingActions } from "./BookingHistoryActions";
-import { formatBookingDuration } from "../utils/formatduration";
+
 import type { PaymentCallback } from "@/features/Payment/domain/entities/paymentcallback";
-import { useServices } from "../hooks/useServices";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import { HomeIcon } from "@/components/icons";
 import { formatDates } from "@/components/utils/formatdates";
+import { formatDuration } from "@/components/utils/formatduration";
 
 interface BookingCardProps {
   booking: BookingHistory;
@@ -37,44 +38,43 @@ export default function BookingCard({
 }: BookingCardProps) {
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
-  const { services } = useServices();
+
   const { t, isRTLOrder } = useLanguage();
 
-  const handleActionButtonClick = () => {
-    if (!clickable) return;
+ const handleActionButtonClick = () => {
+  if (!clickable) return;
 
-    switch (booking.status) {
-      case "IN_PROGRESS":
-      case "REQUESTED":
-        navigate(`/jobtracking/${booking._id}`);
-        break;
-      case "INVOICE_GENERATED":
-        onInvoiceClick(booking);
-        break;
-      case "WORKER_ACCEPTED":
-        onGenerateStartOtp(booking._id);
-        break;
-      case "WORK_COMPLETED_PENDING":
-        onGenerateCompletedOtp(booking._id);
-        break;
-      case "PAYMENT_PENDING":
-        if (booking?.paymentId) {
-          onVerifyPayment({
-            bookingId: booking._id,
-            paymentId: booking.paymentId,
-            status: "SUCCESS",
-            sessionId: booking.sessionId,
-          });
-        }
-        break;
-      case "PAID":
-        navigate(`/servicerating/${booking._id}`);
-        break;
-      default:
-        break;
-    }
-  };
+  switch (booking.status) {
+    case "REQUESTED":
+    case "IN_PROGRESS":
+    case "WORKER_ACCEPTED":
+    case "WORK_COMPLETED_PENDING":
+      navigate(`/jobtracking/${booking._id}`);
+      break;
 
+    case "INVOICE_GENERATED":
+      onInvoiceClick(booking);
+      break;
+
+    case "PAYMENT_PENDING":
+      if (booking?.paymentId) {
+        onVerifyPayment({
+          bookingId: booking._id,
+          paymentId: booking.paymentId,
+          status: "SUCCESS",
+          sessionId: booking.sessionId,
+        });
+      }
+      break;
+
+    case "PAID":
+      navigate(`/servicerating/${booking._id}`);
+      break;
+
+    default:
+      break;
+  }
+};
   return (
     <CommonCard className="w-full max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-6">
       {/* Header */}
@@ -123,7 +123,7 @@ export default function BookingCard({
             dir={isRTLOrder ? "ltr" : undefined}
             className="break-words text-sm font-semibold sm:truncate sm:text-base"
           >
-            {formatBookingDuration(booking)}
+            {formatDuration(booking)}
           </p>
         </div>
 
@@ -144,14 +144,13 @@ export default function BookingCard({
         onViewDetails={() => onViewDetails(booking)}
         onPayNow={() => {
           const finalPrice = booking?.totalCost;
-          const serviceName =
-            services.find((s) => s._id === booking.serviceId)?.name || "Service";
+          const serviceName =booking?.service?.name
           navigate("/payment", {
             state: {
               bookingId: booking._id,
-              taxableAmount:booking.taxableAmount,
+              taxableAmount:booking.estimatedValues?.taxableAmount??booking.actualValues?.taxableAmount,
               bookingCode:booking.bookingCode,
-              vatAmount:booking.vatAmount,
+              vatAmount:booking.estimatedValues?.vatAmount??booking.actualValues?.vatAmount,
               serviceName: serviceName,
               price: Number(finalPrice).toFixed(2),
               currency: booking.currency ?? "SAR",

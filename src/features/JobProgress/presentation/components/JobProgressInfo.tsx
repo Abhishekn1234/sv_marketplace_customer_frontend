@@ -80,8 +80,7 @@ export function JobProgressInfo({ booking }: BookingJobprogressinfo) {
             <span className="font-medium text-gray-800">
               {currency}{" "}
               {booking?.actualValues?.vatAmount ??
-                booking?.estimatedValues?.vatAmount ??
-                0}
+                booking?.estimatedValues?.vatAmount}
             </span>
           </div>
 
@@ -92,7 +91,7 @@ export function JobProgressInfo({ booking }: BookingJobprogressinfo) {
             </span>
 
             <span className="font-medium text-gray-800">
-              {currency} {total ?? 0}
+              {currency} {booking?.actualValues?.taxableAmount ?? booking?.estimatedValues?.taxableAmount}
             </span>
           </div>
 
@@ -104,7 +103,7 @@ export function JobProgressInfo({ booking }: BookingJobprogressinfo) {
               </span>
 
               <span className="text-xl font-bold text-blue-600">
-                {currency} {total ?? 0}
+                {currency} {total}
               </span>
             </div>
           </div>

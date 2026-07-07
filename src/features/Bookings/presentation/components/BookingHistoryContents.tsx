@@ -77,8 +77,9 @@ export default function BookingHistoryContents({ activeTab }: Props) {
 
   // 🔥 FIX: invoice is fetched using selected booking id
   const { data: selectedInvoice } = useGenerateInvoice(
-    selectedBooking?._id
-  );
+  selectedBooking?._id,
+  invoiceModalOpen
+);
 
   // ----------------------------
   // DERIVED DATA

@@ -20,6 +20,7 @@
   },
  "common": {
   "selected":"Selected",
+  "Cancelled":"Cancelled",
   "No worker is assigned":"No worker is assigned",
   "not selected":"Not Selected",
   "hour":"Hour",
@@ -878,7 +879,7 @@
     "bookingSummary": "Booking summary",
     "totalDue": "Total due",
     "serviceFee": "Service fee",
-    "vat": "VAT (15%)",
+    "vat": "VAT",
     "total": "Total",
     "choosePaymentMethod": "Choose payment method",
     "cardNumber": "Card number",

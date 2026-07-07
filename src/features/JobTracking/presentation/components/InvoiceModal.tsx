@@ -24,7 +24,7 @@ export default function InvoiceModal({
   onClose,
 }: Props) {
   const navigate = useNavigate();
-  const { data: invoice } = useGenerateInvoice(booking?._id);
+  const { data: invoice } = useGenerateInvoice(booking?._id,open);
   const { serviceTiers, services } = useServices();
   const { t, isRTLOrder } = useLanguage();
 
@@ -75,14 +75,14 @@ export default function InvoiceModal({
           0
         } ${t.common.days}`;
 
-  const rate = Number(booking.actualValues?.taxableAmount?? booking.estimatedValues?.taxableAmount);
-  const vatAmount = Number(booking.actualValues?.vatAmount ?? booking.estimatedValues?.vatAmount);
+     const rate = Number(booking.actualValues?.taxableAmount?? booking.estimatedValues?.taxableAmount);
+     const vatAmount = Number(booking.actualValues?.vatAmount ?? booking.estimatedValues?.vatAmount);
 
-  const finalAmount = Number(
-    booking.actualValues?.finalAmount ?? booking.estimatedValues?.finalAmount
-  );
+     const finalAmount = Number(
+       booking.actualValues?.finalAmount ?? booking.estimatedValues?.finalAmount
+      );
 
-  const currency =
+     const currency =
     invoiceData?.currency ??
     booking.currency ??
     "SAR";
@@ -186,8 +186,8 @@ export default function InvoiceModal({
               <span dir="ltr">
                 {rate.toFixed(2)} {currency}
                 {booking.pricingMode === "HOURLY"
-                  ? "/hour"
-                  : "/day"}
+                  ? t.common["/hr"]
+                  : t.common["/day"]}
               </span>
             </div>
 

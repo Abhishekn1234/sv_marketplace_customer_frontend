@@ -1,5 +1,6 @@
 
 
+import { GlobeIcon, LanguageIcon } from "@/components/icons";
 import { Input, Label } from "@/components/input";
 import { useState, useEffect } from "react";
 
@@ -14,28 +15,19 @@ const languages = [
   { code: "hi", native: "हिन्दी", label: "Hindi" },
 ];
 
-const LanguageIcon = ({ code }: { code: string }) => {
+const LanguagesIcon = ({ code }: { code: string }) => {
   switch (code) {
     case "en":
       return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-10 h-10">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M2 12h20" />
-          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-        </svg>
+       <GlobeIcon/>
       );
     case "ar":
+      return (
+       <LanguageIcon/>
+      );
     case "hi":
       return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-10 h-10">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M5 8l6 6" />
-          <path d="M4 14l4-4" />
-          <path d="M12 13v7" />
-          <path d="M9 16h6" />
-          <path d="M19 6l-4 4" />
-          <path d="M15 10l4-4" />
-        </svg>
+       <LanguageIcon />
       );
     default:
       return null;
@@ -90,7 +82,7 @@ export default function LanguageCards({ selectedLanguage, onSelectLanguage }: La
               `}
             >
               <span className={isSelected ? "text-white" : "text-gray-900 group-hover:text-white"}>
-                <LanguageIcon code={lang.code} />
+                <LanguagesIcon code={lang.code} />
               </span>
             </div>
 

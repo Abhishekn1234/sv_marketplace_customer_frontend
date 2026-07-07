@@ -1,4 +1,6 @@
+import { ArrowRight } from "@/components/icons";
 import { Image } from "@/components/input";
+import { useLanguage } from "@/features/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 
 interface RecentItemProps {
@@ -23,6 +25,7 @@ export const RecentItem: React.FC<RecentItemProps> = ({
   status,
 }) => {
   const navigate = useNavigate();
+  const {t}=useLanguage();
 
   // -----------------------------
   // NORMALIZE (backend-safe)
@@ -120,17 +123,22 @@ export const RecentItem: React.FC<RecentItemProps> = ({
 
         {!isDisabled ? (
           <div className="text-[13px] font-semibold text-amber-600 group-hover:text-amber-700 transition-all">
-            {isTrack
-              ? "Track →"
-              : isPaid
-              ? "View →"
-              :categoryId && serviceId
-              ? "Rebook →"
-              : ""}
+           {isTrack ? (
+       <span className="flex items-center gap-1">
+        {t.home.Track}
+       <ArrowRight />
+      </span>
+      ) : isPaid ? (
+       t.onboarding.view
+       ) : categoryId && serviceId ? (
+         t.Bookingspage.Actions.rebook
+        ) : (
+           ""
+         )}
           </div>
         ) : (
           <div className="text-[13px] font-semibold text-gray-500">
-            Cancelled
+            {t.common.Cancelled}
           </div>
         )}
       </div>

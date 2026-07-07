@@ -9,6 +9,8 @@ import { QuickActionsIcon } from "./QuickActionsIcon";
 import { TickCircleIcon } from "./TickCircleIcon";
 import { TickIcon } from "./TickIcon";
 import { SecurityIcon } from "./SecurityIcon";
+import { LanguageIcon } from "./LanguageIcon";
+import { GlobeIcon } from "./GlobeIcon";
 import { CheckSquare } from "./CheckSquare";
 import { Square } from "./Square";
 import { LoginIcon } from "./LoginIcon";
@@ -94,6 +96,8 @@ export {
   // SVG Icons
   GoogleIcon,
   QuestionIcon,
+  GlobeIcon,
+  LanguageIcon,
   CancelIcon,
   ChatIcon,
   HashIcon,

@@ -4,6 +4,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 import Button from "@/components/input/Button";
+import { TRACKABLE_STATUSES } from "../utils/trackablestatus";
 
 /* =========================
    ✅ PROPS
@@ -68,13 +69,6 @@ export function BookingActions({
   const shouldPayNow =
     !isExpired &&
     (status === "COMPLETED" || status === "INVOICE_GENERATED");
-
-  const TRACKABLE_STATUSES: BookingStatus[] = [
-    "IN_PROGRESS",
-    "COMPLETED",
-    "WORK_COMPLETED_PENDING",
-    "REQUESTED",
-  ];
 
   const canTrack =
     !isExpired && TRACKABLE_STATUSES.includes(status);

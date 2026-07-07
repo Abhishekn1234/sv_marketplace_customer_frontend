@@ -12,21 +12,21 @@ export const getBookingPrice = (booking: Booking) => {
       ? booking.serviceTierId._id
       : booking.serviceTierId ?? booking.serviceTier?._id;
 
-  if (!pricingTiers || !selectedTierId) return booking.amount;
+  if (!pricingTiers || !selectedTierId) return booking.estimatedValues?.amount;
 
   const matchedTier = pricingTiers.find(
     (tier) => tier._id === selectedTierId
   );
 
-  if (!matchedTier) return booking.amount;
+  if (!matchedTier) return booking.estimatedValues?.amount;
 
   if (booking.pricingMode === "HOURLY") {
-    return matchedTier.HOURLY?.ratePerHour ?? booking.amount;
+    return matchedTier.HOURLY?.ratePerHour ?? booking.estimatedValues?.finalAmount;
   }
 
   if (booking.pricingMode === "PER_DAY") {
-    return matchedTier.PER_DAY?.ratePerDay ?? booking.amount;
+    return matchedTier.PER_DAY?.ratePerDay ?? booking.estimatedValues?.finalAmount;
   }
 
-  return booking.amount;
+  return booking.estimatedValues?.finalAmount;
 };

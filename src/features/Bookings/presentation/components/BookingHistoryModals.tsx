@@ -73,7 +73,7 @@ const navigate = useNavigate();
             state: {
               bookingId: paymentBooking._id,
               serviceName: paymentBooking.service?.name ?? "Service Name",
-              price: paymentBooking.amount,
+              price: paymentBooking.actualValues?.finalAmount?? paymentBooking.estimatedValues?.finalAmount,
               currency: paymentBooking.currency,
             },
           });

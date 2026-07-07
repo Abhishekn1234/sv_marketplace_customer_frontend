@@ -42,10 +42,12 @@ export default function BookingHistoryViewDetailsModal({
     ? formatSmartDate(booking.schedule.startDateTime)
     : "-";
 
-  const duration = formatDuration(booking.estimatedValues?.workHours ?? booking.actualValues?.workHours);
+  const duration = formatDuration(booking, t);
 
-  const price =booking.actualValues?.finalAmount;
-
+  const price =
+  booking.actualValues?.finalAmount ??
+  booking.estimatedValues?.finalAmount ??
+  0;
   return (
     <CommonModal
       open={isOpen}
