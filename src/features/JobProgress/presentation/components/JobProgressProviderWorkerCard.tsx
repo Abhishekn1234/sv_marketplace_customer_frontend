@@ -3,6 +3,8 @@ import { getStatusText } from "../utils/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Link } from "react-router-dom";
 import CommonCard from "@/components/common/CommonCards";
+import { TickIcon } from "@/components/icons";
+
 
 export default function ProviderWorkingCard({ booking }: any) {
   const { t } = useLanguage();
@@ -37,11 +39,7 @@ export default function ProviderWorkingCard({ booking }: any) {
             {name}
 
             {worker && (
-              <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                </svg>
-              </div>
+              <TickIcon color="text-blue-400"/>
             )}
           </div>
 

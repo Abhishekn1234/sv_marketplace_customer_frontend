@@ -1,3 +1,5 @@
+import { formatText } from "@/components/utils/formattext";
+
 type TimelineStatusInput = {
   status?: string | null;
   invoice?: unknown;
@@ -12,36 +14,50 @@ export function resolveTimelineStatus(
   bookingLike?: TimelineStatusInput | null
 ): string {
   const normalizedStatus = status ?? bookingLike?.status ?? "";
-  const hasInvoice = Boolean(bookingLike?.invoice || bookingLike?.invoiceId);
-  const hasPayment = Boolean(
-    bookingLike?.paymentId || bookingLike?.sessionId || bookingLike?.transactionId
+
+  const hasInvoice = Boolean(
+    bookingLike?.invoice || bookingLike?.invoiceId
   );
 
-  if (normalizedStatus === "WORK_COMPLETE_OTP_GENERATED") {
-    return "WORK_COMPLETED_PENDING";
+  const hasPayment = Boolean(
+    bookingLike?.paymentId ||
+      bookingLike?.sessionId ||
+      bookingLike?.transactionId
+  );
+
+  let resolvedStatus = normalizedStatus;
+
+  switch (normalizedStatus) {
+    case "WORK_COMPLETE_OTP_GENERATED":
+      resolvedStatus = "WORK_COMPLETED_PENDING";
+      break;
+
+    case "WORK_START_OTP_GENERATED":
+      resolvedStatus = "WORKER_ACCEPTED";
+      break;
+
+    case "COMPLETED":
+      if (hasPayment) {
+        resolvedStatus = "PAID";
+      } else if (hasInvoice) {
+        resolvedStatus = "INVOICE_GENERATED";
+      } else {
+        resolvedStatus = "WORK_COMPLETED_PENDING";
+      }
+      break;
+
+    case "PAYMENT_COMPLETED":
+      resolvedStatus = "PAID";
+      break;
+
+    case "PAYMENT_INITIATED":
+      resolvedStatus = "PAYMENT_PENDING";
+      break;
+
+    case "INVOICE_GENERATED":
+      resolvedStatus = "INVOICE_GENERATED";
+      break;
   }
 
-  if (normalizedStatus === "WORK_START_OTP_GENERATED") {
-    return "WORKER_ACCEPTED";
-  }
-
-  if (normalizedStatus === "COMPLETED") {
-    if (hasPayment) return "PAID";
-    if (hasInvoice) return "INVOICE_GENERATED";
-    return "WORK_COMPLETED_PENDING";
-  }
-
-  if (normalizedStatus === "PAYMENT_COMPLETED") {
-    return "PAID";
-  }
-
-  if (normalizedStatus === "PAYMENT_INITIATED") {
-    return "PAYMENT_PENDING";
-  }
-
-  if (normalizedStatus === "INVOICE_GENERATED") {
-    return "INVOICE_GENERATED";
-  }
-
-  return normalizedStatus;
+  return formatText(resolvedStatus);
 }

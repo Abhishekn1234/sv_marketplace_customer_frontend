@@ -6,12 +6,13 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
+import CommonProgress from "@/components/common/CommonProgress";
 
 export function JobProgressProgress({ booking, loading }: any) {
   const { t } = useLanguage();
 
   if (loading) return <CommonSpinner />;
-  if (!booking) return <div>No booking found</div>;
+  if (!booking) return <div>{t.common["No data available"]}</div>;
 
   const status = (booking?.status || "REQUESTED").toString();
   const normalizedStatus = status.toUpperCase();
@@ -62,10 +63,13 @@ export function JobProgressProgress({ booking, loading }: any) {
           <span>{progress}%</span>
         </div>
 
-        <div className="h-3 bg-gray-200 rounded">
-          <div
-            className="h-full bg-blue-600 rounded"
-            style={{ width: `${progress}%` }}
+        <div>
+                  <CommonProgress
+            value={progress}
+            showValue={false}
+            className="mb-5"
+            trackClassName="h-2 rounded-full bg-gray-200"
+            indicatorClassName="bg-blue-600 rounded-full"
           />
         </div>
       </div>

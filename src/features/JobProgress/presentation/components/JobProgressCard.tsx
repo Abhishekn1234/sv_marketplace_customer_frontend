@@ -7,7 +7,8 @@ import CommonCard from "@/components/common/CommonCards";
 // import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { getJobProgressTasks } from "../utils/getJobProgressTasks";
 import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
-
+import { TickIcon } from "@/components/icons";
+import { formatText } from "@/components/utils/formattext";
 export function JobProgressCard({ booking }: any) {
   const { t } = useLanguage();
 
@@ -50,7 +51,7 @@ export function JobProgressCard({ booking }: any) {
         </h2>
 
         <div className="text-gray-400 text-sm text-center">
-          No activities yet...
+          {t.common["No data available"]}
         </div>
       </CommonCard>
     );
@@ -85,20 +86,12 @@ export function JobProgressCard({ booking }: any) {
               className={`w-6 h-6 rounded-md flex items-center justify-center border
                 ${
                   task.status === "completed"
-                    ? "bg-emerald-500 border-emerald-500"
+                    ? "bg-gray-300 border-emerald-500"
                     : "border-gray-300 bg-white"
                 }`}
             >
               {task.status === "completed" && (
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
+               <TickIcon color="text-blue-400"/>
               )}
             </div>
 
@@ -117,7 +110,7 @@ export function JobProgressCard({ booking }: any) {
               </div>
 
               <div className="text-[13px] text-gray-500 capitalize">
-                {task.status}
+                {formatText(task.status)}
               </div>
 
               <div className="text-[11px] text-gray-400">

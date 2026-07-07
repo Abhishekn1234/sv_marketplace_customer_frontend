@@ -46,7 +46,19 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        `
+        fixed
+        inset-0
+        z-50
+        bg-black/40
+        backdrop-blur-sm
+
+        data-open:animate-in
+        data-open:fade-in-0
+
+        data-closed:animate-out
+        data-closed:fade-out-0
+        `,
         className
       )}
       {...props}
@@ -74,26 +86,41 @@ function DialogContent({
           left-1/2
           top-1/2
           z-50
+
           flex
-          w-[calc(100vw-1.5rem)]
-          max-w-lg
-          max-h-[90vh]
+          flex-col
+
+          w-[calc(100vw-1rem)]
+          max-w-[95vw]
+
+          sm:max-w-md
+          md:max-w-lg
+          lg:max-w-2xl
+          xl:max-w-3xl
+
+          max-h-[95dvh]
+
           -translate-x-1/2
           -translate-y-1/2
-          flex-col
+
           overflow-hidden
-          rounded-2xl
+
+          rounded-xl
+          sm:rounded-2xl
+
           border
           bg-background
           shadow-2xl
+
           outline-none
+
           data-open:animate-in
           data-open:fade-in-0
           data-open:zoom-in-95
+
           data-closed:animate-out
           data-closed:fade-out-0
           data-closed:zoom-out-95
-          sm:w-full
           `,
           className
         )}
@@ -107,7 +134,16 @@ function DialogContent({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="absolute right-3 top-3 h-8 w-8 rounded-full"
+                className="
+                  absolute
+                  right-2
+                  top-2
+                  h-8
+                  w-8
+                  rounded-full
+                  sm:right-3
+                  sm:top-3
+                "
               />
             }
           >
@@ -128,7 +164,45 @@ function DialogHeader({
     <div
       data-slot="dialog-header"
       className={cn(
-        "flex shrink-0 flex-col gap-2 border-b px-6 py-5",
+        `
+        shrink-0
+        border-b
+
+        px-4
+        py-4
+
+        sm:px-6
+        sm:py-5
+
+        flex
+        flex-col
+        gap-2
+        `,
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function DialogBody({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        `
+        flex-1
+        overflow-y-auto
+
+        px-4
+        py-4
+
+        sm:px-6
+        sm:py-5
+        `,
         className
       )}
       {...props}
@@ -148,7 +222,21 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "shrink-0 border-t bg-background p-4 flex flex-col gap-3 sm:flex-row sm:justify-end",
+        `
+        shrink-0
+        border-t
+        bg-background
+
+        p-4
+
+        flex
+        flex-col-reverse
+        gap-3
+
+        sm:flex-row
+        sm:justify-end
+        sm:gap-2
+        `,
         className
       )}
       {...props}
@@ -174,7 +262,14 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "text-lg font-semibold leading-none tracking-tight",
+        `
+        text-lg
+        font-semibold
+        leading-tight
+        tracking-tight
+
+        sm:text-xl
+        `,
         className
       )}
       {...props}
@@ -190,7 +285,11 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-sm text-muted-foreground",
+        `
+        text-sm
+        leading-6
+        text-muted-foreground
+        `,
         className
       )}
       {...props}
@@ -206,6 +305,7 @@ export {
   DialogOverlay,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,

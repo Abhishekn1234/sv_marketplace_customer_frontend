@@ -1,4 +1,4 @@
-import { formatAMPMTime } from "./formatampmtime";
+import { formatAMPMTime } from "../../../../components/utils/formatampmtime";
 
 export function generateTimeSlots(
   startHour = 8,

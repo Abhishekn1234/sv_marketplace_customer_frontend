@@ -1,5 +1,7 @@
 // components/JobTrackingStepItem.tsx
+
 import Button from "@/components/input/Button";
+import { TickIcon } from "@/components/icons";
 import type { TrackingStep } from "../../domain/entities/jobtrackingsteps";
 
 type Props = {
@@ -23,23 +25,29 @@ export default function JobTrackingStepItem({
   isVerifyPending,
   t,
 }: Props) {
-  const dotClass =
-    step.status === "completed"
-      ? "bg-green-400"
-      : step.status === "active"
-      ? "bg-blue-400 animate-pulse"
-      : "bg-gray-400";
+  const buttonClass =
+    "mt-3 flex w-full sm:w-fit items-center justify-center rounded-md px-4 py-2 text-center text-sm font-medium text-white transition-colors duration-200 whitespace-normal break-words";
 
-const buttonClass =
-  "mt-3 flex w-full sm:w-fit items-center justify-center px-4 py-2 rounded-md text-center text-sm font-medium text-white transition-colors duration-200 whitespace-normal break-words";
   return (
     <div className="relative pb-7">
-      {/* Timeline Dot */}
-      <div
-        className={`absolute -left-8 h-5 w-5 rounded-full ${dotClass}`}
-      />
+      {/* Timeline Icon */}
+      <div className="absolute -left-8 flex h-6 w-6 items-center justify-center">
+        {step.status === "completed" ? (
+          <div className="flex h-6 w-6 items-center justify-center rounded-full ">
+            <TickIcon  />
+          </div>
+        ) : (
+          <div
+            className={`h-4 w-4 rounded-full ${
+              step.status === "active"
+                ? "bg-blue-500 animate-pulse"
+                : "bg-gray-300"
+            }`}
+          />
+        )}
+      </div>
 
-      {/* Content */}
+      {/* Card */}
       <div className="rounded-lg bg-gray-50 p-4 shadow-sm">
         <h3 className="text-base font-semibold text-gray-900">
           {step.title}

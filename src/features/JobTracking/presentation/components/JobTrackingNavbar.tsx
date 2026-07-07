@@ -2,7 +2,7 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
 import Button from "@/components/input/Button";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocation } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/components/utils/reverse";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

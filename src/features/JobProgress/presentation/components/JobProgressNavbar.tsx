@@ -1,4 +1,5 @@
 import CommonNotificationFloater from "@/components/common/CommonNotificationFloater";
+import { Image } from "@/components/input";
 
 export default function JobProgressNavbar() {
   return (
@@ -62,7 +63,7 @@ function NotificationButton() {
 /* 🔹 User Avatar */
 function UserAvatar() {
   return (
-    <img
+    <Image
       src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
       alt="User"
       className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover cursor-pointer transition-all duration-200 border-2 border-transparent hover:border-blue-600 hover:scale-105 hover:shadow-md"

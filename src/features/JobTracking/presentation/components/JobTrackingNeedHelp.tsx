@@ -16,6 +16,7 @@ import CommonCard from "@/components/common/CommonCards";
 import CommonModal from "@/components/common/CommonModal";
 import { CancelConfirmationDialog } from "./CancelModal";
 import { handleApiError } from "@/components/common/ApiError";
+import { CancelIcon, ChatIcon, FileTextIcon, QuestionIcon } from "@/components/icons";
 
 export default function JobTrackingNeedHelp({
   booking,
@@ -98,22 +99,22 @@ export default function JobTrackingNeedHelp({
   const options = [
     {
       text: t.jobtrackingpage.sections.contactSupport,
-      icon: <span>❓</span>,
+      icon: <QuestionIcon bgColor="bg-blue-700"/>,
       action: helpNavigate,
     },
  {
   text: t.jobtrackingpage.sections.chatWithUs,
-  icon: <span>💬</span>,
+  icon:<ChatIcon bgColor="bg-gray-600"/>,
   action: () => toast.info("Chat Feature will come soon"),
 },
     {
       text: t.jobtrackingpage.sections.cancelBooking,
-      icon: <span>🗑️</span>,
+      icon: <CancelIcon/>,
       action: handleCancel,
     },
     {
       text: t.jobtrackingpage.sections.generateInvoice,
-      icon: <span>📄</span>,
+      icon: <FileTextIcon/>,
       action: () => {
         if (!booking) {
           return toast.error("Booking not found ❌");
@@ -145,7 +146,7 @@ export default function JobTrackingNeedHelp({
             onClick={opt.action}
             className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-white"
           >
-            <div className="w-10 h-10 bg-white border rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 flex items-center justify-center">
               {opt.icon}
             </div>
             <span className="text-sm font-semibold">{opt.text}</span>

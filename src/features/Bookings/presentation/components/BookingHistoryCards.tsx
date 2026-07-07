@@ -7,7 +7,7 @@ import { formatDates } from "@/features/Home/presentation/utils/formatdatestring
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 import { getBookingButtonConfig } from "../utils/bookingstatusbuttonmap";
-import { formatStatus } from "../utils/formatstatusmap";
+import { formatStatus } from "../../../../components/utils/formatstatusmap";
 import { statusStyles } from "../utils/statusmap";
 import { BookingActions } from "./BookingHistoryActions";
 import { formatBookingDuration } from "../utils/formatduration";

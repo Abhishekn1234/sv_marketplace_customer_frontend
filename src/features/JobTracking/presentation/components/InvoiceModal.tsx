@@ -75,7 +75,7 @@ export default function InvoiceModal({
           0
         } ${t.common.days}`;
 
-  const rate = Number(booking.amount ?? 0);
+  const rate = Number(booking.taxableAmount ?? 0);
   const vatAmount = Number(booking.vatAmount ?? 0);
 
   const finalAmount = Number(

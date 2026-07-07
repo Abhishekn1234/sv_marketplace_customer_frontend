@@ -5,7 +5,7 @@ import { ArrowLeftIcon, ArrowRight, MinusIcon, PlusIcon } from "@/components/ico
 import { timeSlots } from "../utils/timeslots";
 import { isDisabled } from "../utils/disabledtimefunction";
 import { getAvailableTimeSlots } from "../utils/availabletimeslots";
-import { formatDateTime } from "../utils/formatDateTime";
+import { formatDateTime } from "../../../../components/utils/formatDateTime";
 
 interface BookingTimeAndDurationProps {
   selectedDate: number | null;

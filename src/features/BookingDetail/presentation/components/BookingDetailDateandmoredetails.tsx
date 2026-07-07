@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocation } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/components/utils/reverse";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import CommonCard from "@/components/common/CommonCards";
 import BookingDetailDateSelector from "./BookingDetailDateSelector";

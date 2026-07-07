@@ -86,9 +86,15 @@ import { WalletIcon } from "./WalletIcon";
 import { FileTextIcon } from "./FileTextIcon";
 import { UserRoundIcon } from "./UserRoundIcon";
 import { CalendarDaysIcon } from "./CalendarDaysIcon";
+import { QuestionIcon } from "./QuestionIcon";
+import { ChatIcon } from "./ChatIcon";
+import { CancelIcon } from "./CancelIcon";
 export {
   // SVG Icons
   GoogleIcon,
+  QuestionIcon,
+  CancelIcon,
+  ChatIcon,
   HashIcon,
   ColumnsIcon,
   CalendarDaysIcon,

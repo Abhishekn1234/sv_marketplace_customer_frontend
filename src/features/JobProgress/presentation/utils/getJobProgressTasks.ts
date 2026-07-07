@@ -1,15 +1,17 @@
 import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
+import { formatText } from "@/components/utils/formattext";
 
-interface Task {
+interface JobProgressTask {
   title: string;
+  activityType: string;
   status: "completed" | "progress" | "cancelled";
   time: string;
 }
 
 export const getJobProgressTasks = (
   booking: any,
- translations:any
-): Task[] => {
+  translations: any
+): JobProgressTask[] => {
   const activities = booking?.activities ?? [];
 
   const sortedActivities = [...activities]
@@ -25,7 +27,7 @@ export const getJobProgressTasks = (
     booking?.status === BookingStatus.PAID;
 
   return sortedActivities.map(
-    (a: any, index: number, arr: any[]) => {
+    (a: any, index: number, arr: any[]): JobProgressTask => {
       const isLast = index === arr.length - 1;
 
       const isCancelled =
@@ -34,7 +36,7 @@ export const getJobProgressTasks = (
         a.type === BookingStatus.WORKER_REJECTED ||
         a.type === BookingStatus.CUSTOMER_REJECTED;
 
-      let status: Task["status"] = "completed";
+      let status: JobProgressTask["status"] = "completed";
 
       if (isCancelled) {
         status = "cancelled";
@@ -44,8 +46,13 @@ export const getJobProgressTasks = (
 
       return {
         title:
-          translations[a.type as keyof typeof translations] ?? a.type,
+          translations?.[a.type as keyof typeof translations] ??
+          formatText(a.type),
+
+        activityType: a.type,
+
         status,
+
         time: a.createdAt,
       };
     }

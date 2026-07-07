@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 
-import { formatDateLabel } from "../utils/formatdateLabel";
+import { formatDateLabel } from "../../../../components/utils/formatdateLabel";
 import { formatTime } from "../utils/formattime";
 
 import type { Message } from "../../domain/entities/messages";

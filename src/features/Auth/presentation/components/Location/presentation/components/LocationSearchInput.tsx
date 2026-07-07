@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import { toast } from "react-toastify";
-import { getCurrentLocation } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/components/utils/reverse";
 import { Input } from "@/components/input";
 import Button from "@/components/input/Button";
 import { MapPinIcon, NavigationGPSIcon } from "@/components/icons";

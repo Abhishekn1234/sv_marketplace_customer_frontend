@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 
 import CommonMap from "@/components/common/CommonMap";
-import { getCurrentLocation } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/components/utils/reverse";
 import { Badge, Label, RadioGroup } from "@/components/input";
 
 interface BookingServiceLocationProps {

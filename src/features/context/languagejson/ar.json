@@ -165,6 +165,8 @@
   "home":{
     "Search for cleaning, repair":"ابحث عن التنظيف والإصلاح",
     "What service do you need?":"ما الخدمة التي تحتاجها؟",
+    "Assigned Professional":"المختص المُكلَّف",
+    "Waiting for worker":"بانتظار العامل",
      "Popular Services": "الخدمات الشائعة",
      "No categories found.":"لم يتم العثور على فئات.",
      "No active bookings found":"لا توجد حجوزات نشطة",

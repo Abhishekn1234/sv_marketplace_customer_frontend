@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/core/store/auth";
-import { getCurrentLocation } from "@/features/utils/reverse";
+import { getCurrentLocation } from "@/components/utils/reverse";
 import { handleApiError } from "@/components/common/ApiError";
 
 export const useUpdateCurrentLocation = () => {

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 // import { toast } from "react-toastify";
-import { getCurrentLocation } from "../../../../utils/reverse";
+import { getCurrentLocation } from "../../../../../components/utils/reverse";
 
 import CommonMap from "@/components/common/CommonMap";
 import { Input, Label } from "@/components/input";
