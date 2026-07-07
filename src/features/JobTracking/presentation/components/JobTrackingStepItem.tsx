@@ -1,7 +1,7 @@
-// components/JobTrackingStepItem.tsx
+
 
 import Button from "@/components/input/Button";
-import { TickIcon } from "@/components/icons";
+import { TickCircleIcon, TickIcon } from "@/components/icons";
 import type { TrackingStep } from "../../domain/entities/jobtrackingsteps";
 
 type Props = {
@@ -33,8 +33,8 @@ export default function JobTrackingStepItem({
       {/* Timeline Icon */}
       <div className="absolute -left-8 flex h-6 w-6 items-center justify-center">
         {step.status === "completed" ? (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full ">
-            <TickIcon  />
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50">
+            <TickCircleIcon color="text-blue-300" />
           </div>
         ) : (
           <div

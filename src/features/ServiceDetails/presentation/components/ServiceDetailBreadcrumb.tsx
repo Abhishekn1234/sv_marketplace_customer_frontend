@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { ArrowRight } from "@/components/icons";
 
 export default function ServiceDetailBreadcrumb() {
   const { id } = useParams();
@@ -25,15 +26,7 @@ export default function ServiceDetailBreadcrumb() {
       </Link>
 
       {/* Arrow */}
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        className="w-4 h-4 text-gray-400"
-      >
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+     <ArrowRight/>
 
       {/* Dynamic Service Name */}
       <span className="text-gray-900 font-semibold">

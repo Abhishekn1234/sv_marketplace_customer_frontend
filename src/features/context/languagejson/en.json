@@ -20,6 +20,7 @@
   },
  "common": {
   "selected":"Selected",
+  "No worker is assigned":"No worker is assigned",
   "not selected":"Not Selected",
   "hour":"Hour",
   "day":"Day",

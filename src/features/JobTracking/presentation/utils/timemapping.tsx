@@ -1,4 +1,5 @@
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+
+import { formatDates } from "@/components/utils/formatdates";
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/localbooking";
 

@@ -110,6 +110,7 @@
  "common": {
   "selected":"चयनित",
   "not selected":"चयनित नहीं",
+  "No worker is assigned":"किसी भी वर्कर को काम नहीं सौंपा गया है।",
   "hour":"घंटा",
   "day":"दिन",
   "otp": {

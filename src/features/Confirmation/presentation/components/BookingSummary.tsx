@@ -1,7 +1,7 @@
 "use client";
 
 import SummaryItem from "./SummaryItem";
-import { formatSmartDate } from "../utils/formatdatetime";
+import { formatSmartDate } from "../../../../components/utils/formatsmartdate";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatBookingDurationWithTranslation } from "@/features/Bookings/presentation/utils/formatduration";
 import { InfoIcon } from "@/components/icons";

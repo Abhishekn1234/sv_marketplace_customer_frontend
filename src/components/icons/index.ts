@@ -6,7 +6,8 @@ import ReactIcon from "@/components/icons/react.svg?react";
 
 // Custom Icons
 import { QuickActionsIcon } from "./QuickActionsIcon";
-
+import { TickCircleIcon } from "./TickCircleIcon";
+import { TickIcon } from "./TickIcon";
 import { SecurityIcon } from "./SecurityIcon";
 import { CheckSquare } from "./CheckSquare";
 import { Square } from "./Square";
@@ -73,7 +74,7 @@ import { PencilIcon } from "./PencilIcon";
 import { CheckCheckIcon } from "./CheckCheckIcon";
 import { CircleIcon } from "./CircleIcon";
 export type { IconProps } from "./iconprops";
-import { TickIcon } from "./TickIcon";
+
 import DividerIcon from "./DividerIcon";
 import {CopyIcon} from "./CopyIcon";
 import { ShieldCheckIcon } from "./ShieldCheckIcon";
@@ -103,6 +104,7 @@ export {
   FileTextIcon,
   ChevronRightIcon,
   ShieldCheckIcon,
+  TickCircleIcon,
   TickIcon,
   MinusIcon,
   CopyIcon,

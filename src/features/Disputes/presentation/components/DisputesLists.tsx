@@ -3,7 +3,8 @@ import { InboxIcon } from "@/components/icons";
 import CommonCard from "@/components/common/CommonCards";
 import { statusClass } from "../utils/disputesstatusclass";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { formatSmartDate } from "@/features/Confirmation/presentation/utils/formatdatetime";
+import { formatSmartDate } from "@/components/utils/formatsmartdate";
+
 
 interface Props {
   items: any[];

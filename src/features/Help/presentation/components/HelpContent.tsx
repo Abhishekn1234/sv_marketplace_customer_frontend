@@ -1,9 +1,11 @@
 import React from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { formattedHelpDate } from "../utils/formatdateforhelp";
-import CommonCard from "@/components/common/CommonCards";
+import { formatDate } from "@/components/utils/formatdate";
+
 const HelpContent: React.FC = () => {
   const { t, isRTLOrder } = useLanguage();
+
+  const formathelpdate = formatDate(undefined,t);
 
   return (
     <main
@@ -21,13 +23,13 @@ const HelpContent: React.FC = () => {
         </h1>
 
         <p className="text-xs sm:text-sm text-gray-500">
-          {t.helppage.lastUpdated}: {formattedHelpDate}
+          {t.helppage.lastUpdated}: {formathelpdate}
         </p>
       </div>
 
       {/* Content Card */}
       <div
-        className={`bg-white rounded-xl sm:rounded-2xl p-5 sm:p-8 lg:p-12 border border-gray-200 shadow-sm space-y-8 ${
+        className={`bg-white rounded-xl sm.rounded-2xl p-5 sm:p-8 lg:p-12 border border-gray-200 shadow-sm space-y-8 ${
           isRTLOrder ? "text-right" : "text-left"
         }`}
       >

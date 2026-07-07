@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
+import { formatDates } from "@/components/utils/formatdates";
 
 interface Props {
   booking: Booking | undefined;
@@ -76,9 +77,9 @@ export default function JobTrackingServiceDetails({
       </CommonCard>
     );
   }
-  const baseAmount = Number(booking.amount || 0);
-const vatAmount = Number(booking.vatAmount || 0);
-const finalAmount = Number(booking.totalCost || 0);
+  const baseAmount = Number(booking.actualValues?.taxableAmount || booking.estimatedValues?.taxableAmount);
+  const vatAmount = Number(booking.actualValues?.vatAmount || booking.estimatedValues?.vatAmount);
+  const finalAmount = Number(booking.actualValues?.finalAmount|| booking.estimatedValues?.finalAmount);
 
  const serviceDetails = [
   {

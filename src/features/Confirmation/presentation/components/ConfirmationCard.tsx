@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 import SummaryItem from "./SummaryItem";
 import NextStep from "./Nextstep";
-import { formatSmartDate } from "../utils/formatdatetime";
+import { formatSmartDate } from "../../../../components/utils/formatsmartdate";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
 import { ArrowRight, CalendarIcon, HomeIcon } from "@/components/icons";

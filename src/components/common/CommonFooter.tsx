@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { TickIcon } from "../icons/TickIcon";
+
 import DividerIcon from "../icons/DividerIcon";
+import { TickCircleIcon } from "../icons";
 
 interface FooterProps {
   features?: { label: string }[];       // List of feature labels
@@ -49,7 +50,7 @@ const Footer: React.FC<FooterProps> = ({
         {features.map((feature, idx) => (
           <React.Fragment key={feature.label}>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500">
-              <TickIcon color={iconColor} />
+              <TickCircleIcon color={iconColor} />
               <span>{feature.label}</span>
             </div>
             {showDivider && idx !== features.length - 1 && <DividerIcon />}

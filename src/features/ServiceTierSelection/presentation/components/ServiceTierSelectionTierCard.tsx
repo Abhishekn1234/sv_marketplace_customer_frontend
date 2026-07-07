@@ -1,6 +1,6 @@
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Feature } from "../../domain/entities/feature";
-import { StarIcon, TickIcon } from "@/components/icons";
+import { StarIcon, TickCircleIcon, TickIcon } from "@/components/icons";
 import Button from "@/components/input/Button";
 
 interface TierCardProps {
@@ -75,7 +75,7 @@ export function ServiceTierSelectionTierCard({
               : "text-gray-400 opacity-60"
           }`}
         >
-          <TickIcon color="text-blue-400" />
+          <TickCircleIcon color="text-blue-400" />
           {feature.text}
         </li>
       ))}

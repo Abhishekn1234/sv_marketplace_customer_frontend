@@ -100,6 +100,7 @@
   },
  "common": {
   "selected":"محدد",
+  "No worker is assigned":"لم يتم تعيين أي عامل",
   "not selected":"لم يتم الاختيار",
   "hour":"ساعة",
   "day":"يوم",

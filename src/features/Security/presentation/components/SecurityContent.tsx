@@ -2,12 +2,13 @@
 
 import React from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { formatDateforsecurity } from "../utils/formatteddateforsecurity";
+import { formatDate } from "@/components/utils/formatdate";
+
 
 const SecurityContent: React.FC = () => {
   const { t,isRTLOrder } = useLanguage();
 
-  const formatsecuredate=formatDateforsecurity(t);
+  const formatsecuredate=formatDate(undefined,t);
 
   return (
     <main className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-[100px] sm:pb-[120px]"dir={isRTLOrder?"rtl":""} >

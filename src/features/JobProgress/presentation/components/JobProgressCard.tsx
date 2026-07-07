@@ -6,9 +6,9 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import CommonCard from "@/components/common/CommonCards";
 // import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { getJobProgressTasks } from "../utils/getJobProgressTasks";
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
-import { TickIcon } from "@/components/icons";
+import { TickCircleIcon, TickIcon } from "@/components/icons";
 import { formatText } from "@/components/utils/formattext";
+import { formatDates } from "@/components/utils/formatdates";
 export function JobProgressCard({ booking }: any) {
   const { t } = useLanguage();
 
@@ -83,15 +83,15 @@ export function JobProgressCard({ booking }: any) {
           >
             {/* ICON */}
             <div
-              className={`w-6 h-6 rounded-md flex items-center justify-center border
+              className={`w-6 h-6 rounded-md flex items-center justify-center
                 ${
                   task.status === "completed"
-                    ? "bg-gray-300 border-emerald-500"
-                    : "border-gray-300 bg-white"
+                    ? "bg-gray-50 "
+                    : "border-gray-50"
                 }`}
             >
               {task.status === "completed" && (
-               <TickIcon color="text-blue-400"/>
+               <TickCircleIcon color="text-blue-400"/>
               )}
             </div>
 

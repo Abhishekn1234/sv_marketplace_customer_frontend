@@ -2,12 +2,13 @@
 
 import React from "react";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { formattedHelpDate } from "@/features/Help/presentation/utils/formatdateforhelp";
+import { formatDate } from "@/components/utils/formatdate";
+
 
 const PrivacyContent: React.FC = () => {
   const { t ,isRTLOrder} = useLanguage();
 
- 
+   const formattedHelpDate = formatDate(undefined,t);
 
   return (
     <main className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-[100px] sm:pb-[120px]" dir={isRTLOrder?"rtl":""}>

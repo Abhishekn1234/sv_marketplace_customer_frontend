@@ -1,12 +1,13 @@
 "use client";
 
 import { progressMap } from "@/features/Home/presentation/utils/progressmap";
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 import CommonProgress from "@/components/common/CommonProgress";
+import { formatDates } from "@/components/utils/formatdates";
 
 export function JobProgressProgress({ booking, loading }: any) {
   const { t } = useLanguage();

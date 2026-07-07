@@ -5,7 +5,9 @@ import { ArrowLeftIcon, ArrowRight, MinusIcon, PlusIcon } from "@/components/ico
 import { timeSlots } from "../utils/timeslots";
 import { isDisabled } from "../utils/disabledtimefunction";
 import { getAvailableTimeSlots } from "../utils/availabletimeslots";
-import { formatDateTime } from "../../../../components/utils/formatDateTime";
+import { formatSmartDate } from "@/components/utils/formatsmartdate";
+import { formatdateandtime } from "@/components/utils/formatdateandtime";
+
 
 interface BookingTimeAndDurationProps {
   selectedDate: number | null;
@@ -137,7 +139,7 @@ export default function BookingDetailTimeAndDuration({
         {t.common.selected}{" "}
         <span className="text-blue-600">
           {selectedDate !== null && selectedTime
-            ? formatDateTime(selectedDate, selectedTime)
+            ? formatdateandtime(selectedDate, selectedTime)
             : t.common["not selected"]}
         </span>
       </div>

@@ -1,6 +1,6 @@
-import { formatSmartDate } from "@/features/Confirmation/presentation/utils/formatdatetime";
+
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
-import { formatBookingDuration } from "../utils/formatduration";
+
 import Button from "@/components/input/Button";
 import { useLanguage } from "@/features/context/LanguageContext";
 import CommonModal from "@/components/common/CommonModal";
@@ -8,6 +8,8 @@ import CommonModal from "@/components/common/CommonModal";
 import { BookingHistoryDetailField as DetailField } from "./BookingHistoryDetailField";
 import { BookingHistoryCallableContact } from "./BookingHistoryCallableContact";
 import { CalendarDaysIcon, ClockIcon, FileTextIcon, HashIcon, WalletIcon } from "@/components/icons";
+import { formatSmartDate } from "@/components/utils/formatsmartdate";
+import { formatDuration } from "@/components/utils/formatduration";
 
 interface Props {
   booking: BookingHistory | null;
@@ -40,12 +42,9 @@ export default function BookingHistoryViewDetailsModal({
     ? formatSmartDate(booking.schedule.startDateTime)
     : "-";
 
-  const duration = formatBookingDuration(booking);
+  const duration = formatDuration(booking.estimatedValues?.workHours ?? booking.actualValues?.workHours);
 
-  const price =
-    booking.totalCost != null
-      ? `${booking.currency} ${booking.totalCost.toFixed(2)}`
-      : "-";
+  const price =booking.actualValues?.finalAmount;
 
   return (
     <CommonModal

@@ -3,7 +3,7 @@
 import CommonCard from "@/components/common/CommonCards";
 
 import { useNavigate } from "react-router-dom";
-import { formatDates } from "@/features/Home/presentation/utils/formatdatestring";
+
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import type { BookingStatus } from "../../domain/entities/bookingstatus.types";
 import { getBookingButtonConfig } from "../utils/bookingstatusbuttonmap";
@@ -15,6 +15,7 @@ import type { PaymentCallback } from "@/features/Payment/domain/entities/payment
 import { useServices } from "../hooks/useServices";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { HomeIcon } from "@/components/icons";
+import { formatDates } from "@/components/utils/formatdates";
 
 interface BookingCardProps {
   booking: BookingHistory;

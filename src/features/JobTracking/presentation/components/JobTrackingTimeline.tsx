@@ -103,15 +103,20 @@ export default function JobTrackingTimeline({
   // -----------------------------
   // STEPS
   // -----------------------------
-  const displayStatus = useMemo<BookingStatusType>(() => {
-    if (!currentBooking) return BookingStatus.REQUESTED;
+ const displayStatus = useMemo<BookingStatusType>(() => {
+  if (!currentBooking) {
+    return BookingStatus.REQUESTED;
+  }
 
-    if (!otpModalOpen) {
-      return resolveTimelineStatus(currentBooking.status, currentBooking) as BookingStatusType;
-    }
+  if (!otpModalOpen) {
+    return resolveTimelineStatus(
+      currentBooking.status,
+      currentBooking
+    ) as BookingStatusType;
+  }
 
-    return currentBooking.status;
-  }, [currentBooking, otpModalOpen]);
+  return currentBooking.status as BookingStatusType;
+}, [currentBooking, otpModalOpen]);
 
   const safeBooking = useMemo(() => {
     if (!currentBooking) return null;
@@ -129,18 +134,14 @@ export default function JobTrackingTimeline({
     localBooking: safeBooking,
     activityMap,
   });
-}, [safeBooking, activityMap]);
+  }, [safeBooking, activityMap]);
 
 
   // -----------------------------
   // PRICE
   // -----------------------------
-  const computedPrice = useMemo(
-  () =>
-    (currentBooking?.taxableAmount ?? 0) +
-    (currentBooking?.vatAmount ?? 0),
-  [currentBooking]
-);
+  const computedPrice =currentBooking?.actualValues?.finalAmount ??
+   currentBooking?.estimatedValues?.finalAmount;
 
   // -----------------------------
   // OTP START
@@ -295,8 +296,8 @@ export default function JobTrackingTimeline({
               navigate("/payment", {
                 state: {
                   bookingId: currentBooking._id,
-                  taxableAmount:currentBooking.taxableAmount,
-                  vatAmount:currentBooking?.vatAmount,
+                  taxableAmount:currentBooking.actualValues?.taxableAmount?? currentBooking.estimatedValues?.taxableAmount,
+                  vatAmount:currentBooking?.actualValues?.vatAmount??currentBooking.estimatedValues?.vatAmount,
                   bookingCode:currentBooking.bookingCode,
                   serviceName: currentBooking?.serviceId ?? currentBooking?.service?.name,
                   price: computedPrice,

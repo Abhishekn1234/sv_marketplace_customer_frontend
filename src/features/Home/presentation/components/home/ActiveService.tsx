@@ -6,7 +6,7 @@ import { progressMap } from "../../utils/progressmap";
 import { getBookingFlags } from "../../utils/getbookingflags";
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
-import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 
@@ -28,7 +28,7 @@ const CANCELLED_STATUSES = ["WORKER_CANCELLED", "CUSTOMER_CANCELLED"];
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
   const { t } = useLanguage();
-  const { services } = useServices();
+
 
   // =========================
   // FILTER BOOKINGS
@@ -95,7 +95,7 @@ export default function ActiveService() {
     booking?.assignedWorkers?.[0]?.worker ||
     booking?.assignedWorkers?.[0]?.workerId;
 
-  const workerName = firstWorker?.fullName || "No worker assigned";
+  const workerName = firstWorker?.fullName || t.common["No worker is assigned"];
 
   const workerImage =
     firstWorker?.profilePictureUrl ||
@@ -104,21 +104,17 @@ export default function ActiveService() {
   // =========================
   // SERVICE NAME
   // =========================
-  const serviceMap = useMemo(() => {
-    return new Map((services ?? []).map((s) => [String(s._id), s.name]));
-  }, [services]);
+      const serviceName = booking?.service?.name ?? "No Service";
 
-  const serviceName = serviceMap.get(String(booking?.serviceId)) ?? "Service";
+        // console.log(serviceName);
 
-  // =========================
-  // STATUS FLAGS
-  // =========================
- const status = booking?.status ?? "REQUESTED";
+  
+    const status = booking?.status;
 
-  const { isAssigned, isStarted, showTracking, isPaid } = getBookingFlags(
-    status,
-    !!firstWorker
-  );
+      const { isAssigned, isStarted, showTracking, isPaid } = getBookingFlags(
+        status,
+        !!firstWorker
+      );
 
   // =========================
   // PROGRESS
@@ -126,7 +122,7 @@ export default function ActiveService() {
   const progress = useMemo(() => {
     if (!status) return 20;
 
-    return progressMap[status as BookingStatus] ?? 20;
+    return progressMap[status as BookingStatus];
   }, [status]);
 
   // =========================
