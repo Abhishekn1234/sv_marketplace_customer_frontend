@@ -5,6 +5,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 interface NotificationHeaderProps {
   toggleSelectAll: () => void;
   selected: string[];
+  selectAll: boolean;
   total: number;           // unread count
   markAllAsRead: () => void;
   markSelectedAsRead: () => void;
@@ -14,16 +15,17 @@ export default function NotificationHeader({
   toggleSelectAll,
   selected,
   total,
+  selectAll,
   markAllAsRead,
   markSelectedAsRead,
 }: NotificationHeaderProps) {
   const { t } = useLanguage();
 
-  const hasSelection = selected.length > 0;
-  // allSelected = every unread notification is checked
-  const allSelected = total > 0 && selected.length >= total;
-  // partial = some (but not all) unread notifications are checked
-  const partialSelection = hasSelection && !allSelected;
+ const allSelected = selectAll;
+
+const partialSelection =
+    !selectAll &&
+    selected.length > 0;
 
   return (
     <div className="w-full px-3 sm:px-6 py-3 border-b border-slate-100">

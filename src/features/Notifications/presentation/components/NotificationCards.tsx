@@ -35,7 +35,7 @@ export default function NotificationCards() {
 
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
-
+   const [selectAll, setSelectAll] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const filters = useMemo(() => ({ type, limit: 20 }), [type]);
@@ -64,7 +64,9 @@ export default function NotificationCards() {
   const { mutateAsync: markAsRead } = useMarkNotificationRead();
 const { markAllAsRead } = useMarkAllAsRead();
 
-  const toggleSelect = (id: string) => {
+ const toggleSelect = (id: string) => {
+  setSelectAll(false);
+
   const target = notifications.find(
     (n: any) => (n._id || n.id) === id
   );
@@ -78,32 +80,22 @@ const { markAllAsRead } = useMarkAllAsRead();
   );
 };
  const toggleSelectAll = () => {
-  const unreadIds = unreadNotifications.map(
-    (n: any) => n._id || n.id
-  );
-
-  const allSelected =
-    unreadIds.length > 0 &&
-    unreadIds.every((id) => selected.includes(id));
-
-  if (allSelected) {
-    setSelected((prev) =>
-      prev.filter((id) => !unreadIds.includes(id))
-    );
-  } else {
-    setSelected(unreadIds);
-  }
+  setSelectAll((prev) => !prev);
+  setSelected([]);
 };
   const markSelectedAsRead = async () => {
   if (!selected.length) return;
   const ids = [...selected];
-  setSelected([]);                          // clear first → no flash
+  setSelected([]);
+  setSelectAll(false);                        // clear first → no flash
   await Promise.all(ids.map((id) => markAsRead(id)));
 };
 
 const handleMarkAllAsRead = async () => {
-  setSelected([]);                          // clear first → no flash
-  await markAllAsRead();
+  setSelected([]);
+setSelectAll(false);
+
+await markAllAsRead();
 };
 
   const handleNotificationClick = (notification: any) => {
@@ -214,14 +206,14 @@ const handleMarkAllAsRead = async () => {
 </div>
 
         {/* ACTIONS */}
-        <NotificationHeader
-          toggleSelectAll={toggleSelectAll}
-          selected={selected}
-          total={unreadCount}
-          markAllAsRead={handleMarkAllAsRead}
-          markSelectedAsRead={markSelectedAsRead}
+              <NotificationHeader
+            toggleSelectAll={toggleSelectAll}
+            selected={selected}
+            selectAll={selectAll}
+            total={unreadCount}
+            markAllAsRead={handleMarkAllAsRead}
+            markSelectedAsRead={markSelectedAsRead}
         />
-
         {/* LIST */}
         <div className="">
           {isLoading ? (
@@ -229,12 +221,13 @@ const handleMarkAllAsRead = async () => {
               <CommonSpinner />
             </div>
           ) : (
-            <NotificationContent
+                    <NotificationContent
               notifications={notifications}
               selected={selected}
+              selectAll={selectAll}
               toggleSelect={toggleSelect}
               onNotificationClick={handleNotificationClick}
-            />
+          />
           )}
 
           {/* SENTINEL */}
