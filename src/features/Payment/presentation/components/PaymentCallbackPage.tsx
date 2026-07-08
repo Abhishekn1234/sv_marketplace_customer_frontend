@@ -116,7 +116,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen flex justify-center items-center bg-slate-50">
       <div className="bg-white shadow-xl rounded-3xl p-10 text-center w-full max-w-md">
-        <CommonSpinner size={40} />
+        <CommonSpinner size={40} center />
 
         <h2 className="text-2xl font-bold mt-5">
          {t.common["Verifying Payment"]}
