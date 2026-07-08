@@ -8,11 +8,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import CommonCard from "@/components/common/CommonCards";
 
-const ACTIVE_STATUSES = new Set([
-  "WORKER_ACCEPTED",
-  "REQUESTED",
-  "IN_PROGRESS",
-]);
+
 
 const CANCELLED_STATUSES = new Set([
   "WORKER_CANCELLED",
@@ -70,9 +66,9 @@ const RecentServices: React.FC = () => {
         const hasService = serviceMap.has(serviceId);
 
         const isNotCancelled = !CANCELLED_STATUSES.has(b.status);
-        const isActive = ACTIVE_STATUSES.has(b.status);
+    
 
-        return hasService && isNotCancelled && isActive;
+        return hasService && isNotCancelled;
       })
       .sort((a, b) => {
         const aTime = a.schedule?.startDateTime

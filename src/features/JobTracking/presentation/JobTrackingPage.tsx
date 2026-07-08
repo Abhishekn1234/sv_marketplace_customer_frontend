@@ -36,14 +36,7 @@ export default function JobTrackingPage() {
 if (!loading && !booking) {
   return (
     <PageContainer>
-      <div className="text-center py-10">
-        <h2 className="text-lg font-semibold">
-          Booking not found
-        </h2>
-        <p className="text-sm text-gray-500 mt-2">
-          Redirecting to bookings...
-        </p>
-      </div>
+      <CommonSpinner center size={20}/>
     </PageContainer>
   );
 }

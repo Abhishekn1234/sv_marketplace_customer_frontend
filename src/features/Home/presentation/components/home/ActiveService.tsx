@@ -14,14 +14,7 @@ import ActiveServiceHeader from "./ActiveServiceHeader";
 import ActiveServiceWorkerInfo from "./ActiveServiceWorkerInfo";
 import ActiveServiceActions from "./ActiveServiceActions";
 
-const ACTIVE_STATUSES = [
-  "REQUESTED",
-  "ASSIGNED",
-  "WORKER_ACCEPTED",
-  "ACCEPTED",
-  "IN_PROGRESS",
-  "WORK_COMPLETED_PENDING",
-];
+
 
 const CANCELLED_STATUSES = ["WORKER_CANCELLED", "CUSTOMER_CANCELLED"];
 
@@ -33,14 +26,11 @@ export default function ActiveService() {
   // =========================
   // FILTER BOOKINGS
   // =========================
-  const activeBookings = useMemo(() => {
-    return (bookings || []).filter(
-      (b) =>
-        ACTIVE_STATUSES.includes(b.status) &&
-        !CANCELLED_STATUSES.includes(b.status)
-    );
-  }, [bookings]);
-
+ const activeBookings = useMemo(() => {
+  return (bookings || []).filter(
+    (b) => !CANCELLED_STATUSES.includes(b.status)
+  );
+}, [bookings]);
   // =========================
   // TODAY BOOKING
   // =========================

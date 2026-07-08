@@ -25,53 +25,45 @@ export const RecentItem: React.FC<RecentItemProps> = ({
   status,
 }) => {
   const navigate = useNavigate();
-  const {t}=useLanguage();
+  const { t } = useLanguage();
 
   // -----------------------------
-  // NORMALIZE (backend-safe)
+  // NORMALIZE STATUS
   // -----------------------------
-  const normalizedStatus = (status || "").toUpperCase();
+  const normalizedStatus = (status ?? "").toUpperCase();
 
   // -----------------------------
-  // TRACKABLE STATUSES (JOB FLOW)
+  // STATUS FLAGS
   // -----------------------------
-  const trackStatuses = [
-    "REQUESTED",
-    "WORKER_ACCEPTED",
-    "WORK_STARTED",
-    "IN_PROGRESS",
-    "WORK_COMPLETED_PENDING",
-    "COMPLETED",
-  ];
-
-  const isTrack = trackStatuses.includes(normalizedStatus);
+  const isCancelled = [
+    "CUSTOMER_CANCELLED",
+    "WORKER_CANCELLED",
+  ].includes(normalizedStatus);
 
   const isPaid = normalizedStatus === "PAID";
-  const isCancelled =
-    normalizedStatus === "CUSTOMER_CANCELLED" ||
-    normalizedStatus === "WORKER_CANCELLED";
 
-  const isDisabled = isCancelled;
+  // ✅ Every status except PAID & Cancelled is trackable
+  const isTrack = !isCancelled && !isPaid;
 
   // -----------------------------
   // NAVIGATION
   // -----------------------------
   const handleNavigate = () => {
-    if (isDisabled) return;
+    if (isCancelled) return;
 
-    // 🔥 tracking flow
+    // Track all active bookings
     if (isTrack && bookingId) {
       navigate(`/jobtracking/${bookingId}`);
       return;
     }
 
-    // 💳 paid → booking history
-    if (isPaid) {
-      navigate(`/bookings`);
+    // Paid booking -> Booking history/details
+    if (isPaid && bookingId) {
+      navigate("/bookings");
       return;
     }
 
-    // 🔁 fallback → service page
+    // Fallback -> Rebook
     if (categoryId && serviceId) {
       navigate(`/services/${categoryId}`);
     }
@@ -88,7 +80,7 @@ export const RecentItem: React.FC<RecentItemProps> = ({
         transition-all duration-200
         group
         ${
-          isDisabled
+          isCancelled
             ? "bg-gray-100 opacity-70 cursor-not-allowed"
             : "cursor-pointer hover:bg-gray-50 hover:translate-x-1"
         }
@@ -97,7 +89,11 @@ export const RecentItem: React.FC<RecentItemProps> = ({
       {/* ICON */}
       <div className="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
         {iconUrl ? (
-          <Image src={iconUrl} alt={title} className="w-6 h-6 object-contain" />
+          <Image
+            src={iconUrl}
+            alt={title}
+            className="w-6 h-6 object-contain"
+          />
         ) : (
           <div className="w-6 h-6 bg-gray-300 rounded" />
         )}
@@ -105,36 +101,39 @@ export const RecentItem: React.FC<RecentItemProps> = ({
 
       {/* INFO */}
       <div className="flex-1 min-w-0">
-        <div className="text-[15px] font-semibold text-gray-900 truncate">
+        <div className="truncate text-[15px] font-semibold text-gray-900">
           {title}
         </div>
-        <div className="text-[13px] text-gray-400">{date}</div>
+
+        <div className="text-[13px] text-gray-400">
+          {date}
+        </div>
       </div>
 
       {/* PRICE / ACTION */}
-      <div className="text-right flex-shrink-0">
+      <div className="flex-shrink-0 text-right">
         <div
           className={`text-[15px] font-semibold ${
-            isDisabled ? "text-gray-400" : "text-gray-900"
+            isCancelled ? "text-gray-400" : "text-gray-900"
           }`}
         >
           {price}
         </div>
 
-        {!isDisabled ? (
-          <div className="text-[13px] font-semibold text-amber-600 group-hover:text-amber-700 transition-all">
-           {isTrack ? (
-       <span className="flex items-center gap-1">
-        {t.home.Track}
-       <ArrowRight />
-      </span>
-      ) : isPaid ? (
-       t.onboarding.view
-       ) : categoryId && serviceId ? (
-         t.Bookingspage.Actions.rebook
-        ) : (
-           ""
-         )}
+        {!isCancelled ? (
+          <div className="text-[13px] font-semibold text-amber-600 transition-all group-hover:text-amber-700">
+            {isTrack ? (
+              <span className="flex items-center gap-1">
+                {t.home.Track}
+                <ArrowRight />
+              </span>
+            ) : isPaid ? (
+              t.onboarding.view
+            ) : categoryId && serviceId ? (
+              t.Bookingspage.Actions.rebook
+            ) : (
+              ""
+            )}
           </div>
         ) : (
           <div className="text-[13px] font-semibold text-gray-500">

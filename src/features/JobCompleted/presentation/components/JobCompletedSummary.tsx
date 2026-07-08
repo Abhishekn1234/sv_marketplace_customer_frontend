@@ -51,9 +51,12 @@ export default function JobCompletedSummary({
   const currency = booking.currency || "SAR";
    const isHourly = booking.pricingMode === "HOURLY";
     const isPerDay = booking.pricingMode === "PER_DAY";
+      // console.log(booking);
+          const workHours =
+        booking.actualValues?.workHours || booking.estimatedValues?.workHours || 0;
 
-    const workHours = booking.actualValues?.workHours ?? 0;
-    const workDays = booking.actualValues?.workDays ?? 0;
+      const workDays =
+        booking.actualValues?.workDays || booking.estimatedValues?.workDays || 0;
 
     const duration = isHourly
       ? workHours > 0

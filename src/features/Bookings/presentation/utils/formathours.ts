@@ -1,4 +1,6 @@
 export function formatWorkHours(decimalHours: number) {
+  if (!decimalHours || decimalHours <= 0) return "—";
+
   const hours = Math.floor(decimalHours);
   const minutes = Math.round((decimalHours - hours) * 60);
 

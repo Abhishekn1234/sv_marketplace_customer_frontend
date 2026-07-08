@@ -30,26 +30,26 @@ export default function ActiveServiceHeader({
         </span>
 
         {showTracking && (
-          <span
-            className="
-              px-2.5
-              sm:px-3
-              py-1
-              text-[10px]
-              sm:text-xs
-              whitespace-nowrap
-              bg-green-100
-              text-green-700
-              border
-              rounded-full
-              font-semibold
-            "
-          >
-            {isAssigned && !isStarted
-              ? "Assigned"
-              : formatText(status)}
-          </span>
-        )}
+  <span
+    className="
+      px-2.5
+      sm:px-3
+      py-1
+      text-[10px]
+      sm:text-xs
+      whitespace-nowrap
+      bg-green-100
+      text-green-700
+      border
+      rounded-full
+      font-semibold
+    "
+  >
+    {isAssigned
+      ? "Assigned"
+      : formatText(status)}
+  </span>
+         )}
       </div>
 
       {isStarted && (
