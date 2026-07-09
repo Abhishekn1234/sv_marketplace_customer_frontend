@@ -166,6 +166,7 @@
   "navbar":{
      "Bookings": "Bookings",
       "About": "About",
+      "Favorites":"Favorites",
       "Privacy": "Privacy",
       "Help": "Help",
       "Back":"Back",

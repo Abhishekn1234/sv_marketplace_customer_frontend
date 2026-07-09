@@ -14,6 +14,7 @@ import {
   BookingIcon,
   LoginIcon,
   UserIcon,
+  BookmarkFavoriteIcon,
 } from "@/components/icons";
 
 import { iconBase } from "@/components/common/iconbase";
@@ -62,6 +63,9 @@ const BottomNav: React.FC = () => {
           {/* Bookings */}
           <NavItem ariaLabel="Bookings" tooltip={t.navbar.Bookings} onClick={() => navigate("/bookings")}>
             <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
+          </NavItem>
+          <NavItem ariaLabel="Favorites" tooltip={t.navbar.Favorites} onClick={()=>navigate("/favorites")}>
+           <BookmarkFavoriteIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
           </NavItem>
 
           {/* Profile */}

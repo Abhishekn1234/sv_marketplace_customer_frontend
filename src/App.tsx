@@ -52,6 +52,7 @@ import NotificationNavigation from "./NavigationNotification";
 import PaymentStripeCallbackPage from "./features/Payment/presentation/components/PaymentStripeCallbackPage";
 import PaymentStripeCallbackFailurePage from "./features/Payment/presentation/components/PaymentStripeCallbackFailurePage";
 import PreventBackNavigation from "./PreventNavgiation";
+import FavoritesPage from "./features/Favorites/presentation/FavoritesPage";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -159,7 +160,7 @@ function App() {
     path="/bookingdetail/:serviceId/:serviceTierId"
     element={<BookingDetailPage />}
   />
-
+  <Route path="/favorites" element={<FavoritesPage/>}/>
   {/* =========================
       PROTECTED ROUTES
   ========================= */}

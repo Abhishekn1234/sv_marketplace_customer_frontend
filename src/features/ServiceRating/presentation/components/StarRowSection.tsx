@@ -8,7 +8,18 @@ export const StarRowSection: FC<{
   label?: string;
 }> = ({ rating, setRating, label }) => (
   <div className="flex flex-col items-center w-full">
-    <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-3 mb-3">
+    <div
+      className="
+        flex items-center justify-between
+        w-full
+        max-w-[280px]
+        sm:max-w-[340px]
+        md:max-w-[380px]
+        lg:max-w-[440px]
+        xl:max-w-[500px]
+        mb-3
+      "
+    >
       {[1, 2, 3, 4, 5].map((star) => (
         <Button
           key={star}
@@ -22,11 +33,12 @@ export const StarRowSection: FC<{
             hover:scale-110
             active:scale-95
             transition-transform
-             w-12 h-12
-            sm:w-14 sm:h-14
-            md:w-14 md:h-14
-            lg:w-17 lg:h-17
             cursor-pointer
+            w-10 h-10
+            sm:w-12 sm:h-12
+            md:w-14 md:h-14
+            lg:w-16 lg:h-16
+            flex items-center justify-center
           "
         >
           <StarIcon
