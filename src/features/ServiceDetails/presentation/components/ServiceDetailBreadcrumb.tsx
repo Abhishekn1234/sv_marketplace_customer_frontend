@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useLanguage } from "@/features/context/LanguageContext";
-import { ArrowRight } from "@/components/icons";
+import {  ChevronRightIcon } from "@/components/icons";
 
 export default function ServiceDetailBreadcrumb() {
   const { id } = useParams();
@@ -26,7 +26,7 @@ export default function ServiceDetailBreadcrumb() {
       </Link>
 
       {/* Arrow */}
-     <ArrowRight/>
+     <ChevronRightIcon/>
 
       {/* Dynamic Service Name */}
       <span className="text-gray-900 font-semibold">

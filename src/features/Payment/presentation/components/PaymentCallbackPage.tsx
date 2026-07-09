@@ -1,88 +1,34 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import { toast } from "react-toastify";
 
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-
-import { useVerifyPayment } from "../hooks/useVerifyPayment";
 import { useLanguage } from "@/features/context/LanguageContext";
-import type { PaymentStatus } from "../../domain/entities/paymentstatus";
+import { getSocket } from "@/features/core/Websocket/socket";
+import { BookingEvents } from "@/components/common/BookingEvents";
+import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookingById";
+ // <-- use your booking query hook
 
 export default function PaymentCallbackPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const verifyPayment = useVerifyPayment();
-
   const { t } = useLanguage();
 
   const called = useRef(false);
 
-useEffect(() => {
-  const verify = async () => {
-    if (called.current) return;
-    called.current = true;
+  const bookingId = (location.state as { bookingId: string })?.bookingId;
 
-    const params = new URLSearchParams(location.search);
+  // Replace with your own booking details query
+  const { booking } = useBookingById(bookingId);
 
-    const stateData = (location.state ?? {}) as {
-      paymentId?: string;
-      transactionId?: string;
-      bookingId?: string;
-      status?: PaymentStatus;
-    };
+  useEffect(() => {
+    if (!bookingId) return;
 
-    console.log("location.state =", stateData);
-    console.log("location.search =", location.search);
-
-    const paymentId =
-      stateData.paymentId ||
-      params.get("paymentId") ||
-      "";
-
-    const transactionId =
-      stateData.transactionId ||
-      params.get("session_id") ||
-      paymentId;
-
-    const bookingId =
-      stateData.bookingId ||
-      params.get("bookingId") ||
-      "";
-
-    const rawStatus =
-      stateData.status ||
-      params.get("status");
-
-    const status: PaymentStatus =
-      rawStatus === "SUCCESS" ||
-      rawStatus === "PAID" ||
-      rawStatus === "COMPLETED"
-        ? "SUCCESS"
-        : rawStatus === "FAILED"
-        ? "FAILED"
-        : "PENDING";
-
-    if (!paymentId) {
-      navigate("/bookings", { replace: true });
-      return;
-    }
-
-    try {
-      const response = await verifyPayment.mutateAsync({
-        paymentId,
-        transactionId,
-        // bookingId,
-        status,
-      });
-
-      console.log("VERIFY SUCCESS:", response);
-
-      toast.success(t.paymentpage.verified);
-
+    // If already paid before socket listener attached
+    if (
+      booking?.status === "PAID" ||
+      booking?.status === "COMPLETED"
+    ) {
       navigate("/jobcompleted", {
         replace: true,
         state: {
@@ -90,36 +36,91 @@ useEffect(() => {
           paymentDone: true,
         },
       });
-    } catch (error: any) {
-      console.error("VERIFY ERROR:", error);
-      console.error("VERIFY ERROR RESPONSE:", error?.response?.data);
-
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          t.paymentpage.failed
-      );
-
-      navigate("/bookings", { replace: true });
     }
-  };
+  }, [booking, bookingId, navigate]);
 
-  verify();
-}, [
-  location.search,
-  location.state,
-  navigate,
-  verifyPayment,
-  t,
-]);
+  useEffect(() => {
+    if (called.current) return;
+    called.current = true;
+
+    if (!bookingId) {
+      toast.error("Booking not found");
+      navigate("/bookings", { replace: true });
+      return;
+    }
+
+    const socket = getSocket();
+
+    if (!socket) {
+      toast.error("Socket not connected");
+      navigate("/bookings", { replace: true });
+      return;
+    }
+
+    const handleBookingUpdated = (data: any) => {
+      console.log("============== SOCKET EVENT ==============");
+      console.log("Event:", data.eventName);
+      console.log("Booking:", data.bookingId);
+      console.log("Expected:", bookingId);
+      console.log("Payload:", data);
+
+      if (data.bookingId !== bookingId) return;
+
+      switch (data.eventName) {
+        case BookingEvents.PAYMENT_INITIATED:
+          console.log("PAYMENT_INITIATED");
+          break;
+
+        case BookingEvents.PAYMENT_COMPLETED:
+        case BookingEvents.PAID:
+          console.log("PAYMENT COMPLETED");
+
+          toast.success(t.paymentpage.verified);
+
+          socket.off("bookingUpdated", handleBookingUpdated);
+
+          navigate("/jobcompleted", {
+            replace: true,
+            state: {
+              bookingId,
+              paymentDone: true,
+            },
+          });
+
+          break;
+
+        case BookingEvents.PAYMENT_FAILED:
+          console.log("PAYMENT_FAILED");
+
+          toast.error(t.paymentpage.failed);
+
+          socket.off("bookingUpdated", handleBookingUpdated);
+
+          navigate("/bookings", {
+            replace: true,
+          });
+
+          break;
+
+        default:
+          console.log("Unhandled event:", data.eventName);
+      }
+    };
+
+    socket.on("bookingUpdated", handleBookingUpdated);
+
+    return () => {
+      socket.off("bookingUpdated", handleBookingUpdated);
+    };
+  }, [bookingId, navigate, t]);
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-slate-50">
-      <div className="bg-white shadow-xl rounded-3xl p-10 text-center w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="bg-white rounded-3xl shadow-xl p-10 w-full max-w-md text-center">
         <CommonSpinner size={40} center />
 
         <h2 className="text-2xl font-bold mt-5">
-         {t.common["Verifying Payment"]}
+          {t.common["Verifying Payment"]}
         </h2>
 
         <p className="text-gray-500 mt-2">

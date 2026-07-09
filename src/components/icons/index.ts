@@ -12,6 +12,10 @@ import { SecurityIcon } from "./SecurityIcon";
 import { LanguageIcon } from "./LanguageIcon";
 import { GlobeIcon } from "./GlobeIcon";
 import { CheckSquare } from "./CheckSquare";
+import { FavoriteIcon } from "./FavoriteIcon";
+import { HeartWithFillToggleFavoriteIcon } from "./HeartwithFillToggle";
+import { BookmarkFavoriteIcon } from "./BookmarkFavoriteIcon";
+import { FavoriteFilledIcon } from "./FavoriteFilledIcon";
 import { Square } from "./Square";
 import { LoginIcon } from "./LoginIcon";
 import { BellRing } from "./BellRing";
@@ -100,6 +104,10 @@ export {
   LanguageIcon,
   CancelIcon,
   ChatIcon,
+  BookmarkFavoriteIcon,
+  FavoriteFilledIcon,
+  FavoriteIcon,
+  HeartWithFillToggleFavoriteIcon,
   HashIcon,
   ColumnsIcon,
   CalendarDaysIcon,

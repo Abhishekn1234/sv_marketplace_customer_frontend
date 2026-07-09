@@ -82,6 +82,17 @@ const isAdminNotification = (data = {}, payload = {}) => {
 const buildNotificationRoute = (data = {}, payload = {}) => {
   const type = getType(data, payload);
 
+  const title = (
+    payload.notification?.title ||
+    data.title ||
+    ""
+  ).toString();
+
+  // Cash payment confirmed -> Notifications page
+  if (title.toLowerCase().includes("cash payment confirmed")) {
+    return "/notifications";
+  }
+
   if (isAdminNotification(data, payload)) {
     return "/notifications";
   }

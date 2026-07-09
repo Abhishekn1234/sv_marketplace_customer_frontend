@@ -99,11 +99,13 @@ export default function PaymentPage() {
   };
 
   const handlePayment = async () => {
-    if (!method) {
-      toast.error(t.paymentpage.pleaseSelectMethod);
-      return;
-    }
+  if (!method) {
+    toast.error(t.paymentpage.pleaseSelectMethod);
+    return;
+  }
 
+  // ✅ Skip processing session for cash
+  if (method !== "CASH") {
     const currentSession =
       processingSession ??
       (await refetchProcessingPaymentSession()).data ??
@@ -112,30 +114,32 @@ export default function PaymentPage() {
     if (resumeProcessingSession(currentSession)) {
       return;
     }
+  }
 
-    mutate(
-      { bookingId, paymentMethod: method as PaymentInitial["paymentMethod"] },
-      {
-        onSuccess: (data) => {
-          if (method === "CASH") {
-            navigate("/payment/callback", {
-              replace:true,
-              state: {
-                paymentId: data.paymentId,
-                transactionId: data.paymentId,
-                bookingId,
-                status: "SUCCESS",
-              },
-            });
-            return;
-          }
-          if (data.paymentUrl) {
-            window.location.replace(data.paymentUrl);
-          }
-        },
-      }
-    );
-  };
+  mutate(
+    {
+      bookingId,
+      paymentMethod: method as PaymentInitial["paymentMethod"],
+    },
+    {
+    onSuccess: (data) => {
+  if (method === "CASH") {
+    navigate("/payment/callback", {
+      replace: true,
+      state: {
+        bookingId,
+      },
+    });
+    return;
+  }
+
+  if (data.paymentUrl) {
+    window.location.replace(data.paymentUrl);
+  }
+},
+    }
+  );
+};
 
   const summaryPanel = (
     <OrderSummaryPanel
