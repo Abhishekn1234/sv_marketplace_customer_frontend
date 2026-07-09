@@ -13,14 +13,12 @@ export function formatDuration(
   const pricingMode = booking.pricingMode;
 
   const hours =
-    booking?.actualValues?.workHours ??
-    booking?.estimatedValues?.workHours ??
-    booking?.schedule?.estimatedHours;
+    booking?.actualValues?.workHours ||
+    booking?.estimatedValues?.workHours;
 
   const days =
-    booking?.actualValues?.workDays ??
-    booking?.estimatedValues?.workDays ??
-    booking?.schedule?.estimatedDays;
+    booking?.actualValues?.workDays ||
+    booking?.estimatedValues?.workDays;
 
   if (pricingMode === "HOURLY") {
     if (hours == null) return t?.confirmationpage?.bookingSummary?.na ?? "-";
