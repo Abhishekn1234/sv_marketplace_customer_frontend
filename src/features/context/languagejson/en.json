@@ -163,6 +163,29 @@
     "Money Back": "Money Back If Not Happy"
     
   },
+  "favoritespage": {
+    "eyebrow": "Your saved services",
+    "title": "Favorites",
+    "subtitle": "Services you've bookmarked, ready to compare and book whenever you're set.",
+    "savedServicesCount": "saved services",
+    "searchPlaceholder": "Search saved services",
+    "filters": {
+      "all": "All"
+    },
+    "emptyState": {
+      "title": "Nothing here yet",
+      "description": "Save services you're comparing and they'll show up here."
+    },
+    "card": {
+      "startingPrice": "starting price",
+      "customQuote": "Custom quote",
+      "bookNow": "Book now",
+      "paused": "Paused",
+      "noPreview": "No preview",
+      "ratings": "{{count}} ratings",
+      "removeFavorite": "Remove from favorites"
+    }
+  },
   "navbar":{
      "Bookings": "Bookings",
       "About": "About",

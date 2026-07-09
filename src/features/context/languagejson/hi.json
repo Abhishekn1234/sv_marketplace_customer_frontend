@@ -192,6 +192,29 @@
     "Satisfaction Guarantee": "संतुष्टि की गारंटी",
     "Money Back": "यदि संतुष्ट नहीं हैं तो पैसे वापस"
   },
+  "favoritespage": {
+    "eyebrow": "आपकी सहेजी गई सेवाएं",
+    "title": "पसंदीदा",
+    "subtitle": "आपकी बुकमार्क की गई सेवाएं, तुलना करने और जब चाहें बुक करने के लिए तैयार हैं।",
+    "savedServicesCount": "सहेजी गई सेवाएं",
+    "searchPlaceholder": "सहेजी गई सेवाएं खोजें",
+    "filters": {
+      "all": "सभी"
+    },
+    "emptyState": {
+      "title": "अभी यहां कुछ नहीं है",
+      "description": "जिन सेवाओं की आप तुलना कर रहे हैं उन्हें सहेजें, वे यहां दिखाई देंगी।"
+    },
+    "card": {
+      "startingPrice": "शुरुआती कीमत",
+      "customQuote": "कस्टम कोटेशन",
+      "bookNow": "अभी बुक करें",
+      "paused": "रुका हुआ",
+      "noPreview": "कोई पूर्वावलोकन नहीं",
+      "ratings": "{{count}} रेटिंग",
+      "removeFavorite": "पसंदीदा से हटाएं"
+    }
+  },
   "navbar":{
     "Bookings": "बुकिंग्स",
       "About": "हमारे बारे में",

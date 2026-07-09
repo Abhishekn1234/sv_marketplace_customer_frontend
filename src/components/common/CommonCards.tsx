@@ -105,7 +105,7 @@ export default function CommonCard({
           className={cn(
             "border-t pt-3",
             type === "dark" || type === "darkblue"
-              ? "border-gray-700"
+              ? "border-gray-400"
               : "border-gray-100",
             isRTL ? "text-right" : "text-left"
           )}

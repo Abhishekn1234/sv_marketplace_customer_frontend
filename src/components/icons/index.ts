@@ -8,8 +8,11 @@ import ReactIcon from "@/components/icons/react.svg?react";
 import { QuickActionsIcon } from "./QuickActionsIcon";
 import { TickCircleIcon } from "./TickCircleIcon";
 import { TickIcon } from "./TickIcon";
+
 import { SecurityIcon } from "./SecurityIcon";
 import { LanguageIcon } from "./LanguageIcon";
+import { HeartIcon } from "./HeartIcon";
+import { BadgeCheckFilledIcon } from "./BadgeCheckFilled";
 import { GlobeIcon } from "./GlobeIcon";
 import { CheckSquare } from "./CheckSquare";
 import { FavoriteIcon } from "./FavoriteIcon";
@@ -96,6 +99,9 @@ import { CalendarDaysIcon } from "./CalendarDaysIcon";
 import { QuestionIcon } from "./QuestionIcon";
 import { ChatIcon } from "./ChatIcon";
 import { CancelIcon } from "./CancelIcon";
+import { BadgeCheckIcon } from "./BadgeCheck";
+import { PauseCircleIcon } from "./PauseCircleIcon";
+
 export {
   // SVG Icons
   GoogleIcon,
@@ -104,12 +110,16 @@ export {
   LanguageIcon,
   CancelIcon,
   ChatIcon,
+  PauseCircleIcon,
   BookmarkFavoriteIcon,
   FavoriteFilledIcon,
+  BadgeCheckFilledIcon,
   FavoriteIcon,
   HeartWithFillToggleFavoriteIcon,
+  HeartIcon,
   HashIcon,
   ColumnsIcon,
+  BadgeCheckIcon,
   CalendarDaysIcon,
   UserRoundIcon,
   WalletIcon,

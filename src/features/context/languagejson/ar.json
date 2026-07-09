@@ -10,6 +10,29 @@
    
     "talkToTeam": "تحدث مع فريقنا"
   },
+  "favoritespage": {
+    "eyebrow": "الخدمات المفضّلة لديك",
+    "title": "المفضّلة",
+    "subtitle": "الخدمات التي حفظتها، جاهزة للمقارنة والحجز في أي وقت تريده.",
+    "savedServicesCount": "خدمة محفوظة",
+    "searchPlaceholder": "ابحث في الخدمات المحفوظة",
+    "filters": {
+      "all": "الكل"
+    },
+    "emptyState": {
+      "title": "لا يوجد شيء هنا بعد",
+      "description": "احفظ الخدمات التي تقارن بينها وستظهر هنا."
+    },
+    "card": {
+      "startingPrice": "يبدأ من",
+      "customQuote": "عرض سعر مخصص",
+      "bookNow": "احجز الآن",
+      "paused": "متوقف مؤقتًا",
+      "noPreview": "لا توجد معاينة",
+      "ratings": "{{count}} تقييم",
+      "removeFavorite": "إزالة من المفضّلة"
+    }
+  },
   "loginRequired":{ "bookinghistorytitle": "تسجيل الدخول مطلوب",
       "loginbookingservicetitle": "تسجيل الدخول مطلوب",
     "loginbookingservicedescription":
