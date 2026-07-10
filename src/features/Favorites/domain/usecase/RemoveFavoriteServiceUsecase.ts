@@ -1,9 +1,10 @@
 import { FavoriteServiceRepo } from "../repositories/FavoriteRepo";
 
-export class AddFavoriteServiceUsecase {
+
+export class RemoveFavoriteServiceUsecase {
   constructor(private repo: FavoriteServiceRepo) {}
 
   execute(serviceId: string) {
-    return this.repo.addFavorite(serviceId);
+    return this.repo.removeFavorite(serviceId);
   }
 }

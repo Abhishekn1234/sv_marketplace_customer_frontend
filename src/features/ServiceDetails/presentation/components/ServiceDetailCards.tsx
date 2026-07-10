@@ -11,6 +11,7 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { getPrice } from "../utils/getprice";
 import { FavoriteIcon } from "@/components/icons";
 
+import { useAddFavoriteService } from "@/features/Favorites/presentation/hooks/useAddFavorites";
 interface Props {
   activeFilter: string;
   sortBy: string;
@@ -27,15 +28,19 @@ export default function ServiceDetailCards({
 
   const { data: apiResponse, isPending, error } = useServiceCategory();
 
-  const [favorites, setFavorites] = useState<string[]>([]);
+ const [favorites, setFavorites] = useState<string[]>([]);
 
-  const toggleFavorite = (serviceId: string) => {
-    setFavorites((prev) =>
-      prev.includes(serviceId)
-        ? prev.filter((id) => id !== serviceId)
-        : [...prev, serviceId]
-    );
-  };
+   const addFavoriteMutation = useAddFavoriteService();
+
+ const toggleFavorite = (serviceId: string) => {
+  if (favorites.includes(serviceId)) return;
+
+  addFavoriteMutation.mutate(serviceId, {
+    onSuccess: () => {
+      setFavorites((prev) => [...prev, serviceId]);
+    },
+  });
+};
 
   // Flatten services
   const services = useMemo(() => {
@@ -141,14 +146,15 @@ export default function ServiceDetailCards({
             contentClassName="flex h-full flex-col p-6"
           >
             {/* Favorite */}
-            <Button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(service._id);
-              }}
-              className="absolute top-4 right-4 z-10 p-2 "
-            >
+                      <Button
+            type="button"
+            disabled={addFavoriteMutation.isPending}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(service._id);
+            }}
+            className="absolute top-4 right-4 z-10 p-2"
+             >
               <FavoriteIcon
                 className={`w-6 h-6 transition-all duration-200 ${
                   isFavorite

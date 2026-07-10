@@ -1,11 +1,23 @@
 import { Service } from "@/features/Bookings/domain/entities/service.types";
 
 export function getStartingPrice(service: Service): number | null {
-  if (service.pricingTiers?.length) {
-    const prices = service.pricingTiers
-      .map((t: any) => t?.price)
-      .filter((p: unknown): p is number => typeof p === "number");
-    if (prices.length) return Math.min(...prices);
+  if (!service.pricingTiers?.length) {
+    return null;
   }
-  return typeof service.price === "number" ? service.price : null;
+
+  const prices = service.pricingTiers.flatMap((tier) => {
+    const values: number[] = [];
+
+    if (tier.HOURLY?.ratePerHour) {
+      values.push(tier.HOURLY.ratePerHour);
+    }
+
+    if (tier.PER_DAY?.ratePerDay) {
+      values.push(tier.PER_DAY.ratePerDay);
+    }
+
+    return values;
+  });
+
+  return prices.length ? Math.min(...prices) : null;
 }
