@@ -24,7 +24,7 @@ export default function CommonNotificationFloater({
 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const bellRef = useRef<HTMLButtonElement>(null);
+ const bellRef = useRef<HTMLDivElement>(null);
 
   const { t, isRTLOrder: isRTL } = useLanguage();
 
@@ -88,9 +88,9 @@ useEffect(() => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Bell Button */}
+      <div ref={bellRef}>
       <Button
-        ref={bellRef}
+       
         onClick={() => setOpen((prev) => !prev)}
         variant="ghost"
         size="lg"
@@ -107,6 +107,7 @@ useEffect(() => {
           </span>
         )}
       </Button>
+      </div>
 
       {/* Dropdown */}
       {open && (

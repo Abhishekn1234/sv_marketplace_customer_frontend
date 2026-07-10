@@ -98,9 +98,9 @@ export default function ServiceFavoriteCard({
       {/* Body */}
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="mb-3 flex flex-wrap gap-1.5">
-          {categories.map((category) => (
+          {categories.map((category, index) => (
             <span
-              key={category}
+              key={`${category}-${index}`}
               className="rounded-full bg-[#2F86D6]/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-blue-600"
             >
               {category}
