@@ -1,5 +1,7 @@
-import type { Service } from "@/features/Bookings/domain/entities/service.types";
+import { Service } from "@/features/Bookings/domain/entities/service.types";
 
 export function getCategoryNames(service: Service): string[] {
-  return service.categories ? [service.categories?.name] : [];
+  if (!service.category) return [];
+
+  return [service.category.name];
 }

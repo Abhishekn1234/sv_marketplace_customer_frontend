@@ -22,7 +22,7 @@ export default function BookingDetailBreadCrumb() {
   // console.log(categoryId);
  
   const handleBack = () => {
-  const id = service?.category?.[0]?._id;
+  const id = service?.category._id;
 
   if (id) {
     navigate(`/services/${id}`);
