@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 import { useLanguage } from "@/features/context/LanguageContext";
 import Button from "../input/Button";
 import CommonModal from "./CommonModal";
-import { ShieldCheckIcon } from "../icons";
+import { ShieldCheckIcon, CopyIcon, CheckIcon } from "../icons";
 
 interface OtpModalProps {
   isOpen: boolean;
@@ -21,6 +23,19 @@ export default function OtpModal({
   const { t } = useLanguage();
 
   const otp = String(otpData ?? "------");
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!otpData) return;
+
+    try {
+      await navigator.clipboard.writeText(otp);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy OTP", err);
+    }
+  };
 
   return (
     <CommonModal
@@ -47,15 +62,37 @@ export default function OtpModal({
 
         {/* OTP Card */}
         <div className="mt-5 w-full rounded-2xl border border-blue-100 bg-blue-50 p-4 shadow-sm sm:p-5">
-          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
+          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2" dir="ltr">
             {otp.split("").map((digit, index) => (
               <div
                 key={index}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-base font-bold text-blue-700 shadow-sm ring-1 ring-blue-100 sm:h-11 sm:w-11 sm:rounded-xl sm:text-xl"
+                className="flex h-10 w-8 items-center justify-center rounded-lg bg-white text-lg font-bold text-blue-700 shadow-sm ring-1 ring-blue-100 sm:h-11 sm:w-10 sm:rounded-xl sm:text-xl"
               >
                 {digit}
               </div>
             ))}
+          </div>
+
+          {/* Copy Button */}
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 hover:bg-blue-100"
+              aria-label={copied ? t.common.otp.copied : t.common.otp.copy}
+            >
+              {copied ? (
+                <>
+                  <CheckIcon className="h-4 w-4 text-green-600" />
+                  <span>{t.common.otp.copied}</span>
+                </>
+              ) : (
+                <>
+                  <CopyIcon className="h-4 w-4 text-slate-600" />
+                  <span>{t.common.otp.copy}</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 

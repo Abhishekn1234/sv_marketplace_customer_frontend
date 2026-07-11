@@ -12,6 +12,7 @@ import { getPrice } from "../utils/getprice";
 import { FavoriteIcon } from "@/components/icons";
 
 import { useAddFavoriteService } from "@/features/Favorites/presentation/hooks/useAddFavorites";
+import { useRemoveFavoriteService } from "@/features/Favorites/presentation/hooks/useDeleteFavorites";
 interface Props {
   activeFilter: string;
   sortBy: string;
@@ -31,16 +32,25 @@ export default function ServiceDetailCards({
  const [favorites, setFavorites] = useState<string[]>([]);
 
    const addFavoriteMutation = useAddFavoriteService();
+   const removeFavoriteMutation = useRemoveFavoriteService();
 
- const toggleFavorite = (serviceId: string) => {
-  if (favorites.includes(serviceId)) return;
-
-  addFavoriteMutation.mutate(serviceId, {
-    onSuccess: () => {
-      setFavorites((prev) => [...prev, serviceId]);
-    },
-  });
-};
+    const toggleFavorite = (serviceId: string) => {
+      if (favorites.includes(serviceId)) {
+        removeFavoriteMutation.mutate(serviceId, {
+          onSuccess: () => {
+            setFavorites((prev) =>
+              prev.filter((id) => id !== serviceId)
+            );
+          },
+        });
+      } else {
+        addFavoriteMutation.mutate(serviceId, {
+          onSuccess: () => {
+            setFavorites((prev) => [...prev, serviceId]);
+          },
+        });
+      }
+    };
 
   // Flatten services
   const services = useMemo(() => {
@@ -146,23 +156,26 @@ export default function ServiceDetailCards({
             contentClassName="flex h-full flex-col p-6"
           >
             {/* Favorite */}
-                      <Button
-            type="button"
-            disabled={addFavoriteMutation.isPending}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite(service._id);
-            }}
-            className="absolute top-4 right-4 z-10 p-2"
-             >
-              <FavoriteIcon
-                className={`w-6 h-6 transition-all duration-200 ${
-                  isFavorite
-                    ? "fill-gray-500 text-red-500"
-                    : "fill-none text-gray-400 hover:text-red-500"
-                }`}
-              />
-            </Button>
+           <Button
+  type="button"
+  disabled={
+    addFavoriteMutation.isPending ||
+    removeFavoriteMutation.isPending
+  }
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleFavorite(service._id);
+  }}
+  className="absolute top-4 right-4 z-10 p-2"
+>
+  <FavoriteIcon
+    className={`h-6 w-6 transition-all duration-200 ${
+      isFavorite
+        ? "fill-red-500 text-red-500"
+        : "fill-none text-gray-400 hover:text-red-500"
+    }`}
+  />
+              </Button>
 
             {isPremium && (
               <span className="absolute left-4 top-4 rounded-full bg-yellow-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
