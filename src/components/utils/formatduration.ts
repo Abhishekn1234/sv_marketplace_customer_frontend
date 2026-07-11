@@ -27,7 +27,7 @@ export function formatDuration(
       const mins = Math.round(hours * 60);
       return t
         ? `${mins} ${t.confirmationpage.bookingSummary.minutes}`
-        : `${mins} mins`;
+        : `${mins} min`;
     }
 
     if (hours === 1) {
