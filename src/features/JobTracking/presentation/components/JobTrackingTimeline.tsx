@@ -198,6 +198,23 @@ export default function JobTrackingTimeline({
  const handleVerifyPayment = async () => {
   if (!currentBooking?._id) return;
 
+      // Cash payment doesn't need payment session
+    const cashPayment = currentBooking.payments?.find(
+      (pay) => pay.paymentMethod === "CASH"
+    );
+
+      if (cashPayment) {
+        navigate("/jobcompleted", {
+          replace: true,
+          state: {
+            bookingId: currentBooking._id,
+            paymentDone: true,
+          },
+        });
+        return;
+      }
+
+  // Online payment flow
   const session =
     (await processingPaymentSessionQuery.refetch()).data ?? null;
 
@@ -218,7 +235,6 @@ export default function JobTrackingTimeline({
 
   verifyPaymentMutation.mutate(
     {
-      bookingId: currentBooking._id,
       paymentId,
       status: "SUCCESS",
       transactionId:
@@ -244,12 +260,14 @@ export default function JobTrackingTimeline({
         });
       },
       onError: (err) => {
-        handleApiError(err, translationMessages["Payment Verification Failed"]);
+        handleApiError(
+          err,
+          translationMessages["Payment Verification Failed"]
+        );
       },
     }
   );
 };
-
   // -----------------------------
   // SCROLL ACTIVE STEP
   // -----------------------------

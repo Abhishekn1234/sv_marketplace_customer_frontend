@@ -12,6 +12,8 @@ import type {
 } from "./bookingpricedetails";
 import type { User } from "@/features/Auth/domain/entities/auth.types";
 import type { Activity } from "@/features/JobTracking/domain/entities/jobtimelineactivities";
+import { GetAllDisputes } from "@/features/Disputes/domain/entities/getdisputesall";
+import { Payment } from "@/features/Payment/domain/entities/payment.types";
 
 
 export interface Booking {
@@ -90,8 +92,8 @@ export interface Booking {
 
   assignedWorkers?: AssignedWorker[];
 
-  payments?: any[];
-  disputes?: any[];
+  payments?: Payment[];
+  disputes?: GetAllDisputes[];
 
   activities?: Activity[];
 

@@ -92,6 +92,7 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
   if (title.toLowerCase().includes("cash payment confirmed")) {
     return "/notifications";
   }
+  
 
   if (isAdminNotification(data, payload)) {
     return "/notifications";
@@ -121,6 +122,9 @@ const buildNotificationRoute = (data = {}, payload = {}) => {
   ) {
     return `/jobtracking/${bookingId}`;
   }
+      if (type === "CASH_PAYMENT_CONFIRMED") {
+      return "/notifications";
+    }
 
   if (
     type === "JOB_PROGRESS" &&

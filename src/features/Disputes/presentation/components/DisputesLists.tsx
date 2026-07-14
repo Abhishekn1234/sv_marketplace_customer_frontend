@@ -4,10 +4,11 @@ import CommonCard from "@/components/common/CommonCards";
 import { statusClass } from "../utils/disputesstatusclass";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { formatSmartDate } from "@/components/utils/formatsmartdate";
+import { GetAllDisputes } from "../../domain/entities/getdisputesall";
 
 
 interface Props {
-  items: any[];
+  items: GetAllDisputes[];
   isLoading: boolean;
   isFetchingNextPage: boolean;
   sentinelRef: React.RefObject<HTMLDivElement | null>;
