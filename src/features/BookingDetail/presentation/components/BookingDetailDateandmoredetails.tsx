@@ -12,6 +12,7 @@ import BookingDetailNotesAndSummary from "./BookingDetailNoteSummary";
 import { handleApiError } from "@/components/common/ApiError";
 import { parseTime } from "../utils/parseTime";
 
+import { useValidateCoupon } from "../hooks/useapplycouponcode";
 
 
 export default function BookingDetailDateandmoredetails() {
@@ -23,7 +24,17 @@ export default function BookingDetailDateandmoredetails() {
   const selectedService = services?.find((s: any) => s._id === serviceId);
 
   const { current_location, accessToken } = useAuthStore();
+ const validateCoupon = useValidateCoupon();
 
+const [couponCode, setCouponCode] = useState("");
+const [appliedCouponCode, setAppliedCouponCode] = useState("");
+const [couponPricing, setCouponPricing] = useState<{
+  amountBeforeDiscount: number;
+  discountAmount: number;
+  taxableAmount: number;
+  taxAmount: number;
+  totalCost: number;
+} | null>(null);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [duration, setDuration] = useState(1);
@@ -52,7 +63,71 @@ export default function BookingDetailDateandmoredetails() {
     () => basePrice + vatRate,
     [basePrice, vatRate]
   );
+  const handleApplyCoupon = async () => {
+  if (!couponCode.trim()) {
+    return toast.error("Enter coupon code");
+  }
+ 
+  if (selectedDate === null) {
+    return toast.error("Select booking date");
+  }
 
+  if (!selectedTime) {
+    return toast.error("Select booking time");
+  }
+
+  try {
+    const today = new Date();
+    const selectedDateObj = new Date(today);
+    selectedDateObj.setDate(today.getDate() + selectedDate);
+
+    const { hours, minutes } = parseTime(selectedTime);
+    selectedDateObj.setHours(hours, minutes, 0, 0);
+
+    const { lat, lng } = await getCurrentLocation();
+
+    const pricingMode =
+      duration > 24 ? "PER_DAY" : "HOURLY";
+
+    const estimatedDays =
+      duration > 24 ? Math.floor(duration / 24) : 0;
+
+    const estimatedHours =
+      duration > 24 ? duration % 24 : duration;
+   const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
+    const response = await validateCoupon.mutateAsync({
+      workDescription: notes || "Service booking",
+      
+      couponCode,
+      serviceId: serviceId!,
+      serviceTierId: serviceTierId!,
+      pricingMode,
+      numberOfWorkers,
+      bookingType:bookingType,
+      startDateTime: selectedDateObj.toISOString(),
+      estimatedHours,
+      estimatedDays,
+      location: {
+        type: "Point",
+        coordinates: [lng, lat],
+      },
+    });
+
+  setCouponPricing({
+  amountBeforeDiscount: response.amountBeforeDiscount,
+  discountAmount: response.discountAmount,
+  taxableAmount: response.taxableAmount,
+  taxAmount: response.taxAmount,
+  totalCost: response.totalCost,
+});
+
+setAppliedCouponCode(couponCode.trim());
+
+toast.success("Coupon applied successfully");
+  } catch (error) {
+    handleApiError(error);
+  }
+};
   const handleBooking = async () => {
     if (!accessToken) {
       setShowLoginModal(true);
@@ -106,6 +181,7 @@ export default function BookingDetailDateandmoredetails() {
 
       const payload = {
         workDescription: notes || "Service booking",
+        couponCode,
         serviceId: serviceId!,
         serviceTierId: serviceTierId!,
         pricingMode,
@@ -149,17 +225,24 @@ export default function BookingDetailDateandmoredetails() {
         onDecreaseDuration={decreaseDuration}
       />
 
-      <BookingDetailNotesAndSummary
-        notes={notes}
-        onNotesChange={setNotes}
-        duration={duration}
-        basePrice={basePrice}
-        vatRate={vatRate}
-        totalCostToSend={totalCostToSend}
-        loading={loading}
-        onConfirmBooking={handleBooking}
-        showLoginModal={showLoginModal}
-      />
+     <BookingDetailNotesAndSummary
+  notes={notes}
+  onNotesChange={setNotes}
+  duration={duration}
+  basePrice={basePrice}
+  vatRate={vatRate}
+  totalCostToSend={totalCostToSend}
+  loading={loading}
+  onConfirmBooking={handleBooking}
+  showLoginModal={showLoginModal}
+
+  couponCode={couponCode}
+  appliedCouponCode={appliedCouponCode}
+  onCouponCodeChange={setCouponCode}
+  onApplyCoupon={handleApplyCoupon}
+  couponLoading={validateCoupon.isPending}
+  couponPricing={couponPricing}
+/>
     </CommonCard>
   );
 }

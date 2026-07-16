@@ -14,6 +14,7 @@ import type { User } from "@/features/Auth/domain/entities/auth.types";
 import type { Activity } from "@/features/JobTracking/domain/entities/jobtimelineactivities";
 import { GetAllDisputes } from "@/features/Disputes/domain/entities/getdisputesall";
 import { Payment } from "@/features/Payment/domain/entities/payment.types";
+import { AppliedDiscount } from "@/features/BookingDetail/domain/entities/couponValidation.types";
 
 
 export interface Booking {
@@ -67,7 +68,7 @@ export interface Booking {
   memberDiscount?: number;
 
   taxLines?: TaxLine[];
-  appliedDiscounts?: any[];
+  appliedDiscounts?: AppliedDiscount[];
 
   estimatedValues?: BookingValueBreakdown;
   actualValues?: BookingValueBreakdown;
