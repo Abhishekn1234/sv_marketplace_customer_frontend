@@ -30,6 +30,7 @@ export interface Service {
 
   rating?: string;
   price?: number;
+  isFavorited?:boolean;
 }
 
 

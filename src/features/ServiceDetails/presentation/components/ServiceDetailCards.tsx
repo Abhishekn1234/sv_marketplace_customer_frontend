@@ -13,6 +13,7 @@ import { FavoriteIcon } from "@/components/icons";
 
 import { useAddFavoriteService } from "@/features/Favorites/presentation/hooks/useAddFavorites";
 import { useRemoveFavoriteService } from "@/features/Favorites/presentation/hooks/useDeleteFavorites";
+import { useQueryClient } from "@tanstack/react-query";
 interface Props {
   activeFilter: string;
   sortBy: string;
@@ -29,28 +30,52 @@ export default function ServiceDetailCards({
 
   const { data: apiResponse, isPending, error } = useServiceCategory();
 
- const [favorites, setFavorites] = useState<string[]>([]);
+ 
 
-   const addFavoriteMutation = useAddFavoriteService();
-   const removeFavoriteMutation = useRemoveFavoriteService();
+ const queryClient = useQueryClient();
 
-    const toggleFavorite = (serviceId: string) => {
-      if (favorites.includes(serviceId)) {
-        removeFavoriteMutation.mutate(serviceId, {
-          onSuccess: () => {
-            setFavorites((prev) =>
-              prev.filter((id) => id !== serviceId)
-            );
-          },
+const addFavoriteMutation = useAddFavoriteService();
+const removeFavoriteMutation = useRemoveFavoriteService();
+
+const toggleFavorite = (service: any) => {
+  const serviceId = service._id;
+
+  if (service.isFavorited) {
+    removeFavoriteMutation.mutate(serviceId, {
+      onSuccess: () => {
+        queryClient.setQueryData(["serviceCategory"], (old: any) => {
+          if (!old) return old;
+
+          return old.map((category: any) => ({
+            ...category,
+            services: category.services.map((s: any) =>
+              s._id === serviceId
+                ? { ...s, isFavorited: false }
+                : s
+            ),
+          }));
         });
-      } else {
-        addFavoriteMutation.mutate(serviceId, {
-          onSuccess: () => {
-            setFavorites((prev) => [...prev, serviceId]);
-          },
+      },
+    });
+  } else {
+    addFavoriteMutation.mutate(serviceId, {
+      onSuccess: () => {
+        queryClient.setQueryData(["serviceCategory"], (old: any) => {
+          if (!old) return old;
+
+          return old.map((category: any) => ({
+            ...category,
+            services: category.services.map((s: any) =>
+              s._id === serviceId
+                ? { ...s, isFavorited: true }
+                : s
+            ),
+          }));
         });
-      }
-    };
+      },
+    });
+  }
+};
 
   // Flatten services
   const services = useMemo(() => {
@@ -143,7 +168,7 @@ export default function ServiceDetailCards({
         const tier = service.pricingTiers?.[0];
         const price = getPrice(service);
 
-        const isFavorite = favorites.includes(service._id);
+       const isFavorite = service.isFavorited;
 
         return (
           <CommonCard
@@ -156,26 +181,26 @@ export default function ServiceDetailCards({
             contentClassName="flex h-full flex-col p-6"
           >
             {/* Favorite */}
-           <Button
-  type="button"
-  disabled={
-    addFavoriteMutation.isPending ||
-    removeFavoriteMutation.isPending
-  }
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleFavorite(service._id);
-  }}
-  className="absolute top-4 right-4 z-10 p-2"
->
-  <FavoriteIcon
-    className={`h-6 w-6 transition-all duration-200 ${
-      isFavorite
-        ? "fill-red-500 text-red-500"
-        : "fill-none text-gray-400 hover:text-red-500"
-    }`}
-  />
-              </Button>
+                    <Button
+            type="button"
+            disabled={
+              addFavoriteMutation.isPending ||
+              removeFavoriteMutation.isPending
+            }
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(service);
+            }}
+            className="absolute top-4 right-4 z-10 p-2"
+          >
+            <FavoriteIcon
+              className={`h-6 w-6 transition-all duration-200 ${
+                isFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "fill-none text-gray-400 hover:text-red-500"
+              }`}
+            />
+          </Button>
 
             {isPremium && (
               <span className="absolute left-4 top-4 rounded-full bg-yellow-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">

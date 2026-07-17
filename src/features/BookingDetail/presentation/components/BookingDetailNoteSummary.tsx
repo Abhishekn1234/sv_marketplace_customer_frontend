@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "@/components/input/Button";
-import { Input, Textarea } from "@/components/input";
+import { Input, Label, Textarea } from "@/components/input";
 import { ArrowRight } from "@/components/icons";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import LoginRequired from "@/components/common/LoginRequired";
@@ -89,33 +89,33 @@ const isApplied =
       {/* Coupon Code Section */}
       <div className="mt-4">
         {!showCouponInput ? (
-          <button
+          <Button
             type="button"
             onClick={() => setShowCouponInput(true)}
             className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
           >
-            {isApplied ? "Coupon applied" : "Apply coupon code?"}
-          </button>
+            {isApplied ? t.common.couponApplied : t.common.applyCouponCode}
+          </Button>
         ) : (
           <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-sm font-bold text-gray-900">
-                Coupon Code
-              </label>
-              <button
+              <Label className="text-sm font-bold text-gray-900">
+               {t.common.couponCode}
+              </Label>
+              <Button
                 type="button"
                 onClick={handleCancelCoupon}
                 className="text-xs font-medium text-gray-500 hover:text-gray-700 hover:underline"
               >
-                Cancel
-              </button>
+                {t.common.cancel}
+              </Button>
             </div>
 
             <div className="relative flex items-center">
               <Input
                     value={couponCode}
                     onChange={(value) => onCouponCodeChange(value)}
-                    placeholder="Enter coupon code"
+                    placeholder={t.common.enterCouponCode}
                     className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-4 pr-24 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   />
 
@@ -129,7 +129,7 @@ const isApplied =
                     : "bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
                 }`}
               >
-                {couponLoading ? "Applying..." : isApplied ? "Applied ✓" : "Apply"}
+                {couponLoading ? t.common.applying : isApplied ? t.common.applied : t.common.apply}
               </Button>
             </div>
           </div>
@@ -142,7 +142,7 @@ const isApplied =
           <span className="text-gray-600">
             {t.bookingdetailpage.basePrice}{" "}
             <span className="whitespace-nowrap text-gray-400">
-              ({duration} {duration === 1 ? "Hour" : "Hours"})
+              ({duration} {duration === 1 ? t.common.hour : t.common.hours})
             </span>
           </span>
 
