@@ -49,6 +49,64 @@ const [couponPricing, setCouponPricing] = useState<{
     selectedPricing?.HOURLY?.ratePerHour ??
     selectedPricing?.PER_DAY?.ratePerDay ??
     0;
+    const validateCouponForDuration = async (currentDuration: number) => {
+  if (!couponCode.trim()) return;
+
+  if (selectedDate === null || !selectedTime) return;
+
+  try {
+    const today = new Date();
+    const selectedDateObj = new Date(today);
+    selectedDateObj.setDate(today.getDate() + selectedDate);
+
+    const { hours, minutes } = parseTime(selectedTime);
+    selectedDateObj.setHours(hours, minutes, 0, 0);
+
+    const { lat, lng } = await getCurrentLocation();
+
+    const pricingMode =
+      currentDuration > 24 ? "PER_DAY" : "HOURLY";
+
+    const estimatedDays =
+      currentDuration > 24
+        ? Math.floor(currentDuration / 24)
+        : 0;
+
+    const estimatedHours =
+      currentDuration > 24
+        ? currentDuration % 24
+        : currentDuration;
+
+    const response = await validateCoupon.mutateAsync({
+      workDescription: notes || "Service booking",
+      couponCode,
+      serviceId: serviceId!,
+      serviceTierId: serviceTierId!,
+      pricingMode,
+      numberOfWorkers,
+      bookingType: "SCHEDULED",
+      startDateTime: selectedDateObj.toISOString(),
+      estimatedHours,
+      estimatedDays,
+      location: {
+        type: "Point",
+        coordinates: [lng, lat],
+      },
+    });
+
+    setCouponPricing({
+      amountBeforeDiscount: response.amountBeforeDiscount,
+      discountAmount: response.discountAmount,
+      taxableAmount: response.taxableAmount,
+      taxAmount: response.taxAmount,
+      totalCost: response.totalCost,
+    });
+
+    setAppliedCouponCode(couponCode.trim());
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
   const safeUnitPrice = unitPrice ?? 0;
   const vatPercent = selectedService?.vatRate ?? 0;
@@ -64,68 +122,26 @@ const [couponPricing, setCouponPricing] = useState<{
     [basePrice, vatRate]
   );
   const handleApplyCoupon = async () => {
-  if (!couponCode.trim()) {
-    return toast.error("Enter coupon code");
+  await validateCouponForDuration(duration);
+};
+
+const increaseDuration = () => {
+  const newDuration = duration + 1;
+  setDuration(newDuration);
+
+  if (couponPricing) {
+    validateCouponForDuration(newDuration);
   }
- 
-  if (selectedDate === null) {
-    return toast.error("Select booking date");
-  }
+};
 
-  if (!selectedTime) {
-    return toast.error("Select booking time");
-  }
+const decreaseDuration = () => {
+  if (duration === 1) return;
 
-  try {
-    const today = new Date();
-    const selectedDateObj = new Date(today);
-    selectedDateObj.setDate(today.getDate() + selectedDate);
+  const newDuration = duration - 1;
+  setDuration(newDuration);
 
-    const { hours, minutes } = parseTime(selectedTime);
-    selectedDateObj.setHours(hours, minutes, 0, 0);
-
-    const { lat, lng } = await getCurrentLocation();
-
-    const pricingMode =
-      duration > 24 ? "PER_DAY" : "HOURLY";
-
-    const estimatedDays =
-      duration > 24 ? Math.floor(duration / 24) : 0;
-
-    const estimatedHours =
-      duration > 24 ? duration % 24 : duration;
-   const bookingType: "SCHEDULED" | "INSTANT" = "SCHEDULED";
-    const response = await validateCoupon.mutateAsync({
-      workDescription: notes || "Service booking",
-      
-      couponCode,
-      serviceId: serviceId!,
-      serviceTierId: serviceTierId!,
-      pricingMode,
-      numberOfWorkers,
-      bookingType:bookingType,
-      startDateTime: selectedDateObj.toISOString(),
-      estimatedHours,
-      estimatedDays,
-      location: {
-        type: "Point",
-        coordinates: [lng, lat],
-      },
-    });
-
-  setCouponPricing({
-  amountBeforeDiscount: response.amountBeforeDiscount,
-  discountAmount: response.discountAmount,
-  taxableAmount: response.taxableAmount,
-  taxAmount: response.taxAmount,
-  totalCost: response.totalCost,
-});
-
-setAppliedCouponCode(couponCode.trim());
-
-toast.success("Coupon applied successfully");
-  } catch (error) {
-    handleApiError(error);
+  if (couponPricing) {
+    validateCouponForDuration(newDuration);
   }
 };
   const handleBooking = async () => {
@@ -205,9 +221,7 @@ toast.success("Coupon applied successfully");
     }
   };
 
-  const increaseDuration = () => setDuration((prev) => prev + 1);
-  const decreaseDuration = () =>
-    setDuration((prev) => (prev > 1 ? prev - 1 : 1));
+  
 
   return (
     <CommonCard className="border-2 border-gray-200 rounded-2xl p-6">

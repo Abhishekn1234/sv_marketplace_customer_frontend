@@ -52,6 +52,9 @@ export default function NotificationCards() {
   const notifications = useMemo(() => {
     return data?.pages.flatMap((p) => p.data) ?? [];
   }, [data]);
+ const totalItems = useMemo(() => {
+  return data?.pages?.[0]?.pagination?.totalItems ?? 0;
+}, [data]);
 
   const unreadNotifications = useMemo(
     () => notifications.filter((n: any) => !n.isRead),
@@ -155,9 +158,9 @@ await markAllAsRead();
           </div>
         </div>
 
-        {unreadCount > 0 && (
+        {totalItems  > 0 && (
           <Badge className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-               {unreadCount} {t.notificationpage.unread}
+               {totalItems } {t.notificationpage.unread}
           </Badge>
           
         )}
@@ -210,7 +213,7 @@ await markAllAsRead();
             toggleSelectAll={toggleSelectAll}
             selected={selected}
             selectAll={selectAll}
-            total={unreadCount}
+            total={totalItems}
             markAllAsRead={handleMarkAllAsRead}
             markSelectedAsRead={markSelectedAsRead}
         />
