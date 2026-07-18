@@ -74,12 +74,7 @@ export default function PaymentMethodsPanel({
         <div style={styles.methodsGrid}>
           {normalized.map((gateway) => {
             const meta =
-              METHOD_META[gateway.type] ?? {
-                label: gateway.title,
-                icon: "💳",
-                bg: "#F3F4F6",
-                color: "#374151",
-              };
+              METHOD_META[gateway.type]
 
             const selected = method === gateway.type;
 
@@ -112,15 +107,13 @@ export default function PaymentMethodsPanel({
                 </div>
 
                 <span
-                  style={{
-                    ...styles.methodLabel,
-                    color: selected
-                      ? "#1D4ED8"
-                      : undefined,
-                  }}
-                >
-                  {meta.label}
-                </span>
+                style={{
+                  ...styles.methodLabel,
+                  color: selected ? "#1D4ED8" : undefined,
+                }}
+              >
+                {gateway.title || meta.label}
+              </span>
               </Button>
             );
           })}

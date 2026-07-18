@@ -22,7 +22,7 @@ import { useUnreadCount } from "../hooks/useUnreadCount";
 
 import { getNotificationTarget } from "../utils/notificationNavigation";
 import { useNotificationFilters } from "../utils/notificationfilterskeylanguages";
-import { useTheme } from "@/features/context/themeContext";
+// import { useTheme } from "@/features/context/themeContext";
 import { BellIcon } from "@/components/icons/BellIcon";
 import Button from "@/components/input/Button";
 import { Badge } from "@/components/input";
@@ -31,7 +31,7 @@ import { Badge } from "@/components/input";
 export default function NotificationCards() {
   const { t,isRTLOrder } = useLanguage();
   const navigate = useNavigate();
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   const [type, setType] = useState<any>(undefined);
   const [selected, setSelected] = useState<string[]>([]);
@@ -52,10 +52,17 @@ export default function NotificationCards() {
   const notifications = useMemo(() => {
     return data?.pages.flatMap((p) => p.data) ?? [];
   }, [data]);
- const totalItems = useMemo(() => {
-  return data?.pages?.[0]?.pagination?.totalItems ?? 0;
-}, [data]);
+ 
+useEffect(() => {
+  const unreadIds = notifications
+    .filter((n: any) => !n.isRead)
+    .map((n: any) => n._id || n.id);
 
+  setSelectAll(
+    unreadIds.length > 0 &&
+      unreadIds.every((id: string) => selected.includes(id))
+  );
+}, [selected, notifications]);
   const unreadNotifications = useMemo(
     () => notifications.filter((n: any) => !n.isRead),
     [notifications]
@@ -83,8 +90,18 @@ const { markAllAsRead } = useMarkAllAsRead();
   );
 };
  const toggleSelectAll = () => {
-  setSelectAll((prev) => !prev);
-  setSelected([]);
+  if (selectAll) {
+    setSelectAll(false);
+    setSelected([]);
+    return;
+  }
+
+  const unreadIds = notifications
+    .filter((n: any) => !n.isRead)
+    .map((n: any) => n._id || n.id);
+
+  setSelectAll(true);
+  setSelected(unreadIds);
 };
   const markSelectedAsRead = async () => {
   if (!selected.length) return;
@@ -139,9 +156,7 @@ await markAllAsRead();
 
   return (
         <div
-        className={`min-h-screen w-full ${
-          theme === "dark" ? "bg-zinc-950" : ""
-        }`}
+        className={`min-h-screen w-full `}
         dir={isRTLOrder?"rtl":""}
       >
       {/* HEADER */}
@@ -158,11 +173,10 @@ await markAllAsRead();
           </div>
         </div>
 
-        {totalItems  > 0 && (
+                {unreadCount > 0 && (
           <Badge className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-               {totalItems } {t.notificationpage.unread}
+            {unreadCount} {t.notificationpage.unread}
           </Badge>
-          
         )}
       </div>
 
@@ -210,13 +224,13 @@ await markAllAsRead();
 
         {/* ACTIONS */}
               <NotificationHeader
-            toggleSelectAll={toggleSelectAll}
-            selected={selected}
-            selectAll={selectAll}
-            total={totalItems}
-            markAllAsRead={handleMarkAllAsRead}
-            markSelectedAsRead={markSelectedAsRead}
-        />
+  toggleSelectAll={toggleSelectAll}
+  selected={selected}
+  selectAll={selectAll}
+  total={unreadNotifications.length}
+  markAllAsRead={handleMarkAllAsRead}
+  markSelectedAsRead={markSelectedAsRead}
+/>
         {/* LIST */}
         <div className="">
           {isLoading ? (

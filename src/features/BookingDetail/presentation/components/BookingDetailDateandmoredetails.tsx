@@ -239,24 +239,24 @@ const decreaseDuration = () => {
         onDecreaseDuration={decreaseDuration}
       />
 
-     <BookingDetailNotesAndSummary
-  notes={notes}
-  onNotesChange={setNotes}
-  duration={duration}
-  basePrice={basePrice}
-  vatRate={vatRate}
-  totalCostToSend={totalCostToSend}
-  loading={loading}
-  onConfirmBooking={handleBooking}
-  showLoginModal={showLoginModal}
+        <BookingDetailNotesAndSummary
+      notes={notes}
+      onNotesChange={setNotes}
+      duration={duration}
+      basePrice={basePrice}
+      vatRate={vatRate}
+      totalCostToSend={totalCostToSend}
+      loading={loading}
+      onConfirmBooking={handleBooking}
+      showLoginModal={showLoginModal}
 
-  couponCode={couponCode}
-  appliedCouponCode={appliedCouponCode}
-  onCouponCodeChange={setCouponCode}
-  onApplyCoupon={handleApplyCoupon}
-  couponLoading={validateCoupon.isPending}
-  couponPricing={couponPricing}
-/>
+      couponCode={couponCode}
+      appliedCouponCode={appliedCouponCode}
+      onCouponCodeChange={setCouponCode}
+      onApplyCoupon={handleApplyCoupon}
+      couponLoading={validateCoupon.isPending}
+      couponPricing={couponPricing}
+    />
     </CommonCard>
   );
 }

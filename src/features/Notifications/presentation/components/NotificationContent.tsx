@@ -11,6 +11,7 @@ export default function NotificationContent({
   notifications,
   selected,
   toggleSelect,
+  selectAll,
   onNotificationClick,
 }: any) {
   const { t, lang } = useLanguage();
@@ -43,7 +44,8 @@ export default function NotificationContent({
         // console.log(notifications);
        const notificationId = n._id || n.id;
      
-       const isSelected = selected.includes(notificationId);
+      const isSelected =
+  (selectAll && !n.isRead) || selected.includes(notificationId);
         const isUnread = !n.isRead;
 
         const createdAt = new Date(n.createdAt);

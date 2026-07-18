@@ -17,62 +17,60 @@ export const getMethodMeta = (
     bg: string;
     color: string;
   }
-> => ({
-  CARD: {
-    label: paymentMethods.creditCard ?? "Credit Card",
-    icon: "💳",
-    bg: "#EFF6FF",
-    color: "#1D4ED8",
-  },
+> => {
+  const cardLabel = paymentMethods.creditCard;
 
-  STRIPE: {
-    label: paymentMethods.stripe ?? "Stripe",
-    icon: "💳",
-    bg: "#EEF2FF",
-    color: "#4338CA",
-  },
+  return {
+    CARD: {
+      label: cardLabel.toLowerCase().startsWith("stripe")
+        ? "Stripe"
+        : cardLabel,
+      icon: "💳",
+      bg: "#EFF6FF",
+      color: "#1D4ED8",
+    },
 
-  APPLE_PAY: {
-    label: paymentMethods.applePay ?? "Apple Pay",
-    icon: "🍎",
-    bg: "#F3F4F6",
-    color: "#111827",
-  },
+    STRIPE: {
+      label: paymentMethods.stripe ?? "Stripe",
+      icon: "💳",
+      bg: "#EEF2FF",
+      color: "#4338CA",
+    },
 
-  CASH: {
-    label: paymentMethods.cash ?? "Cash",
-    icon: "💵",
-    bg: "#ECFDF5",
-    color: "#059669",
-  },
+    APPLE_PAY: {
+      label: paymentMethods.applePay ?? "Apple Pay",
+      icon: "🍎",
+      bg: "#F3F4F6",
+      color: "#111827",
+    },
 
-  STC: {
-    label: paymentMethods.stcPay ?? "STC Pay",
-    icon: "📱",
-    bg: "#FEF3C7",
-    color: "#92400E",
-  },
+    CASH: {
+      label: paymentMethods.cash ?? "Cash",
+      icon: "💵",
+      bg: "#ECFDF5",
+      color: "#059669",
+    },
 
-  MADA: {
-    label: paymentMethods.mada ?? "Mada",
-    icon: "🏧",
-    bg: "#FDF2F8",
-    color: "#9D174D",
-  },
+    STC: {
+      label: paymentMethods.stcPay ?? "STC Pay",
+      icon: "📱",
+      bg: "#FEF3C7",
+      color: "#92400E",
+    },
 
-  BANK: {
-    label: paymentMethods.bankTransfer ?? "Bank Transfer",
-    icon: "🏦",
-    bg: "#F5F3FF",
-    color: "#6D28D9",
-  },
-});
+    MADA: {
+      label: paymentMethods.mada ?? "Mada",
+      icon: "🏧",
+      bg: "#FDF2F8",
+      color: "#9D174D",
+    },
 
-/**
- * Only methods requiring card details
- */
-export const SHOWS_CARD_FIELDS = [
-  "CARD",
-//   "STRIPE",
-  "MADA",
-];
+    BANK: {
+      label: paymentMethods.bankTransfer ?? "Bank Transfer",
+      icon: "🏦",
+      bg: "#F5F3FF",
+      color: "#6D28D9",
+    },
+  };
+};
+export const SHOWS_CARD_FIELDS = [ "CARD", "STRIPE", "MADA", ];

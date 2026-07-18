@@ -110,6 +110,7 @@
  "common": {
   "selected":"चयनित",
   "not selected":"चयनित नहीं",
+  "No slots available for this date":"इस तारीख के लिए कोई स्लॉट उपलब्ध नहीं है।",
   "Cancelled":"रद्द",
     "applyCouponCode": "कूपन कोड लागू करें?",
     "couponApplied": "कूपन लागू हो गया",
@@ -322,6 +323,7 @@
    "bookingdetailpage":{
      "backToServices": "सेवाओं पर वापस जाएं",
       "title": "बुकिंग विवरण",
+      "discountApplied":"डिस्काउंट लागू किया गया",
       "vatRate": "वैट दर",
       "Cancel":"रद्द करें",
       "Save":"सहेजें",

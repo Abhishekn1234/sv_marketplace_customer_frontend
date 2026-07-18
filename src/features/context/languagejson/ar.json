@@ -130,6 +130,7 @@
     "enterCouponCode": "أدخل رمز القسيمة",
     "apply": "تطبيق",
     "applying": "جارٍ التطبيق...",
+    "No slots available for this date":"لا توجد مواعيد متاحة لهذا التاريخ.",
     "applied": "تم التطبيق ✓",
   "Cancelled":"تم الإلغاء",
   "No worker is assigned":"لم يتم تعيين أي عامل",
@@ -322,6 +323,7 @@
   "bookingdetailpage":{
      "backToServices": "العودة إلى الخدمات",
      "title": "تفاصيل الحجز",
+     "discountApplied":"تم تطبيق الخصم",
      "Update Home Address": "تحديث عنوان المنزل",
      "Cancel": "إلغاء",
      "Getting location...": "جارٍ الحصول على الموقع...",

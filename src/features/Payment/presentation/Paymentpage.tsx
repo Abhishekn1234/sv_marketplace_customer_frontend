@@ -43,6 +43,7 @@ export default function PaymentPage() {
   const { mutate, isPending } = useBookingPayment();
   
   const { data: gateways, isLoading } = useGetPaymentGateway();
+  console.log(gateways);
   const bookingCode=state?.bookingCode??"Booking Code"
   const  bookingId   = state?.bookingId   ?? "";
   const serviceName = state?.serviceName ?? "Service";

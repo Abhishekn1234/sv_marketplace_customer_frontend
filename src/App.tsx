@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "./features/context/themeContext";
+// import { ThemeProvider } from "./features/context/themeContext";
 import { LanguageProvider } from "./features/context/LanguageContext";
 import { ToastContainer } from "react-toastify";
 
@@ -100,7 +100,7 @@ function App() {
   }, [isLoggedIn, accessToken]);
 
   return (
-    <ThemeProvider>
+    // <ThemeProvider>
       <LanguageProvider>
         <ScrollToTop />
         <NotificationNavigation />
@@ -196,7 +196,7 @@ function App() {
 </Route>
 </Routes>
       </LanguageProvider>
-    </ThemeProvider>
+    // </ThemeProvider>
   );
 }
 

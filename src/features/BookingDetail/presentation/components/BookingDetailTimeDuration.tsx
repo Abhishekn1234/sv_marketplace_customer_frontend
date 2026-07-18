@@ -111,6 +111,7 @@ export default function BookingDetailTimeAndDuration({
               <Button
                 key={time}
                 type="button"
+                dir="ltr"
                 variant="none"
                 onClick={() => !disabled && onSelectTime(time)}
                 disabled={disabled}
@@ -129,7 +130,7 @@ export default function BookingDetailTimeAndDuration({
           })
         ) : (
           <p className="col-span-full text-sm text-gray-400">
-            {t.common["not selected"] ?? "No slots available for this date"}
+            {t.common["not selected"] ?? t.common["No slots available for this date"]}
           </p>
         )}
       </div>
@@ -163,7 +164,7 @@ export default function BookingDetailTimeAndDuration({
           <div className="flex-1 text-center">
             <span className="text-3xl font-black">{duration}</span>
             <span className="ml-2 text-sm font-semibold text-gray-500">
-              {duration === 1 ? "Hour" : "Hours"}
+              {duration === 1 ? t.common.hour : t.common.hours}
             </span>
           </div>
 

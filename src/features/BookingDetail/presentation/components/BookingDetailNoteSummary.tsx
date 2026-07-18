@@ -70,9 +70,9 @@ const isApplied =
     <>
       {/* Special Requirements / Notes */}
       <div className="mt-6">
-        <label className="mb-2 block text-sm font-bold text-gray-900">
+        <Label className="mb-2 block text-sm font-bold text-gray-900">
           {t.bookingdetailpage.specialRequirement}
-        </label>
+        </Label>
 
         <Textarea
           value={notes}
@@ -89,6 +89,7 @@ const isApplied =
       {/* Coupon Code Section */}
       <div className="mt-4">
         {!showCouponInput ? (
+          <div className="text-end justify-end">
           <Button
             type="button"
             onClick={() => setShowCouponInput(true)}
@@ -96,6 +97,7 @@ const isApplied =
           >
             {isApplied ? t.common.couponApplied : t.common.applyCouponCode}
           </Button>
+          </div>
         ) : (
           <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
             <div className="mb-2 flex items-center justify-between">
@@ -154,7 +156,7 @@ const isApplied =
         {/* Display Discount line if coupon is applied */}
         {couponPricing && couponPricing.discountAmount > 0 && (
           <div className="mb-2.5 flex items-baseline justify-between gap-2 text-sm text-emerald-600">
-            <span>Discount Applied</span>
+            <span>{t.bookingdetailpage.discountApplied}</span>
             <span className="whitespace-nowrap font-semibold">
               - SAR {couponPricing.discountAmount.toFixed(2)}
             </span>
