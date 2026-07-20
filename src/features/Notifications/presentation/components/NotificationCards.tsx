@@ -227,7 +227,7 @@ await markAllAsRead();
   toggleSelectAll={toggleSelectAll}
   selected={selected}
   selectAll={selectAll}
-  total={unreadNotifications.length}
+  total={unreadCount}
   markAllAsRead={handleMarkAllAsRead}
   markSelectedAsRead={markSelectedAsRead}
 />
