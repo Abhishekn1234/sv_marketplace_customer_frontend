@@ -4,13 +4,18 @@ export interface Category {
   _id: string;
   name: string;
   slug: string;
-  vatRate?: number; 
+
+  description?: string;
+
+  vatRate?: number;
+
   iconUrl?: string;
   iconPublicId?: string;
+
   services: Service[];
-  description?: string;
+
+  rating?: number;
+
   createdAt?: string;
   updatedAt?: string;
-  rating?:number;
-
 }

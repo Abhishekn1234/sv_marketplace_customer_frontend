@@ -5,14 +5,18 @@ export function useCategoryCardMetrics(category: Category) {
   return useMemo(() => {
     const services = category.services ?? [];
 
+    // Average rating
+    const totalRating = services.reduce(
+      (sum, service) => sum + (service.avgRating || 0),
+      0
+    );
+
     const averageRating =
       services.length > 0
-        ? (
-            services.reduce((sum, service) => sum + (service.avgRating ?? 0), 0) /
-            services.length
-          ).toFixed(1)
-        : "0";
+        ? Number((totalRating / services.length).toFixed(1))
+        : 0;
 
+    // Average price
     let totalPrice = 0;
     let priceCount = 0;
 
@@ -21,10 +25,10 @@ export function useCategoryCardMetrics(category: Category) {
 
       if (pricing?.HOURLY?.ratePerHour) {
         totalPrice += pricing.HOURLY.ratePerHour;
-        priceCount += 1;
+        priceCount++;
       } else if (pricing?.PER_DAY?.ratePerDay) {
         totalPrice += pricing.PER_DAY.ratePerDay;
-        priceCount += 1;
+        priceCount++;
       }
     });
 

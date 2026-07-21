@@ -6,31 +6,37 @@ export interface Service {
   name: string;
   slug: string;
 
-  // ❌ remove string | union
-  // category: string | ServiceCategoryObject;
+  category: ServiceCategoryObject;
+  categories?: ServiceCategoryObject;
 
- category: ServiceCategoryObject ;  // ✅ always object now
- categories?:ServiceCategoryObject;
   vatRate?: number;
   description: string;
   currency: string;
+
   pricingTiers: PricingTier[];
 
   isActive: boolean;
+
   avgRating: number;
   totalRatings: number;
+  rating?: number;
 
-  createdAt: string;
-  updatedAt: string;
+  price?: number;
+  isFavorited?: boolean;
 
   iconUrl?: string;
   iconPublicId?: string;
   thumbnailUrl?: string;
   thumbnailPublicId?: string;
 
-  rating?: string;
-  price?: number;
-  isFavorited?:boolean;
-}
+  createdAt: string;
+  updatedAt: string;
 
+  // Optional fields commonly returned by APIs
+  serviceCode?: string;
+  displayName?: string;
+  commissionValue?: number;
+  commissionType?: string;
+  basePrice?: number;
+}
 
