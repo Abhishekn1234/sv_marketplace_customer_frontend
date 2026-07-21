@@ -359,6 +359,7 @@
    "workers":"Workers",
   "service": "Service",
   "tier": "Tier",
+  "seconds":"Seconds",
   "timeAndDate": "Time & Date",
   "location": "Location",
   "duration": "Duration",

@@ -21,25 +21,42 @@ export function formatDuration(
     booking?.estimatedValues?.workDays;
 
   if (pricingMode === "HOURLY") {
-    if (hours == null) return t?.confirmationpage?.bookingSummary?.na ?? "-";
+  if (hours == null) return t?.confirmationpage?.bookingSummary?.na ?? "-";
 
-    if (hours < 1) {
-      const mins = Math.round(hours * 60);
-      return t
-        ? `${mins} ${t.confirmationpage.bookingSummary.minutes}`
-        : `${mins} min`;
-    }
+  const totalSeconds = Math.round(hours * 3600);
 
-    if (hours === 1) {
-      return t
-        ? `1 ${t.confirmationpage.bookingSummary.hour}`
-        : "1 hr";
-    }
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
 
-    return t
-      ? `${hours} ${t.confirmationpage.bookingSummary.hours}`
-      : `${hours} hrs`;
+  const parts: string[] = [];
+
+  if (hrs > 0) {
+    parts.push(
+      t
+        ? `${hrs} ${hrs === 1 ? t.confirmationpage.bookingSummary.hour : t.confirmationpage.bookingSummary.hours}`
+        : `${hrs} ${hrs === 1 ? "hr" : "hrs"}`
+    );
   }
+
+  if (mins > 0) {
+    parts.push(
+      t
+        ? `${mins} ${mins === 1 ? t.confirmationpage.bookingSummary.minute : t.confirmationpage.bookingSummary.minutes}`
+        : `${mins} min`
+    );
+  }
+
+  if (secs > 0 || parts.length === 0) {
+    parts.push(
+      t
+        ? `${secs} ${secs === 1 ? t.confirmationpage.bookingSummary.second : t.confirmationpage.bookingSummary.seconds}`
+        : `${secs} sec`
+    );
+  }
+
+  return parts.join(" ");
+}
 
   if (pricingMode === "PER_DAY") {
     if (days == null) return t?.confirmationpage?.bookingSummary?.na ?? "-";

@@ -31,6 +31,7 @@ import { handleApiError } from "@/components/common/ApiError";
 import type { LocalBooking } from "../../domain/entities/localbooking";
 import { buildJobTrackingSteps } from "../utils/buildJobTrackingSteps";
 import { resolveTimelineStatus } from "../utils/resolveTimelineStatus";
+import { formatText } from "@/components/utils/formattext";
 
 
 
@@ -296,7 +297,7 @@ export default function JobTrackingTimeline({
     <CommonCard className="p-7">
     <JobTrackingHeaders
         title={t.jobtrackingpage.sections.serviceProgress}
-        status={displayStatus}
+        status={formatText(displayStatus)}
     />
 
       <div className="relative pl-10" ref={timelineRef}>
