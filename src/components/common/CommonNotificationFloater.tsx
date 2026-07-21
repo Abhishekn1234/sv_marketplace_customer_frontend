@@ -15,16 +15,25 @@ import CommonSpinner from "./CommonLoadingSpinner";
 
 type Props = {
   direction?: "up" | "down";
+  // Optional controlled state — if not passed, component manages its own state internally
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function CommonNotificationFloater({
   direction = "down",
+  open: controlledOpen,
+  setOpen: controlledSetOpen,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Use controlled state if provided, otherwise fall back to internal state
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = controlledSetOpen ?? setInternalOpen;
 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
- const bellRef = useRef<HTMLDivElement>(null);
+  const bellRef = useRef<HTMLDivElement>(null);
 
   const { t, isRTLOrder: isRTL } = useLanguage();
 
@@ -36,7 +45,6 @@ export default function CommonNotificationFloater({
     });
 
   useEffect(() => {
-
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
@@ -65,66 +73,61 @@ export default function CommonNotificationFloater({
     } catch {
       setOpen(false);
     }
-
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
 
+      // Ignore clicks on the bell itself — its own onClick handles toggling
+      if (bellRef.current?.contains(target)) return;
 
-useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+        setOpen(false);
+      }
+    };
 
-    // Ignore clicks on the bell itself — its own onClick handles toggling
-    if (bellRef.current?.contains(target)) return;
-
-    if (dropdownRef.current && !dropdownRef.current.contains(target)) {
-      setOpen(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-   }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setOpen]);
 
   return (
     <div className="relative" ref={dropdownRef}>
       <div ref={bellRef}>
-      <Button
-       
-        onClick={() => setOpen((prev) => !prev)}
-        variant="ghost"
-        size="lg"
-        className={clsx(
-          "relative flex items-center justify-center text-black",
-          direction === "down" && "hidden sm:flex"
-        )}
-      >
-        <BellIcon className={clsx(iconBase)} />
+        <Button
+          onClick={() => setOpen((prev) => !prev)}
+          variant="ghost"
+          size="lg"
+          className={clsx(
+            "relative flex items-center justify-center text-black",
+            direction === "down" && "hidden sm:flex"
+          )}
+        >
+          <BellIcon className={clsx(iconBase)} />
 
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
-            {unreadCount}
-          </span>
-        )}
-      </Button>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 text-[10px] text-black rounded-full flex items-center justify-center border-2 border-white bg-blue-300">
+              {unreadCount}
+            </span>
+          )}
+        </Button>
       </div>
 
       {/* Dropdown */}
       {open && (
-              <div
-        className={clsx(
-          "absolute z-50 bg-white rounded-2xl shadow-xl border",
-          "w-[calc(100vw-2rem)] max-w-80",
+        <div
+          className={clsx(
+            "absolute z-50 bg-white rounded-2xl shadow-xl border",
+            "w-[calc(100vw-2rem)] max-w-80",
 
-          direction === "up" ? "bottom-full mb-3" : "top-full mt-3",
+            direction === "up" ? "bottom-full mb-3" : "top-full mt-3",
 
-          "left-1/2 -translate-x-1/2",
+            "left-1/2 -translate-x-1/2",
 
-          isRTL
-
-            ? "sm:left-0 sm:right-auto sm:translate-x-0"
-            : "sm:right-0 sm:left-auto sm:translate-x-0"
-        )}
+            isRTL
+              ? "sm:left-0 sm:right-auto sm:translate-x-0"
+              : "sm:right-0 sm:left-auto sm:translate-x-0"
+          )}
         >
           {/* Header */}
           <div className="px-4 py-3 border-b flex justify-between">
@@ -199,7 +202,5 @@ useEffect(() => {
         </div>
       )}
     </div>
-
   );
 }
-

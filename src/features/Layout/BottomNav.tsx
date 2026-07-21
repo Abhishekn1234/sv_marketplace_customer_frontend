@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 
@@ -18,14 +18,16 @@ import {
 } from "@/components/icons";
 
 import { iconBase } from "@/components/common/iconbase";
-// import Button from "@/components/input/Button";
 import { useLanguage } from "../context/LanguageContext";
 
 const BottomNav: React.FC = () => {
   const { user, accessToken } = useAuthStore();
   const navigate = useNavigate();
- const{t}=useLanguage();
+  const { t } = useLanguage();
   const userPhoto = user?.profilePictureUrl;
+
+  // Lifted state so we can suppress the tooltip while the dropdown is open
+  const [notifOpen, setNotifOpen] = useState(false);
 
   return (
     <nav
@@ -55,33 +57,41 @@ const BottomNav: React.FC = () => {
 
       {accessToken ? (
         <>
-          {/* Notifications */}
-          <NavItem ariaLabel="Notifications" tooltip={t.notificationpage.title}>
-            <CommonNotificationFloater direction="up" />
+          {/* Notifications — tooltip suppressed while dropdown is open */}
+          <NavItem
+            ariaLabel="Notifications"
+            tooltip={notifOpen ? undefined : t.notificationpage.title}
+          >
+            <CommonNotificationFloater
+              direction="up"
+              open={notifOpen}
+              setOpen={setNotifOpen}
+            />
           </NavItem>
 
           {/* Bookings */}
           <NavItem ariaLabel="Bookings" tooltip={t.navbar.Bookings} onClick={() => navigate("/bookings")}>
             <BookingIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
           </NavItem>
-          <NavItem ariaLabel="Favorites" tooltip={t.navbar.Favorites} onClick={()=>navigate("/favorites")}>
-           <BookmarkFavoriteIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
+
+          <NavItem ariaLabel="Favorites" tooltip={t.navbar.Favorites} onClick={() => navigate("/favorites")}>
+            <BookmarkFavoriteIcon className={clsx(iconBase, "text-gray-400 group-hover:text-gray-600")} />
           </NavItem>
 
           {/* Profile */}
-                <NavItem ariaLabel="Profile" tooltip={t.profilepage.myProfile} onClick={() => navigate("/profile")}>
-          {userPhoto ? (
-            <div className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
-              <Image
-                src={userPhoto}
-                alt="Profile"
-                className="w-full h-full rounded-full object-cover block"
-              />
-            </div>
-          ) : (
-            <UserIcon className={clsx(iconBase, "text-gray-500")} />
-          )}
-        </NavItem>
+          <NavItem ariaLabel="Profile" tooltip={t.profilepage.myProfile} onClick={() => navigate("/profile")}>
+            {userPhoto ? (
+              <div className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
+                <Image
+                  src={userPhoto}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover block"
+                />
+              </div>
+            ) : (
+              <UserIcon className={clsx(iconBase, "text-gray-500")} />
+            )}
+          </NavItem>
         </>
       ) : (
         <>
@@ -118,16 +128,16 @@ const NavItem: React.FC<NavItemProps> = ({
   const baseClass =
     "w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:scale-105 transition";
 
- const content = (
-  <div
-    role="button"
-    aria-label={ariaLabel}
-    onClick={onClick}
-    className={baseClass}
-  >
-    {children}
-  </div>
-);
+  const content = (
+    <div
+      role="button"
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className={baseClass}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <div className="flex items-center justify-center">
