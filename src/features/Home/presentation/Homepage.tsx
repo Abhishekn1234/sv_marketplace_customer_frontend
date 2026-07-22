@@ -24,7 +24,9 @@ export default function WebsiteHome() {
     handleCategoryChange,
     handleSearchResults,
   } = useServiceCategoryFilter(apiResponse);
-
+// console.log("Active:", activeCategory);
+// console.log("Filtered:", filteredServices);
+// console.log("API:", apiResponse);
   if (isLoading) {
     return (
       <div>
