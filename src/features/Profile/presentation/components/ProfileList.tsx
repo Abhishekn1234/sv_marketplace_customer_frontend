@@ -13,6 +13,7 @@ import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 
 import CommonCard from '@/components/common/CommonCards';
 import { PencilIcon, StarIcon } from '@/components/icons';
+import { useReviews } from '@/features/Reviews/presentation/hooks/useReviews';
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
@@ -20,7 +21,7 @@ export default function ProfileList() {
   const { setUser, user } = useAuthStore();
   const { data: bookings } = useBookingHistory();
   const { t } = useLanguage();
-
+  const {total}=useReviews();
   const bookingcount =
     bookings?.pages?.reduce(
       (sum, page) => sum + (page.pagination?.totalItems || 0),
@@ -131,7 +132,7 @@ export default function ProfileList() {
 
             <div className="text-center">
               <span className="block text-2xl font-bold text-blue-600">
-                12
+                {total}
               </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">
                 {t.profilepage.reviews}

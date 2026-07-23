@@ -37,9 +37,12 @@ export default function CommonTable<T>({
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-  const{t}=useLanguage();
+  const{t,isRTLOrder}=useLanguage();
   return (
-  <div className="w-full">
+ <div
+  dir={isRTLOrder ? "rtl" : "ltr"}
+  className="w-full"
+>
     {/* Table */}
     <div
       className="

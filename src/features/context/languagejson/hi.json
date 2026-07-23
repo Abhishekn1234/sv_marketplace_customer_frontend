@@ -995,7 +995,33 @@
     "title": "कस्टम अनुरोध",
     "description": "कुछ और चाहिए? हमें बताएं और हम आपके लिए सही विशेषज्ञ ढूंढेंगे।",
     "button": "कोट प्राप्त करें"
-  }
+  },
+  "reviewpage": {
+  "title": "समीक्षाएं",
+  "reviewCount_one": "{{count}} समीक्षा",
+  "reviewCount_other": "{{count}} समीक्षाएं",
+  "searchPlaceholder": "समीक्षाएं खोजें...",
+  "sort": {
+    "newest": "सबसे नई पहले",
+    "oldest": "सबसे पुरानी पहले",
+    "highestRated": "सर्वाधिक रेटेड",
+    "lowestRated": "न्यूनतम रेटेड"
+  },
+  "table": {
+    "service": "सेवा",
+    "workers": "कर्मचारी",
+    "serviceRating": "सेवा रेटिंग",
+    "workerRating": "कर्मचारी रेटिंग",
+    "feedback": "प्रतिक्रिया",
+    "date": "तारीख"
+  },
+  "unassigned": "अनियुक्त",
+  "noFeedback": "—",
+  "errorTitle": "समीक्षाएं लोड नहीं हो सकीं",
+  "errorSubtitle": "कृपया थोड़ी देर बाद पुनः प्रयास करें।",
+  "emptyTitle": "कोई समीक्षा नहीं मिली",
+  "emptySubtitle": "अपनी खोज या फ़िल्टर समायोजित करने का प्रयास करें।"
+}
 
 
 

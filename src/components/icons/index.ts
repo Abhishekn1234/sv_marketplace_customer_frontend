@@ -12,6 +12,7 @@ import { TickIcon } from "./TickIcon";
 import { SecurityIcon } from "./SecurityIcon";
 import { LanguageIcon } from "./LanguageIcon";
 import { HeartIcon } from "./HeartIcon";
+import ReviewIcon from "./ReviewIcon";
 import { BadgeCheckFilledIcon } from "./BadgeCheckFilled";
 import { GlobeIcon } from "./GlobeIcon";
 import { CheckSquare } from "./CheckSquare";
@@ -111,6 +112,7 @@ export {
   CancelIcon,
   ChatIcon,
   PauseCircleIcon,
+  ReviewIcon,
   BookmarkFavoriteIcon,
   FavoriteFilledIcon,
   BadgeCheckFilledIcon,

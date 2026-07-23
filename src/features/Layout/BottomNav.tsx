@@ -15,6 +15,7 @@ import {
   LoginIcon,
   UserIcon,
   BookmarkFavoriteIcon,
+ ReviewIcon
 } from "@/components/icons";
 
 import { iconBase } from "@/components/common/iconbase";
@@ -67,6 +68,9 @@ const BottomNav: React.FC = () => {
               open={notifOpen}
               setOpen={setNotifOpen}
             />
+          </NavItem>
+          <NavItem ariaLabel="Reviews" tooltip={t.reviewpage.title} onClick={() => navigate("/reviews")}>
+         <ReviewIcon className="h-6 w-6 text-gray-400" />
           </NavItem>
 
           {/* Bookings */}

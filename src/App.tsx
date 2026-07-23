@@ -53,6 +53,7 @@ import PaymentStripeCallbackPage from "./features/Payment/presentation/component
 import PaymentStripeCallbackFailurePage from "./features/Payment/presentation/components/PaymentStripeCallbackFailurePage";
 import PreventBackNavigation from "./PreventNavgiation";
 import FavoritesPage from "./features/Favorites/presentation/FavoritesPage";
+import ReviewsPage from "./features/Reviews/presentation/ReviewsPage";
 
 function App() {
   const { accessToken, isLoggedIn } = useAuthStore();
@@ -167,7 +168,7 @@ function App() {
   <Route element={<ProtectedRoute />}>
     <Route path="/notifications" element={<NotificationsPage />} />
     <Route path="/profile" element={<Profile />} />
-
+    <Route path="/reviews" element={<ReviewsPage/>}/>
     <Route path="/payment" element={<PaymentPage />} />
 
     <Route path="/disputes" element={<ListDisputes />} />

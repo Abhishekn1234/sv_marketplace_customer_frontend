@@ -997,6 +997,32 @@
     "title": "طلب مخصص",
     "description": "هل تحتاج إلى شيء آخر؟ أخبرنا بما تحتاجه وسنجد لك الخبير المناسب.",
     "button": "احصل على عرض سعر"
-  }
+  },
+  "reviewpage": {
+  "title": "التقييمات",
+  "reviewCount_one": "{{count}} تقييم",
+  "reviewCount_other": "{{count}} تقييمات",
+  "searchPlaceholder": "ابحث في التقييمات...",
+  "sort": {
+    "newest": "الأحدث أولاً",
+    "oldest": "الأقدم أولاً",
+    "highestRated": "الأعلى تقييمًا",
+    "lowestRated": "الأقل تقييمًا"
+  },
+  "table": {
+    "service": "الخدمة",
+    "workers": "العامل (العمال)",
+    "serviceRating": "تقييم الخدمة",
+    "workerRating": "تقييم العامل",
+    "feedback": "الملاحظات",
+    "date": "التاريخ"
+  },
+  "unassigned": "غير معيّن",
+  "noFeedback": "—",
+  "errorTitle": "تعذّر تحميل التقييمات",
+  "errorSubtitle": "يرجى المحاولة مرة أخرى بعد قليل.",
+  "emptyTitle": "لا توجد تقييمات",
+  "emptySubtitle": "حاول تعديل البحث أو الفلاتر."
+}
 
 }

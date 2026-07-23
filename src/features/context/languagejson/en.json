@@ -999,6 +999,32 @@
     "title": "Custom Request",
     "description": "Need something else? Tell us what you need and we'll find the right expert for you.",
     "button": "Get a Quote"
-  }
+  },
+  "reviewpage": {
+  "title": "Reviews",
+  "reviewCount_one": "{{count}} review",
+  "reviewCount_other": "{{count}} reviews",
+  "searchPlaceholder": "Search reviews...",
+  "sort": {
+    "newest": "Newest first",
+    "oldest": "Oldest first",
+    "highestRated": "Highest rated",
+    "lowestRated": "Lowest rated"
+  },
+  "table": {
+    "service": "Service",
+    "workers": "Worker(s)",
+    "serviceRating": "Service rating",
+    "workerRating": "Worker rating",
+    "feedback": "Feedback",
+    "date": "Date"
+  },
+  "unassigned": "Unassigned",
+  "noFeedback": "—",
+  "errorTitle": "Couldn't load reviews",
+  "errorSubtitle": "Please try again in a moment.",
+  "emptyTitle": "No reviews found",
+  "emptySubtitle": "Try adjusting your search or filters."
+}
 
 }
