@@ -6,14 +6,17 @@ export function generateTimeSlots(
   step = 30
 ) {
   const slots: string[] = [];
+  const now = new Date();
 
   for (let hour = startHour; hour <= endHour; hour++) {
     for (let min = 0; min < 60; min += step) {
-      const date = new Date();
-      date.setHours(hour);
-      date.setMinutes(min);
+      const slot = new Date();
+      slot.setHours(hour, min, 0, 0);
 
-      slots.push(formatAMPMTime(date));
+      
+      if (slot <= now) continue;
+
+      slots.push(formatAMPMTime(slot));
     }
   }
 
