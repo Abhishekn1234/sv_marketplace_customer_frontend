@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/input/Button";
 import CommonProgress from "@/components/common/CommonProgress";
 import { useLanguage } from "@/features/context/LanguageContext";
-
+import { useMediaQuery } from "react-responsive";
 interface ActiveServiceActionsProps {
   bookingId: string;
   showTracking: boolean;
@@ -22,7 +22,7 @@ export default function ActiveServiceActions({
 }: ActiveServiceActionsProps) {
   const navigate = useNavigate();
   const { t } = useLanguage();
-
+const isMobile = useMediaQuery({ maxWidth: 767 });
   const primaryButtonClass =
     "w-full sm:flex-1 h-11 sm:h-12 rounded-xl bg-blue-600 text-white hover:text-white";
 
@@ -32,7 +32,7 @@ export default function ActiveServiceActions({
   if (showTracking) {
     return (
       <>
-        {isStarted && (
+       {isStarted && !isMobile && (
           <CommonProgress
             value={progress}
             showValue={false}
