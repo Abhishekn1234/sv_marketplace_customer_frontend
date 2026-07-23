@@ -89,6 +89,7 @@ export default function JobCompletedSummary({
       {
         label: t.jobcompletedpage.duration,
         value: duration,
+        isLTR:true
       },
     ];
 
@@ -140,7 +141,7 @@ export default function JobCompletedSummary({
                   : undefined
               }
               className={`font-semibold break-words ${
-                item.isLTR && isRTLOrder ? "text-right" : ""
+                item.isLTR && isRTLOrder ? "" : ""
               }`}
             >
               {item.value}
