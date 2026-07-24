@@ -131,12 +131,12 @@ export default function JobTrackingTimeline({
   const steps = useMemo(() => {
     if (!safeBooking) return [];
 
-  return buildJobTrackingSteps({
-    localBooking: safeBooking,
-    activityMap,
-    t
-  });
-  }, [safeBooking, activityMap]);
+    return buildJobTrackingSteps({
+      localBooking: safeBooking,
+      activityMap,
+      t
+    });
+  }, [safeBooking, activityMap, t]);
 
 
   // -----------------------------
