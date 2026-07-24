@@ -32,12 +32,20 @@ export default function BookingDetailTimeAndDuration({
 
   const [page, setPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+   const [now, setNow] = useState(Date.now());
 
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setNow(Date.now());
+        }, 60 * 1000);
+
+        return () => clearInterval(interval);
+      }, []);
 
   const availableSlots = useMemo(
-    () => getAvailableTimeSlots(timeSlots, selectedDate),
-    [selectedDate]
-  );
+  () => getAvailableTimeSlots(timeSlots, selectedDate),
+  [selectedDate, now]
+   );
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);

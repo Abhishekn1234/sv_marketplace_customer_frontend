@@ -116,6 +116,11 @@ const [couponPricing, setCouponPricing] = useState<{
     () => (basePrice * vatPercent) / 100,
     [basePrice, vatPercent]
   );
+  const handleCancelCoupon = () => {
+  setCouponCode("");
+  setAppliedCouponCode("");
+  setCouponPricing(null);
+};
 
   const totalCostToSend = useMemo(
     () => basePrice + vatRate,
@@ -256,6 +261,7 @@ const decreaseDuration = () => {
       onApplyCoupon={handleApplyCoupon}
       couponLoading={validateCoupon.isPending}
       couponPricing={couponPricing}
+       onCancelCoupon={handleCancelCoupon}
     />
     </CommonCard>
   );

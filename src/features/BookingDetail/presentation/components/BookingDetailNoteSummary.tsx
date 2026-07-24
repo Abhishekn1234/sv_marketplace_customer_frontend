@@ -14,7 +14,7 @@ interface BookingNotesAndSummaryProps {
   basePrice: number;
   vatRate: number;
   totalCostToSend: number;
-
+ onCancelCoupon: () => void;
   loading: boolean;
   onConfirmBooking: () => void;
   showLoginModal: boolean;
@@ -42,7 +42,7 @@ export default function BookingDetailNotesAndSummary({
   loading,
   onConfirmBooking,
   showLoginModal,
-
+ onCancelCoupon,
   couponCode,
   onCouponCodeChange,
   onApplyCoupon,
@@ -62,9 +62,9 @@ const isApplied =
     appliedCouponCode.trim().toLowerCase();
 
   const handleCancelCoupon = () => {
-    onCouponCodeChange("");
-    setShowCouponInput(false);
-  };
+  onCancelCoupon();
+  setShowCouponInput(false);
+};
 
   return (
     <>
