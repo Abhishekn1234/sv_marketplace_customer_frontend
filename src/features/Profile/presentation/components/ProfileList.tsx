@@ -14,6 +14,7 @@ import CommonSpinner from '@/components/common/CommonLoadingSpinner';
 import CommonCard from '@/components/common/CommonCards';
 import { PencilIcon, StarIcon } from '@/components/icons';
 import { useReviews } from '@/features/Reviews/presentation/hooks/useReviews';
+import { useInfiniteFavoriteServices } from '@/features/Favorites/presentation/hooks/useInfiniteFavoriteServices';
 
 export default function ProfileList() {
   const { data: profile, isLoading, isError } = useProfile();
@@ -22,6 +23,9 @@ export default function ProfileList() {
   const { data: bookings } = useBookingHistory();
   const { t } = useLanguage();
   const {total}=useReviews();
+  const {data:favoriteServices}=useInfiniteFavoriteServices();
+  const totalFavorites =
+  favoriteServices?.pages?.[0]?.pagination?.totalItems ?? 0;
   const bookingcount =
     bookings?.pages?.reduce(
       (sum, page) => sum + (page.pagination?.totalItems || 0),
@@ -141,7 +145,7 @@ export default function ProfileList() {
 
             <div className="text-center">
               <span className="block text-2xl font-bold text-blue-600">
-                3
+                {totalFavorites}
               </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">
                 {t.profilepage.favorites}

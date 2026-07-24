@@ -5,7 +5,7 @@ import {
 import { FavoriteServiceRepoImpl } from "../../data/repositories/FavoriteRepoImpl";
 import { GetFavoriteServicesUseCase } from "../../domain/usecase/GetFavoriteServicesUseCase";
 
-export function useInfiniteFavoriteServices(search: string) {
+export function useInfiniteFavoriteServices(search?: string) {
   return useInfiniteQuery({
     queryKey: ["favorite-services", search],
     initialPageParam: 1,

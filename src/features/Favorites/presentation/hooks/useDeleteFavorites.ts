@@ -1,4 +1,8 @@
-import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { FavoriteServiceRepoImpl } from "../../data/repositories/FavoriteRepoImpl";
@@ -13,14 +17,40 @@ export function useRemoveFavoriteService() {
   return useMutation({
     mutationFn: (serviceId: string) => usecase.execute(serviceId),
 
-    onSuccess: (_, serviceId) => {
-      // Update favorite status cache
-      queryClient.setQueryData(
-        ["favorite-status", serviceId],
-        false
-      );
+    onMutate: async (serviceId) => {
+      await queryClient.cancelQueries({ queryKey: ["service-categories"] });
+      await queryClient.cancelQueries({ queryKey: ["services"] });
+      await queryClient.cancelQueries({ queryKey: ["favorite-services"] });
 
-      // Remove the service from all favorite-services queries
+      const previousCategories = queryClient.getQueryData(["service-categories"]);
+      const previousServices = queryClient.getQueryData(["services"]);
+      const previousFavorites = queryClient.getQueriesData({
+        queryKey: ["favorite-services"],
+      });
+
+      queryClient.setQueryData(["service-categories"], (old: any) => {
+        if (!old) return old;
+
+        return old.map((category: any) => ({
+          ...category,
+          services: category.services.map((service: any) =>
+            service._id === serviceId
+              ? { ...service, isFavorited: false }
+              : service
+          ),
+        }));
+      });
+
+      queryClient.setQueryData(["services"], (old: any) => {
+        if (!old) return old;
+
+        return old.map((service: any) =>
+          service._id === serviceId
+            ? { ...service, isFavorited: false }
+            : service
+        );
+      });
+
       queryClient.setQueriesData(
         { queryKey: ["favorite-services"] },
         (oldData: InfiniteData<any> | undefined) => {
@@ -38,14 +68,43 @@ export function useRemoveFavoriteService() {
         }
       );
 
+      return {
+        previousCategories,
+        previousServices,
+        previousFavorites,
+      };
+    },
+
+    onSuccess: () => {
       toast.success("Removed from favorites");
     },
 
-    onError: (error: any) => {
+    onError: (error: any, _, context) => {
+      if (context?.previousCategories) {
+        queryClient.setQueryData(
+          ["service-categories"],
+          context.previousCategories
+        );
+      }
+
+      if (context?.previousServices) {
+        queryClient.setQueryData(["services"], context.previousServices);
+      }
+
+      if (context?.previousFavorites) {
+        context.previousFavorites.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+
       toast.error(
-        error?.response?.data?.message ??
+        error?.response?.data?.message ||
           "Failed to remove favorite"
       );
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorite-services"] });
     },
   });
 }
