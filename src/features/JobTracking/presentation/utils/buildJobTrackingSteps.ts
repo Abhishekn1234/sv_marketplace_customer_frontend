@@ -1,17 +1,20 @@
 import type { Activity } from "../../domain/entities/jobtimelineactivities";
 import type { LocalBooking } from "../../domain/entities/localbooking";
+import { getStepConfig } from "./stepconfig";
 
-import { STEP_CONFIG } from "../utils/stepconfig";
+
 import { getStepTime } from "./timemapping";
 
 interface Params {
   localBooking: LocalBooking;
   activityMap: Record<string, Activity>;
+  t:any;
 }
 
 export function buildJobTrackingSteps({
   localBooking,
   activityMap,
+  t
 }: Params) {
   if (!localBooking) return [];
 
@@ -22,7 +25,7 @@ export function buildJobTrackingSteps({
     "CUSTOMER_CANCELLED",
     "EXPIRED",
   ];
-
+ const STEP_CONFIG = getStepConfig(t);
   const filteredSteps = STEP_CONFIG.filter(
     (step) => !TERMINAL_STATUSES.includes(step.key)
   );

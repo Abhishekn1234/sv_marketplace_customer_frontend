@@ -406,7 +406,22 @@
 "jobtrackingpage": {
   "title": "जॉब ट्रैकिंग",
   "subtitle": "अपनी सेवा अनुरोध को वास्तविक समय में ट्रैक करें",
-
+"steps":{
+   "bookingConfirmed": "बुकिंग की पुष्टि हुई",
+    "professionalAssigned": "पेशेवर नियुक्त किया गया",
+    "workStarted": "काम शुरू हुआ",
+    "workeraccepted":"वर्कर ने स्वीकार किया",
+    "inProgress": "कार्य प्रगति पर है",
+    "completedByWorker": "कर्मी द्वारा कार्य पूरा किया गया",
+    "waitingCompletionOtp": "पूर्णता OTP की प्रतीक्षा",
+    "invoiceGenerated": "चालान तैयार किया गया",
+    "paymentPending": "भुगतान लंबित",
+    "paymentDone": "भुगतान पूरा हुआ",
+    "completed": "पूर्ण",
+    "cancelledByProfessional": "पेशेवर द्वारा रद्द",
+    "cancelledByYou": "आपके द्वारा रद्द",
+    "expired": "समाप्त"
+},
 "cancelBooking": {
   "title": "बुकिंग रद्द करें",
   "subtitle": "क्या आप वाकई अपनी बुकिंग रद्द करना चाहते हैं?",

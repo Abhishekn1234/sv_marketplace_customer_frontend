@@ -134,6 +134,7 @@ export default function JobTrackingTimeline({
   return buildJobTrackingSteps({
     localBooking: safeBooking,
     activityMap,
+    t
   });
   }, [safeBooking, activityMap]);
 

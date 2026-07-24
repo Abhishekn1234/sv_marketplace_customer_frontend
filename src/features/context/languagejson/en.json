@@ -377,7 +377,22 @@
 "jobtrackingpage": {
   "title": "Job Tracking",
   "subtitle": "Track your service request in real-time",
-
+  "steps":{
+    "bookingConfirmed": "Booking Confirmed",
+    "professionalAssigned": "Professional Assigned",
+    "workStarted": "Work Started",
+    "inProgress": "In Progress",
+    "workeraccepted":"Worker Accepted",
+    "completedByWorker": "Completed by Worker",
+    "waitingCompletionOtp": "Waiting Completion OTP",
+    "invoiceGenerated": "Invoice Generated",
+    "paymentPending": "Payment Pending",
+    "paymentDone": "Payment Done",
+    "completed": "Completed",
+    "cancelledByProfessional": "Cancelled by Professional",
+    "cancelledByYou": "Cancelled by You",
+    "expired": "Expired"
+  },
   "sections": {
     "serviceProgress": "Service Progress",
     "needHelp": "Need Help?",

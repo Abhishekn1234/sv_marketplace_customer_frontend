@@ -407,6 +407,22 @@
 "jobtrackingpage": {
   "title": "تتبع العمل",
   "subtitle": "تتبع طلب خدمتك في الوقت الفعلي",
+  "steps":{ 
+    "bookingConfirmed": "تم تأكيد الحجز",
+    "professionalAssigned": "تم تعيين مقدم الخدمة",
+    "workStarted": "بدأ العمل",
+    "workeraccepted":"تم قبول العامل",
+    "inProgress": "العمل قيد التنفيذ",
+    "completedByWorker": "اكتمل بواسطة العامل",
+    "waitingCompletionOtp": "بانتظار رمز إتمام العمل",
+    "invoiceGenerated": "تم إنشاء الفاتورة",
+    "paymentPending": "الدفع قيد الانتظار",
+    "paymentDone": "تم الدفع",
+    "completed": "مكتمل",
+    "cancelledByProfessional": "تم الإلغاء بواسطة مقدم الخدمة",
+    "cancelledByYou": "تم الإلغاء بواسطتك",
+    "expired": "منتهي"
+  },
    "buttons": {
       "startWorkOtp": "رمز بدء العمل",
       "completeWorkOtp": "رمز إكمال العمل",
