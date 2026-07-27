@@ -38,11 +38,12 @@ export const useBookings = () => {
   const navigate = useNavigate();
 
   // ================= FETCH BOOKINGS =================
-  const {
-    data = [],
-    isLoading,
-    isError,
-  } = useQuery<Booking[]>({
+const {
+  data = [],
+  isLoading,
+  isError,
+  refetch,
+} = useQuery<Booking[]>({
     queryKey: bookingKeys.all,
     queryFn: async (): Promise<Booking[]> => {
       const res = await getBookings.execute();
@@ -63,8 +64,12 @@ export const useBookings = () => {
         : [];
     },
 
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+   staleTime: 1000 * 60 * 5,
+gcTime: 1000 * 60 * 10,
+
+refetchOnWindowFocus: true,
+refetchOnReconnect: true,
+refetchOnMount: "always",
   });
 
   // ================= SOCKET =================
@@ -107,7 +112,34 @@ export const useBookings = () => {
       socket.off("bookingUpdated", handler);
     };
   }, [queryClient]);
+useEffect(() => {
+  const handleResume = () => {
+    const socket = getSocket();
 
+    if (socket && !socket.connected) {
+      socket.connect();
+    }
+
+    refetch();
+  };
+
+  const handleVisibility = () => {
+    if (document.visibilityState === "visible") {
+      handleResume();
+    }
+  };
+
+  window.addEventListener("focus", handleResume);
+  document.addEventListener("visibilitychange", handleVisibility);
+
+  return () => {
+    window.removeEventListener("focus", handleResume);
+    document.removeEventListener(
+      "visibilitychange",
+      handleVisibility
+    );
+  };
+}, [refetch]);
   // ================= CREATE BOOKING =================
   const create = useMutation({
     mutationFn: (payload: BookingPayload) =>
@@ -211,6 +243,7 @@ export const useBookings = () => {
     bookings: data,
     loading: isLoading,
     error: isError,
+      refetch,
     createBooking: create,
     cancelBooking: cancel,
   };

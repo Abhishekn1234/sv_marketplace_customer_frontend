@@ -1,23 +1,27 @@
 import { useEffect } from "react";
-import { getSocket } from "@/features/core/Websocket/socket";
 import { useQueryClient } from "@tanstack/react-query";
+import { getSocket } from "@/features/core/Websocket/socket";
 import { BookingEvents } from "@/components/common/BookingEvents";
 import { resolveTimelineStatus } from "./resolveTimelineStatus";
-
 
 interface Props {
   bookingId: string;
   setLocalBooking: (booking: any) => void;
   navigate: (path: string, options?: any) => void;
+  refetch: () => void;
 }
 
 export function useSocketTimelineJobTracking({
   bookingId,
   setLocalBooking,
   navigate,
+  refetch,
 }: Props) {
   const queryClient = useQueryClient();
 
+  // =====================================
+  // SOCKET LIVE UPDATES
+  // =====================================
   useEffect(() => {
     const socket = getSocket();
 
@@ -64,14 +68,17 @@ export function useSocketTimelineJobTracking({
         [BookingEvents.COMPLETION_CONFIRMED]:
           "COMPLETED",
 
-        [BookingEvents.COMPLETED]: "COMPLETED",
+        [BookingEvents.COMPLETED]:
+          "COMPLETED",
 
-        [BookingEvents.FINALIZED]: "FINALIZED",
+        [BookingEvents.FINALIZED]:
+          "FINALIZED",
 
         [BookingEvents.PARTIALLY_PAID]:
           "PARTIALLY_PAID",
 
-        [BookingEvents.PAID]: "PAID",
+        [BookingEvents.PAID]:
+          "PAID",
 
         [BookingEvents.PAYMENT_INITIATED]:
           "PAYMENT_PENDING",
@@ -125,14 +132,17 @@ export function useSocketTimelineJobTracking({
       const mappedStatus =
         EVENT_STATUS_MAP[eventName] ??
         data?.status ??
-        booking?.status;
+        booking.status;
 
-      const resolvedStatus = resolveTimelineStatus(mappedStatus, booking);
+      const resolvedStatus = resolveTimelineStatus(
+        mappedStatus,
+        booking
+      );
 
       const updatedBooking = {
         ...booking,
         status: resolvedStatus,
-        activities: booking.activities || [],
+        activities: booking.activities ?? [],
       };
 
       queryClient.setQueryData(
@@ -145,7 +155,10 @@ export function useSocketTimelineJobTracking({
         (old: any[] = []) =>
           old.map((b) =>
             String(b._id) === String(bookingId)
-              ? updatedBooking
+              ? {
+                  ...b,
+                  ...updatedBooking,
+                }
               : b
           )
       );
@@ -168,8 +181,71 @@ export function useSocketTimelineJobTracking({
     };
   }, [
     bookingId,
-    queryClient,
     navigate,
+    queryClient,
     setLocalBooking,
   ]);
+
+  // =====================================
+  // TAB RESUME / LAPTOP WAKE
+  // =====================================
+  useEffect(() => {
+    const handleResume = () => {
+      const socket = getSocket();
+
+      if (socket && !socket.connected) {
+        console.log("Socket disconnected. Reconnecting...");
+        socket.connect();
+      }
+
+      refetch();
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        handleResume();
+      }
+    };
+
+    window.addEventListener("focus", handleResume);
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibility
+    );
+
+    return () => {
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibility
+      );
+    };
+  }, [refetch]);
+
+  // =====================================
+  // SOCKET RECONNECTED
+  // =====================================
+  useEffect(() => {
+    const socket = getSocket();
+
+    if (!socket) return;
+
+    const handleConnect = () => {
+      console.log("Socket Connected");
+
+      refetch();
+    };
+
+    const handleDisconnect = (reason: string) => {
+      console.log("Socket Disconnected:", reason);
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, [refetch]);
 }

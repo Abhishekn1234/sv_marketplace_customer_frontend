@@ -35,13 +35,17 @@ import { formatText } from "@/components/utils/formattext";
 
 
 
+interface Props {
+  booking: Booking | null;
+  loading: boolean;
+  refetch: () => void;
+}
+
 export default function JobTrackingTimeline({
   booking,
   loading,
-}: {
-  booking: Booking | null;
-  loading: boolean;
-}) {
+  refetch,
+}: Props)  {
   const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
  const toLocalBooking = (booking: Booking): LocalBooking => {
@@ -88,6 +92,7 @@ export default function JobTrackingTimeline({
         bookingId: bookingId ?? "",
         setLocalBooking,
         navigate,
+        refetch
       });
 
   // ✅ Use localBooking (merged with socket updates) for instant UI display

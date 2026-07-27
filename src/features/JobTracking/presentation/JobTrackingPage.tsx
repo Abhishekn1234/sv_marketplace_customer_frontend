@@ -12,7 +12,7 @@ export default function JobTrackingPage() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
  const {isRTLOrder}=useLanguage();
-  const { bookings, loading } = useBookings();
+  const { bookings, loading,refetch } = useBookings();
 
   const booking = bookings?.find(
     (b) => String(b._id) === String(bookingId)
@@ -71,7 +71,7 @@ if (!loading && !booking) {
     <div dir={isRTLOrder?"rtl":""}>
     <PageContainer>
       <JobTrackingHeader booking={booking} />
-      <JobTrackingContent bookings={booking} loading={false} />
+      <JobTrackingContent bookings={booking} loading={false} refetch={refetch} />
     </PageContainer>
     </div>
   );
