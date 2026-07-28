@@ -1,13 +1,9 @@
 import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { formatText } from "@/components/utils/formattext";
 import { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { JobProgressTask } from "../../domain/entities/jobprogresstask";
 
-interface JobProgressTask {
-  title: string;
-  activityType: string;
-  status: "completed" | "progress" | "cancelled";
-  time: string;
-}
+
 
 export const getJobProgressTasks = (
   booking: Booking,

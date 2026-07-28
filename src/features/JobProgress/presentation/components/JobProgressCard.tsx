@@ -10,6 +10,7 @@ import { TickCircleIcon, TickIcon } from "@/components/icons";
 import { formatText } from "@/components/utils/formattext";
 import { formatDates } from "@/components/utils/formatdates";
 import { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { JobProgressTask } from "../../domain/entities/jobprogresstask";
 interface Props{
   booking:Booking
 }
@@ -71,7 +72,7 @@ export function JobProgressCard({ booking }: Props) {
       </h2>
 
       <div className="flex flex-col gap-3">
-        {tasks.map((task: any, i: number) => (
+        {tasks.map((task: JobProgressTask, i: number) => (
       
           <div
             key={i}
