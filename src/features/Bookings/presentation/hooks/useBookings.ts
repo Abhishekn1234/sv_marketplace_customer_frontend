@@ -157,7 +157,7 @@ useEffect(() => {
       );
 
       toast.success("Booking created");
-      navigate(`/confirmation/${newBooking._id}`);
+      navigate(`/confirmation/${newBooking._id}`,{replace:true});
     },
     onError(err:any){
       handleApiError(err);

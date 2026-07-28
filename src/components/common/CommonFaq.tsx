@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Image, Input, Label } from "../input";
 import Button from "../input/Button";
-import { PlusIcon } from "../icons";
+import { PlusIcon, WhatsAppIcon } from "../icons";
 import CommonModal from "./CommonModal";
 import { useLanguage } from "@/features/context/LanguageContext";
 
@@ -52,7 +52,8 @@ export default function CommonFaq() {
       w-14
       h-14
       
-      bg-green-500
+      bg-green-400
+      text-white
       
       rounded-full
       flex
@@ -65,11 +66,7 @@ export default function CommonFaq() {
       duration-300
     "
   >
-    <Image
-      src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
-      alt="WhatsApp"
-      className="w-7 h-7"
-    />
+   <WhatsAppIcon/>
   </Button>
 </div>
 

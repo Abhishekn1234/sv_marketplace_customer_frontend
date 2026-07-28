@@ -1,5 +1,6 @@
 import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 import { formatText } from "@/components/utils/formattext";
+import { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 interface JobProgressTask {
   title: string;
@@ -9,7 +10,7 @@ interface JobProgressTask {
 }
 
 export const getJobProgressTasks = (
-  booking: any,
+  booking: Booking,
   translations: any
 ): JobProgressTask[] => {
   const activities = booking?.activities ?? [];

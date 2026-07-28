@@ -357,24 +357,49 @@
     }
   },
   
-  "bookingSummary": {
+ "bookingSummary": {
   "title": "Booking Summary",
-   "workers":"Workers",
+
+  "bookingCode": "Booking ID",
   "service": "Service",
   "tier": "Tier",
-  "seconds":"Seconds",
+  "status": "Status",
+  "bookingType": "Booking Type",
   "timeAndDate": "Time & Date",
   "location": "Location",
   "duration": "Duration",
+  "workers": "Workers",
+  "workDescription": "Work Description",
+
+  "paymentSummary": "Payment Summary",
+  "serviceCost": "Service Cost",
+  "discount": "Discount",
+  "coupon": "Coupon Applied",
+  "vat": "VAT",
   "totalPaid": "Total Paid",
+
+  "seconds": "Seconds",
+  "minute": "Minute",
+  "minutes": "Minutes",
   "hour": "Hour",
-  "minutes":"Minutes",
   "hours": "Hours",
+  "day": "Day",
   "days": "Days",
+
+  "scheduled": "Scheduled",
+  "instant": "Instant",
+
+  "requested": "Requested",
+  "confirmed": "Confirmed",
+  "assigned": "Assigned",
+  "inProgress": "In Progress",
+  "completed": "Completed",
+  "cancelled": "Cancelled",
+
   "na": "N/A",
 
   "providerAssignmentTitle": "Provider Assignment in Progress",
-  "providerAssignmentDesc": "We're assigning the best provider for your location. You'll receive a notification once confirmed."
+  "providerAssignmentDesc": "We're assigning the best provider for your location. You'll receive a notification once the provider has been confirmed."
 }
 },
 "jobtrackingpage": {
@@ -687,7 +712,24 @@
     "viewInvoice": "View Invoice",
     "bookAgain": "Book Again",
     "getSupport": "Get Support",
-    "share": "Share"
+    "share": "Share",
+     "sharemodaljobcompleted": {
+    "title": "Share Booking",
+    "subtitle": "Choose how you'd like to share the booking details.",
+    "whatsapp": "WhatsApp",
+    "gmail": "Gmail",
+    "whatsappDescription": "Share instantly",
+    "gmailDescription": "Send via email",
+    "footer": "Booking details will be attached to your selected app.",
+    "emailSubject": "Booking Details",
+    "bookingDetails": "Booking Details",
+    "service": "Service",
+    "tier": "Tier",
+    "status": "Status",
+    "amount": "Amount",
+    "duration": "Duration",
+    "hours": "hrs"
+  }
   },
   
   "notificationpage": {

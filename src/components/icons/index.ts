@@ -13,6 +13,8 @@ import { SecurityIcon } from "./SecurityIcon";
 import { LanguageIcon } from "./LanguageIcon";
 import { HeartIcon } from "./HeartIcon";
 import ReviewIcon from "./ReviewIcon";
+import MailIcon from "./MailIcon";
+import WhatsAppIcon from "./WhatsAppIcon";
 import { BadgeCheckFilledIcon } from "./BadgeCheckFilled";
 import { GlobeIcon } from "./GlobeIcon";
 import { CheckSquare } from "./CheckSquare";
@@ -112,6 +114,9 @@ export {
   LanguageIcon,
   CancelIcon,
   ChatIcon,
+  MailIcon,
+  WhatsAppIcon,
+  
   PauseCircleIcon,
   ReviewIcon,
   BookmarkFavoriteIcon,

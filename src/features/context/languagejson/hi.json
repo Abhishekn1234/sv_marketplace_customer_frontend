@@ -388,22 +388,47 @@
  
   "bookingSummary": {
   "title": "बुकिंग सारांश",
-   "workers":"कर्मचारी",
+
+  "bookingCode": "बुकिंग आईडी",
   "service": "सेवा",
-  "seconds":"सेकंड",
   "tier": "स्तर",
+  "status": "स्थिति",
+  "bookingType": "बुकिंग प्रकार",
   "timeAndDate": "समय और तिथि",
   "location": "स्थान",
   "duration": "अवधि",
+  "workers": "कर्मचारी",
+  "workDescription": "कार्य विवरण",
+
+  "paymentSummary": "भुगतान सारांश",
+  "serviceCost": "सेवा शुल्क",
+  "discount": "छूट",
+  "coupon": "लागू कूपन",
+  "vat": "वैट",
   "totalPaid": "कुल भुगतान",
-   "hour": "घंटा",
+
+  "seconds": "सेकंड",
+  "minute": "मिनट",
+  "minutes": "मिनट",
+  "hour": "घंटा",
   "hours": "घंटे",
-  "minutes":"मिनट",
+  "day": "दिन",
   "days": "दिन",
+
+  "scheduled": "निर्धारित",
+  "instant": "तुरंत",
+
+  "requested": "अनुरोध प्राप्त हुआ",
+  "confirmed": "पुष्टि हुई",
+  "assigned": "प्रदाता नियुक्त",
+  "inProgress": "कार्य प्रगति पर है",
+  "completed": "पूर्ण",
+  "cancelled": "रद्द",
+
   "na": "लागू नहीं",
 
   "providerAssignmentTitle": "प्रदाता असाइनमेंट प्रगति में है",
-  "providerAssignmentDesc": "हम आपके स्थान के लिए सर्वश्रेष्ठ प्रदाता असाइन कर रहे हैं। पुष्टि होने पर आपको सूचना मिलेगी।"
+  "providerAssignmentDesc": "हम आपके स्थान के लिए सर्वोत्तम सेवा प्रदाता नियुक्त कर रहे हैं। प्रदाता की पुष्टि होते ही आपको सूचना भेजी जाएगी।"
 }
 },
 "jobtrackingpage": {
@@ -712,7 +737,23 @@
 "jobcompletedpage": {
     "title": "सेवा पूर्ण हुई!",
     "message": "आपकी सेवा सफलतापूर्वक पूरी हो गई है। हमें चुनने के लिए धन्यवाद!",
-
+     "sharemodaljobcompleted": {
+    "title": "बुकिंग साझा करें",
+    "subtitle": "चुनें कि आप बुकिंग विवरण कैसे साझा करना चाहते हैं।",
+    "whatsapp": "व्हाट्सएप",
+    "gmail": "जीमेल",
+    "whatsappDescription": "तुरंत साझा करें",
+    "gmailDescription": "ईमेल द्वारा भेजें",
+    "footer": "बुकिंग विवरण आपके चुने हुए ऐप में संलग्न किए जाएंगे।",
+    "emailSubject": "बुकिंग विवरण",
+    "bookingDetails": "बुकिंग विवरण",
+    "service": "सेवा",
+    "tier": "श्रेणी",
+    "status": "स्थिति",
+    "amount": "राशि",
+    "duration": "अवधि",
+    "hours": "घंटे"
+  },
     "serviceSummary": "सेवा सारांश",
     "completed": "पूर्ण",
 

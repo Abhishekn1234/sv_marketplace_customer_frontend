@@ -31,7 +31,7 @@ export default function ProfileTop() {
         }
       >
        
-       {t.profilepage.backToDashboard}
+       {t.common.GoToHome}
       </Button>
 
       {/* Title + Logout Row */}

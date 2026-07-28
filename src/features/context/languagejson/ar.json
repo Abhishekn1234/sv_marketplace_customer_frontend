@@ -388,22 +388,46 @@
   "bookingSummary": {
   "title": "ملخص الحجز",
 
+  "bookingCode": "رقم الحجز",
   "service": "الخدمة",
   "tier": "الفئة",
+  "status": "الحالة",
+  "bookingType": "نوع الحجز",
   "timeAndDate": "الوقت والتاريخ",
   "location": "الموقع",
   "duration": "المدة",
+  "workers": "العمال",
+  "workDescription": "وصف العمل",
+
+  "paymentSummary": "ملخص الدفع",
+  "serviceCost": "تكلفة الخدمة",
+  "discount": "الخصم",
+  "coupon": "قسيمة الخصم",
+  "vat": "ضريبة القيمة المضافة",
   "totalPaid": "إجمالي المدفوع",
-  "workers":"العمال",
-  "seconds":"ثوانٍ",
-   "hour":"ساعة",
-   "minutes":"دقائق",
+
+  "seconds": "ثوانٍ",
+  "minute": "دقيقة",
+  "minutes": "دقائق",
+  "hour": "ساعة",
   "hours": "ساعات",
+  "day": "يوم",
   "days": "أيام",
+
+  "scheduled": "مجدول",
+  "instant": "فوري",
+
+  "requested": "تم استلام الطلب",
+  "confirmed": "تم التأكيد",
+  "assigned": "تم تعيين مقدم الخدمة",
+  "inProgress": "قيد التنفيذ",
+  "completed": "مكتمل",
+  "cancelled": "تم الإلغاء",
+
   "na": "غير متوفر",
 
   "providerAssignmentTitle": "جارٍ تعيين مقدم الخدمة",
-  "providerAssignmentDesc": "نقوم بتعيين أفضل مقدم خدمة لموقعك. ستتلقى إشعارًا بمجرد التأكيد."
+  "providerAssignmentDesc": "نقوم بتعيين أفضل مقدم خدمة لموقعك. ستتلقى إشعارًا بمجرد تأكيد مقدم الخدمة."
 }
 },
 
@@ -715,6 +739,23 @@
 "jobcompletedpage": {
     "title": "تم إكمال الخدمة!",
     "message": "تم إكمال خدمتك بنجاح. شكرًا لاختيارك لنا!",
+    "sharemodaljobcompleted": {
+    "title": "مشاركة الحجز",
+    "subtitle": "اختر الطريقة التي ترغب في مشاركة تفاصيل الحجز بها.",
+    "whatsapp": "واتساب",
+    "gmail": "جيميل",
+    "whatsappDescription": "شارك فورًا",
+    "gmailDescription": "إرسال عبر البريد الإلكتروني",
+    "footer": "سيتم إرفاق تفاصيل الحجز بالتطبيق الذي اخترته.",
+    "emailSubject": "تفاصيل الحجز",
+    "bookingDetails": "تفاصيل الحجز",
+    "service": "الخدمة",
+    "tier": "الفئة",
+    "status": "الحالة",
+    "amount": "المبلغ",
+    "duration": "المدة",
+    "hours": "ساعات"
+  },
 
     "serviceSummary": "ملخص الخدمة",
     "completed": "مكتمل",
