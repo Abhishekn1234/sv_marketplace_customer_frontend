@@ -8,6 +8,7 @@ import { InfoIcon } from "@/components/icons";
 import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import CommonCard from "@/components/common/CommonCards";
+import { formatStatus } from "@/components/utils/formatstatusmap";
 interface BookingSummaryProps {
   data: Booking;
   placeName: string;
@@ -35,11 +36,7 @@ export default function BookingSummary({
     data.service?.name ||
     "N/A";
 
-  const bookingStatus =
-    data.status
-      ?.replace(/_/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, (l) => l.toUpperCase()) || "N/A";
+  const bookingStatus =formatStatus(data.status);
 
   return (
     <div
