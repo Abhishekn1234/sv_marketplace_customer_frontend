@@ -21,6 +21,9 @@
  "common": {
   "selected":"Selected",
   "Cancelled":"Cancelled",
+   "GoToHome": "Go to Home",
+    "NotFoundTitle": "Page Not Found",
+    "NotFoundDescription": "Sorry, the page you're looking for doesn't exist or has been moved.",
   "applyCouponCode": "Apply coupon code?",
     "couponApplied": "Coupon applied",
     "couponCode": "Coupon Code",

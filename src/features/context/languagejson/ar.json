@@ -123,6 +123,9 @@
   },
  "common": {
   "selected":"محدد",
+  "GoToHome": "العودة إلى الصفحة الرئيسية",
+  "NotFoundTitle": "الصفحة غير موجودة",
+    "NotFoundDescription": "عذرًا، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
     "applyCouponCode": "تطبيق رمز القسيمة؟",
     "couponApplied": "تم تطبيق القسيمة",
     "couponCode": "رمز القسيمة",

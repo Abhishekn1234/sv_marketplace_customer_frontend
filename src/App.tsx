@@ -35,6 +35,9 @@ const ServiceDetailPage = lazy(() => import("./features/ServiceDetails/presentat
 const ServiceTierSelectionPage = lazy(() => import("./features/ServiceTierSelection/presentation/ServiceTierSelectionPage"));
 const BookingDetailPage = lazy(() => import("./features/BookingDetail/presentation/BookingDetailPage"));
 const JobTrackingPage = lazy(() => import("./features/JobTracking/presentation/JobTrackingPage"));
+const NotFoundPage = lazy(
+  () => import("./features/Notfound/presentation/NotFoundPage")
+);
 const JobProgressPage = lazy(() => import("./features/JobProgress/presentation/JobProgressPage"));
 const ConfirmationPage = lazy(() => import("./features/Confirmation/presentation/ConfirmationPage"));
 const ChangePasswordPage = lazy(() => import("./features/ChangePassword/presentation/ChangePasswordPage"));
@@ -170,7 +173,7 @@ function App() {
               </Route>
             </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </Suspense>

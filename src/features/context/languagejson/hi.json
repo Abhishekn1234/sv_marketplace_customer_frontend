@@ -109,6 +109,9 @@
   },
  "common": {
   "selected":"चयनित",
+    "GoToHome": "होम पर जाएँ",
+     "NotFoundTitle": "पेज नहीं मिला",
+    "NotFoundDescription": "क्षमा करें, आप जिस पेज को खोज रहे हैं वह मौजूद नहीं है या उसे स्थानांतरित कर दिया गया है।",
   "not selected":"चयनित नहीं",
   "No slots available for this date":"इस तारीख के लिए कोई स्लॉट उपलब्ध नहीं है।",
   "Cancelled":"रद्द",

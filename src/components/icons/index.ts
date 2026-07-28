@@ -23,6 +23,7 @@ import { FavoriteFilledIcon } from "./FavoriteFilledIcon";
 import { Square } from "./Square";
 import { LoginIcon } from "./LoginIcon";
 import { BellRing } from "./BellRing";
+import AlertTraingleIcon from "./AlertTraingleIcon";
 import { InboxIcon } from "./InboxIcon";
 import { SearchIcon } from "./SearchIcon";
 import { PhoneIcon } from "./PhoneIcon";
@@ -119,6 +120,7 @@ export {
   FavoriteIcon,
   HeartWithFillToggleFavoriteIcon,
   HeartIcon,
+  AlertTraingleIcon,
   HashIcon,
   ColumnsIcon,
   BadgeCheckIcon,
