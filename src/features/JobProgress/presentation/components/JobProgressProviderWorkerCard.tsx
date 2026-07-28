@@ -3,7 +3,7 @@ import { getStatusText } from "../utils/getstatustexts";
 import { useLanguage } from "@/features/context/LanguageContext";
 import { Link } from "react-router-dom";
 import CommonCard from "@/components/common/CommonCards";
-import { TickIcon } from "@/components/icons";
+import { TickIcon, VerifiedTickIcon } from "@/components/icons";
 
 
 export default function ProviderWorkingCard({ booking }: any) {
@@ -39,7 +39,7 @@ export default function ProviderWorkingCard({ booking }: any) {
             {name}
 
             {worker && (
-              <TickIcon color="text-blue-400"/>
+             <VerifiedTickIcon bgColor="blue" size={20}/>
             )}
           </div>
 

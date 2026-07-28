@@ -105,7 +105,7 @@ import { ChatIcon } from "./ChatIcon";
 import { CancelIcon } from "./CancelIcon";
 import { BadgeCheckIcon } from "./BadgeCheck";
 import { PauseCircleIcon } from "./PauseCircleIcon";
-
+import VerifiedTickIcon from "./VerifiedTickIcon";
 export {
   // SVG Icons
   GoogleIcon,
@@ -113,10 +113,11 @@ export {
   GlobeIcon,
   LanguageIcon,
   CancelIcon,
+  VerifiedTickIcon,
   ChatIcon,
   MailIcon,
   WhatsAppIcon,
-  
+
   PauseCircleIcon,
   ReviewIcon,
   BookmarkFavoriteIcon,

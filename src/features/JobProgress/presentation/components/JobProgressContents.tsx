@@ -1,9 +1,13 @@
+import { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import { JobProgressCard } from "./JobProgressCard";
 import { JobProgressInfo } from "./JobProgressInfo";
 import { JobProgressProgress } from "./JobProgressProgress";
 import ProviderWorkingCard from "./JobProgressProviderWorkerCard";
-
-export default function JobProgressContents({ booking, loading }: any) {
+interface Props{
+  booking:Booking;
+  loading:boolean;
+}
+export default function JobProgressContents({ booking, loading }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
       

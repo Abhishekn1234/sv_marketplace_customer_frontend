@@ -1,3 +1,4 @@
+import { VerifiedTickIcon } from "@/components/icons";
 import { Image } from "@/components/input";
 
 interface ActiveServiceWorkerInfoProps {
@@ -22,16 +23,25 @@ export default function ActiveServiceWorkerInfo({
         alt={workerName}
         className="h-12 w-12 shrink-0 rounded-lg border object-cover sm:h-14 sm:w-14"
       />
-
       <div className="min-w-0 flex-1">
-        <div className="truncate font-semibold">
-          {workerName}
-        </div>
+  <div className="flex items-center gap-2">
+    <span className="truncate font-semibold">
+      {workerName}
+    </span>
 
-        <div className="truncate text-xs text-gray-400 sm:text-sm">
-          {hasWorker ? assignedText : waitingText}
-        </div>
-      </div>
+    {hasWorker && (
+      <VerifiedTickIcon
+        bgColor="#2563EB"
+        size={18}
+        className="shrink-0"
+      />
+    )}
+  </div>
+
+  <div className="truncate text-xs text-gray-400 sm:text-sm">
+    {hasWorker ? assignedText : waitingText}
+  </div>
+</div>
     </div>
   );
 }

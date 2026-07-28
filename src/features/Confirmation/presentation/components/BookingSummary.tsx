@@ -25,16 +25,9 @@ export default function BookingSummary({
 
   const duration = formatBookingDurationWithTranslation(data, t);
 
-  const serviceId =
-    typeof data.serviceId === "string"
-      ? data.serviceId
-      : data.serviceId?._id;
 
-  const serviceName =
-    services?.find((s: any) => String(s._id) === String(serviceId))?.name ||
-    (typeof data.serviceId === "object" ? data.serviceId?.name : null) ||
-    data.service?.name ||
-    "N/A";
+
+  const serviceName =data.service?.name
 
   const bookingStatus =formatStatus(data.status);
 

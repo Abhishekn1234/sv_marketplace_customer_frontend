@@ -9,7 +9,11 @@ import { getJobProgressTasks } from "../utils/getJobProgressTasks";
 import { TickCircleIcon, TickIcon } from "@/components/icons";
 import { formatText } from "@/components/utils/formattext";
 import { formatDates } from "@/components/utils/formatdates";
-export function JobProgressCard({ booking }: any) {
+import { Booking } from "@/features/Bookings/domain/entities/booking.types";
+interface Props{
+  booking:Booking
+}
+export function JobProgressCard({ booking }: Props) {
   const { t } = useLanguage();
 
     const tasks = useMemo(
@@ -68,6 +72,7 @@ export function JobProgressCard({ booking }: any) {
 
       <div className="flex flex-col gap-3">
         {tasks.map((task: any, i: number) => (
+      
           <div
             key={i}
             className={`flex items-center gap-4 p-4 rounded-xl border transition

@@ -12,7 +12,7 @@ import CommonCard from "@/components/common/CommonCards";
 
 import { useGetChatMessages } from "@/features/WorkerChat/presentation/hooks/useGetChatMessages";
 import { BookingEvents } from "@/components/common/BookingEvents";
-import { TickIcon } from "@/components/icons";
+import { TickIcon, VerifiedTickIcon } from "@/components/icons";
 
 interface Props {
   booking: Booking | null;
@@ -217,7 +217,7 @@ export default function JobTrackingWorkerDetails({
             {worker.fullName}
 
             {worker && (
-             <TickIcon color="text-blue-900"/>
+              <VerifiedTickIcon bgColor="blue" size={20}/>
             )}
           </div>
 

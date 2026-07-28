@@ -8,8 +8,12 @@ import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import CommonCard from "@/components/common/CommonCards";
 import CommonProgress from "@/components/common/CommonProgress";
 import { formatDates } from "@/components/utils/formatdates";
-
-export function JobProgressProgress({ booking, loading }: any) {
+import { Booking } from "@/features/Bookings/domain/entities/booking.types";
+interface Props{
+  booking:Booking;
+  loading:boolean;
+}
+export function JobProgressProgress({ booking, loading }: Props) {
   const { t } = useLanguage();
 
   if (loading) return <CommonSpinner />;
