@@ -425,7 +425,23 @@
   "cancelled": "تم الإلغاء",
 
   "na": "غير متوفر",
+   "providerAssigned": "تم تعيين مقدم الخدمة",
+  "providerAssignedDesc": "تم تعيين مقدم الخدمة لحجزك.",
 
+  "shareStartOtp": "شارك رمز بدء العمل",
+  "shareStartOtpDesc": "شارك رمز بدء العمل مع مقدم الخدمة لبدء العمل.",
+
+  "verifyCompletionOtp": "تحقق من رمز إكمال العمل",
+  "verifyCompletionOtpDesc": "شارك رمز إكمال العمل لتأكيد انتهاء الخدمة.",
+
+  "workInProgress": "العمل قيد التنفيذ",
+  "workInProgressDesc": "يقوم مقدم الخدمة حاليًا بتنفيذ خدمتك.",
+
+  "completePayment": "إتمام الدفع",
+  "completePaymentDesc": "أكمل عملية الدفع بعد انتهاء العمل.",
+
+  "paymentCompleted": "تم إكمال الدفع",
+  "paymentCompletedDesc": "تم إكمال عملية الدفع بنجاح.",
   "providerAssignmentTitle": "جارٍ تعيين مقدم الخدمة",
   "providerAssignmentDesc": "نقوم بتعيين أفضل مقدم خدمة لموقعك. ستتلقى إشعارًا بمجرد تأكيد مقدم الخدمة."
 }

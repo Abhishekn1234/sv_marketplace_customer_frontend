@@ -9,6 +9,7 @@ import { useServices } from "@/features/Bookings/presentation/hooks/useServices"
 import { Booking } from "@/features/Bookings/domain/entities/booking.types";
 import CommonCard from "@/components/common/CommonCards";
 import { formatStatus } from "@/components/utils/formatstatusmap";
+import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 interface BookingSummaryProps {
   data: Booking;
   placeName: string;
@@ -200,15 +201,51 @@ export default function BookingSummary({
             <InfoIcon />
           </div>
 
-          <div>
-            <h4 className="mb-1 text-sm font-bold text-gray-900">
-              {t.confirmationpage.bookingSummary.providerAssignmentTitle}
-            </h4>
+        <div>
+         <h4 className="mb-1 text-sm font-bold text-gray-900">
+  {data.status === BookingStatus.REQUESTED
+    ? t.confirmationpage.steps.step1.title
+    : data.status === BookingStatus.WORKER_ACCEPTED
+    ? t.confirmationpage.bookingSummary.providerAssigned
+    : data.status === BookingStatus.WORK_START_OTP_GENERATED
+    ? t.confirmationpage.bookingSummary.shareStartOtp
+    : data.status === BookingStatus.WORK_STARTED ||
+      data.status === BookingStatus.IN_PROGRESS
+    ? t.confirmationpage.bookingSummary.workInProgress
+    : data.status === BookingStatus.WORK_COMPLETE_OTP_GENERATED ||
+      data.status === BookingStatus.WORK_COMPLETED_BY_WORKER ||
+      data.status === BookingStatus.WORK_COMPLETED_PENDING
+    ? t.confirmationpage.bookingSummary.verifyCompletionOtp
+    : data.status === BookingStatus.INVOICE_GENERATED ||
+      data.status === BookingStatus.PAYMENT_PENDING
+    ? t.confirmationpage.bookingSummary.completePayment
+    : data.status === BookingStatus.PAID
+    ? t.confirmationpage.bookingSummary.paymentCompleted
+    : t.confirmationpage.bookingSummary.providerAssigned}
+       </h4>
 
-            <p className="text-sm text-gray-600">
-              {t.confirmationpage.bookingSummary.providerAssignmentDesc}
-            </p>
-          </div>
+         <p className="text-sm text-gray-600">
+  {data.status === BookingStatus.REQUESTED
+    ? t.confirmationpage.steps.step1.description
+    : data.status === BookingStatus.WORKER_ACCEPTED
+    ? t.confirmationpage.bookingSummary.providerAssignedDesc
+    : data.status === BookingStatus.WORK_START_OTP_GENERATED
+    ? t.confirmationpage.bookingSummary.shareStartOtpDesc
+    : data.status === BookingStatus.WORK_STARTED ||
+      data.status === BookingStatus.IN_PROGRESS
+    ? t.confirmationpage.bookingSummary.workInProgressDesc
+    : data.status === BookingStatus.WORK_COMPLETE_OTP_GENERATED ||
+      data.status === BookingStatus.WORK_COMPLETED_BY_WORKER ||
+      data.status === BookingStatus.WORK_COMPLETED_PENDING
+    ? t.confirmationpage.bookingSummary.verifyCompletionOtpDesc
+    : data.status === BookingStatus.INVOICE_GENERATED ||
+      data.status === BookingStatus.PAYMENT_PENDING
+    ? t.confirmationpage.bookingSummary.completePaymentDesc
+    : data.status === BookingStatus.PAID
+    ? t.confirmationpage.bookingSummary.paymentCompletedDesc
+    : t.confirmationpage.bookingSummary.providerAssignedDesc}
+          </p>
+        </div>
         </div>
       </div>
     </div>

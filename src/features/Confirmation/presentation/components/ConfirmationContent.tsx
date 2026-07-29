@@ -15,6 +15,7 @@ import { useBookingById } from "@/features/Bookings/presentation/hooks/useBookin
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import { ArrowRight, CalendarIcon, HomeIcon, SuccessIcon } from "@/components/icons";
+import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus.types";
 
 export default function ConfirmationContent() {
   const navigate = useNavigate();
@@ -152,7 +153,7 @@ export default function ConfirmationContent() {
         </div>
 
         {/* Whats Next */}
-        <WhatsNext />
+      <WhatsNext status={data.status as BookingStatus} />
 
       </div>
     </main>

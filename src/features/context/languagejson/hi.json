@@ -426,7 +426,23 @@
   "cancelled": "रद्द",
 
   "na": "लागू नहीं",
+   "providerAssigned": "सेवा प्रदाता नियुक्त किया गया",
+  "providerAssignedDesc": "आपकी बुकिंग के लिए सेवा प्रदाता नियुक्त कर दिया गया है।",
 
+  "shareStartOtp": "स्टार्ट OTP साझा करें",
+  "shareStartOtpDesc": "कार्य शुरू करने के लिए प्रोफेशनल के साथ स्टार्ट OTP साझा करें।",
+
+  "verifyCompletionOtp": "पूर्णता OTP सत्यापित करें",
+  "verifyCompletionOtpDesc": "कार्य की पुष्टि के लिए पूर्णता OTP साझा करें।",
+
+  "workInProgress": "कार्य प्रगति पर है",
+  "workInProgressDesc": "आपका प्रोफेशनल वर्तमान में आपकी सेवा पर कार्य कर रहा है।",
+
+  "completePayment": "भुगतान पूरा करें",
+  "completePaymentDesc": "कार्य पूरा होने के बाद भुगतान पूरा करें।",
+
+  "paymentCompleted": "भुगतान पूरा हुआ",
+  "paymentCompletedDesc": "आपका भुगतान सफलतापूर्वक पूरा हो गया है।",
   "providerAssignmentTitle": "प्रदाता असाइनमेंट प्रगति में है",
   "providerAssignmentDesc": "हम आपके स्थान के लिए सर्वोत्तम सेवा प्रदाता नियुक्त कर रहे हैं। प्रदाता की पुष्टि होते ही आपको सूचना भेजी जाएगी।"
 }

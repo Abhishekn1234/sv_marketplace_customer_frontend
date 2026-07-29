@@ -397,7 +397,23 @@
   "cancelled": "Cancelled",
 
   "na": "N/A",
+   "providerAssigned": "Provider Assigned",
+  "providerAssignedDesc": "Your service provider has been assigned to your booking.",
 
+  "shareStartOtp": "Share Start OTP",
+  "shareStartOtpDesc": "Share the start OTP with the professional to begin the work.",
+
+  "verifyCompletionOtp": "Verify Completion OTP",
+  "verifyCompletionOtpDesc": "Share the completion OTP to confirm the work.",
+
+  "workInProgress": "Work in Progress",
+  "workInProgressDesc": "Your professional is currently working on your service.",
+
+  "completePayment": "Complete Payment",
+  "completePaymentDesc": "Complete payment after the work is finished.",
+
+  "paymentCompleted": "Payment Completed",
+  "paymentCompletedDesc": "Your payment has been completed successfully.",
   "providerAssignmentTitle": "Provider Assignment in Progress",
   "providerAssignmentDesc": "We're assigning the best provider for your location. You'll receive a notification once the provider has been confirmed."
 }
