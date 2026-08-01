@@ -11,14 +11,15 @@ interface ActiveServiceActionsProps {
   isPaid: boolean;
   isStarted: boolean;
   progress: number;
+  hasWorker: boolean;
 }
-
 export default function ActiveServiceActions({
   bookingId,
   showTracking,
   isPaid,
   isStarted,
   progress,
+  hasWorker,
 }: ActiveServiceActionsProps) {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -51,6 +52,7 @@ const isMobile = useMediaQuery({ maxWidth: 767 });
             {t.home.Track}
           </Button>
 
+                {hasWorker && (
           <Button
             variant="ghost"
             className={secondaryButtonClass}
@@ -58,6 +60,7 @@ const isMobile = useMediaQuery({ maxWidth: 767 });
           >
             {t.home.Chat}
           </Button>
+        )}
         </div>
       </>
     );

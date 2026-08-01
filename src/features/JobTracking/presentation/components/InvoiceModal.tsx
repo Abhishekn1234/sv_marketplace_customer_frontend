@@ -8,11 +8,15 @@ import { useGenerateInvoice } from "@/features/Generateotp/presentation/hooks/us
 import { useNavigate } from "react-router-dom";
 import CommonModal from "@/components/common/CommonModal";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
+import { Service } from "@/features/Bookings/domain/entities/service.types";
+import { Category } from "@/features/Bookings/domain/entities/category.types";
+import { PricingTier } from "@/features/Bookings/domain/entities/pricingtier.types";
+import { ServiceTierRef } from "@/features/Bookings/domain/entities/servicetier.types";
 
 interface Props {
-  services: any[];
-  categories: any[];
-  serviceTiers?: any[];
+  services: Service[];
+  categories: Category[];
+  serviceTiers?: PricingTier[];
   open: boolean;
   booking?: Booking;
   onClose: () => void;
@@ -30,22 +34,21 @@ export default function InvoiceModal({
 
   if (!open || !booking) return null;
 
-  // Normalize serviceId
+  
   const serviceId =
     typeof booking.serviceId === "string"
       ? booking.serviceId
       : booking.serviceId?._id;
 
-  // Service name
   const service = localize(
   booking.service?.name ??
     (typeof booking.serviceId === "object"
       ? booking.serviceId?.name
       : services.find((s) => s._id === serviceId)?.name) ??
     "-"
-);
+   );
 
-  // Normalize serviceTierId
+ 
   const serviceTierId =
     typeof booking.serviceTierId === "string"
       ? booking.serviceTierId
@@ -54,7 +57,7 @@ export default function InvoiceModal({
   const serviceTier =
     booking.serviceTier ??
     serviceTiers?.find(
-      (tier: any) =>
+      (tier:ServiceTierRef) =>
         tier._id === serviceTierId ||
         tier.tierId === serviceTierId
     );

@@ -156,12 +156,13 @@ export default function ActiveService() {
       waitingText={t.home["Waiting for worker"]}
     />
 
-      <ActiveServiceActions
+            <ActiveServiceActions
         bookingId={booking._id}
         showTracking={showTracking}
         isPaid={isPaid}
         isStarted={isStarted}
         progress={progress}
+        hasWorker={!!firstWorker}
       />
     </CommonCard>
   );

@@ -58,7 +58,7 @@ export default function WorkerChatPage() {
   }
 
   if (!workerData) {
-    return <CommonSpinner />;
+    return <CommonSpinner center />;
   }
 
   const { worker, profile } = workerData;

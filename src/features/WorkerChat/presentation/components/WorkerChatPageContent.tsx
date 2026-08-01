@@ -190,7 +190,7 @@ export default function WorkerChatPageContent({
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <CommonSpinner />
+        <CommonSpinner center />
       </div>
     );
   }
@@ -210,7 +210,7 @@ export default function WorkerChatPageContent({
         >
           {isFetchingNextPage && (
             <div className="py-4">
-              <CommonSpinner />
+              <CommonSpinner center />
             </div>
           )}
 
