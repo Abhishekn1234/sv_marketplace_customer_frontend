@@ -1,13 +1,22 @@
+
+import { LocalizedText } from "@/components/common/localizedtext.types";
 import type { Service } from "./service.types";
 
 export interface ServiceCategoryObject {
   _id: string;
-  name: string;
+
+  name: LocalizedText;
   slug: string;
+
+  description?: LocalizedText;
+
   iconUrl?: string;
   iconPublicId?: string;
-  services?: Service[]; 
+
+  vatRate?: number;
+
+  services?: Service[];
+
   createdAt?: string;
   updatedAt?: string;
-  vatRate?: number; // Add VAT rate here
 }

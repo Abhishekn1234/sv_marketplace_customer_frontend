@@ -2,11 +2,15 @@ import { useLanguage } from "@/features/context/LanguageContext";
 import { Feature } from "../../domain/entities/feature";
 import { StarIcon, TickCircleIcon, TickIcon } from "@/components/icons";
 import Button from "@/components/input/Button";
-
+import {LocalizedText} from "@/components/common/localizedtext.types";
 interface TierCardProps {
   name: string;
-  description: string;
-  prices: { hourly: number; daily: number; currency: string };
+  description?: string;
+  prices: {
+    hourly: number;
+    daily: number;
+    currency: string;
+  };
   features: Feature[];
   recommended?: boolean;
   selected?: boolean;
@@ -23,7 +27,7 @@ export function ServiceTierSelectionTierCard({
   selected,
   onSelect,
 }: TierCardProps) {
- const{t}=useLanguage();
+ const{t,localize}=useLanguage();
   return (
     <div
       onClick={onSelect}
@@ -41,8 +45,8 @@ export function ServiceTierSelectionTierCard({
       )}
 
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">{name}</h3>
-        <p className="text-sm text-gray-500 font-medium">{description}</p>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">{localize(name)}</h3>
+        <p className="text-sm text-gray-500 font-medium">{localize(description)}</p>
       </div>
 
       <div className="flex flex-col gap-1 mb-6">
@@ -88,7 +92,7 @@ export function ServiceTierSelectionTierCard({
             : "border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
         }`}
       >
-        {selected ? `${t.notificationpage.selected} : ${name}` : `${t.servicedetailpage.Select} ${name}`}
+        {selected ? `${t.notificationpage.selected} : ${localize(name)}` : `${t.servicedetailpage.Select} ${localize(name)}`}
       </Button>
     </div>
   );

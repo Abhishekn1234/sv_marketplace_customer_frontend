@@ -1,15 +1,20 @@
+import { LocalizedText } from "@/components/common/localizedtext.types";
 import type { PricingTier } from "./pricingtier.types";
 import type { ServiceCategoryObject } from "./servicecategoryobject.types";
 
 export interface Service {
   _id: string;
-  name: string;
+  name: string; // API always returns a plain string for service.name
   slug: string;
 
+  // API returns { "0": {...} }
   category: ServiceCategoryObject;
-  categories?: ServiceCategoryObject;
+
+  // optional if used elsewhere
+  categories?: ServiceCategoryObject[];
 
   vatRate?: number;
+
   description: string;
   currency: string;
 
@@ -32,11 +37,9 @@ export interface Service {
   createdAt: string;
   updatedAt: string;
 
-  // Optional fields commonly returned by APIs
   serviceCode?: string;
   displayName?: string;
   commissionValue?: number;
   commissionType?: string;
   basePrice?: number;
 }
-

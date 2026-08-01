@@ -20,7 +20,7 @@ const CANCELLED_STATUSES = ["WORKER_CANCELLED", "CUSTOMER_CANCELLED"];
 
 export default function ActiveService() {
   const { bookings, loading } = useBookings();
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
 
 
   // =========================
@@ -94,7 +94,7 @@ export default function ActiveService() {
   // =========================
   // SERVICE NAME
   // =========================
-      const serviceName = booking?.service?.name ?? "No Service";
+      const serviceName = localize(booking?.service?.name) ?? "No Service";
 
         // console.log(serviceName);
 

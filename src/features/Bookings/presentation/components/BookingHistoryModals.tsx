@@ -7,6 +7,7 @@ import OtpModal from "@/components/common/CommonOtpModal";
 import type { BookingHistory } from "../../domain/entities/bookinghistory.types";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface BookingModalsProps {
   selectedBooking: BookingHistory | null;
@@ -59,6 +60,7 @@ export default function BookingModals({
 }: BookingModalsProps) {
   const paymentBooking = allBookings.find(b => b._id === paymentBookingId);
 const navigate = useNavigate();
+const{localize}=useLanguage();
   return (
     <>
       <BookingHistoryViewDetailsModal
@@ -72,7 +74,7 @@ const navigate = useNavigate();
           navigate("/payment", {
             state: {
               bookingId: paymentBooking._id,
-              serviceName: paymentBooking.service?.name ?? "Service Name",
+              serviceName: localize(paymentBooking.service?.name) ?? "Service Name",
               price: paymentBooking.actualValues?.finalAmount?? paymentBooking.estimatedValues?.finalAmount,
               currency: paymentBooking.currency,
             },

@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useMemo, useEffect } from "react";
+// LanguageContext.tsx
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
 
 import en from "./languagejson/en.json";
 import hi from "./languagejson/hi.json";
@@ -6,12 +13,9 @@ import ar from "./languagejson/ar.json";
 
 import type { TranslationType } from "./types/language";
 import { useAuthStore } from "@/features/core/store/auth";
+import { LocalizedText } from "@/components/common/localizedtext.types";
 
-const languagesMap = {
-  en,
-  hi,
-  ar,
-} as const;
+const languagesMap = { en, hi, ar } as const;
 
 type SupportedLang = keyof typeof languagesMap;
 
@@ -19,9 +23,20 @@ interface LanguageContextValue {
   t: TranslationType;
   lang: SupportedLang;
   isRTLOrder: boolean;
+  localize: (value?: string | LocalizedText | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
+
+// Shared so both the provider and the no-provider fallback stay in sync.
+function localizeValue(
+  lang: SupportedLang,
+  value?: string | LocalizedText | null
+): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return value[lang] || value.en || value.ar || value.hi || "";
+}
 
 export const LanguageProvider = ({
   children,
@@ -32,25 +47,16 @@ export const LanguageProvider = ({
 
   const lang: SupportedLang = useMemo(() => {
     const normalized = (storeLang || "en").toLowerCase();
-
     if (normalized === "en" || normalized === "hi" || normalized === "ar") {
       return normalized;
     }
-
     return "en";
   }, [storeLang]);
 
-  /**
-   * TRUE RTL ORDER MODE (NOT browser RTL)
-   */
   const isRTLOrder = lang === "ar";
 
-  /**
-   * GLOBAL ORDER CONTROL (IMPORTANT PART)
-   */
   useEffect(() => {
     const root = document.documentElement;
-
     if (isRTLOrder) {
       root.classList.add("rtl-order");
     } else {
@@ -58,13 +64,19 @@ export const LanguageProvider = ({
     }
   }, [isRTLOrder]);
 
+  const localize = useCallback(
+    (value?: string | LocalizedText | null) => localizeValue(lang, value),
+    [lang]
+  );
+
   const value = useMemo(
     () => ({
       lang,
       t: languagesMap[lang],
       isRTLOrder,
+      localize,
     }),
-    [lang, isRTLOrder]
+    [lang, isRTLOrder, localize]
   );
 
   return (
@@ -82,6 +94,8 @@ export const useLanguage = () => {
       lang: "en" as SupportedLang,
       t: languagesMap.en,
       isRTLOrder: false,
+      localize: (value?: string | LocalizedText | null) =>
+        localizeValue("en", value),
     };
   }
 

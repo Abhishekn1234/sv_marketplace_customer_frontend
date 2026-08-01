@@ -8,7 +8,7 @@ export class GetServicesUseCase {
   this.serviceRepo=service;
  }
 
-  async execute(): Promise<APIResponse<Service[]>> {
-    return await this.serviceRepo.getServices();
-  }
+ execute(params?: GetServicesParams): Promise<APIResponse<Service[]>> {
+  return this.serviceRepo.getServices(params);
+}
 }  

@@ -8,73 +8,96 @@ import { GetServiceTierUsecase } from "../../domain/usecases/services/GetService
 import type { Service } from "../../domain/entities/service.types";
 import type { Category } from "../../domain/entities/category.types";
 import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
+import { GetServicesParams } from "../../domain/entities/bookingservices.params.types";
 
-export const useServices = () => {
+
+
+export const useServices = ({
+  page = 1,
+  limit = 10,
+  sort = "createdAt:desc",
+  search = "",
+  categoryId,
+  language = "en",
+}: GetServicesParams = {}) => {
   const getServicesUseCase = new GetServicesUseCase(ServiceRepository);
   const getServiceTierUseCase = new GetServiceTierUsecase(ServiceRepository);
 
- const serviceTiersQuery = useQuery<ServiceTierRef[], Error>({
-  queryKey: ["serviceTiers"],
-  queryFn: async () => {
-    return await getServiceTierUseCase.execute();
-  },
+  const serviceTiersQuery = useQuery<ServiceTierRef[], Error>({
+    queryKey: ["serviceTiers"],
+    queryFn: () => getServiceTierUseCase.execute(),
 
-  // ✅ FIX
-  staleTime: Infinity,
-  gcTime: 1000 * 60 * 30,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 30,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: false,
-});
+  const servicesQuery = useQuery<Service[], Error>({
+    queryKey: [
+      "services",
+      page,
+      limit,
+      sort,
+      search,
+      categoryId,
+      language,
+    ],
 
-const servicesQuery = useQuery<Service[], Error>({
-  queryKey: ["services"],
-  queryFn: async () => {
-    const response = await getServicesUseCase.execute();
-    return Array.isArray(response?.data) ? response.data : [];
-  },
+    queryFn: async () => {
+          const response = await getServicesUseCase.execute({
+        page,
+        limit,
+        sort,
+        search,
+        categoryId,
+       language,
+      });
+      return Array.isArray(response?.data) ? response.data : [];
+    },
 
-  // ✅ FIX
-  staleTime: Infinity,
-  gcTime: 1000 * 60 * 30,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 30,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: false,
-});
-
-  // ❌ move toast handling outside query (React Query v5 style)
   if (serviceTiersQuery.error) {
-    toast.error(serviceTiersQuery.error.message || "Failed to fetch service tiers");
+    toast.error(
+      serviceTiersQuery.error.message ||
+        "Failed to fetch service tiers"
+    );
   }
 
   if (servicesQuery.error) {
-    toast.error(servicesQuery.error.message || "Failed to fetch services");
+    toast.error(
+      servicesQuery.error.message ||
+        "Failed to fetch services"
+    );
   }
 
   const categories: Category[] = servicesQuery.data
     ? Object.values(
         servicesQuery.data.reduce((acc, service) => {
-                  const categoryObj = service.category;
+          const category = service.category;
 
-          if (!categoryObj?._id) return acc;
+          if (!category?._id) return acc;
 
-          const categoryId = categoryObj._id;
-
-          if (!acc[categoryId]) {
-            acc[categoryId] = {
-              _id: categoryObj._id,
-              name: categoryObj.name ?? "Category",
-              vatRate: categoryObj.vatRate,
-              slug: categoryObj.slug ?? "",
-              iconUrl: categoryObj.iconUrl,
-              iconPublicId: categoryObj.iconPublicId,
+          if (!acc[category._id]) {
+            acc[category._id] = {
+              _id: category._id,
+              name: category.name,
+              slug: category.slug,
+              vatRate: category.vatRate,
+              iconUrl: category.iconUrl,
+              iconPublicId: category.iconPublicId,
               services: [],
             };
           }
 
-          acc[categoryId].services.push(service);
+          acc[category._id].services.push(service);
 
           return acc;
         }, {} as Record<string, Category>)
@@ -85,14 +108,15 @@ const servicesQuery = useQuery<Service[], Error>({
     categories,
     services: servicesQuery.data ?? [],
     serviceTiers: serviceTiersQuery.data ?? [],
-    loading: serviceTiersQuery.isLoading || servicesQuery.isLoading,
+    loading:
+      servicesQuery.isLoading || serviceTiersQuery.isLoading,
     error:
-      serviceTiersQuery.error?.message ||
       servicesQuery.error?.message ||
+      serviceTiersQuery.error?.message ||
       null,
     refetch: () => {
-      serviceTiersQuery.refetch();
       servicesQuery.refetch();
+      serviceTiersQuery.refetch();
     },
   };
 };

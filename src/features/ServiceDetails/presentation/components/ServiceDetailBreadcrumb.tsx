@@ -1,38 +1,36 @@
 import { Link, useParams } from "react-router-dom";
-
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { ChevronRightIcon } from "@/components/icons";
 import { useLanguage } from "@/features/context/LanguageContext";
-import {  ChevronRightIcon } from "@/components/icons";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function ServiceDetailBreadcrumb() {
   const { id } = useParams();
-  const { data:categories} = useServiceCategory();
-//   console.log(services);
-  // Find service by id
-  const {t}=useLanguage();
-  const selectedService = categories?.find(
-    (service: any) => service._id === id
-  );
+  const { t, localize, lang } = useLanguage();
+
+  const { services = [] } = useServices({
+    categoryId: id,
+    language: lang,
+  });
+
+  const categoryName =
+    services.length > 0
+      ? localize(services[0].category?.name)
+      : "";
 
   return (
-    <nav className="flex items-center gap-2 mb-6 text-sm font-medium">
-      
-      {/* Home */}
+    <nav className="mb-6 flex items-center gap-2 text-sm font-medium">
       <Link
         to="/"
-        className="text-gray-400 hover:text-blue-600 transition-colors"
+        className="text-gray-400 transition-colors hover:text-blue-600"
       >
         {t.servicedetailpage.breadcrumb.Home}
       </Link>
 
-      {/* Arrow */}
-     <ChevronRightIcon/>
+      <ChevronRightIcon />
 
-      {/* Dynamic Service Name */}
-      <span className="text-gray-900 font-semibold">
-        {selectedService?.name}
+      <span className="font-semibold text-gray-900">
+        {categoryName}
       </span>
     </nav>
   );
 }
-

@@ -39,7 +39,7 @@ export default function BookingCard({
   const navigate = useNavigate();
   const { label, clickable } = getBookingButtonConfig(booking);
 
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
 
  const handleActionButtonClick = () => {
   if (!clickable) return;
@@ -85,10 +85,10 @@ export default function BookingCard({
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="break-words text-[14px] font-semibold text-gray-900 sm:truncate sm:text-[16px]">
-              {booking.service?.name ?? "Service Name"}
+              {localize(booking.service?.name) ?? "Service Name"}
             </h3>
             <p className="break-words text-xs text-gray-500 sm:truncate sm:text-sm">
-              {booking.serviceTier?.displayName ?? "Tier"} •{" "}
+              {localize(booking.serviceTier?.displayName) ?? "Tier"} •{" "}
               {booking.assignedWorkers?.[0]?.worker?.fullName ?? "Not assigned"}
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function BookingCard({
         onViewDetails={() => onViewDetails(booking)}
         onPayNow={() => {
           const finalPrice = booking?.totalCost;
-          const serviceName =booking?.service?.name
+          const serviceName =localize(booking?.service?.name)
           navigate("/payment", {
             state: {
               bookingId: booking._id,

@@ -1,27 +1,35 @@
 import { useMemo } from "react";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import Button from "@/components/input/Button";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
-import {  ChevronRightIcon, ColumnsIcon } from "@/components/icons";
+import { ChevronRightIcon, ColumnsIcon } from "@/components/icons";
 
 export default function ServiceTierSelectionBreadCrumb() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, localize, lang } = useLanguage();
 
-  const { data: apiResponse, isPending } = useServiceCategory();
-  const {t}=useLanguage();
- 
-  const services = useMemo(() => {
-    return apiResponse?.flatMap((category: any) => category.services) ?? [];
-  }, [apiResponse]);
+  const {
+    services = [],
+    loading: isPending,
+    error,
+  } = useServices({
+    language: lang,
+  });
 
-  const serviceName =
-    services.find((s: any) => s._id === id)?.name || "Service";
+  const service = useMemo(
+    () => services.find((s: any) => s._id === id),
+    [services, id]
+  );
 
   if (isPending) {
-    return <CommonSpinner/>
+    return <CommonSpinner />;
+  }
+
+  if (error) {
+    return null;
   }
 
   return (
@@ -30,33 +38,36 @@ export default function ServiceTierSelectionBreadCrumb() {
       <nav className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 mb-6">
         <Button
           onClick={() => navigate(-1)}
-          className="hover:text-blue-600 transition-colors cursor-pointer text-black"
+          className="cursor-pointer text-black transition-colors hover:text-blue-600"
         >
           {t.servicetierselectionpage.steps.service}
         </Button>
 
         <ChevronRightIcon />
 
-        <span className="text-gray-900 font-semibold">{t.servicetierselectionpage.steps.selectTier}</span>
+        <span className="font-semibold text-gray-900">
+          {t.servicetierselectionpage.steps.selectTier}
+        </span>
 
-        <ChevronRightIcon/>
+        <ChevronRightIcon />
 
-        <span className="text-black">{t.servicetierselectionpage.steps.schedule}</span>
+        <span className="text-black">
+          {t.servicetierselectionpage.steps.schedule}
+        </span>
       </nav>
 
       {/* Service Badge */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center gap-3 px-4 py-2 bg-white border-2 border-gray-200 rounded-full shadow-sm">
-          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-           <ColumnsIcon/>
+        <div className="inline-flex items-center gap-3 rounded-full border-2 border-gray-200 bg-white px-4 py-2 shadow-sm">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
+            <ColumnsIcon />
           </div>
 
           <span className="text-sm font-bold text-gray-900">
-            {serviceName}
+            {service ? localize(service.name) : "Service"}
           </span>
         </div>
       </div>
     </div>
   );
 }
-

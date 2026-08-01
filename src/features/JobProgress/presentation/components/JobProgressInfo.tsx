@@ -7,15 +7,15 @@ import { formatSmartDate } from "@/components/utils/formatsmartdate";
 import { formatCoordinates } from "@/components/utils/formatcoordinates";
 
 export function JobProgressInfo({ booking }: BookingJobprogressinfo) {
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
 
   // =========================
   // SERVICE DETAILS
   // =========================
-  const serviceName = booking?.service?.name ?? "N/A";
+  const serviceName = localize(booking?.service?.name) ?? "N/A";
 
   const serviceTierName =
-    booking?.serviceTier?.displayName ?? "N/A";
+    localize(booking?.serviceTier?.displayName) ?? "N/A";
 
   // =========================
   // PRICE DETAILS

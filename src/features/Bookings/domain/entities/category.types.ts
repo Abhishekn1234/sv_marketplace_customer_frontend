@@ -1,12 +1,13 @@
+import { LocalizedText } from "@/components/common/localizedtext.types";
 import type { Service } from "./service.types";
 
 export interface Category {
   _id: string;
-  name: string;
+
+  name: string | LocalizedText;
+  description?: string | LocalizedText;
+
   slug: string;
-
-  description?: string;
-
   vatRate?: number;
 
   iconUrl?: string;

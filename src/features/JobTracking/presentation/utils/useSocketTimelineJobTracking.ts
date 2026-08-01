@@ -3,10 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/features/core/Websocket/socket";
 import { BookingEvents } from "@/components/common/BookingEvents";
 import { resolveTimelineStatus } from "./resolveTimelineStatus";
+import { Booking } from "@/features/Bookings/domain/entities/booking.types";
 
 interface Props {
   bookingId: string;
-  setLocalBooking: (booking: any) => void;
+  setLocalBooking: (booking: Booking) => void;
   navigate: (path: string, options?: any) => void;
   refetch: () => void;
 }

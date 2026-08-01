@@ -23,7 +23,7 @@ export default function JobTrackingWorkerDetails({
   booking,
   loading,
 }: Props) {
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
   const navigate = useNavigate();
 
   const [localBooking, setLocalBooking] =
@@ -221,13 +221,10 @@ export default function JobTrackingWorkerDetails({
             )}
           </div>
 
-          <div className="text-sm text-gray-500">
-            {localBooking?.service?.name} •{" "}
-            {
-              localBooking?.serviceTier
-                ?.displayName
-            }
-          </div>
+              <div className="text-sm text-gray-500">
+      {localize(localBooking?.service?.name)} •{" "}
+      {localize(localBooking?.serviceTier?.displayName as any)}
+    </div>
         </div>
       </div>
 

@@ -11,8 +11,8 @@ export class GetServiceCategoriesUseCase {
     this.serviceRepository = serviceRepository;
   }
 
-   async execute(): Promise<Category[]> {
-    return this.serviceRepository.getCategories();
+   async execute( params?: GetServicesParams): Promise<Category[]> {
+    return this.serviceRepository.getCategories(params);
   }
 }
 

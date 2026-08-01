@@ -1,14 +1,11 @@
 import React from "react";
-
 import { RecentItem } from "./RecentItem";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import { useLanguage } from "@/features/context/LanguageContext";
 import { getBookingPrice } from "../../utils/getbookprice";
 import { formatDate } from "../../../../../components/utils/formatdate";
-import { useLanguage } from "@/features/context/LanguageContext";
-import { useBookings } from "@/features/Bookings/presentation/hooks/useBookings";
 import CommonCard from "@/components/common/CommonCards";
-
-
 
 const CANCELLED_STATUSES = new Set([
   "WORKER_CANCELLED",
@@ -17,38 +14,28 @@ const CANCELLED_STATUSES = new Set([
 
 const RecentServices: React.FC = () => {
   const { bookings } = useBookings();
-  const { data: categories = [] } = useServiceCategory();
-  const { t } = useLanguage();
+  const { t, lang, localize } = useLanguage();
+
+  const {
+    services = [],
+    loading,
+    error,
+  } = useServices({
+    language: lang,
+  });
 
   // =========================
-  // MAP: service -> category
-  // =========================
-  const serviceToCategoryMap = React.useMemo(() => {
-    const map = new Map<string, string>();
-
-    categories?.forEach((category: any) => {
-      category.services?.forEach((service: any) => {
-        map.set(String(service._id), String(category._id));
-      });
-    });
-
-    return map;
-  }, [categories]);
-
-  // =========================
-  // MAP: service details
+  // MAP: service -> details
   // =========================
   const serviceMap = React.useMemo(() => {
     const map = new Map<string, any>();
 
-    categories?.forEach((category: any) => {
-      category.services?.forEach((service: any) => {
-        map.set(String(service._id), service);
-      });
+    services.forEach((service: any) => {
+      map.set(String(service._id), service);
     });
 
     return map;
-  }, [categories]);
+  }, [services]);
 
   // =========================
   // FILTER + SORT BOOKINGS
@@ -57,18 +44,17 @@ const RecentServices: React.FC = () => {
     if (!bookings?.length) return [];
 
     return bookings
-      .filter((b) => {
+      .filter((booking) => {
         const serviceId = String(
-          typeof b.serviceId === "object"
-            ? b.serviceId._id
-            : b.serviceId ?? ""
+          typeof booking.serviceId === "object"
+            ? booking.serviceId._id
+            : booking.serviceId ?? ""
         );
-        const hasService = serviceMap.has(serviceId);
 
-        const isNotCancelled = !CANCELLED_STATUSES.has(b.status);
-    
-
-        return hasService && isNotCancelled;
+        return (
+          serviceMap.has(serviceId) &&
+          !CANCELLED_STATUSES.has(booking.status)
+        );
       })
       .sort((a, b) => {
         const aTime = a.schedule?.startDateTime
@@ -83,11 +69,12 @@ const RecentServices: React.FC = () => {
       });
   }, [bookings, serviceMap]);
 
+  if (loading) return null;
+
+  if (error) return null;
+
   if (!validBookings.length) return null;
 
-  // =========================
-  // UI
-  // =========================
   return (
     <CommonCard
       title={
@@ -115,7 +102,13 @@ const RecentServices: React.FC = () => {
             ? `${booking.currency ?? ""} ${priceValue}`
             : "";
 
-        const categoryId = serviceToCategoryMap.get(serviceId);
+        // Supports both populated and plain categoryId
+        const categoryId =
+          service?.categoryId?._id ??
+          service?.categoryId ??
+          service?.category?._id ??
+          service?.category ??
+          "";
 
         return (
           <RecentItem
@@ -123,7 +116,7 @@ const RecentServices: React.FC = () => {
             bookingId={booking._id}
             categoryId={categoryId}
             serviceId={serviceId}
-            title={service?.name ?? ""}
+            title={localize(service?.name)}
             date={
               booking.bookingType === "SCHEDULED"
                 ? formatDate(booking.schedule?.startDateTime)

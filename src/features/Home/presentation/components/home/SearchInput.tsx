@@ -16,20 +16,23 @@ interface Props {
 
 const ServiceSearch: React.FC<Props> = ({ services, onSearchResults }) => {
   const [query, setQuery] = useState("");
-  const {t}=useLanguage();
-  useEffect(() => {
-    if (!query) {
-      onSearchResults(services); 
-      return;
-    }
+  const {t,localize}=useLanguage();
+ useEffect(() => {
+  if (!query.trim()) {
+    onSearchResults(services);
+    return;
+  }
 
-    const filtered = services.filter((service) =>
-      service.name.toLowerCase().includes(query.toLowerCase())
-    );
+  const search = query.toLowerCase().trim();
 
-    onSearchResults(filtered);
-  }, [query, services, onSearchResults]);
+  const filtered = services.filter((service) =>
+    localize(service.name)
+      .toLowerCase()
+      .includes(search)
+  );
 
+  onSearchResults(filtered);
+}, [query, services, onSearchResults, localize]);
   return (
     <div className="flex flex-col gap-7 max-w-4xl">
       {/* Title */}

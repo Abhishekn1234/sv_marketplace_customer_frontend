@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 import { useSearchStore } from "@/features/core/store/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomQuote from "./GetCustomQuote";
@@ -26,12 +26,17 @@ export default function ServiceDetailCards({
   const { id } = useParams();
   const { searchTerm } = useSearchStore();
   const navigate = useNavigate();
-  const { t } = useLanguage();
-
-  const { data: apiResponse, isPending, error } = useServiceCategory();
-
+  const { t,localize,lang } = useLanguage();
+const {
+  services,
+  loading: isPending,
+  error,
+} = useServices({
+  categoryId: id,
+  language: lang,
+});
+// console.log(services);
  
-
  const queryClient = useQueryClient();
 
 const addFavoriteMutation = useAddFavoriteService();
@@ -78,12 +83,16 @@ const toggleFavorite = (service: any) => {
 };
 
   // Flatten services
-  const services = useMemo(() => {
-    return apiResponse?.flatMap((category: any) => category.services) ?? [];
-  }, [apiResponse]);
+const localizedServices = useMemo(() => {
+  return services.map((service: any) => ({
+    ...service,
+    name: localize(service.name),
+    description: localize(service.description),
+  }));
+}, [services, localize]);
 
   if (isPending) {
-    return <CommonSpinner />;
+    return <CommonSpinner center />;
   }
 
   if (error) {
@@ -91,18 +100,20 @@ const toggleFavorite = (service: any) => {
   }
 
   // Category filter
-  let filteredServices = services.filter(
-    (service: any) => service.category?.[0]?._id === id
-  );
+  let filteredServices = [...localizedServices];
 
   // Search filter
-  if (searchTerm?.trim()) {
-    filteredServices = filteredServices.filter(
-      (service: any) =>
-        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      if (searchTerm?.trim()) {
+  filteredServices = filteredServices.filter((service) => {
+    const name = service.name.toLowerCase();
+    const description = service.description.toLowerCase();
+
+    return (
+      name.includes(searchTerm.toLowerCase()) ||
+      description.includes(searchTerm.toLowerCase())
     );
-  }
+  });
+    }
 
   // Filters
   if (activeFilter === "Popular") {
@@ -119,7 +130,9 @@ const toggleFavorite = (service: any) => {
 
   if (activeFilter === "Eco Friendly") {
     filteredServices = filteredServices.filter((service: any) =>
-      service.description?.toLowerCase().includes("eco")
+     localize(service.description)
+  .toLowerCase()
+  .includes("eco")
     );
   }
 
@@ -218,7 +231,7 @@ const toggleFavorite = (service: any) => {
               >
                 <Image
                   src={service.iconUrl}
-                  alt={service.name}
+                 alt={localize(service.name)}
                   className="h-7 w-7"
                 />
               </div>
@@ -231,11 +244,11 @@ const toggleFavorite = (service: any) => {
             </div>
 
             <h3 className="mb-2 text-xl font-bold text-gray-900">
-              {service.name}
+              {localize(service.name)}
             </h3>
 
             <p className="mb-5 flex-1 text-sm leading-6 text-gray-500">
-              {service.description}
+              {localize(service.description)}
             </p>
 
             <div className="mt-auto flex items-center justify-between border-t-2 border-gray-200 pt-5">

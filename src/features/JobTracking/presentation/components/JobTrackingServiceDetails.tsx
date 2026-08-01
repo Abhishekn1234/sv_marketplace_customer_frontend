@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/features/context/LanguageContext";
 import type { Booking } from "@/features/Bookings/domain/entities/booking.types";
@@ -18,16 +16,23 @@ export default function JobTrackingServiceDetails({
   booking,
   loading,
 }: Props) {
-  const { t,isRTLOrder } = useLanguage();
-  const { serviceTiers, services } = useServices();
+  const { t, isRTLOrder, localize, lang } = useLanguage();
+
+  // ✅ Pass current language
+  const {
+    serviceTiers,
+    services,
+  } = useServices({
+    language: lang,
+  });
 
   const [coordinates, setCoordinates] = useState("Loading...");
 
   // -----------------------------
-  // tier name
+  // Service Tier
   // -----------------------------
   const tierName = useMemo(() => {
-    if (!serviceTiers || !booking) return "—";
+    if (!booking) return "—";
 
     const tierId =
       typeof booking.serviceTierId === "string"
@@ -36,14 +41,14 @@ export default function JobTrackingServiceDetails({
 
     const tier = serviceTiers.find((t) => t._id === tierId);
 
-    return tier?.displayName || "—";
-  }, [serviceTiers, booking]);
+    return tier ? localize(tier.displayName) : "—";
+  }, [serviceTiers, booking, lang]);
 
   // -----------------------------
-  // service name
+  // Service Name
   // -----------------------------
   const serviceName = useMemo(() => {
-    if (!services || !booking) return "—";
+    if (!booking) return "—";
 
     const serviceId =
       typeof booking.serviceId === "string"
@@ -52,11 +57,14 @@ export default function JobTrackingServiceDetails({
 
     const service = services.find((s) => s._id === serviceId);
 
-    return service?.name || "—";
-  }, [services, booking]);
+    console.log("Language:", lang);
+    console.log("Service:", service);
+
+    return service ? localize(service.name) : "—";
+  }, [services, booking, lang]);
 
   // -----------------------------
-  // coordinates
+  // Coordinates
   // -----------------------------
   useEffect(() => {
     if (!booking?.location?.coordinates) {
@@ -64,8 +72,7 @@ export default function JobTrackingServiceDetails({
       return;
     }
 
-    const lat = booking.location.coordinates[1];
-    const lng = booking.location.coordinates[0];
+    const [lng, lat] = booking.location.coordinates;
 
     setCoordinates(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`);
   }, [booking]);
@@ -77,80 +84,90 @@ export default function JobTrackingServiceDetails({
       </CommonCard>
     );
   }
-  const baseAmount = Number(booking.actualValues?.taxableAmount || booking.estimatedValues?.taxableAmount);
-  const vatAmount = Number(booking.actualValues?.vatAmount || booking.estimatedValues?.vatAmount);
-  const finalAmount = Number(booking.actualValues?.finalAmount|| booking.estimatedValues?.finalAmount);
 
- const serviceDetails = [
-  {
-    label: t.jobtrackingpage.serviceDetails.serviceType,
-    value: serviceName,
-  },
-  {
-    label: t.jobtrackingpage.serviceDetails.serviceTier,
-    value: tierName,
-  },
-  {
-    label: t.jobtrackingpage.serviceDetails.dateTime,
-    value: booking.schedule?.startDateTime
-      ? formatDates(booking.schedule.startDateTime)
-      : "—",
-  },
-  {
-    label: t.jobtrackingpage.serviceDetails.location,
-    value: coordinates,
-    isSmall: true,
-  },
+  const baseAmount = Number(
+    booking.actualValues?.taxableAmount ??
+      booking.estimatedValues?.taxableAmount ??
+      0
+  );
 
-  // PRICE BREAKDOWN
-  {
-    label: t.jobtrackingpage.serviceDetails.basePrice,
-    value: `${booking.currency} ${baseAmount.toFixed(2)}`,
-  },
-  {
-    label: t.jobtrackingpage.serviceDetails.vatRate,
-    value: `${booking.currency} ${vatAmount.toFixed(2)}`,
-    isVat: true,
-  },
-  {
-    label: t.jobtrackingpage.serviceDetails.totalPrice,
-    value: `${booking.currency} ${finalAmount.toFixed(2)}`,
-    isPrice: true,
-  },
-];
+  const vatAmount = Number(
+    booking.actualValues?.vatAmount ??
+      booking.estimatedValues?.vatAmount ??
+      0
+  );
+
+  const finalAmount = Number(
+    booking.actualValues?.finalAmount ??
+      booking.estimatedValues?.finalAmount ??
+      0
+  );
+
+  const serviceDetails = [
+    {
+      label: t.jobtrackingpage.serviceDetails.serviceType,
+      value: serviceName,
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.serviceTier,
+      value: tierName,
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.dateTime,
+      value: booking.schedule?.startDateTime
+        ? formatDates(booking.schedule.startDateTime)
+        : "—",
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.location,
+      value: coordinates,
+      isSmall: true,
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.basePrice,
+      value: `${booking.currency} ${baseAmount.toFixed(2)}`,
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.vatRate,
+      value: `${booking.currency} ${vatAmount.toFixed(2)}`,
+    },
+    {
+      label: t.jobtrackingpage.serviceDetails.totalPrice,
+      value: `${booking.currency} ${finalAmount.toFixed(2)}`,
+      isPrice: true,
+    },
+  ];
 
   return (
-    <CommonCard
-      title={t.jobtrackingpage.serviceDetails.title}
-    >
+    <CommonCard title={t.jobtrackingpage.serviceDetails.title}>
       <div className="flex flex-col divide-y divide-gray-100">
         {serviceDetails.map((item, idx) => (
           <div
             key={idx}
-            className="flex justify-between items-start gap-3 py-3 min-w-0"
+            className="flex justify-between items-start gap-3 py-3"
           >
-            <span className="text-sm font-medium text-gray-500 shrink-0">
+            <span className="text-sm font-medium text-gray-500">
               {item.label}
             </span>
 
-                  <span
-          dir="ltr"
-          style={{
-            direction: "ltr",
-            unicodeBidi: "plaintext",
-          }}
-          className={`font-semibold break-words min-w-0 ${
-            isRTLOrder ? "text-left" : "text-right"
-          } ${
-            item.isSmall
-              ? "text-xs text-gray-700"
-              : item.isPrice
-              ? "text-blue-600 text-base"
-              : "text-sm text-gray-900"
-          }`}
-        >
-          {item.value}
-        </span>
+            <span
+              dir="ltr"
+              style={{
+                direction: "ltr",
+                unicodeBidi: "plaintext",
+              }}
+              className={`font-semibold break-words ${
+                isRTLOrder ? "text-left" : "text-right"
+              } ${
+                item.isSmall
+                  ? "text-xs text-gray-700"
+                  : item.isPrice
+                  ? "text-base text-blue-600"
+                  : "text-sm text-gray-900"
+              }`}
+            >
+              {item.value}
+            </span>
           </div>
         ))}
       </div>

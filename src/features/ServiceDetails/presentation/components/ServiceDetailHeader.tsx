@@ -1,28 +1,50 @@
 import { useParams } from "react-router-dom";
-import { useServiceCategory } from "@/features/Bookings/presentation/hooks/useServiceCategory";
+
+import { useLanguage } from "@/features/context/LanguageContext";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
+import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 
 export default function ServiceDetailHeader() {
-  const { id } = useParams<{ id: string }>(); 
-  
-  const { data: categories } = useServiceCategory();
+  const { id } = useParams<{ id: string }>();
+  const { localize, lang:language } = useLanguage();
 
-  if ( !categories) return null;
+  const {
+    categories,
+    loading,
+    error,
+  } = useServices({
+    categoryId: id,
+    
+    language:language,
+  });
 
-  // Find the service that matches the ID
-  const service = categories.find((s) => s._id === id);
 
-  if (!service) return <p>Service not found</p>;
+  if (loading) {
+    return <CommonSpinner  center />;
+  }
+
+  if (error) {
+    return (
+      <p className="text-red-500">
+        Failed to load category.
+      </p>
+    );
+  }
+
+  const category = categories?.[0];
+
+  if (!category) {
+    return <p>Service not found</p>;
+  }
 
   return (
     <div className="mb-8">
-      {/* Title */}
-      <h1 className="text-[42px] font-bold text-gray-900 mb-3 tracking-[-0.02em]">
-        {service.name}
+      <h1 className="mb-3 text-[42px] font-bold tracking-[-0.02em] text-gray-900">
+        {localize(category.name)}
       </h1>
 
-      {/* Subtitle */}
-      <p className="text-lg text-gray-500 max-w-[600px] leading-relaxed font-medium">
-        {service.description}
+      <p className="max-w-[600px] text-lg font-medium leading-relaxed text-gray-500">
+        {localize(category.description)}
       </p>
     </div>
   );

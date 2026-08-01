@@ -1,3 +1,8 @@
+import { LocalizedText } from "@/components/common/localizedtext.types";
+interface Feature {
+  text: string;
+  included: boolean;
+}
 export interface ServiceTierDetails {
   _id: string;
   code: string;
@@ -6,6 +11,8 @@ export interface ServiceTierDetails {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  features?:Feature;
+
 }
 
 export interface PricingTier {

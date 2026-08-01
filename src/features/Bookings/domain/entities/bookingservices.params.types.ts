@@ -4,4 +4,6 @@ export interface GetServicesParams {
   sort?: string;
   search?: string;
   categoryId?: string;
+  servicesLimitPerCategory?: number;
+  language?: "en" | "ar" | "hi";
 }

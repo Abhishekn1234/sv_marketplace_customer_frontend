@@ -19,7 +19,7 @@ import { BookingStatus } from "@/features/Bookings/domain/entities/bookingstatus
 
 export default function ConfirmationContent() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
   const { bookingId } = useParams<{ bookingId: string }>();
 
   // ✅ SINGLE BOOKING (NOT LIST)
@@ -52,13 +52,14 @@ export default function ConfirmationContent() {
   // TIER NAME
   // -----------------------------
   const tierName = useMemo(() => {
-    if (!serviceTiers || !data) return "N/A";
+  if (!serviceTiers || !data) return "N/A";
 
-    return (
-      serviceTiers.find((tier: any) => tier._id === data.serviceTierId)
-        ?.displayName ?? "N/A"
-    );
-  }, [serviceTiers, data]);
+  const tier = serviceTiers.find(
+    (tier: any) => tier._id === data.serviceTierId
+  );
+
+  return tier ? localize(tier.displayName) : "N/A";
+}, [serviceTiers, data, localize]);
 
   // -----------------------------
   // STATUS FORMAT
@@ -106,9 +107,9 @@ export default function ConfirmationContent() {
         </h1>
 
         {/* Status message */}
-        <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
-          {statusMessageMap[data.status] || "Booking status updated."}
-        </p>
+                <p className="text-base sm:text-lg text-gray-500 font-medium mb-8">
+            {localize(statusMessageMap[data.status]) || "Booking status updated."}
+          </p>
 
         {/* Reference ID */}
         <div className="inline-flex items-center gap-3 px-5 py-3 mb-8 bg-white border-2 border-gray-200 rounded-full shadow-sm">

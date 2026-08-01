@@ -51,7 +51,7 @@ export function BookingActions({
   onCheckProgress,
   navigatetodispute,
 }: BookingActionsProps) {
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
 
   const status = booking.status as BookingStatus;
 
@@ -119,7 +119,7 @@ export function BookingActions({
             onPayNow({
               bookingId: booking._id,
               bookingCode:booking?.bookingCode,
-              serviceName: booking.service?.name ?? "Service",
+              serviceName: localize(booking.service?.name) ?? "Service",
               price: booking?.totalCost ?? 0,
               taxableAmount:booking?.taxableAmount,
               vatAmount:booking?.vatAmount,

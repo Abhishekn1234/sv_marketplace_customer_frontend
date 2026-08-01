@@ -21,7 +21,7 @@ export default function BookingSummary({
   placeName,
   tierName,
 }: BookingSummaryProps) {
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
   const { services } = useServices();
 
   const duration = formatBookingDurationWithTranslation(data, t);
@@ -59,7 +59,7 @@ export default function BookingSummary({
 
           <SummaryItem
             label={t.confirmationpage.bookingSummary.service}
-            value={serviceName}
+            value={localize(serviceName)}
             isRTLOrder={isRTLOrder}
           />
 

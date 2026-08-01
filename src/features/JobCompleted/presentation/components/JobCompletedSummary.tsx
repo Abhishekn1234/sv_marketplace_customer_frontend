@@ -12,7 +12,7 @@ export default function JobCompletedSummary({
   booking: Booking;
 }) {
   const { serviceTiers, services } = useServices();
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
 
   // Service
   const serviceId =
@@ -20,12 +20,13 @@ export default function JobCompletedSummary({
       ? booking.serviceId
       : booking.serviceId?._id;
 
-  const service =
-    booking.service?.name ??
+const service = localize(
+  booking.service?.name ??
     (typeof booking.serviceId === "object"
       ? booking.serviceId?.name
       : services.find((s) => s._id === serviceId)?.name) ??
-    "—";
+    "—"
+);
 
   // Service Tier
   const serviceTierId =
@@ -33,14 +34,15 @@ export default function JobCompletedSummary({
       ? booking.serviceTierId
       : booking.serviceTierId?._id;
 
-  const tierName =
-    booking.serviceTier?.displayName ??
+  const tierName = localize(
+  booking.serviceTier?.displayName ??
     serviceTiers?.find(
       (tier) =>
         String(tier._id) === String(serviceTierId) ||
         String(tier.tierId) === String(serviceTierId)
     )?.displayName ??
-    "—";
+    "—"
+);
 
   const price =
     booking.actualValues?.finalAmount?.toFixed(2) ??

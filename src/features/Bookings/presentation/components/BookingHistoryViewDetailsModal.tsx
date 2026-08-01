@@ -24,12 +24,12 @@ export default function BookingHistoryViewDetailsModal({
   isOpen,
   onClose,
 }: Props) {
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
 
   if (!booking) return null;
 
-  const serviceName = booking.service?.name ?? "Service Details";
-  const tierName = booking.serviceTier?.displayName ?? "-";
+  const serviceName = localize(booking.service?.name) ?? "Service Details";
+  const tierName = localize(booking.serviceTier?.displayName) ?? "-";
 
   const customerName = booking.assignedWorkers?.[0]?.worker?.fullName ?? t.common["Not Assigned"];
   const customerPhone = booking.assignedWorkers?.[0]?.worker?.phone;

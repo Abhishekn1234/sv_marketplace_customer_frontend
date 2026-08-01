@@ -26,7 +26,7 @@ export default function InvoiceModal({
   const navigate = useNavigate();
   const { data: invoice } = useGenerateInvoice(booking?._id,open);
   const { serviceTiers, services } = useServices();
-  const { t, isRTLOrder } = useLanguage();
+  const { t, isRTLOrder,localize } = useLanguage();
 
   if (!open || !booking) return null;
 
@@ -37,12 +37,13 @@ export default function InvoiceModal({
       : booking.serviceId?._id;
 
   // Service name
-  const service =
-    booking.service?.name ??
+  const service = localize(
+  booking.service?.name ??
     (typeof booking.serviceId === "object"
       ? booking.serviceId?.name
       : services.find((s) => s._id === serviceId)?.name) ??
-    "-";
+    "-"
+);
 
   // Normalize serviceTierId
   const serviceTierId =
@@ -58,7 +59,9 @@ export default function InvoiceModal({
         tier.tierId === serviceTierId
     );
 
-  const serviceTierName = serviceTier?.displayName ?? "-";
+ const serviceTierName = localize(
+  serviceTier?.displayName ?? "-"
+);
 
   const invoiceData = invoice ?? null;
 

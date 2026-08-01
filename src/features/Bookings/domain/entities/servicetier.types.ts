@@ -1,3 +1,5 @@
+import { LocalizedText } from "@/components/common/localizedtext.types";
+
 interface Feature {
   text: string;
   included: boolean;
@@ -5,10 +7,10 @@ interface Feature {
 export interface ServiceTierRef {
   _id: string;
   tierId?:string;
-  name?: string;
+  name?: LocalizedText;
   code?:string;
-  displayName?:string;
-  description:string;
+  displayName?:LocalizedText;
+  description:LocalizedText;
   isActive:boolean;
   createdAt?:Date;
   updatedAt?:Date;
