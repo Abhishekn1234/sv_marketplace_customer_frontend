@@ -6,7 +6,8 @@ export interface GetAllDisputes{
   _id: string;
   bookingId: string;
   raisedByUserId: string;
-
+  bookingCode?:string;
+  reasonType?: string;
   raisedBy: UserRole;
 
   reason: string;

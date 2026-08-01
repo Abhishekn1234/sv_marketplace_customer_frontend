@@ -21,12 +21,12 @@ export default function ReviewDesktopTable({
   fetchNextPage,
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const { t } = useLanguage();
-
+  const { t,localize } = useLanguage();
+   console.log(reviews);
   const columns: Column<Review>[] = [
     {
       header: t.reviewpage.table.service,
-      render: (row) => row.service?.name ?? t.reviewpage.noFeedback,
+      render: (row) => localize(row.service?.name) ?? t.reviewpage.noFeedback,
     },
     {
       header: t.reviewpage.table.workers,

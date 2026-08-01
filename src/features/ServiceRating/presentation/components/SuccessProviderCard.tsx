@@ -19,7 +19,7 @@ import CommonCard from "@/components/common/CommonCards";
 export default function SuccessProviderCard() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { data, isLoading } = useBookingHistory();
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
 
   const { data: review, isLoading: reviewLoading } =
     useBookingReview(bookingId);
@@ -118,7 +118,7 @@ export default function SuccessProviderCard() {
         {booking.assignedWorkers?.[0]?.worker?.fullName || "Provider Name"}
       </h2>
       <p className="text-sm sm:text-base text-gray-500 truncate">
-        {booking.service?.name || "Service Name"}
+        {localize(booking.service?.name) || "Service Name"}
       </p>
     </div>
 

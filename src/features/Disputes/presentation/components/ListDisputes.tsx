@@ -3,15 +3,13 @@ import { useInfiniteDisputes } from "../hooks/useInfinteDisputes";
 import DisputesSearchBar from "./DisputesSearchBar";
 import DisputesList from "./DisputesLists";
 
-
-
 export default function ListDisputes() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // debounce
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 250);
     return () => clearTimeout(t);
@@ -25,41 +23,51 @@ export default function ListDisputes() {
     fetchNextPage,
   } = useInfiniteDisputes(debouncedSearch);
 
-  const items = data?.pages.flatMap((p) => p.data) ?? [];
+  const items = data?.pages.flatMap((page) => page.data) ?? [];
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+      const first = entries[0];
+
+      if (
+        first.isIntersecting &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
         fetchNextPage();
       }
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage]
+    [fetchNextPage, hasNextPage, isFetchingNextPage]
   );
 
   useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
+    if (!scrollRef.current || !sentinelRef.current) return;
 
-    const obs = new IntersectionObserver(handleIntersect, {
-      threshold: 0.1,
+    const observer = new IntersectionObserver(handleIntersect, {
+      root: scrollRef.current,
+      rootMargin: "100px",
+      threshold: 0,
     });
 
-    obs.observe(el);
-    return () => obs.disconnect();
+    observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
   }, [handleIntersect]);
 
   return (
-    <div className="flex flex-col h-[70vh] sm:h-[620px] rounded-2xl bg-gray-50 overflow-hidden">
-
-      <DisputesSearchBar search={search} setSearch={setSearch} />
+    <div className="flex flex-col h-full rounded-none sm:rounded-2xl bg-gray-50 overflow-hidden">
+      <DisputesSearchBar
+        search={search}
+        setSearch={setSearch}
+      />
 
       <DisputesList
         items={items}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
         sentinelRef={sentinelRef}
+        scrollRef={scrollRef}
       />
-
     </div>
   );
 }

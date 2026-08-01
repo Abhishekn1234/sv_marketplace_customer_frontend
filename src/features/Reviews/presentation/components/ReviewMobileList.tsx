@@ -3,6 +3,8 @@ import CommonCard from "@/components/common/CommonCards";
 import CommonSpinner from "@/components/common/CommonLoadingSpinner";
 import RatingStars from "./RatingStars";
 import { Review } from "../../domain/entities/review.types";
+import { formatDate } from "@/components/utils/formatdate";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 
 interface Props {
@@ -19,7 +21,7 @@ export default function ReviewMobileList({
   fetchNextPage,
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement>(null);
-
+ const {t,localize}=useLanguage();
   useEffect(() => {
     if (!hasNextPage) return;
     const node = sentinelRef.current;
@@ -41,23 +43,20 @@ export default function ReviewMobileList({
           <div className="flex items-start justify-between gap-2">
             <div>
               <p className="font-medium text-gray-900">
-                {review.service?.name ?? "Service"}
+                {localize(review.service?.name) ?? "Service"}
               </p>
               <p className="text-xs text-gray-500">
                 {review.workers.map((w) => w.fullName).join(", ") || "Unassigned"}
               </p>
             </div>
             <span className="shrink-0 text-xs text-gray-400">
-              {new Date(review.reviewedAt).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })}
+              {formatDate(review.reviewedAt)}
             </span>
           </div>
 
           <div className="mt-2 flex items-center gap-4">
-            <RatingStars value={review.serviceRating} label="Service" />
-            <RatingStars value={review.workerRating} label="Worker" />
+            <RatingStars value={review.serviceRating} label={t.common.service} />
+            <RatingStars value={review.workerRating} label={t.common.workers} />
           </div>
 
           {review.feedback && (
