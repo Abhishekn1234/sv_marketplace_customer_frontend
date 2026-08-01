@@ -14,13 +14,21 @@ import { getCategoryNames } from "./utils/getcategoryname";
 import { useInfiniteFavoriteServices } from "./hooks/useInfiniteFavoriteServices";
 import { useRemoveFavoriteService } from "./hooks/useDeleteFavorites";
 import { useLanguage } from "@/features/context/LanguageContext";
+import { useServices } from "@/features/Bookings/presentation/hooks/useServices";
 
 export default function FavoritesPage() {
   const navigate = useNavigate();
-  const { t, localize } = useLanguage();
-  const [activeFilter, setActiveFilter] = useState("All");
+  const { t, localize, lang } = useLanguage();
+
+  const [activeFilter, setActiveFilter] = useState(
+    t.Bookingspage.status.All
+  );
   const [query, setQuery] = useState("");
 
+  const { categories,services:service } = useServices({
+    language: lang,
+  });
+ console.log(service);
   const {
     data,
     isPending,
@@ -43,33 +51,76 @@ export default function FavoritesPage() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const services = useMemo<Service[]>(() => {
-    return data?.pages.flatMap((page) => page.data) ?? [];
-  }, [data]);
+  useEffect(() => {
+    setActiveFilter(t.Bookingspage.status.All);
+  }, [lang]);
 
-  const filters = useMemo(() => {
-    const categories = new Set<string>();
+  // Category lookup
+//   const categoryMap = useMemo(() => {
+//   return new Map(
+//     (categories ?? []).map((category) => [category._id, category])
+//   );
+// }, [categories]);
+const serviceMap = useMemo(() => {
+  return new Map(
+    (service ?? []).map((item) => [item._id, item])
+  );
+}, [service]);
+// Merge favorite services with localized categories
+const services = useMemo(() => {
+  const favoriteServices =
+    data?.pages.flatMap((page) => page.data as Service[]) ?? [];
 
-    services.forEach((service) => {
-      getCategoryNames(service, localize).forEach((category) =>
-        categories.add(category)
-      );
-    });
+  return favoriteServices.map((favorite) => {
+    const localizedService = serviceMap.get(favorite._id);
 
-    return ["All", ...Array.from(categories)];
-  }, [services]);
+    if (!localizedService) {
+      return favorite;
+    }
 
-  const filtered = useMemo(() => {
-    return services.filter((service) => {
-      const categories = getCategoryNames(service, localize);
+    return {
+      ...favorite,
 
-      return (
-        activeFilter === "All" ||
-        categories.includes(activeFilter)
-      );
-    });
-  }, [services, activeFilter]);
+      // Replace with localized values from useServices
+      name: localizedService.name,
+      description: localizedService.description,
+      category: localizedService.category,
 
+      // Keep favorite-specific fields
+      isFavorited: favorite.isFavorited,
+      avgRating: favorite.avgRating,
+      totalRatings: favorite.totalRatings,
+      pricingTiers: favorite.pricingTiers,
+    };
+  });
+}, [data, serviceMap]);
+
+const filters = useMemo(() => {
+  const set = new Set<string>();
+
+  services.forEach((service) => {
+    getCategoryNames(service, localize).forEach((category) =>
+      set.add(category)
+    );
+  });
+
+  return [t.Bookingspage.status.All, ...Array.from(set)];
+}, [services, localize, t]);
+
+useEffect(() => {
+  setActiveFilter(t.Bookingspage.status.All);
+}, [t.Bookingspage.status.All]);
+
+const filtered = useMemo(() => {
+  return services.filter((service) => {
+    const categoryNames = getCategoryNames(service, localize);
+
+    return (
+      activeFilter === t.Bookingspage.status.All ||
+      categoryNames.includes(activeFilter)
+    );
+  });
+}, [services, activeFilter, localize, t]);
   const removeFavorite = (id: string) => {
     removeFavoriteMutation.mutate(id);
   };
@@ -78,7 +129,6 @@ export default function FavoritesPage() {
     navigate(`/servicetierselection/${service._id}`);
   };
 
-  // Only show full-page loader on first load
   if (isPending && !data) {
     return <CommonSpinner center />;
   }
@@ -106,7 +156,6 @@ export default function FavoritesPage() {
           onFilterChange={setActiveFilter}
         />
 
-        {/* Small loader while searching */}
         {isFetching && !isFetchingNextPage && (
           <div className="flex justify-center py-3">
             <CommonSpinner />

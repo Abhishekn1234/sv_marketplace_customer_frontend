@@ -22,7 +22,7 @@ export default function ReviewDesktopTable({
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { t,localize } = useLanguage();
-   console.log(reviews);
+  //  console.log(reviews);
   const columns: Column<Review>[] = [
     {
       header: t.reviewpage.table.service,

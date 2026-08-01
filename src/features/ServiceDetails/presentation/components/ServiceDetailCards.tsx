@@ -14,6 +14,7 @@ import { FavoriteIcon } from "@/components/icons";
 import { useAddFavoriteService } from "@/features/Favorites/presentation/hooks/useAddFavorites";
 import { useRemoveFavoriteService } from "@/features/Favorites/presentation/hooks/useDeleteFavorites";
 import { useQueryClient } from "@tanstack/react-query";
+import { Service } from "@/features/Bookings/domain/entities/service.types";
 interface Props {
   activeFilter: string;
   sortBy: string;
@@ -45,38 +46,36 @@ const removeFavoriteMutation = useRemoveFavoriteService();
 const toggleFavorite = (service: any) => {
   const serviceId = service._id;
 
+  const updateServicesCache = (isFavorited: boolean) => {
+    queryClient.setQueriesData(
+      {
+        queryKey: ["services"],
+      },
+      (old: any) => {
+        if (!Array.isArray(old)) return old;
+
+        return old.map((item: any) =>
+          item._id === serviceId
+            ? {
+                ...item,
+                isFavorited,
+              }
+            : item
+        );
+      }
+    );
+  };
+
   if (service.isFavorited) {
     removeFavoriteMutation.mutate(serviceId, {
       onSuccess: () => {
-        queryClient.setQueryData(["serviceCategory"], (old: any) => {
-          if (!old) return old;
-
-          return old.map((category: any) => ({
-            ...category,
-            services: category.services.map((s: any) =>
-              s._id === serviceId
-                ? { ...s, isFavorited: false }
-                : s
-            ),
-          }));
-        });
+        updateServicesCache(false);
       },
     });
   } else {
     addFavoriteMutation.mutate(serviceId, {
       onSuccess: () => {
-        queryClient.setQueryData(["serviceCategory"], (old: any) => {
-          if (!old) return old;
-
-          return old.map((category: any) => ({
-            ...category,
-            services: category.services.map((s: any) =>
-              s._id === serviceId
-                ? { ...s, isFavorited: true }
-                : s
-            ),
-          }));
-        });
+        updateServicesCache(true);
       },
     });
   }
@@ -84,7 +83,7 @@ const toggleFavorite = (service: any) => {
 
   // Flatten services
 const localizedServices = useMemo(() => {
-  return services.map((service: any) => ({
+  return services.map((service: Service) => ({
     ...service,
     name: localize(service.name),
     description: localize(service.description),

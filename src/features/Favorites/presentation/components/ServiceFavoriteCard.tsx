@@ -31,7 +31,7 @@ export default function ServiceFavoriteCard({
 
   const price = getStartingPrice(service);
   const categories = getCategoryNames(service,localize);
-
+ console.log(service);
   return (
     <CommonCard
       type="white"
@@ -108,15 +108,15 @@ export default function ServiceFavoriteCard({
           ))}
         </div>
 
-        <h3
+              <h3
           className="mb-1.5 text-base font-semibold leading-snug text-[#16324F] sm:text-lg"
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
         >
-          {service.name}
+          {localize(service.name)}
         </h3>
 
         <p className="mb-5 line-clamp-2 text-sm text-gray-500">
-          {service.description}
+          {localize(service.description)}
         </p>
 
         <div className="mt-auto flex items-center gap-1">

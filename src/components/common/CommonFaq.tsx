@@ -107,63 +107,55 @@ export default function CommonFaq() {
       {/* ================= WHATSAPP MODAL ================= */}
 
       <CommonModal
-        open={whatsappOpen}
-        onClose={() =>
-          setWhatsappOpen(false)
-        }
-        title={t.faq.chatOnWhatsapp}
-        width="max-w-md"
-      >
-        <div className="space-y-4">
-          
+  open={whatsappOpen}
+  onClose={() => setWhatsappOpen(false)}
+  title={t.faq.chatOnWhatsapp}
 
-          {/* Input */}
-          <div>
-            <Label className="mb-2 block text-sm font-semibold text-gray-700">
-             {t.faq.yourMessage}
-            </Label>
+  width="max-w-xs"
+>
+  <div className="space-y-3">
+    <div>
+      <Label className="mb-2 block text-sm font-semibold text-gray-700">
+        {t.faq.yourMessage}
+      </Label>
 
-            <Input
-              type="text"
-              value={message}
-              onChange={(value) =>
-                setMessage(value)
-              }
-              placeholder={t.faq.messagePlaceholder}
-              className="
-                w-full
-                rounded-xl
-                border
-                border-gray-200
-                px-4
-                py-3
-                text-sm
-                outline-none
-                focus:border-green-500
-                focus:ring-4
-                focus:ring-green-100
-              "
-            />
-          </div>
+      <Input
+        type="text"
+        value={message}
+        onChange={(value) => setMessage(value)}
+        placeholder={t.faq.messagePlaceholder}
+        className="
+          w-full
+          rounded-lg
+          border
+          border-gray-200
+          px-3
+          py-2.5
+          text-sm
+          focus:border-green-500
+          focus:ring-2
+          focus:ring-green-100
+        "
+      />
+    </div>
 
-          {/* Action */}
-          <Button
-            onClick={handleSendToWhatsApp}
-            className="
-              w-full
-              rounded-xl
-              bg-green-500
-              py-3
-              font-semibold
-              text-white
-              transition
-              hover:bg-green-600
-            "
-          >
-           {t.faq.chatOnWhatsapp}
-          </Button>
-        </div>
-      </CommonModal>
+    <Button
+      onClick={handleSendToWhatsApp}
+      className="
+        w-full
+        rounded-lg
+        bg-green-500
+        py-2.5
+        text-sm
+        font-medium
+        text-white
+        hover:bg-green-600
+      "
+    >
+      {t.faq.chatOnWhatsapp}
+    </Button>
+  </div>
+</CommonModal>
 
       {/* ================= FAQ FLOAT BUTTON ================= */}
 
