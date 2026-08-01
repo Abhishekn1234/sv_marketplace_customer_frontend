@@ -13,10 +13,11 @@ import ServiceFavoriteCard from "./components/ServiceFavoriteCard";
 import { getCategoryNames } from "./utils/getcategoryname";
 import { useInfiniteFavoriteServices } from "./hooks/useInfiniteFavoriteServices";
 import { useRemoveFavoriteService } from "./hooks/useDeleteFavorites";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 export default function FavoritesPage() {
   const navigate = useNavigate();
-
+  const { t, localize } = useLanguage();
   const [activeFilter, setActiveFilter] = useState("All");
   const [query, setQuery] = useState("");
 
@@ -50,7 +51,7 @@ export default function FavoritesPage() {
     const categories = new Set<string>();
 
     services.forEach((service) => {
-      getCategoryNames(service).forEach((category) =>
+      getCategoryNames(service, localize).forEach((category) =>
         categories.add(category)
       );
     });
@@ -60,7 +61,7 @@ export default function FavoritesPage() {
 
   const filtered = useMemo(() => {
     return services.filter((service) => {
-      const categories = getCategoryNames(service);
+      const categories = getCategoryNames(service, localize);
 
       return (
         activeFilter === "All" ||

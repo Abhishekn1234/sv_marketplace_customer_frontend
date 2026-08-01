@@ -9,6 +9,7 @@ import BookingServiceForm from "./BookingServiceForm";
 import BookingServiceLocation from "./BookingServiceLocation";
 import BookingServiceFooter from "./BookingServiceFooter";
 import { getCurrentLocation } from "../../../../../components/utils/reverse";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface BookingServiceModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export default function BookingServiceModal({
   onClose,
   service,
 }: BookingServiceModalProps) {
-  
+   const{localize}=useLanguage();
   const [workDescription, setWorkDescription] = useState("");
   const [numberOfWorkers, setNumberOfWorkers] = useState(1);
   const [estimatedHours, setEstimatedHours] = useState(1);
@@ -62,13 +63,16 @@ export default function BookingServiceModal({
   }, [service, selectedTiers, pricingMode, estimatedHours, estimatedDays, numberOfWorkers]);
 
   const tierNameMap = useMemo(() => {
-    if (!serviceTiers) return {};
-    const map: Record<string, string> = {};
-    for (const tier of serviceTiers) {
-      map[tier._id] = tier.displayName ?? "Tier";
-    }
-    return map;
-  }, [serviceTiers]);
+  if (!serviceTiers) return {};
+
+  const map: Record<string, string> = {};
+
+  serviceTiers.forEach((tier) => {
+    map[tier._id] = localize(tier.displayName) || "Tier";
+  });
+
+  return map;
+}, [serviceTiers, localize]);
 
 
   useEffect(() => {

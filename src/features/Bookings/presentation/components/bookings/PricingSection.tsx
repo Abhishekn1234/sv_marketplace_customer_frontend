@@ -4,6 +4,7 @@ import type { ServiceTierRef } from "../../../domain/entities/servicetier.types"
 
 import Button from "@/components/input/Button";
 import Select from "@/components/input/Select";
+import { useLanguage } from "@/features/context/LanguageContext";
 
 interface Props {
   service: Service;
@@ -42,7 +43,7 @@ export default function PricingSection({
       selectedTiers.includes(id) ? selectedTiers.filter(t => t !== id) : [...selectedTiers, id]
     );
   };
-
+ const {localize}=useLanguage();
   return (
     <div className="space-y-4">
       <Label>Pricing</Label>
@@ -106,7 +107,7 @@ export default function PricingSection({
               variant={selectedTiers.includes(tier._id) ? "ghost" : "primary"}
               onClick={() => toggleTier(tier._id)}
             >
-              {tierInfo?.displayName ?? "Tier"}
+              {localize(tierInfo?.displayName)?? "Tier"}
             </Button>
           );
         })}

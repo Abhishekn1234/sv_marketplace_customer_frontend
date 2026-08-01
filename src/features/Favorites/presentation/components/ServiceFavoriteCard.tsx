@@ -27,10 +27,10 @@ export default function ServiceFavoriteCard({
   onRemoveFavorite,
   onBookNow,
 }: ServiceFavoriteCardProps) {
-  const { t } = useLanguage();
+  const { t,localize } = useLanguage();
 
   const price = getStartingPrice(service);
-  const categories = getCategoryNames(service);
+  const categories = getCategoryNames(service,localize);
 
   return (
     <CommonCard
