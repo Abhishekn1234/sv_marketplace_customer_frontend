@@ -14,6 +14,7 @@ export interface BookingHistoryQueryParams {
   sort?: string;
   search?: string;
   status?: BookingStatus;
+  language?: string;
 }
 
 

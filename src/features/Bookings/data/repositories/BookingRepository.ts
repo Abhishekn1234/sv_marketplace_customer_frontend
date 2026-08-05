@@ -40,15 +40,18 @@ async getBookings(): Promise<GetBookingsResponse> {
     bookings: bookingsArray,
   };
 }
-async getBookingHistory(params?:BookingHistoryQueryParams): Promise<BookingHistoryResponse> {
+async getBookingHistory(params?: BookingHistoryQueryParams): Promise<BookingHistoryResponse> {
+  const { language, ...queryParams } = params ?? {};
 
   const response = await apiClient.get<BookingHistoryResponse>(
     `${this.baseUrl}/history`,
     {
-      params
+      params: queryParams,
+      headers: {
+        ...(language ? { "accept-language": language } : {}),
+      },
     }
   );
-  // console.log(response);
 
   return response.data;
 }

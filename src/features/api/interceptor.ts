@@ -52,6 +52,12 @@ apiClient.interceptors.request.use(
         `Bearer ${accessToken}`;
     }
 
+    const language = useAuthStore.getState().language;
+    if (language) {
+      config.headers = config.headers ?? {};
+      (config.headers as Record<string, string>)['accept-language'] = language;
+    }
+
     if (config.data instanceof FormData) {
       delete (config.headers as any)?.["Content-Type"];
     } else {
