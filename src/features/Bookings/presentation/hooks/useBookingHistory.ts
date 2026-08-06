@@ -17,7 +17,6 @@ export function useBookingHistory(params?: BookingHistoryQueryParams) {
       usecase.execute({
         ...params,
         page: pageParam as number,
-        language,
       }),
 
     getNextPageParam: (lastPage) => {

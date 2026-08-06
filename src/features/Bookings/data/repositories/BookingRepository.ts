@@ -10,6 +10,7 @@ import type { BookingPayload } from "../../domain/entities/bookingpayload.types"
 import apiClient from "../../../api/interceptor";
 import type { BookingById } from "../../domain/entities/bookingbyid.types";
 import type { BookingHistoryQueryParams, BookingHistoryResponse } from "../../domain/entities/bookinghistory.types";
+import { useAuthStore } from "@/features/core/store/auth";
 
 export class BookingRepository implements IBookingRepository {
   private readonly baseUrl = "/booking";
@@ -41,14 +42,15 @@ async getBookings(): Promise<GetBookingsResponse> {
   };
 }
 async getBookingHistory(params?: BookingHistoryQueryParams): Promise<BookingHistoryResponse> {
-  const { language, ...queryParams } = params ?? {};
+  const { language: _language, ...queryParams } = params ?? {};
+  const selectedLanguage = useAuthStore.getState().language;
 
   const response = await apiClient.get<BookingHistoryResponse>(
     `${this.baseUrl}/history`,
     {
       params: queryParams,
       headers: {
-        ...(language ? { "accept-language": language } : {}),
+        ...(selectedLanguage ? { "accept-language": selectedLanguage } : {}),
       },
     }
   );

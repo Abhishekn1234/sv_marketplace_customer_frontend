@@ -9,6 +9,7 @@ import type { Service } from "../../domain/entities/service.types";
 import type { Category } from "../../domain/entities/category.types";
 import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 import { GetServicesParams } from "../../domain/entities/bookingservices.params.types";
+import { useAuthStore } from "@/features/core/store/auth";
 
 
 
@@ -18,8 +19,8 @@ export const useServices = ({
   sort = "createdAt:desc",
   search = "",
   categoryId,
-  language = "en",
 }: GetServicesParams = {}) => {
+  const selectedLanguage = useAuthStore((state) => state.language);
   const getServicesUseCase = new GetServicesUseCase(ServiceRepository);
   const getServiceTierUseCase = new GetServiceTierUsecase(ServiceRepository);
 
@@ -42,7 +43,7 @@ export const useServices = ({
       sort,
       search,
       categoryId,
-      language,
+      selectedLanguage,
     ],
 
     queryFn: async () => {
@@ -52,7 +53,6 @@ export const useServices = ({
         sort,
         search,
         categoryId,
-       language,
       });
       return Array.isArray(response?.data) ? response.data : [];
     },

@@ -7,6 +7,7 @@ import type { ServiceTierRef } from "../../domain/entities/servicetier.types";
 import type { GetServicesParams } from "../../domain/entities/bookingservices.params.types";
 
 import apiClient from "../../../api/interceptor";
+import { useAuthStore } from "@/features/core/store/auth";
 
 export class ServiceRepository implements IServiceRepository {
   private readonly baseUrl = "booking";
@@ -14,17 +15,15 @@ export class ServiceRepository implements IServiceRepository {
  async getServices(
   params: GetServicesParams = {}
 ): Promise<APIResponse<Service[]>> {
-  const {
-    language,
-    ...queryParams
-  } = params;
+  const { language: _language, ...queryParams } = params;
+  const selectedLanguage = useAuthStore.getState().language;
 
   const response = await apiClient.get<APIResponse<Service[]>>(
     `${this.baseUrl}/services`,
     {
       params: queryParams,
       headers: {
-        "accept-language": language,
+        ...(selectedLanguage ? { "accept-language": selectedLanguage } : {}),
       },
     }
   );
@@ -41,8 +40,14 @@ export class ServiceRepository implements IServiceRepository {
   }
 
   async getServiceTiers(): Promise<ServiceTierRef[]> {
+    const selectedLanguage = useAuthStore.getState().language;
     const response = await apiClient.get<ServiceTierRef[]>(
-      `${this.baseUrl}/pricing-tiers`
+      `${this.baseUrl}/pricing-tiers`,
+      {
+        headers: {
+          ...(selectedLanguage ? { "accept-language": selectedLanguage } : {}),
+        },
+      }
     );
 
     return response.data;
@@ -59,8 +64,14 @@ export class ServiceRepository implements IServiceRepository {
   }
 
   async getCategories( params?: GetServicesParams): Promise<Category[]> {
+    const selectedLanguage = useAuthStore.getState().language;
     const response = await apiClient.get<APIResponse<Category[]>>(
-      "/services"
+      "/services",
+      {
+        headers: {
+          ...(selectedLanguage ? { "accept-language": selectedLanguage } : {}),
+        },
+      }
     );
 
     return response.data.data;
@@ -69,11 +80,15 @@ export class ServiceRepository implements IServiceRepository {
   async searchServices(
     query: string
   ): Promise<APIResponse<Service[]>> {
+    const selectedLanguage = useAuthStore.getState().language;
     const response = await apiClient.get<APIResponse<Service[]>>(
       `${this.baseUrl}/services`,
       {
         params: {
           search: query,
+        },
+        headers: {
+          ...(selectedLanguage ? { "accept-language": selectedLanguage } : {}),
         },
       }
     );
