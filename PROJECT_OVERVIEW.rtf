@@ -1,0 +1,98 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}}
+{\b Project Overview}\par
+\par
+{\b Purpose}\par
+This repository contains the Cashigo customer frontend application built with React, TypeScript, Vite, Tailwind CSS, and Firebase. It serves as the web customer portal for booking services, tracking jobs, managing wallets, viewing notifications, and interacting with support.\par
+\par
+{\b Key Technologies}\par
+- React 18\par
+- TypeScript\par
+- Vite\par
+- Tailwind CSS\par
+- React Router DOM\par
+- Firebase\par
+- React Query\par
+- Zustand\par
+- Leaflet for maps\par
+- Firebase Messaging and service workers\par
+- Radix UI, Heroicons, Lucide, and other UI helpers\par
+\par
+{\b Root Files}\par
+- project.json - project dependencies and scripts.\par
+- vite.config.ts - Vite build and dev server configuration.\par
+- tsconfig.json - TypeScript compiler settings and path aliases.\par
+- index.html - application HTML entry point.\par
+- README.md - project summary and usage guide.\par
+- postcss.config.cjs - PostCSS configuration.\par
+- tailwind.config.ts - Tailwind CSS configuration.\par
+- vercel.json - Vercel deployment settings.\par
+\par
+{\b Public Folder}\par
+- public/ - static assets and service worker scripts.\par
+  - service-worker.js - PWA / caching service worker.\par
+  - firebase-messaging-sw.js - Firebase push notifications.\par
+  - firebase-message-sw.js - additional Firebase messaging support.\par
+  - sw.js - secondary service worker file.\par
+\par
+{\b Source Structure (src/)}\par
+\par
+{\b Main App Entry}\par
+- src/main.tsx - bootstraps the React app.\par
+- src/App.tsx - root app component.\par
+- src/AppRoutes.tsx - application routing and route configuration.\par
+\par
+{\b Global UI & Utilities}\par
+- src/components/ - reusable components and UI building blocks.\par
+  - common/ - shared common components used across features.\par
+  - firebase/ - Firebase helpers, notifications, and messaging utilities.\par
+  - icons/ - reusable icon components.\par
+  - input/ - shared input controls.\par
+  - lib/ - visual helpers or library abstractions.\par
+  - ui/ - generic UI components.\par
+  - utils/ - helper utilities used by the component layer.\par
+\par
+{\b Feature Modules}\par
+- src/features/ - feature-oriented modules representing pages and flows.\par
+  - Auth/ - authentication and login workflows.\par
+  - Bookings/ - booking history, booking listings, and booking-related pages.\par
+  - BookingDetail/ - detailed view for individual bookings.\par
+  - Home/ - main landing or dashboard experience.\par
+  - Payment/ - payment and wallet functionality.\par
+  - Profile/ - user profile and account management.\par
+  - Notifications/ - notification pages and settings.\par
+  - WorkerChat/ - customer-worker chat interactions.\par
+  - JobTracking/, JobProgress/, JobCompleted/ - live service tracking and progress experiences.\par
+  - ServiceDetails/, ServiceRating/, ServiceTierSelection/ - service browsing and selection workflows.\par
+  - Help/, Privacy/, CookiePolicy/, AboutUs/ - informational and support pages.\par
+\par
+{\b Supporting Files}\par
+- src/hooks/ - custom React hooks.\par
+- src/lib/ - shared library utilities and query helpers.\par
+- src/types/ - TypeScript type declarations.\par
+- src/index.css and src/App.css - application styles.\par
+- src/ProtectedLayout.tsx - layout wrapper for authenticated routes.\par
+- src/ScrollToTop.tsx - scroll restoration helper.\par
+- src/ConfirmModal.tsx - global confirmation modal component.\par
+- src/NavigationNotification.tsx - navigation-related notifications helper.\par
+\par
+{\b Recommended Reading Flow}\par
+1. Start at src/main.tsx to understand app initialization.\par
+2. Review src/App.tsx for global providers and layout.\par
+3. Open src/AppRoutes.tsx to see the route structure and feature entry points.\par
+4. Inspect src/components/common/ for shared UI patterns.\par
+5. Explore src/features/ modules to understand domain-specific pages and flows.\par
+\par
+{\b Running Locally}\par
+- npm install - install dependencies.\par
+- npm run dev - start development server.\par
+- npm run build - build production assets.\par
+- npm run preview - preview the production build locally.\par
+- npm run lint - run ESLint over the project.\par
+\par
+{\b Notes}\par
+- The project uses a feature-first folder organization to keep pages and flows grouped together.\par
+- Global shared components and utilities live under src/components/, src/hooks/, and src/lib/.\par
+- Tailwind CSS is configured through Vite and tailwind.config.ts.\par
+- Firebase is used for notifications and messaging, and the public folder contains service worker files required for that integration.\par
+}
